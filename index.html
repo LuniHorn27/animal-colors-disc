@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>動物本色｜DISC 行為風格測驗</title>
+<link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
+<meta name="description" content="每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。44 題，約 7–8 分鐘，測出你的動物本色。">
+<!-- 連結預覽（LINE、Facebook 等）。之後換網域時，og:url、og:image 和下方程式裡的 SITE_URL 要一起改 -->
+<meta property="og:url" content="https://lunihorn27.github.io/animal-colors-disc/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="動物本色｜DISC 行為風格測驗">
+<meta property="og:description" content="每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。44 題，約 7–8 分鐘，測出你的動物本色。">
+<meta property="og:image" content="https://lunihorn27.github.io/animal-colors-disc/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="動物本色：測出你的動物本色，DISC 行為風格測驗">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Dark mode: neutral near-black (#0F0F0F, not pure black, to avoid text halation) with brighter animal colors.
+   Layout: a full-width site bar on top, then one reading column (max 800px) on every screen, including results — no side-by-side text columns.
+   Brand 動物本色 (brand/tokens.css): neutral 霧白 ground so the four animal colors stay equal; buttons use ink, never an animal color. */
+:root{
+  --bg:#F1F2F4; --surface:#FFFFFF; --sunk:#E3E5E8; --ink:#1F2329; --muted:#5B6068; --faint:#8C9199; --line:#D7DADF;
+  --accent:#1F2329; --accent-ink:#FFFFFF; --accent-soft:#E6E8EB;
+  --warn-bg:#FBF0DA; --warn-ink:#7A4A08; --err:#B3261E;
+  --d:#D66A14; --i:#11968A; --s:#5E9A47; --c:#6576DC;
+  --round:"Huninn","Noto Sans TC","PingFang TC",sans-serif; --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
+  --accent:#F2F2F2; --accent-ink:#0F0F0F; --accent-soft:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F; --err:#FF9A8F;
+  --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
+  --accent:#F2F2F2; --accent-ink:#0F0F0F; --accent-soft:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F; --err:#FF9A8F;
+  --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.75;margin:0}
+.wrap{width:100%;padding-inline:clamp(16px,4vw,48px);padding-block:28px 64px}
+#s-home,#s-quiz,#s-info,#s-blind,#s-result{max-width:800px;margin-inline:auto}
+.home-col{display:flex;flex-direction:column;gap:16px;padding-block:clamp(8px,3vh,32px)}
+.home-col h1{font-size:clamp(34px,5vw,52px);margin-bottom:4px}
+.home-col .types{margin:8px 0}
+@media (min-width:768px){.home-col .types{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.start-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--round);font-weight:400;font-synthesis:none;line-height:1.35;text-wrap:balance;margin:0}
+h1{font-size:30px} h2{font-size:22px} h3{font-size:18px}
+p{margin:0}
+.stack{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.muted{color:var(--muted)} .small{font-size:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:500}
+a.btn{text-decoration:none;color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.link{border:none;background:none;min-height:44px;padding:0 4px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0}
+.type{border-radius:12px;padding:12px 14px;background:var(--sunk)}
+.type{display:flex;align-items:center;gap:12px}
+.type .lt{font-family:var(--round);font-size:32px;font-weight:400;line-height:1;width:34px;text-align:center}
+.type b{font-size:16px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:1px}
+details{border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;color:var(--accent);font-weight:500}
+details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
+.consent{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--accent-soft);cursor:pointer}
+.consent input{width:22px;height:22px;margin-top:3px;accent-color:var(--accent);flex:none}
+/* quiz */
+.bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;margin:8px 0 28px}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .25s ease}
+.q{font-family:var(--round);font-size:clamp(22px,2.6vw,32px);font-weight:400;font-synthesis:none;line-height:1.5;min-height:3em;margin-bottom:24px;text-wrap:pretty}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;min-height:54px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);text-align:left;transition:border-color .15s,background .15s}
+@media (min-width:768px){
+  .opts{flex-direction:row}
+  .opts .opt{flex:1 1 0;min-width:0;flex-direction:column;justify-content:center;text-align:center;min-height:104px;gap:10px;padding:12px 8px}
+}
+.opt .k{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--sunk);font-size:14px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"] .k{background:var(--accent);color:var(--accent-ink)}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.info-grid{gap:20px;max-width:560px}
+.form-row{display:flex;flex-direction:column;gap:6px}
+.form-row label{font-weight:500}
+select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:48px;padding:0 12px}
+.blind{display:flex;flex-direction:column;gap:10px}
+.blind .opt{padding:14px 16px;align-items:flex-start;line-height:1.7}
+/* result */
+.warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:12px 16px;font-size:15px}
+.hero{display:flex;flex-direction:column;gap:8px;padding:8px 0 8px}
+.hero .code{font-size:14px;color:var(--muted);letter-spacing:.04em}
+.hero h1{font-size:clamp(32px,8vw,44px)}
+.hero .one{font-size:18px}
+.prom{border-left:4px solid var(--accent);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
+.report{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.side,.main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
+.ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
+.ak-S{background:color-mix(in srgb,var(--s) 22%,transparent)} .ak-C{background:color-mix(in srgb,var(--c) 20%,transparent)}
+.chart-svg{width:100%;max-width:440px;display:block;margin:0 auto}
+@media (max-width:767.98px){.chart-card{padding-inline:6px}.chart-card>h3,.chart-card>.legend{padding-inline:14px}}
+.hero .eyebrow{font-size:14px;color:var(--muted)}
+.confirm{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--warn-bg);color:var(--warn-ink)}
+.confirm p{flex:1 1 220px}
+.brow{display:grid;grid-template-columns:88px minmax(0,1fr) 34px;align-items:center;gap:10px;margin:14px 0;font-size:15px}
+.btrack{position:relative;height:14px;border-radius:7px;background:var(--sunk)}
+.bfill{height:100%;border-radius:7px}
+.bmean{position:absolute;top:-5px;bottom:-5px;width:0;border-left:2px dashed var(--faint)}
+.bval{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:8px}
+.sec h3{margin-bottom:8px}
+.sec ul{margin:0;padding-left:20px}
+.sec li{margin:4px 0}
+.tip{margin-top:10px;padding:10px 14px;border-radius:10px;background:var(--sunk);font-size:15px}
+.rate{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.rate .opt{min-height:44px;padding:0 14px}
+/* five in a row only when the card itself has room (it sits beside the share card on wide screens) */
+.rate-card{container-type:inline-size}
+@container (min-width:440px){
+  .rate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+  .rate .opt{flex-direction:column;justify-content:center;gap:6px;min-height:80px;padding:8px 4px;font-size:14px;text-align:center}
+}
+.share-img{display:block;width:100%;max-width:360px;max-height:520px;object-fit:cover;object-position:top;height:auto;margin:12px auto 0;border-radius:12px;border:1px solid var(--line)}
+.foot-meta{border-top:1px solid var(--line);padding-top:14px;margin-top:24px;display:flex;flex-direction:column;gap:6px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+/* brand */
+.site-bar{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px);padding-top:env(safe-area-inset-top,0px)}
+.bar-in{max-width:800px;margin-inline:auto;min-height:60px;display:flex;align-items:center;gap:16px}
+.bar-brand{display:flex;align-items:center;gap:10px;min-height:44px;min-width:0;font-family:var(--round);font-size:18px;line-height:1.3;color:var(--ink);text-decoration:none;flex:0 1 auto}
+.bar-brand svg{width:28px;height:28px;flex:none}
+/* 之後新增的頁面連結放在 .bar-nav 裡；目前所在頁面加 aria-current="page" */
+.bar-nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;min-width:0}
+.bar-nav:empty{display:none}
+.bar-nav a{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:15px;white-space:nowrap}
+.bar-nav a:hover{background:var(--sunk);color:var(--ink)}
+.bar-nav a[aria-current="page"]{color:var(--ink);font-weight:700}
+/* 頁首右側的動作按鈕（分享測驗；之後的設定也放這裡）。導覽是空的時候，由它把自己推到最右邊 */
+.bar-actions{display:flex;gap:4px;flex:none}
+.bar-nav:empty+.bar-actions{margin-left:auto}
+.bar-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:500}
+.bar-btn:hover{background:var(--sunk)}
+.bar-btn svg{width:20px;height:20px;flex:none}
+.bar-btn[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100vw - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:20;margin:0}
+.toast:empty{display:none}
+.home-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center}
+.home-hero .flower{width:min(220px,62vw);justify-self:start;order:-1}
+@media (min-width:768px){.home-hero{grid-template-columns:minmax(0,1fr) 230px;gap:24px}.home-hero .flower{width:100%;order:0;justify-self:end}}
+.type .pat{width:34px;height:34px;flex:none;border-radius:50% 50% 50% 6px;display:block}
+.type .tx{display:flex;flex-direction:column;line-height:1.35}
+.type .tx small{font-size:13px;color:var(--muted);font-weight:400}
+.flower{display:block}
+.flower .pt{stroke:var(--surface);stroke-linejoin:round}
+.home-hero .flower .pt{stroke:var(--bg)}
+.donut{width:100%;max-width:480px;margin:4px auto 0}
+.donut text{font-family:var(--sans);font-weight:700;fill:var(--ink)}
+.donut .lab{font-size:13px}
+.donut .c1{font-size:12px;font-weight:400;fill:var(--muted)}
+.donut .c2{font-size:16px}
+.donut .c2.two{font-size:15px}
+.donut-legend{display:none;list-style:none;margin:12px 0 0;padding:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;font-size:15px;font-weight:700}
+.donut-legend li{display:flex;align-items:center;gap:6px;margin:0;min-width:0}
+.donut-legend svg{width:18px;height:18px;border-radius:50%;flex:none}
+.donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
+@media (max-width:767.98px){.donut .lab{display:none}.donut .c1{font-size:22px}.donut .c2{font-size:26px}.donut .c2.two{font-size:22px}.donut-legend{display:grid}
+  .chart-svg .ax{font-size:19px}.chart-svg .vl{font-size:19px}}
+.pbars{display:flex;flex-direction:column;gap:14px;position:relative;padding-top:24px;margin-top:4px}
+.pbar{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:15px}
+.pbar .nm{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
+.pbar .nm svg{width:18px;height:18px;flex:none;border-radius:50%}
+.pbar .tr{height:18px;border-radius:9px;background:var(--sunk)}
+.pbar .fl{display:block;height:100%;border-radius:9px;overflow:hidden}
+.pbar .fl svg{display:block;width:100%;height:100%}
+.pbar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.pbars .avgline{position:absolute;top:18px;bottom:-4px;border-left:2px dashed var(--muted);pointer-events:none}
+.pbars .avglab{position:absolute;top:0;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
+.flower text{font-family:var(--sans);font-weight:700;fill:var(--ink)}
+.seg{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:var(--sunk);gap:4px}
+.seg button{font:inherit;font-size:15px;min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.14)}
+#s-result:not(.mode-data) .only-data{display:none!important}
+#s-result.mode-data .only-brand{display:none!important}
+input[type=text],input[type=email]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:48px;padding:0 12px;width:100%}
+input[aria-invalid="true"]{border-color:var(--err)}
+.field-err{font-size:14px;color:var(--err)}
+.field-err:empty{display:none}
+.quiz-top{margin:0 0 8px}
+.quiz-top .btn.link{padding:0 4px;margin-left:-4px}
+dialog{border:0;border-radius:16px;padding:24px;max-width:min(440px,calc(100vw - 32px));background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(20,22,26,.45)}
+dialog h2{margin-bottom:8px}
+dialog .actions{margin-top:20px;justify-content:flex-end}
+@media (hover:none){.kbd-hint{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script>/* 深色模式：套用使用者上次的選擇，避免畫面先閃一下別的顏色 */try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
+
+<svg id="pat-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
+<header class="site-bar">
+  <div class="bar-in">
+    <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span>測出你的動物本色</span></a>
+    <nav class="bar-nav" aria-label="網站導覽"></nav>
+    <div class="bar-actions">
+      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false" title="深色模式"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl">深色模式</span></button>
+      <button type="button" class="bar-btn" id="bar-share" title="分享測驗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">分享測驗</span></button>
+    </div>
+  </div>
+</header>
+<div class="wrap" id="app">
+
+  <section id="s-home" class="stack">
+    <div class="home-col">
+    <div class="home-hero">
+      <div class="stack" style="gap:12px">
+        <h1>測出你的動物本色</h1>
+        <p>這份測驗根據心理學家馬斯頓（William Marston）在 1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，分別用四種動物代表。</p>
+      </div>
+      <svg class="flower" id="home-flower" viewBox="0 0 240 240" aria-hidden="true"></svg>
+    </div>
+    <div class="types">
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-D)"/></svg><span class="tx"><b>老虎</b><small>D 支配</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-I)"/></svg><span class="tx"><b>孔雀</b><small>I 影響</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-S)"/></svg><span class="tx"><b>無尾熊</b><small>S 穩定</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-C)"/></svg><span class="tx"><b>貓頭鷹</b><small>C 謹慎</small></span></div>
+    </div>
+    <p>每個人身上都有這四種動物，只是比例不同。沒有好壞，也沒有哪一型比較好。</p>
+    <p>共 44 題，大約 7–8 分鐘。請依照你<b>平常實際的樣子</b>作答，而不是你希望成為的樣子。</p>
+    <p>完成後，你會看到自己的動物本色、四種傾向的分布圖，以及溝通和職涯上的參考建議。</p>
+    <p class="small muted">小提醒：結果僅供自我了解參考。你的作答會保存下來，用來讓這份測驗更準確；資料只用在這份測驗，不會挪作其他用途，也不會提供給其他人或公司。</p>
+    <div class="start-card">
+    <label class="consent" for="agree"><input type="checkbox" id="agree"><span>我了解結果僅供參考，也同意保存我的作答，用來讓這份測驗更準確</span></label>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn primary" id="start" disabled>開始作答</button>
+      <button class="btn" id="resume" hidden>繼續上次的作答</button>
+    </div>
+    </div>
+    </div>
+  </section>
+
+  <section id="s-quiz" hidden>
+    <p class="quiz-top"><button class="btn link" id="go-home">回到首頁</button></p>
+    <div class="bar-top"><span id="qcount">第 1 題，共 44 題</span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
+    <div class="progress" aria-hidden="true"><i id="qbar" style="width:0"></i></div>
+    <p class="q" id="qtext" aria-live="polite"></p>
+    <div class="opts" id="opts" role="group" aria-label="符合程度"></div>
+    <div class="nav">
+      <button class="btn" id="prev">上一題</button>
+      <span class="small muted kbd-hint">可用數字鍵 1–5 作答</span>
+    </div>
+    <p style="margin-top:32px" id="demo-row" hidden><button class="btn link" id="demo">示範：自動填完（測試用）</button></p>
+  </section>
+
+  <section id="s-info" class="stack" hidden>
+    <h2>最後幾個問題（選填）</h2>
+    <p class="muted">以下都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。</p>
+    <div class="info-grid stack">
+    <div class="form-row"><label for="uname">名字</label>
+      <input type="text" id="uname" autocomplete="name" maxlength="40"></div>
+    <div class="form-row"><label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="email-err">
+      <span class="field-err" id="email-err" role="alert"></span></div>
+    <div class="form-row"><label for="age">年齡層</label>
+      <select id="age"><option value="">請選擇</option><option>18 歲以下</option><option>18–24 歲</option><option>25–34 歲</option><option>35–44 歲</option><option>45–54 歲</option><option>55 歲以上</option></select></div>
+    <div class="form-row"><label for="gender">性別</label>
+      <select id="gender"><option value="">請選擇</option><option>生理男</option><option>生理女</option></select></div>
+    <div class="form-row"><label for="edu">學歷</label>
+      <select id="edu"><option value="">請選擇</option><option>國中以下</option><option>高中職</option><option>專科</option><option>大學</option><option>碩士</option><option>博士</option></select></div>
+    <div class="form-row"><label for="job">職業類別</label>
+      <select id="job"><option value="">請選擇</option><option>學生</option><option>上班族</option><option>自由工作者</option><option>自營或創業</option><option>家管</option><option>待業中</option><option>退休</option><option>其他</option></select></div>
+    </div>
+    <div><button class="btn primary" id="info-next">下一步</button></div>
+  </section>
+
+  <section id="s-blind" class="stack" hidden>
+    <p class="small muted" id="blind-step">第 1 頁，共 2 頁</p>
+    <h2 id="blind-h">憑直覺，選一段最像的描述</h2>
+    <div class="blind" id="blind-opts" role="group" aria-labelledby="blind-h"></div>
+    <div class="actions"><button class="btn" id="blind-prev" hidden>上一頁</button><button class="btn primary" id="blind-next" disabled>下一頁</button></div>
+  </section>
+
+  <section id="s-result" class="stack" hidden></section>
+</div>
+
+<p class="toast" id="toast" role="status" aria-live="polite"></p>
+<dialog id="home-dialog" aria-labelledby="hd-title" aria-describedby="hd-desc">
+  <h2 id="hd-title">要回到首頁嗎？</h2>
+  <p id="hd-desc" class="muted">你的作答進度會保存在這個瀏覽器裡，之後可以在首頁按「繼續上次的作答」接著做。</p>
+  <div class="actions"><button class="btn" id="hd-stay" autofocus>繼續作答</button><button class="btn primary" id="hd-go">回到首頁</button></div>
+</dialog>
+
+<script>
+/* ===== 1. 題庫資料（題庫草稿 v0.4） ===== */
+const TYPES = ['D','I','S','C'];
+const ANIMAL = {D:'老虎', I:'孔雀', S:'無尾熊', C:'貓頭鷹'};
+const TNAME = {D:'支配', I:'影響', S:'穩定', C:'謹慎'};
+const TCOLOR = {D:'var(--d)', I:'var(--i)', S:'var(--s)', C:'var(--c)'};
+
+/* ===== 品牌：動物花紋（甲）與四瓣花。網頁 SVG 和分享圖片 canvas 共用同一份圖案資料 ===== */
+const PAT = {
+  D:{w:44,h:44,rot:-32,scale:.9,base:'#D66A14',els:[['path','M0 9C11 3 24 15 44 7L44 14C25 22 11 10 0 15Z','#3A1C07'],['path','M0 31C13 26 27 37 44 30L44 35C27 43 13 32 0 37Z','#3A1C07']]},
+  I:{w:40,h:40,base:'#11968A',els:[['ell',10,11,8,10,0,'#0B4F66'],['ell',10,12,5,6.4,0,'#F3C24F'],['ell',10,13,2.8,2.8,0,'#142A4C'],['ell',30,31,8,10,0,'#0B4F66'],['ell',30,32,5,6.4,0,'#F3C24F'],['ell',30,33,2.8,2.8,0,'#142A4C']]},
+  S:{w:36,h:36,base:'#5E9A47',els:[['ell',9,10,3.6,8.5,38,'#3C6B30'],['ell',27,27,3.6,8.5,-38,'#3C6B30'],['ell',27,8,2.2,2.2,0,'#DCEBD3'],['ell',9,28,2.2,2.2,0,'#DCEBD3']]},
+  C:{w:20,h:16,base:'#6576DC',els:[['line','M0 16A10 10 0 0 1 20 16M-10 8A10 10 0 0 1 10 8M10 8A10 10 0 0 1 30 8','#222A6E',2]]}
+};
+function patSVG(t){
+  const p = PAT[t];
+  const els = p.els.map(e => e[0]==='path' ? `<path d="${e[1]}" fill="${e[2]}"/>`
+    : e[0]==='ell' ? `<ellipse cx="${e[1]}" cy="${e[2]}" rx="${e[3]}" ry="${e[4]}" transform="rotate(${e[5]} ${e[1]} ${e[2]})" fill="${e[6]}"/>`
+    : `<path d="${e[1]}" fill="none" stroke="${e[2]}" stroke-width="${e[3]}"/>`).join('');
+  const tf = p.rot ? ` patternTransform="rotate(${p.rot}) scale(${p.scale})"` : '';
+  return `<pattern id="pat-${t}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse"${tf}><rect width="${p.w}" height="${p.h}" fill="${p.base}"/>${els}</pattern>`;
+}
+document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('');
+/* canvas 版花紋：f = 花的 SVG 單位換算成 canvas 像素的倍率，(ox,oy) = SVG 原點在 canvas 上的位置 */
+function canvasPattern(ctx, t, f, ox, oy){
+  const p = PAT[t], k = 4, c = document.createElement('canvas');
+  c.width = p.w*k; c.height = p.h*k;
+  const g = c.getContext('2d'); g.scale(k,k); g.fillStyle = p.base; g.fillRect(0,0,p.w,p.h);
+  p.els.forEach(e=>{
+    if (e[0]==='path'){ g.fillStyle=e[2]; g.fill(new Path2D(e[1])); }
+    else if (e[0]==='ell'){ g.fillStyle=e[6]; g.beginPath(); g.ellipse(e[1],e[2],e[3],e[4],e[5]*Math.PI/180,0,Math.PI*2); g.fill(); }
+    else { g.strokeStyle=e[2]; g.lineWidth=e[3]; g.stroke(new Path2D(e[1])); }
+  });
+  const pat = ctx.createPattern(c,'repeat');
+  if (pat.setTransform) pat.setTransform(new DOMMatrix().translateSelf(ox,oy).rotateSelf(p.rot||0).scaleSelf(f*(p.scale||1)/k));
+  return pat;
+}
+/* 四瓣花：方向和四向圖相同（老虎左上、孔雀右上、無尾熊右下、貓頭鷹左下）。
+   半徑用分數的平方根換算，花瓣面積才會和分數成正比；分數很低時保留一點點，避免花瓣完全消失。 */
+const PETAL = {D:[180,270], I:[270,360], S:[0,90], C:[90,180]};
+const petalR = (v, R) => R*Math.sqrt(Math.max(4, v)/100);
+function petalPath(cx, cy, r, a1, a2){
+  const p = a => [cx+r*Math.cos(a*Math.PI/180), cy+r*Math.sin(a*Math.PI/180)].map(v=>+v.toFixed(1));
+  const [x1,y1]=p(a1), [x2,y2]=p(a2);
+  return `M${cx} ${cy}L${x1} ${y1}A${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y2}Z`;
+}
+function flowerSVG(vals, {avg=null, labels=false, id='', label=''}={}){
+  const cx=120, cy=120, R=104;
+  let g = TYPES.map(t=>`<path class="pt" d="${petalPath(cx,cy,petalR(vals[t],R),...PETAL[t])}" fill="url(#pat-${t})" stroke-width="4"/>`).join('');
+  if (avg!=null){ const ra=(R*Math.sqrt(avg/100)).toFixed(1);
+    g += `<circle cx="${cx}" cy="${cy}" r="${ra}" fill="none" stroke="var(--surface)" stroke-width="4" opacity=".7"/><circle cx="${cx}" cy="${cy}" r="${ra}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="5 4"/>`; }
+  if (labels){ const L = {D:[6,16,'start'], I:[234,16,'end'], S:[234,234,'end'], C:[6,234,'start']};
+    g += TYPES.map(t=>`<text x="${L[t][0]}" y="${L[t][1]}" text-anchor="${L[t][2]}" font-size="13">${LBL(t)} ${vals[t]}</text>`).join(''); }
+  return `<svg class="flower"${id?` id="${id}"`:''} viewBox="0 0 240 240" ${label?`role="img" aria-label="${label}"`:'aria-hidden="true"'}>${g}</svg>`;
+}
+const ITEMS = [
+['D01',0,'團體裡沒有人帶頭時，我會主動站出來帶領大家。'],['D02',0,'我喜歡自己掌控事情要怎麼做。'],['D03',0,'分組合作時，我常常是分配工作的那個人。'],['D04',0,'比起照別人的決定做事，我更喜歡自己做決定。'],
+['D05',1,'即使資訊不完整，我也能很快做出決定。'],['D06',1,'我一確定目標，就會馬上開始行動。'],['D07',1,'事情進展太慢時，我會想辦法推動進度。'],['D08',1,'比起過程，我更在意最後的結果。'],
+['D09',2,'任務越困難，越能激起我的鬥志。'],['D10',2,'遇到競爭時，我會非常想贏。'],['D11',2,'遇到阻礙時，我會想辦法突破，而不是繞過去。'],['D12',2,'只要有機會得到更好的成果，我就敢冒險。'],
+['D13',3,'即使對方可能不想聽，我也會直接說出我的看法。'],['D14',3,'意見不同時，我會當面提出來討論。'],['D15',3,'我說話習慣開門見山，不拐彎抹角。'],['D16',3,'不想做的事，我會直接拒絕。'],
+['I01',0,'我很容易和剛認識的人熟起來。'],['I02',0,'在聚會或活動中，我會主動找不同的人聊天。'],['I03',0,'我常常主動揪人一起做事或參加活動。'],['I04',0,'認識新朋友對我來說是件開心的事。'],
+['I05',1,'我常常能夠說服別人。'],['I06',1,'我的熱情常常能感染身邊的人。'],['I07',1,'分享想法時，我常用故事或例子讓別人更有興趣。'],['I08',1,'別人常因為我的鼓勵，而願意嘗試新事物。'],
+['I09',2,'遇到事情時，我通常會往好的方面想。'],['I10',2,'我常常逗身邊的人開心。'],['I11',2,'有新計畫時，我常常會很興奮、很期待。'],['I12',2,'我喜歡隨興，想到什麼就去做。'],
+['I13',3,'我喜歡在大家面前分享想法或故事。'],['I14',3,'被大家注意的時候，我會覺得很自在。'],['I15',3,'我說話時表情和手勢都很豐富。'],['I16',3,'和別人聊天時，我通常是說話比較多的那個。'],
+['S01',0,'我喜歡照自己的步調，穩穩地把事情做好。'],['S02',0,'我比較喜歡用熟悉的方式做事。'],['S03',0,'比起臨時變動，我更喜歡事先講好的安排。'],['S04',0,'就算事情進展得慢，我也能耐心等待。'],
+['S05',1,'即使不是我的工作，我也樂於幫忙別人。'],['S06',1,'比起競爭，我更重視合作。'],['S07',1,'比起站在台前，我更喜歡在幕後支持大家。'],['S08',1,'我很重視長期穩定的合作關係。'],
+['S09',2,'朋友有心事時，常常會找我聊。'],['S10',2,'我常常會留意身邊的人需要什麼。'],['S11',2,'別人說話時，我通常會耐心聽完。'],['S12',2,'和我相處的人，通常會覺得很自在。'],
+['S13',3,'為了不傷和氣，我常常會把不同的意見放在心裡。'],['S14',3,'我不喜歡讓人覺得我太強勢。'],['S15',3,'為了讓大家相處融洽，我常常會配合別人的做法。'],['S16',3,'別人問我意見時，我常常會說「都可以」。'],
+['C01',0,'做事時，我會追求盡善盡美。'],['C02',0,'交出成果前，我會反覆檢查好幾次。'],['C03',0,'別人容易忽略的細節，我常常會注意到。'],['C04',0,'對我來說，做得正確比做得快更重要。'],
+['C05',1,'我做事習慣照著既定的流程（SOP）來。'],['C06',1,'我習慣按部就班，一步一步把事情完成。'],['C07',1,'我喜歡把東西整理得井然有序。'],['C08',1,'有明確的規則可以照著做時，我會比較安心。'],
+['C09',2,'做決定前，我會先做足功課。'],['C10',2,'比起感覺，我更相信數據和證據。'],['C11',2,'聽到一個消息時，我會先查證它是不是真的。'],['C12',2,'我喜歡把事情的來龍去脈弄清楚。'],
+['C13',3,'做事時，我會特別小心避免出錯。'],['C14',3,'我說話很注重用詞是否精確。'],['C15',3,'行動之前，我會先評估可能的風險。'],['C16',3,'在不確定的情況下，我寧可保守一點。']
+].map(([id,f,text])=>({id,t:id[0],f,text,kind:'score'}));
+const ATTN = [{id:'Q01',text:'這一題請直接選「有點符合」。',ans:4,kind:'attn'},{id:'Q02',text:'這一題請直接選「非常不符合」。',ans:1,kind:'attn'}];
+const PAIRS = [
+  {id:'R01',orig:'D15',text:'我說話習慣委婉，會先鋪陳再講重點。',kind:'pair'},
+  {id:'R02',orig:'I01',text:'我通常需要很長一段時間，才能和剛認識的人熟起來。',kind:'pair'},
+  {id:'R03',orig:'S03',text:'比起事先講好的安排，我更喜歡臨時起意。',kind:'pair'},
+  {id:'R04',orig:'C06',text:'我做事常常想到哪裡就做到哪裡。',kind:'pair'}];
+const BYID = Object.fromEntries([...ITEMS,...ATTN,...PAIRS].map(x=>[x.id,x]));
+const SCALE = ['非常不符合','有點不符合','普通','有點符合','非常符合'];
+const CODE_OF = {'老虎':'D','孔雀':'I','無尾熊':'S','貓頭鷹':'C'};
+const LBL = t => t+' '+ANIMAL[t];
+const sumTimes = st => Object.values(st.times||{}).reduce((a,b)=>a+b,0);
+const fmtClock = ms => { const s=Math.floor(ms/1000); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
+const fmtDur = ms => { const s=Math.round(ms/1000), m=Math.floor(s/60); return m ? `${m} 分 ${s%60} 秒` : `${s} 秒`; };
+const BLIND = {
+  D:'我做事重視結果和效率，遇到困難會想辦法突破。我習慣自己做決定，說話直接，喜歡有挑戰性的任務。',
+  I:'我喜歡和人互動，很容易和不熟的人聊開。我樂觀、說話生動，常常是帶動氣氛、鼓勵大家的那個人。',
+  S:'我重視和諧與穩定，喜歡用自己的步調把事情做好。我善於傾聽、願意配合別人，是朋友眼中可靠的人。',
+  C:'我重視正確和品質，做決定前會先蒐集資料。我做事有條理、注意細節，喜歡有明確標準的環境。'};
+
+/* ===== 2. 解說內容（解說文字草稿 v0.1） ===== */
+const R = {
+D:{name:'老虎',code:'D 支配型',one:'果斷直接、勇於挑戰，習慣帶著大家往目標前進。',
+ core:'你是行動派。遇到問題或阻礙時，你的第一個念頭通常不是「怎麼辦」，而是「怎麼解決」。你重視結果和效率，喜歡掌握主導權，也願意為自己的決定負責。對你來說，困難不是退縮的理由，而是證明自己的機會。',
+ good:['決策快：資訊不完整時，也能判斷方向、先動起來','不怕挑戰：任務越困難，越能激發你的鬥志','目標明確：能把大家的注意力拉回重點','敢說真話：問題出現時會直接指出來，不讓事情一直拖著'],
+ blind:['求快的時候，可能忽略細節或別人的感受','說話直接，有時會讓人覺得有壓力，或覺得被否定','習慣自己做主，不太容易放手讓別人用他們的方式做','對進度慢的人容易不耐煩'],
+ comm:'你說話習慣先講結論，喜歡簡短、有重點的對話。你欣賞直接表達意見的人，不喜歡繞圈子或含糊的回答。',
+ commTip:'和老虎溝通時，先講重點和結論，再補充細節。有不同意見可以直說，但要附上理由。',
+ stress:'壓力大時，你可能變得更強勢、更急躁，想一個人把事情扛下來，或用下指令的方式推動別人。',
+ stressTip:'做決定前，先問一句「大家覺得呢？」多花一分鐘聽，常常能省下之後更多溝通的時間。',
+ env:['有明確目標、看得到成果','擁有決策權和自主空間','節奏快、有挑戰，能持續面對新問題'],
+ jobs:'創業、管理職、專案負責人、業務開發、營運主管、危機處理',
+ tips:['和孔雀：他們重視氣氛和互動，多給一點肯定，他們會更有衝勁','和無尾熊：他們需要時間適應變化，重大調整盡量提早告知','和貓頭鷹：他們重視正確，給他們足夠的資料和思考時間，別急著要答案']},
+I:{name:'孔雀',code:'I 影響型',one:'熱情樂觀、善於表達，總能為身邊的人帶來活力。',
+ core:'你相信事情會往好的方向發展，也相信人。你喜歡和人互動，擅長用熱情和故事打動別人，讓大家願意一起行動。在團體中，你常常是帶動氣氛、讓陌生人變熟的那個人。',
+ good:['感染力強：你的熱情能讓大家打起精神','善於表達：能把想法說得生動有趣，讓人聽得進去','人脈廣：容易和不同的人建立關係','樂觀有彈性：遇到變化時，能很快看到新的可能'],
+ blind:['想法多、開頭快，但收尾和細節容易被忽略','有時答應太多事，時間不夠用','在意別人的看法，被冷落或否定時容易受影響','做決定時可能偏重感覺，比較少查證'],
+ comm:'你說話生動、表情豐富，喜歡輕鬆、有互動的對話，也喜歡分享想法和經驗。比起冷冰冰的數據，你更容易被故事和人打動。',
+ commTip:'和孔雀溝通時，先建立輕鬆的氣氛，給他們表達的空間。重要的細節和期限，最好事後用文字再確認一次。',
+ stress:'壓力大時，你可能變得情緒化、話變多或變得急躁，也可能為了逃避不愉快，而拖延該處理的事。',
+ stressTip:'把重要的事寫下來、排出優先順序。答應別人之前，先想一下時間是不是真的夠。',
+ env:['能和人互動、合作','氣氛開放，可以自由提出想法','工作內容有變化，不會一成不變'],
+ jobs:'行銷、公關、業務、活動企劃、講師、主持、客戶關係',
+ tips:['和老虎：他們重視效率，討論時先講重點，熱情的部分可以留到後面','和無尾熊：他們步調比較穩，不要一次丟出太多新點子，給他們時間消化','和貓頭鷹：他們重視依據，分享想法時可以多準備一些具體資料']},
+S:{name:'無尾熊',code:'S 穩定型',one:'穩定可靠、體貼包容，是大家最安心的依靠。',
+ core:'你重視和諧與穩定，喜歡在熟悉、友善的環境中，用自己的步調把事情做好。你善於傾聽，常常察覺別人的需要，願意在背後默默支持大家。對你來說，良好的關係和彼此信任，比贏過別人更重要。',
+ good:['可靠：答應的事會持續做到，讓人放心','有耐心：願意花時間把事情做好，也願意等待別人','善於傾聽：讓人覺得被理解，相處起來很自在','團隊的黏著劑：能化解緊張，讓大家合作順利'],
+ blind:['為了避免衝突，常把不同意見放在心裡','不太會拒絕，容易把太多事攬在自己身上','面對突然的變化，需要比較多時間適應','習慣配合別人，有時忽略自己的需要'],
+ comm:'你說話溫和、有耐心，習慣先聽完別人的想法再表達。你不喜歡被催促，也不喜歡激烈的爭論。',
+ commTip:'和無尾熊溝通時，語氣放緩，給他們時間思考。想知道他們真正的想法，可以私下、用比較輕鬆的方式問。',
+ stress:'壓力大時，你可能變得退縮、沉默，表面上答應，心裡卻不認同。壓力累積久了，也可能突然爆發。',
+ stressTip:'試著把「我覺得……」說出口。適時表達自己的想法不會破壞關係，反而能讓別人更了解你。',
+ env:['穩定、可預期，有明確的分工','重視團隊合作、氣氛和睦','能長期經營關係，而不是一直在競爭'],
+ jobs:'行政、人資、客戶服務、護理、社工、教育輔導',
+ tips:['和老虎：他們說話直接，不一定是針對你。需要時間時，可以明確說出需要多久','和孔雀：他們點子多、變化快，你可以幫忙提醒他們把事情收尾','和貓頭鷹：你們都重視穩定，但他們更重視正確，給他們回饋時可以具體一點']},
+C:{name:'貓頭鷹',code:'C 謹慎型',one:'細心嚴謹、講求精確，用事實和邏輯把事情做對。',
+ core:'你重視品質和正確性，做決定前習慣先蒐集資料、弄清楚來龍去脈。你喜歡有明確標準和流程的環境，相信只要方法正確，結果自然會好。別人容易忽略的細節，往往逃不過你的眼睛。',
+ good:['精確：能發現錯誤和漏洞，確保品質','分析力強：用邏輯和數據判斷，不容易被情緒或話術影響','有條理：做事按部就班，讓人信任你的成果','謹慎：行動前會評估風險，避免不必要的損失'],
+ blind:['追求完美，可能花太多時間在細節上','資訊不夠時，不容易下決定','習慣先看到問題，有時讓人覺得太挑剔','比較少表達感受，別人不容易知道你在想什麼'],
+ comm:'你說話精準、有依據，喜歡有邏輯、有資料的討論。對模糊的說法或沒有根據的意見，你會想先問清楚。',
+ commTip:'和貓頭鷹溝通時，提供具體的資料和明確的期待，並給他們思考的時間。有不同看法時，用事實討論會比用情緒說服更有效。',
+ stress:'壓力大時，你可能變得更挑剔、鑽牛角尖，或退回自己的世界、不想溝通，也可能因為怕出錯而遲遲無法決定。',
+ stressTip:'先問自己「這件事做到幾分就夠了？」不是每件事都需要一百分。',
+ env:['有明確的標準、流程和品質要求','能專心工作，不會一直被打斷','重視專業與正確性'],
+ jobs:'工程師、研究人員、數據分析、會計、品質管理、法務、稽核',
+ tips:['和老虎：他們重視速度，可以先給結論和你的判斷，細節之後再補','和孔雀：他們重視感受，指出問題時，先肯定做得好的部分','和無尾熊：他們不喜歡衝突，提出意見時語氣可以柔和一點']},
+DI:{name:'老虎＋孔雀',code:'DI 組合型',one:'有衝勁又有魅力，能帶著大家一起衝向目標。',
+ core:'你同時有老虎的果斷和孔雀的熱情，這兩種特質在你身上差不多明顯。你不只敢做決定，也能讓別人心甘情願跟上。你喜歡快節奏、有挑戰的事，也喜歡站在台前影響別人。',
+ good:['能帶人也能衝：既能做決定，也能激勵大家','擅長開創：面對新機會，能很快行動並找到支持的人','說服力強：說話有自信，讓人願意相信你','反應快：情況改變時，能立刻調整方向'],
+ blind:['步調太快，身邊的人可能跟不上','同時開太多頭，後續追蹤和細節比較弱','自信有時會被看成太過強勢','對冗長的討論和流程缺乏耐心'],
+ comm:'你說話熱情直接、充滿能量，喜歡快速討論、當場決定。',commTip:'跟上他們的節奏，先談大方向，細節事後用文字補充。',
+ stress:'你可能變得更急、更強勢，一個人主導全部，或用說服壓過反對的意見。',stressTip:'找一位細心的夥伴，幫你把關細節和進度。',
+ env:['變化快、有舞台、看得到成果','能帶領團隊、開拓新局'],jobs:'創業、業務主管、行銷主管、新事業開發、活動或專案領導',
+ tips:['和無尾熊、貓頭鷹：他們需要時間思考，討論時放慢速度，不要急著要對方當場答應']},
+IS:{name:'孔雀＋無尾熊',code:'IS 組合型',one:'溫暖熱情、善解人意，讓身邊的人感到被重視。',
+ core:'你同時有孔雀的熱情和無尾熊的體貼。你重視人，喜歡和人互動，也很在意別人的感受。你擅長建立關係、營造溫暖的氣氛，是團隊中讓人安心又開心的存在。',
+ good:['人緣好：容易讓人親近、信任','同理心強：能感受到別人的情緒和需要','善於協調：能在不同意見之間找到大家都能接受的方式','營造好氣氛：讓團隊合作起來輕鬆愉快'],
+ blind:['很難拒絕別人，容易委屈自己','必要的批評說不出口','做決定時容易被感情左右','對數據和細節比較沒耐心'],
+ comm:'你說話親切溫和、喜歡聊天，重視雙向互動。',commTip:'先關心近況再談正事。需要提出批評時，私下、溫和地說。',
+ stress:'你可能過度在意別人的看法、委屈自己，或情緒低落卻不說出來。',stressTip:'練習說「這次我沒辦法」。先照顧好自己，才能繼續照顧別人。',
+ env:['以人為中心，重視合作和關懷','氣氛友善，不是激烈競爭'],jobs:'客戶關係、人資、教育、諮商輔導、社工、社群經營',
+ tips:['和老虎、貓頭鷹：他們比較就事論事，不代表不在乎你。討論時可以多準備具體內容']},
+SC:{name:'無尾熊＋貓頭鷹',code:'SC 組合型',one:'穩健踏實、細心可靠，是最值得信賴的執行者。',
+ core:'你同時有無尾熊的穩定和貓頭鷹的嚴謹。你做事有計畫、按部就班，重視品質，也重視團隊和諧。你不追求鎂光燈，但交給你的事，大家都很放心。',
+ good:['穩定可靠：品質一致，很少出錯','細心有條理：重視流程和細節','能長期投入：願意耐心把事情做到好','守規矩、守承諾：讓人信任'],
+ blind:['面對變化，適應得比較慢','不太主動爭取機會或表現自己','做決定比較保守','習慣把意見放在心裡'],
+ comm:'你說話安靜、謹慎，開口前會先想清楚。',commTip:'有變化時提前告知，並給清楚的說明和準備時間。',
+ stress:'你可能變得退縮、焦慮，更堅持原本的做法。',stressTip:'遇到改變時，先列出「哪些事情不會變」，會比較安心。也試著主動說出自己的意見。',
+ env:['穩定，有清楚的流程與分工','重視品質與專業'],jobs:'行政管理、會計、品質管理、資料管理、技術支援、研究助理、公職',
+ tips:['和老虎、孔雀：他們變化快、想法多，可以主動告訴他們你需要多少準備時間']},
+CD:{name:'貓頭鷹＋老虎',code:'CD 組合型',one:'理性果斷、標準嚴格，追求又快又對的結果。',
+ core:'你同時有貓頭鷹的嚴謹和老虎的果斷。你重視事實和邏輯，也重視結果。你對自己和別人都有高標準，擅長分析問題，並推動解決方案。',
+ good:['想得清楚也做得到：分析完就能推動執行','標準高：成果品質好','客觀：就事論事，不容易被情緒影響','能解決複雜問題：遇到難題時冷靜拆解'],
+ blind:['可能顯得冷淡或太嚴厲','不太在意氣氛和別人的感受','對達不到標準的人缺乏耐心','不容易接受別人的做法'],
+ comm:'你說話簡潔、理性，直接指出問題。',commTip:'用數據和邏輯說話，直接提出問題和解決方法。',
+ stress:'你可能變得更挑剔、更嚴厲，獨自承擔所有事、不願意交給別人。',stressTip:'給別人回饋時多加一句肯定，團隊會更願意跟上你的標準。',
+ env:['重視專業、標準與成果','能獨立判斷、推動改善'],jobs:'工程主管、策略分析、財務、管理顧問、技術專家、流程改善',
+ tips:['和孔雀、無尾熊：他們重視關係，指出問題之前先肯定，效果會更好']},
+DS:{name:'老虎＋無尾熊',code:'DS 對角型',one:'堅定又體貼，能在目標和人情之間找到平衡。',
+ core:'你身上同時有兩種方向相反的特質：老虎的果斷、重視結果，以及無尾熊的耐心、重視和諧，而且兩者都很明顯。你可能會依場合切換：例如在工作上果斷推動，和朋友或家人相處時很隨和；或是目標很堅定，做法上卻很照顧每個人的感受。',
+ good:['兼顧目標和人：能推動進度，又不讓人覺得被犧牲','堅定但不強硬：能守住立場，同時維持關係','能依場合調整：需要時果斷，需要時包容','讓人信任又願意跟隨'],
+ blindTitle:'兩種特質的拉扯',blind:['想推動進度，又怕傷感情，可能在兩者之間猶豫','別人可能覺得你「有時很強勢、有時又很好說話」，不容易捉摸','一直在兩種角色間切換，可能累積壓力'],
+ comm:'你會依情況直接或溫和地表達。',commTip:'想了解他們，可以直接問：「這件事你比較在意結果，還是大家的感受？」',
+ stress:'你可能在強勢和退讓之間擺盪，一下想全部自己決定，一下又什麼都配合。',stressTip:'先釐清這件事最重要的是什麼，再決定要堅持還是配合。',
+ env:['需要同時照顧成果與人的角色'],jobs:'團隊主管、專案協調、店長、教練、照護管理',tips:[],
+ note:'這種組合比較少見。如果你覺得不太像自己，可以對照上方四向圖中的各型分數，或過一段時間再測一次。'},
+IC:{name:'孔雀＋貓頭鷹',code:'IC 對角型',one:'熱情又嚴謹，能把複雜的事說得清楚又有趣。',
+ core:'你身上同時有兩種方向相反的特質：孔雀的熱情外向，以及貓頭鷹的精確嚴謹，而且兩者都很明顯。你可能上台時很有感染力，準備時卻一絲不苟；或是在熟人面前很活潑，工作時很講究細節。',
+ good:['表達加上專業：能讓專業內容變得好懂','兼具創意與嚴謹：想法有趣，也經得起檢驗','能和不同類型的人合作','說服力有根據：別人既覺得有趣，也覺得可信'],
+ blindTitle:'兩種特質的拉扯',blind:['想自由發揮，又怕不夠完美','在「趕快分享」和「再確認一次」之間拉扯','別人可能不容易捉摸你真正的風格'],
+ comm:'你說明事情時生動有趣，也會附上根據。',commTip:'和他們討論時，可以同時給出想法和資料，他們兩種都重視。',
+ stress:'你可能過度準備，或情緒起伏比較大。',stressTip:'分清楚哪些場合需要完美、哪些場合先完成就好。',
+ env:['需要把專業內容傳達給別人的角色'],jobs:'講師、顧問、產品經理、技術業務、知識型內容創作',tips:[],
+ note:'這種組合比較少見。如果你覺得不太像自己，可以對照上方四向圖中的各型分數，或過一段時間再測一次。'},
+CH:{name:'變色龍',code:'四型均衡',one:'彈性十足、善於調整，能依情境切換不同的風格。',
+ core:'你的四種傾向分數很接近，沒有特別突出的一型。這代表你能依照場合和對象調整做法：需要決策時能果斷，需要帶動氣氛時能熱情，需要支持別人時能耐心，需要精確時也能細心。',
+ good:['適應力強：在不同環境都能找到合適的做法','能理解不同的人：容易站在別人的角度想','適合當橋樑：能在不同風格的人之間溝通協調','面對變化不慌'],
+ blind:['別人可能不容易看出你的核心風格','有時你也不確定自己真正喜歡哪種方式','一直配合環境調整，可能會累'],
+ comm:'你會依對象調整說話方式，和誰都能溝通。',commTip:'',
+ stress:'你可能不確定該用哪種方式應對，或過度配合別人的期待。',stressTip:'偶爾問自己：「如果不用配合任何人，我最自在的方式是什麼？」',
+ env:['需要跨部門合作、角色多元的環境'],jobs:'專案協調、跨部門窗口、顧問、新創團隊成員',tips:[],
+ note:'四型分數接近，也可能是因為你正處於生活或工作的轉換期，或作答時心裡想的情境不太一樣。可以看看四向圖中哪一型稍微高一點，或過一段時間再測一次。'}
+};
+const SUB = {
+ DI:'你在果斷之外也帶有熱情。推動事情時，懂得用說服和鼓勵讓大家跟上，而不只是下指令。',
+ DS:'你在果斷之外也帶有耐心。雖然重視結果，但會顧及團隊的感受，願意等大家一起前進。',
+ DC:'你在果斷之外也重視依據。做決定快，但會先抓住關鍵資料，要求又快又對。',
+ ID:'你的熱情帶有行動力。不只會鼓舞人，也會主動推動事情發生。',
+ IS:'你的熱情帶有溫柔。除了帶動氣氛，也很在意每個人是否感到自在。',
+ IC:'你的熱情帶有細心。分享想法時言之有物，讓人覺得有趣又可信。',
+ SD:'你的穩定帶有堅持。平時隨和，但在重要的事情上會守住原則。',
+ SI:'你的穩定帶有親和力。除了可靠，也很容易和人打成一片。',
+ SC:'你的穩定帶有嚴謹。做事踏實又細心，交給你的事很少出錯。',
+ CD:'你的嚴謹帶有果斷。分析完就會推動執行，不會只停留在想法。',
+ CI:'你的嚴謹帶有表達力。能把複雜的分析說得清楚易懂。',
+ CS:'你的嚴謹帶有耐心。願意花時間把事情做好，也會顧及合作夥伴的感受。'};
+
+/* ===== 3. 抽題與計分（不碰畫面） ===== */
+const GATE = 0.40;
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+function drawSequence(){
+  const pairs = shuffle(PAIRS).slice(0,2);
+  const forced = new Set(pairs.map(p=>p.orig));
+  const picked = [];
+  TYPES.forEach(t=>{
+    const counts = shuffle([3,3,2,2]);
+    for (let f=0; f<4; f++){
+      const pool = ITEMS.filter(x=>x.t===t && x.f===f);
+      const must = pool.filter(x=>forced.has(x.id));
+      const rest = shuffle(pool.filter(x=>!forced.has(x.id)));
+      picked.push(...must, ...rest.slice(0, counts[f]-must.length));
+    }
+  });
+  for (let tries=0; tries<200; tries++){
+    const seq = shuffle(picked.map(x=>x.id));
+    seq.splice(14 + Math.floor(Math.random()*5), 0, 'Q01');
+    seq.splice(30 + Math.floor(Math.random()*5), 0, 'Q02');
+    pairs.forEach(p=>seq.splice(Math.floor(Math.random()*(seq.length+1)),0,p.id));
+    const ok = pairs.every(p=>Math.abs(seq.indexOf(p.id)-seq.indexOf(p.orig))>=6) && seq.indexOf('Q01')>3 && seq.indexOf('Q02')<seq.length-3;
+    if (ok) return seq;
+  }
+  return shuffle([...picked.map(x=>x.id),'Q01','Q02',...pairs.map(p=>p.id)]);
+}
+
+const ADJ = {DI:'DI',ID:'DI',IS:'IS',SI:'IS',SC:'SC',CS:'SC',CD:'CD',DC:'CD'};
+const DIAG = {DS:'DS',SD:'DS',IC:'IC',CI:'IC'};
+
+function score(st){
+  const sums={D:0,I:0,S:0,C:0}, n={D:0,I:0,S:0,C:0};
+  const scoredIds = st.seq.filter(id=>BYID[id].kind==='score');
+  scoredIds.forEach(id=>{const it=BYID[id]; sums[it.t]+=st.answers[id]; n[it.t]++;});
+  const mean={}; TYPES.forEach(t=>mean[t]=sums[t]/n[t]);
+  const avg = TYPES.reduce((a,t)=>a+mean[t],0)/4;
+  const rel={}; TYPES.forEach(t=>rel[t]=mean[t]-avg);
+  const order = TYPES.slice().sort((a,b)=>rel[b]-rel[a]);
+  const [a,b,c,d] = order, e=1e-9;
+  const gap = rel[a]-rel[b], spread = rel[a]-rel[d];
+  let key, kind, primary=a, secondary=b, level=null;
+  if (TYPES.every(t=>Math.abs(mean[t]-mean.D)<e)) { kind='none'; }
+  else if (spread < GATE-e) { kind='chameleon'; key='CH'; }
+  else if (gap >= GATE-e) { kind='single'; key=a; level = gap>=0.8-e ? 'high':'mid'; }
+  else if (ADJ[a+b]) { kind='combo'; key=ADJ[a+b]; }
+  else if (rel[a]-rel[c] >= GATE-e && rel[b]-rel[c] >= GATE-e) { kind='diag'; key=DIAG[a+b]; }
+  else { kind='single'; key=a; level='low'; }
+  // quality flags
+  const vals = st.seq.map(id=>st.answers[id]);
+  const scoredVals = scoredIds.map(id=>st.answers[id]);
+  const midRatio = scoredVals.filter(v=>v===3).length/scoredVals.length;
+  let run=1, maxRun=1; for (let i=1;i<vals.length;i++){ run = vals[i]===vals[i-1]?run+1:1; maxRun=Math.max(maxRun,run); }
+  const totalMs = st.seq.reduce((s,id)=>s+(st.times[id]||0),0);
+  const attnFail = ATTN.filter(q=>st.seq.includes(q.id) && st.answers[q.id]!==q.ans).map(q=>q.id);
+  const pairBad = PAIRS.filter(p=>st.seq.includes(p.id)).filter(p=>Math.abs(st.answers[p.orig]-(6-st.answers[p.id]))>=3).map(p=>p.id);
+  return {mean,avg,rel,order,gap,spread,kind,key,primary,secondary,level,
+    flags:{midRatio,maxRun,totalMs,attnFail,pairBad,fast:totalMs<88000,longRun:maxRun>=15,mostlyMid:midRatio>0.8}};
+}
+
+/* ===== 4. 畫面 ===== */
+const $ = s => document.querySelector(s);
+const STORE='disc-proto-v1';
+let st = null;
+const save = () => { try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} };
+const load = () => { try{ return JSON.parse(localStorage.getItem(STORE)); }catch(e){ return null; } };
+const clear = () => { try{ localStorage.removeItem(STORE); }catch(e){} };
+
+function show(id){
+  ['s-home','s-quiz','s-info','s-blind','s-result'].forEach(s=>$('#'+s).hidden = s!==id);
+  $('#app').classList.toggle('wide', id==='s-result');
+  window.scrollTo(0,0);
+}
+
+/* home */
+document.getElementById('home-flower').outerHTML = flowerSVG({D:82,I:64,S:44,C:56},{id:'home-flower'});
+const saved = load();
+if (saved && saved.seq && !saved.done) $('#resume').hidden=false;
+$('#agree').addEventListener('change', e=>$('#start').disabled=!e.target.checked);
+$('#start').addEventListener('click', ()=>{
+  st = {seq:drawSequence(), answers:{}, times:{}, idx:0, info:{}, blind:null, rating:null, done:false, startedAt:Date.now()};
+  save(); show('s-quiz'); renderQ();
+});
+$('#resume').addEventListener('click', ()=>{ const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0; show('s-quiz'); renderQ(); });
+
+/* quiz */
+let shownAt = 0, busy=false;
+function renderQ(){
+  const id = st.seq[st.idx], it = BYID[id], total = st.seq.length;
+  const done = Math.round(st.idx/total*100);
+  $('#qcount').textContent = `第 ${st.idx+1} 題，共 ${total} 題`;
+  $('#qpct').textContent = `已完成 ${done}%`;
+  $('#qbar').style.width = done+'%';
+  $('#qtext').textContent = it.text;
+  $('#opts').innerHTML = SCALE.map((s,i)=>`<button class="opt" data-v="${i+1}" aria-pressed="${st.answers[id]===i+1}"><span class="k">${i+1}</span>${s}</button>`).join('');
+  $('#prev').disabled = st.idx===0;
+  shownAt = performance.now(); busy=false; tick();
+}
+function tick(){ if (st && !$('#s-quiz').hidden) $('#qtime').textContent = '作答時間 '+fmtClock(sumTimes(st)+(performance.now()-shownAt)); }
+setInterval(tick, 1000);
+function answer(v){
+  if (busy) return; busy=true;
+  const id = st.seq[st.idx];
+  st.answers[id]=v; st.times[id]=(st.times[id]||0)+Math.round(performance.now()-shownAt);
+  document.querySelectorAll('#opts .opt').forEach(b=>b.setAttribute('aria-pressed', String(+b.dataset.v===v)));
+  save();
+  setTimeout(()=>{
+    if (st.idx < st.seq.length-1){ st.idx++; save(); renderQ(); }
+    else { show('s-info'); }
+  }, 220);
+}
+$('#opts').addEventListener('click', e=>{ const b=e.target.closest('.opt'); if(b) answer(+b.dataset.v); });
+$('#prev').addEventListener('click', ()=>{ if(st.idx>0){ st.idx--; save(); renderQ(); } });
+document.addEventListener('keydown', e=>{
+  if ($('#s-quiz').hidden || $('#home-dialog').open) return;
+  if (e.key>='1' && e.key<='5') answer(+e.key);
+  else if (e.key==='ArrowLeft') $('#prev').click();
+  else if (e.key==='ArrowRight' && st.answers[st.seq[st.idx]] && st.idx<st.seq.length-1){ st.idx++; save(); renderQ(); }
+});
+/* 自動填完只給開發測試用：網址加上 ?dev 才會出現，避免受試者產生假資料 */
+$('#demo-row').hidden = !new URLSearchParams(location.search).has('dev');
+$('#demo').addEventListener('click', ()=>{
+  const lean = {}; TYPES.forEach(t=>lean[t]=1.8+Math.random()*3);
+  st.seq.forEach(id=>{
+    const it=BYID[id]; let v;
+    if (it.kind==='attn') v=it.ans;
+    else if (it.kind==='pair') v=Math.max(1,Math.min(5,Math.round(6-lean[BYID[it.orig].t]+(Math.random()-.5))));
+    else v=Math.max(1,Math.min(5,Math.round(lean[it.t]+(Math.random()-.5)*1.6)));
+    st.answers[id]=v; st.times[id]=3000+Math.round(Math.random()*6000);
+  });
+  st.idx=st.seq.length-1; save(); show('s-info');
+});
+
+/* info */
+const emailOK = () => { const el=$('#email'); return !el.value.trim() || el.checkValidity(); };
+function showEmailErr(on){
+  $('#email').setAttribute('aria-invalid', String(on));
+  $('#email-err').textContent = on ? 'Email 格式好像不完整，例如 name@example.com。不想留也可以空白。' : '';
+}
+$('#email').addEventListener('blur', ()=>showEmailErr(!emailOK()));
+$('#email').addEventListener('input', ()=>{ if ($('#email').getAttribute('aria-invalid')==='true' && emailOK()) showEmailErr(false); });
+$('#info-next').addEventListener('click', ()=>{
+  if (!emailOK()){ showEmailErr(true); $('#email').focus(); return; }
+  st.info={name:$('#uname').value.trim(), email:$('#email').value.trim(), age:$('#age').value, gender:$('#gender').value, edu:$('#edu').value, job:$('#job').value};
+  /* 盲選分兩頁：每型的描述拆成前後兩句，各頁四個選項、順序各自隨機。
+     st.blind＝第 1 頁的選擇（沿用原本欄位，後端相容），st.blind2＝第 2 頁的選擇 */
+  st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save();
+  renderBlind(0); show('s-blind');
+});
+const BLIND_PARTS = Object.fromEntries(TYPES.map(t=>[t, BLIND[t].split('。').filter(Boolean).map(x=>x+'。')]));
+let blindPage = 0;
+function renderBlind(page){
+  blindPage = page;
+  const pick = page===0 ? st.blind : st.blind2;
+  $('#blind-step').textContent = `第 ${page+1} 頁，共 2 頁`;
+  $('#blind-opts').innerHTML = st.blindOrders[page].map(t=>`<button class="opt" data-t="${t}" aria-pressed="${pick===t}">${BLIND_PARTS[t][page]}</button>`).join('');
+  $('#blind-prev').hidden = page===0;
+  $('#blind-next').textContent = page===0 ? '下一頁' : '看我的動物本色';
+  $('#blind-next').disabled = !pick;
+}
+$('#blind-opts').addEventListener('click', e=>{
+  const b=e.target.closest('.opt'); if(!b) return;
+  if (blindPage===0) st.blind=b.dataset.t; else st.blind2=b.dataset.t;
+  save();
+  document.querySelectorAll('#blind-opts .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+  $('#blind-next').disabled=false;
+});
+$('#blind-prev').addEventListener('click', ()=>{ renderBlind(0); window.scrollTo(0,0); });
+$('#blind-next').addEventListener('click', ()=>{
+  if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); $('#blind-h').focus?.(); return; }
+  st.done=true; st.finishedAt=Date.now(); save(); renderResult(); show('s-result');
+});
+
+/* 回到首頁：作答中（題目、最後幾個問題、盲選）要先確認；進度會保存，可從首頁繼續 */
+const inProgress = () => ['s-quiz','s-info','s-blind'].some(id=>!$('#'+id).hidden);
+const homeDialog = $('#home-dialog');
+function askGoHome(){ if (homeDialog.showModal) homeDialog.showModal(); else if (window.confirm('要回到首頁嗎？你的作答進度會保存。')) goHome(); }
+function goHome(){
+  if (homeDialog.open) homeDialog.close();
+  $('#resume').hidden = !(st && st.seq && !st.done);
+  show('s-home');
+}
+$('#go-home').addEventListener('click', askGoHome);
+$('#hd-stay').addEventListener('click', ()=>homeDialog.close());
+$('#hd-go').addEventListener('click', goHome);
+document.querySelector('.bar-brand').addEventListener('click', e=>{ if (inProgress()){ e.preventDefault(); askGoHome(); } });
+
+/* result */
+const pct = m => Math.round((m-1)/4*100);
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* 四向圖的刻度：以「你的平均」為基準圓，放大各型和平均的差距。
+   差距至少以 ±15 分的範圍作圖，避免很小的差距被誇大；每圈相差 10 分。 */
+function chartGeom(r){
+  const s100 = m => (m-1)/4*100, avg = s100(r.avg);
+  const dev = {}; TYPES.forEach(t=>dev[t]=s100(r.mean[t])-avg);
+  const span = Math.max(15, ...TYPES.map(t=>Math.abs(dev[t])));
+  const k = 0.42/span, frac = d => 0.5 + d*k;
+  const rings = []; for (let d=10; d<=span; d+=10){ rings.push(frac(d)); if (frac(-d)>0.04) rings.push(frac(-d)); }
+  return {dev, frac:t=>frac(dev[t]), mean:0.5, rings};
+}
+const DIRS = {D:[-1,-1],I:[1,-1],S:[1,1],C:[-1,1]};
+function chartSVG(r){
+  const cx=170, cy=170, R=118, k=Math.SQRT1_2, G=chartGeom(r);
+  let g='';
+  g+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="1"/>`;
+  G.rings.forEach(f=>g+=`<circle cx="${cx}" cy="${cy}" r="${R*f}" fill="none" stroke="var(--line)" stroke-width="1"/>`);
+  g+=`<line x1="${cx}" y1="${cy-R-8}" x2="${cx}" y2="${cy+R+8}" stroke="var(--faint)" stroke-width="1"/>`;
+  g+=`<line x1="${cx-R-8}" y1="${cy}" x2="${cx+R+8}" y2="${cy}" stroke="var(--faint)" stroke-width="1"/>`;
+  const lab=(x,y,t,a='middle')=>`<text class="ax" x="${x}" y="${y}" text-anchor="${a}" font-size="14" fill="var(--muted)">${t}</text>`;
+  g+=lab(cx,22,'主動')+lab(cx,334,'配合')+lab(8,cy-8,'重事','start')+lab(332,cy-8,'重人','end');
+  TYPES.forEach(t=>{const d=DIRS[t]; g+=`<text x="${cx+d[0]*k*(R+46)}" y="${cy+d[1]*k*(R+46)+5}" text-anchor="middle" font-size="17" font-weight="700" fill="var(--ink)"><tspan fill="${TCOLOR[t]}">●</tspan> ${LBL(t)}</text>`;});
+  g+=`<circle cx="${cx}" cy="${cy}" r="${R*G.mean}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  const pts = TYPES.map(t=>{const d=DIRS[t], rr=R*G.frac(t); return [cx+d[0]*k*rr, cy+d[1]*k*rr];});
+  g+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="var(--ink)" fill-opacity="0.08" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  TYPES.forEach((t,i)=>{const [x,y]=pts[i], d=DIRS[t];
+    g+=`<circle cx="${x}" cy="${y}" r="5" fill="${TCOLOR[t]}" stroke="var(--surface)" stroke-width="2"/>`;
+    g+=`<text x="${x+d[0]*10}" y="${y+5}" class="vl" text-anchor="${d[0]<0?'end':'start'}" font-size="16" font-weight="700" fill="var(--ink)" stroke="var(--surface)" stroke-width="4" paint-order="stroke">${pct(r.mean[t])}</text>`;});
+  return `<svg class="chart-svg" viewBox="-14 -14 368 368" role="img" aria-label="DISC 四向圖：${TYPES.map(t=>LBL(t)+' '+pct(r.mean[t])+' 分').join('、')}，你的平均 ${pct(r.avg)} 分">${g}</svg>`;
+}
+function barsHTML(r){
+  const m = pct(r.avg);
+  return TYPES.map(t=>`<div class="brow"><span><span class="dot" style="background:${TCOLOR[t]}"></span>${LBL(t)}</span>
+    <div class="btrack"><div class="bfill" style="width:${pct(r.mean[t])}%;background:${TCOLOR[t]}"></div><div class="bmean" style="left:${m}%"></div></div>
+    <span class="bval">${pct(r.mean[t])}</span></div>`).join('');
+}
+/* 標題：依分數高低排列，每個動物用自己的顏色 */
+function titleParts(r){
+  if (r.kind==='chameleon') return [{text:'變色龍', t:null}];
+  if (r.kind==='single') return [{text:LBL(r.primary), t:r.primary}];
+  return [{text:LBL(r.order[0]), t:r.order[0]}, {text:'＋', t:null}, {text:LBL(r.order[1]), t:r.order[1]}];
+}
+function codeLine(r, rep){
+  if (r.kind==='combo') return `${r.order[0]}${r.order[1]} 組合型`;
+  if (r.kind==='diag') return `${r.order[0]}${r.order[1]} 對角型`;
+  return rep.code;
+}
+/* 動物一律寫成「代號＋動物」（D 老虎）；「精確數據」模式的標題先寫代號組合 */
+function titleHTML(r){ return titleParts(r).map(p=>p.t?`<span style="color:${TCOLOR[p.t]}">${LBL(p.t)}</span>`:p.text).join(''); }
+const animalLine = r => titleParts(r).map(p=>p.t?LBL(p.t):p.text).join('');
+function dataTitle(r){
+  if (r.kind==='chameleon') return '四型接近';
+  if (r.kind==='single') return `${r.primary} 型（${TNAME[r.primary]}）`;
+  return `${r.order[0]}${r.order[1]} 型（${TNAME[r.order[0]]}＋${TNAME[r.order[1]]}）`;
+}
+function promText(r){
+  const a=LBL(r.primary), b=LBL(r.secondary);
+  if (r.level==='high') return `你的本色裡，${a} 最明顯，明顯高過其他動物。`;
+  if (r.level==='mid') return `你的本色裡，${a} 最明顯，${b} 也有一定影響。`;
+  return `你的本色裡，${a} 只比 ${b} 多一點點，兩種動物都很明顯。`;
+}
+/* ===== 動物本色模式的兩張圖：本色組成圈（比例）＋花紋長條（分數）。網頁與分享圖片共用計算 ===== */
+function donutGeom(vals){
+  /* D 結束在 12 點鐘方向，接著 I、S、C 順時針：位置和四向圖一樣（D 左上、I 右上、S 右下、C 左下） */
+  const sum = TYPES.reduce((a,t)=>a+Math.max(0,vals[t]),0) || 1; let a0 = -90 - Math.max(0,vals.D)/sum*360;
+  return TYPES.map(t=>{ const p = Math.max(0,vals[t])/sum, a1 = a0+p*360, g = {t, p, a0, a1, mid:(a0+a1)/2}; a0 = a1; return g; });
+}
+/* 百分比用最大餘數法取整數，四個加起來剛好 100 */
+function pctRound(segs){
+  const raw = segs.map(g=>({t:g.t, v:g.p*100})), out = {};
+  raw.forEach(o=>out[o.t]=Math.floor(o.v));
+  let left = 100 - raw.reduce((a,o)=>a+Math.floor(o.v),0);
+  raw.slice().sort((a,b)=>(b.v-Math.floor(b.v))-(a.v-Math.floor(a.v))).forEach(o=>{ if (left>0 && o.v>0){ out[o.t]++; left--; } });
+  return out;
+}
+/* 圓外的標籤：同一側太近就往下推開 */
+function spreadLabels(labs, gap){
+  ['L','R'].forEach(sd=>{ const a = labs.filter(l=>l.side===sd).sort((m,n)=>m.y-n.y);
+    for (let i=1;i<a.length;i++) if (a[i].y-a[i-1].y<gap) a[i].y = a[i-1].y+gap; });
+}
+function donutLabels(segs, cx, cy, r, gap){
+  const labs = segs.filter(g=>g.p>0).map(g=>{ const a=g.mid*Math.PI/180, c=Math.cos(a);
+    return {t:g.t, x:cx+r*c, y:cy+r*Math.sin(a), side:c<0?'L':'R', anchor:c<-.2?'end':c>.2?'start':'middle'}; });
+  spreadLabels(labs, gap); return labs;
+}
+function donutSVG(vals, center){
+  const cx=160, cy=160, Ro=112, Ri=66, segs=donutGeom(vals), pr=pctRound(segs);
+  const P = (r,a)=>[cx+r*Math.cos(a*Math.PI/180), cy+r*Math.sin(a*Math.PI/180)].map(v=>+v.toFixed(1));
+  let g = '';
+  segs.forEach(s=>{ if (s.p<=0) return;
+    const a1 = Math.min(s.a1, s.a0+359.9), big = (a1-s.a0)>180?1:0;
+    const [x1,y1]=P(Ro,s.a0), [x2,y2]=P(Ro,a1), [x3,y3]=P(Ri,a1), [x4,y4]=P(Ri,s.a0);
+    g += `<path class="pt" d="M${x1} ${y1}A${Ro} ${Ro} 0 ${big} 1 ${x2} ${y2}L${x3} ${y3}A${Ri} ${Ri} 0 ${big} 0 ${x4} ${y4}Z" fill="url(#pat-${s.t})" stroke-width="3"/>`; });
+  g += donutLabels(segs, cx, cy, Ro+16, 16).map(l=>`<text x="${l.x.toFixed(1)}" y="${(l.y+4).toFixed(1)}" text-anchor="${l.anchor}" class="lab">${LBL(l.t)} ${pr[l.t]}%</text>`).join('');
+  /* 組合型（例如 D 老虎＋I 孔雀）分兩行，才放得進圓圈中間 */
+  const parts = center.split('＋');
+  g += parts.length>1
+    ? `<text x="${cx}" y="${cy-24}" text-anchor="middle" class="c1">你的本色</text><text x="${cx}" y="${cy+2}" text-anchor="middle" class="c2 two">${parts[0]}</text><text x="${cx}" y="${cy+28}" text-anchor="middle" class="c2 two">＋${parts[1]}</text>`
+    : `<text x="${cx}" y="${cy-10}" text-anchor="middle" class="c1">你的本色</text><text x="${cx}" y="${cy+18}" text-anchor="middle" class="c2">${center}</text>`;
+  const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
+  return `<svg class="flower donut" viewBox="-80 0 480 320" role="img" aria-label="本色組成：${TYPES.map(t=>LBL(t)+' '+pr[t]+'%').join('、')}">${g}</svg>${legend}`;
+}
+function patBarsHTML(vals, avg){
+  const order = TYPES;
+  const at = `calc(108px + (100% - 150px) * ${avg/100})`;
+  return `<div class="pbars" role="img" aria-label="${order.map(t=>LBL(t)+' '+vals[t]+' 分').join('、')}，你的平均 ${avg} 分">${order.map(t=>`<div class="pbar"><span class="nm"><svg viewBox="0 0 18 18" aria-hidden="true"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}</span><span class="tr"><span class="fl" style="width:${Math.max(1.5,vals[t])}%"><svg preserveAspectRatio="none" aria-hidden="true"><rect width="100%" height="100%" fill="url(#pat-${t})"/></svg></span></span><span class="v">${vals[t]}</span></div>`).join('')}<span class="avgline" style="left:${at}"></span><span class="avglab" style="left:${at}">你的平均 ${avg}</span></div>`;
+}
+/* 結果呈現方式：brand＝動物本色（組成圈＋花紋長條），data＝精確數據（四向圖＋長條圖）。記住使用者的選擇 */
+let VIEW = (()=>{ try{ return localStorage.getItem('disc-view')==='data' ? 'data' : 'brand'; }catch(e){ return 'brand'; } })();
+function setView(v){
+  VIEW = v; try{ localStorage.setItem('disc-view', v); }catch(e){}
+  const el = $('#s-result'); el.classList.toggle('mode-data', v==='data');
+  el.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.view===v)));
+  lastImage = null; const so = $('#share-out'); if (so) so.hidden = true;
+}
+
+/* 內文中的動物關鍵字：統一成「代號＋動物」，前後留一個空格，畫面上加底色 */
+const A_OPEN='\u0001', A_CLOSE='\u0002';
+function markAnimals(raw){
+  let t = String(raw).replace(/([DISC]) (老虎|孔雀|無尾熊|貓頭鷹)/g, '$2');
+  t = t.replace(/(老虎|孔雀|無尾熊|貓頭鷹)/g, m=>A_OPEN+CODE_OF[m]+A_CLOSE);
+  t = t.replace(/([一-鿿A-Za-z0-9])\u0001/g, '$1 \u0001').replace(/\u0002([一-鿿A-Za-z0-9])/g, '\u0002 $1');
+  return t;
+}
+const akHTML = raw => esc(markAnimals(raw)).replace(/\u0001([DISC])\u0002/g, (m,c)=>`<span class="ak ak-${c}">${c} ${ANIMAL[c]}</span>`);
+const akPlain = raw => markAnimals(raw).replace(/\u0001([DISC])\u0002/g, (m,c)=>`${c} ${ANIMAL[c]}`);
+function splitLabel(x){ const i=x.indexOf('：'); return i>0&&i<12 ? [x.slice(0,i), x.slice(i+1)] : [null, x]; }
+function list(arr){ return `<ul>${arr.map(x=>{const [l,b]=splitLabel(x); return l?`<li><b>${akHTML(l)}</b>：${akHTML(b)}</li>`:`<li>${akHTML(b)}</li>`;}).join('')}</ul>`; }
+
+/* 解說的段落結構（網頁與分享圖片共用） */
+function reportSections(rep){
+  const out = [
+    {title:'核心特質', paras:[rep.core]},
+    {title:'你的優勢', items:rep.good},
+    {title:rep.blindTitle||'可能的盲點', items:rep.blind},
+    {title:'你的溝通方式', paras:[rep.comm], tip:rep.commTip?['給身邊的人',rep.commTip]:null},
+    {title:'壓力下的你', paras:[rep.stress], tip:['小建議',rep.stressTip]},
+    {title:'適合的工作環境與方向', items:rep.env, tip:['可能適合的方向（僅供參考）',rep.jobs]},
+  ];
+  if (rep.tips.length) out.push({title:'和其他動物相處的小提醒', items:rep.tips});
+  if (rep.note) out.push({title:'關於這個結果', paras:[rep.note]});
+  return out;
+}
+function sectionBody(sec){
+  let b = (sec.paras||[]).map(p=>`<p>${akHTML(p)}</p>`).join('');
+  if (sec.items) b += list(sec.items);
+  if (sec.tip) b += `<p class="tip"><b>${sec.tip[0]}：</b>${akHTML(sec.tip[1])}</p>`;
+  return b;
+}
+function sectionHTML(sec){ return `<div class="card sec"><h3>${akHTML(sec.title)}</h3>${sectionBody(sec)}</div>`; }
+const DISCLAIMER = '以上內容僅供自我了解參考。本色是你平常最自在的做事方式；每個人身上都有四種動物，只是比例不同，在不同場合也會用其他動物的方式應對。';
+function metaText(){ return [`本次作答 ${st.seq.length} 題`, `作答時間 ${fmtDur(sumTimes(st))}`, `完成日期 ${new Date(st.finishedAt||Date.now()).toLocaleDateString('zh-TW')}`]; }
+function footMeta(note){
+  return `<div class="foot-meta">${note?`<p class="small muted">${note}</p>`:''}<div class="meta">${metaText().map(m=>`<span>${m}</span>`).join('')}</div></div>`;
+}
+
+function renderResult(){
+  const r = score(st), f = r.flags, el = $('#s-result');
+  const warns = [];
+  if (f.mostlyMid && r.kind!=='none') warns.push('你大部分的題目都選了「普通」，這份結果的參考性較低。如果想得到更準確的結果，可以重新作答，盡量選擇「有點符合」或「有點不符合」。');
+  if (f.fast || f.longRun) warns.push('這次作答速度較快，或連續選了很多相同的答案，結果可能不夠準確。');
+  let html = '';
+  html += warns.map(w=>`<div class="warn">${w}</div>`).join('');
+  const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。</p><button class="btn" id="again-cancel">保留結果</button><button class="btn primary" id="again-ok">清除並重新作答</button></div>`;
+  const shareBtns = (id) => `<button class="btn" data-share="${id}">分享圖片</button>`;
+  const rating = `<div class="card rate-card"><h3>這個結果像你嗎？</h3><div class="rate" id="rate">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}"><span class="k">${v}</span>${['完全不像','不太像','普通','有點像','非常像'][v-1]}</button>`).join('')}</div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
+  if (r.kind==='none'){
+    html += `<div class="hero"><span class="eyebrow">你的動物本色</span><h1>暫時無法判定</h1>
+      <p class="one">你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。</p></div>
+      <div class="report"><aside class="side"><div class="card">${chartSVG(r)}</div></aside>
+      <div class="main">${rating}<div class="actions"><button class="btn primary" id="again">重新作答</button></div>${confirmHTML}${footMeta('')}</div></div>`;
+  } else {
+    const rep = R[r.key];
+    const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
+    const tentative = f.mostlyMid ? '（暫定）' : '';
+    html += `<div class="hero"><span class="eyebrow">你的動物本色</span>
+      <h1 class="only-brand">${titleHTML(r)}${tentative}</h1><h1 class="only-data">${dataTitle(r)}${tentative}</h1>
+      <span class="code only-brand">${codeLine(r,rep)}</span><span class="code only-data">${animalLine(r)}</span><p class="one">${akHTML(rep.one)}</p>`;
+    if (r.kind==='single') html += `<p class="prom">${akHTML(promText(r))}<br><span class="muted small">副型：${akHTML(LBL(r.secondary))}。${SUB[r.primary+r.secondary]}</span></p>`;
+    html += `</div>`;
+    html += `<div class="report">
+      <aside class="side">
+        <div class="seg" role="group" aria-label="結果呈現方式"><button type="button" data-view="brand" aria-pressed="${VIEW==='brand'}">動物本色</button><button type="button" data-view="data" aria-pressed="${VIEW==='data'}">精確數據</button></div>
+        <div class="card chart-card only-brand"><h3>你的本色組成</h3>${donutSVG(vals, animalLine(r))}
+          <div class="legend"><span>每種動物占你四種傾向總和的比例，加起來是 100%。這是四種動物彼此比較的結果；每一型的實際分數請看下方。</span></div></div>
+        <div class="card only-brand"><h3>四種動物的分數</h3>${patBarsHTML(vals, pct(r.avg))}
+          <div class="legend"><span>長條越長，分數越高（滿分 100），依 D、I、S、C 排列。虛線是你的平均（${pct(r.avg)} 分）。</span></div></div>
+        <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
+          <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表這一型比你的平均突出；在虛線內，代表相對不明顯。每圈相差 10 分。</span></div></div>
+        <div class="card only-data"><h3>四型分數</h3>${barsHTML(r)}
+          <div class="legend"><span>虛線：你的平均（${pct(r.avg)} 分）</span></div></div>
+      </aside>
+      <div class="main">
+        ${reportSections(rep).map(sectionHTML).join('')}
+        <p class="small muted">${DISCLAIMER}</p>
+        <div class="pair">${rating}
+          <div class="card" id="share-card"><h3>分享你的結果</h3>
+            <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
+            <div class="actions" style="margin-top:12px"><button class="btn primary" id="make-img">產生結果圖片</button></div>
+            <div id="share-out" hidden><img class="share-img" id="share-img" alt="我的動物本色結果圖片">
+              <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn" id="dl-img" download="動物本色-結果.png">下載圖片</a>${shareBtns('card')}</div>
+              <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
+          </div>
+        </div>
+        <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button></div>
+        ${confirmHTML}
+        <p class="small muted" id="invite-msg" role="status"></p>
+        ${footMeta('')}
+      </div>
+    </div>`;
+  }
+  el.innerHTML = html;
+  el.classList.toggle('mode-data', VIEW==='data');
+  el.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
+  $('#rate').addEventListener('click', e=>{const b=e.target.closest('.opt'); if(!b) return; st.rating=+b.dataset.v; save();
+    document.querySelectorAll('#rate .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#rate-msg').textContent='謝謝你的回饋！';});
+  if (r.kind!=='none'){
+    $('#make-img').addEventListener('click', ()=>buildShareImage(r, true));
+    el.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click', ()=>shareResult(r, b.dataset.share)));
+    $('#invite').addEventListener('click', inviteFriends);
+  }
+  $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
+  $('#again-cancel').addEventListener('click', ()=>{ $('#again-confirm').hidden=true; $('#again').focus(); });
+  $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; show('s-home'); });
+}
+
+/* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
+let lastImage = null;
+/* 測驗網址：上線後若改用自訂網域，填在這裡（例如 'disc.example.tw'）；留空時自動用目前網站的網址，本機預覽時不顯示 */
+const SITE_URL = 'lunihorn27.github.io/animal-colors-disc';
+const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
+async function buildShareImage(r, reveal){
+  try { await document.fonts.ready; } catch(e){}
+  const W=1080, PAD=110, maxW=W-PAD*2;
+  const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',accent:'#1F2329',sunk:'#E3E5E8',
+    D:'#D66A14',I:'#11968A',S:'#5E9A47',C:'#6576DC',Dt:'#F7E1D0',It:'#CFEAE8',St:'#DFEBDA',Ct:'#E0E4F8'};
+  const SANS='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif', ROUND='"Huninn","Noto Sans TC",sans-serif';
+  const rep=R[r.key];
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=9000;
+  const x=cv.getContext('2d'); x.textBaseline='alphabetic';
+
+  // rich text: chips (D 老虎…) are atomic units with a tinted background; other text wraps per character
+  const units = (raw, bold=false) => { const out=[]; const t=markAnimals(raw); let i=0;
+    while(i<t.length){ if(t[i]===A_OPEN){ const c=t[i+1]; out.push({s:`${c} ${ANIMAL[c]}`, chip:c, bold:true}); i+=3; } else { out.push({s:t[i], bold}); i++; } }
+    return out; };
+  const fontOf = (u,size) => `${u.bold?700:400} ${size}px ${SANS}`;
+  const uw = (u,size) => { x.font=fontOf(u,size); return x.measureText(u.s).width + (u.chip?18:0); };
+  function drawRich(us, X, Y, width, size, lh, color){
+    let lines=[[]], w=0;
+    const noStart = /^[，。、：；！？）」』,.!?]$/;
+    us.forEach(u=>{ const ww=uw(u,size); if (w+ww>width && lines[lines.length-1].length && !noStart.test(u.s)){ lines.push([]); w=0; if(u.s===' ') return; } lines[lines.length-1].push(u); w+=ww; });
+    lines.forEach((ln,li)=>{ let px=X; const py=Y+li*lh;
+      ln.forEach(u=>{ const ww=uw(u,size);
+        if (u.chip){ x.fillStyle=P[u.chip+'t']; rr(px, py-size*0.95, ww, size*1.32, 8); x.fill(); x.fillStyle=P.ink; x.font=fontOf(u,size); x.fillText(u.s, px+9, py); }
+        else { x.fillStyle=color; x.font=fontOf(u,size); x.fillText(u.s, px, py); }
+        px+=ww; }); });
+    return Y + (lines.length-1)*lh;
+  }
+  const rr=(X,Y,w,h,rad)=>{x.beginPath();x.moveTo(X+rad,Y);x.arcTo(X+w,Y,X+w,Y+h,rad);x.arcTo(X+w,Y+h,X,Y+h,rad);x.arcTo(X,Y+h,X,Y,rad);x.arcTo(X,Y,X+w,Y,rad);x.closePath();};
+
+  x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
+  let y=130;
+  { // brand row: logo mark + name
+    const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
+    x.save(); x.translate(PAD, y-38); x.scale(.48,.48); M.forEach(([d,t])=>{ x.fillStyle=P[t]; x.fill(new Path2D(d)); }); x.restore();
+    x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText('動物本色', PAD+62, y);
+    const bw=x.measureText('動物本色').width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText('DISC 行為風格測驗', PAD+62+bw+20, y); }
+  { const parts = VIEW==='data' ? [{text:dataTitle(r), t:null}] : titleParts(r).map(p=>({text:p.t?LBL(p.t):p.text, t:p.t})); let size=92; x.font=`400 ${size}px ${ROUND}`;
+    while (parts.reduce((w,p)=>w+x.measureText(p.text).width,0)>maxW && size>48){ size-=4; x.font=`400 ${size}px ${ROUND}`; }
+    y+=size+20; let px=PAD; parts.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }
+  y+=60; x.fillStyle=P.muted; x.font=`500 32px ${SANS}`; x.fillText(VIEW==='data' ? animalLine(r) : codeLine(r,rep), PAD, y);
+  y+=76; y=drawRich(units(rep.one), PAD, y, maxW, 38, 58, P.ink);
+  if (r.kind==='single'){
+    y+=72;
+    const top=y-40; y=drawRich(units(promText(r)), PAD+28, y, maxW-28, 32, 50, P.ink);
+    y+=48; y=drawRich(units(`副型：${LBL(r.secondary)}。${SUB[r.primary+r.secondary]}`), PAD+28, y, maxW-28, 28, 44, P.muted);
+    x.fillStyle=P.accent; x.fillRect(PAD, top, 6, y-top+12);
+  }
+
+  // chart: 精確數據＝四向圖＋長條圖；動物本色＝四瓣花
+  if (VIEW==='data'){
+  const Rr=220, cx=W/2, cy=y+130+Rr, k=Math.SQRT1_2, Gm=chartGeom(r);
+  x.strokeStyle=P.line; x.lineWidth=2; [1,...Gm.rings].forEach(f=>{x.beginPath();x.arc(cx,cy,Rr*f,0,Math.PI*2);x.stroke();});
+  x.strokeStyle='#B9C0BB'; x.beginPath(); x.moveTo(cx,cy-Rr-14); x.lineTo(cx,cy+Rr+14); x.moveTo(cx-Rr-14,cy); x.lineTo(cx+Rr+14,cy); x.stroke();
+  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.textAlign='center';
+  x.fillText('主動',cx,cy-Rr-26); x.fillText('配合',cx,cy+Rr+50);
+  x.textAlign='right'; x.fillText('重事',cx-Rr-22,cy-10); x.textAlign='left'; x.fillText('重人',cx+Rr+22,cy-10);
+  x.setLineDash([12,10]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.arc(cx,cy,Rr*Gm.mean,0,Math.PI*2); x.stroke(); x.setLineDash([]);
+  const pts=TYPES.map(t=>{const d=DIRS[t],q=Rr*Gm.frac(t);return [cx+d[0]*k*q, cy+d[1]*k*q];});
+  x.beginPath(); pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.closePath();
+  x.fillStyle='rgba(31,35,41,0.08)'; x.fill(); x.strokeStyle=P.ink; x.lineWidth=5; x.lineJoin='round'; x.stroke();
+  TYPES.forEach((t,i)=>{const [px,py]=pts[i], d=DIRS[t];
+    x.fillStyle=P[t]; x.beginPath(); x.arc(px,py,10,0,Math.PI*2); x.fill();
+    x.font=`700 30px ${SANS}`; x.lineWidth=8; x.strokeStyle=P.card; x.lineJoin='round';
+    x.textAlign=d[0]<0?'right':'left'; const tx=px+d[0]*20, ty=py+10; x.strokeText(String(pct(r.mean[t])),tx,ty); x.fillStyle=P.ink; x.fillText(String(pct(r.mean[t])),tx,ty);
+    const lx=cx+d[0]*k*(Rr+86), ly=cy+d[1]*k*(Rr+86)+12; x.font=`700 32px ${SANS}`; const tw=x.measureText(LBL(t)).width;
+    x.fillStyle=P[t]; x.beginPath(); x.arc(lx-tw/2-6, ly-11, 10, 0, Math.PI*2); x.fill();
+    x.textAlign='center'; x.fillStyle=P.ink; x.fillText(LBL(t), lx+12, ly);});
+  x.textAlign='left';
+  y = cy+Rr+110;
+  x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(`虛線圓：你的平均（${pct(r.avg)} 分）　點在虛線外代表比平均突出　每圈相差 10 分`, PAD, y);
+
+  // score bars
+  y+=60; const barX=PAD+170, barW=maxW-170-80, mx=barX+barW*pct(r.avg)/100;
+  TYPES.forEach(t=>{ y+=58;
+    x.fillStyle=P[t]; x.beginPath(); x.arc(PAD+10,y-11,9,0,Math.PI*2); x.fill();
+    x.fillStyle=P.ink; x.font=`500 30px ${SANS}`; x.fillText(LBL(t), PAD+30, y);
+    x.fillStyle=P.sunk; rr(barX,y-26,barW,20,10); x.fill();
+    x.fillStyle=P[t]; rr(barX,y-26,Math.max(20,barW*pct(r.mean[t])/100),20,10); x.fill();
+    x.textAlign='right'; x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(String(pct(r.mean[t])), W-PAD, y); x.textAlign='left'; });
+  x.setLineDash([8,6]); x.strokeStyle=P.muted; x.lineWidth=2; x.beginPath(); x.moveTo(mx,y-3*58-36); x.lineTo(mx,y+4); x.stroke(); x.setLineDash([]);
+
+  } else {
+    const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
+    // 本色組成圈
+    y += 90; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText('你的本色組成', PAD, y);
+    const segs=donutGeom(vals), pr=pctRound(segs), Ro=220, Ri=132, cx=W/2, cy=y+80+Ro;
+    segs.forEach(sg=>{ if (sg.p<=0) return; const a0=sg.a0*Math.PI/180, a1=Math.min(sg.a1, sg.a0+359.9)*Math.PI/180;
+      x.beginPath(); x.arc(cx,cy,Ro,a0,a1); x.arc(cx,cy,Ri,a1,a0,true); x.closePath();
+      x.fillStyle=canvasPattern(x,sg.t,2.2,0,0); x.fill(); x.lineWidth=7; x.lineJoin='round'; x.strokeStyle=P.card; x.stroke(); });
+    x.font=`700 30px ${SANS}`; x.fillStyle=P.ink;
+    donutLabels(segs, cx, cy, Ro+34, 42).forEach(l=>{ x.textAlign=l.anchor==='end'?'right':l.anchor==='start'?'left':'center'; x.fillText(`${LBL(l.t)} ${pr[l.t]}%`, l.x, l.y+10); });
+    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText('你的本色', cx, cy-18);
+    { const c=animalLine(r); let size=40; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>Ri*2-36 && size>24){ size-=2; x.font=`700 ${size}px ${SANS}`; }
+      x.fillStyle=P.ink; x.fillText(c, cx, cy+30); }
+    x.textAlign='left';
+    y = cy+Ro+84; x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText('每種動物占你四種傾向總和的比例，加起來是 100%', PAD, y);
+    // 花紋長條（由高到低）
+    y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText('四種動物的分數', PAD, y);
+    const order=TYPES, barX=PAD+200, barW=maxW-200-80, ax=barX+barW*pct(r.avg)/100;
+    y += 56; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(`你的平均 ${pct(r.avg)}`, ax, y); x.textAlign='left';
+    const top=y+8;
+    order.forEach(t=>{ y+=64;
+      x.fillStyle=canvasPattern(x,t,1.4,0,0); x.beginPath(); x.arc(PAD+14,y-11,14,0,Math.PI*2); x.fill();
+      x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), PAD+38, y);
+      x.fillStyle=P.sunk; rr(barX,y-30,barW,26,13); x.fill();
+      x.fillStyle=canvasPattern(x,t,1.4,0,0); rr(barX,y-30,Math.max(26,barW*vals[t]/100),26,13); x.fill();
+      x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(vals[t]), W-PAD, y); x.textAlign='left'; });
+    x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(ax,top); x.lineTo(ax,y+10); x.stroke(); x.setLineDash([]);
+    y += 64; x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText('長條越長，分數越高（滿分 100）', PAD, y);
+  }
+
+  // full analysis
+  reportSections(rep).forEach(sec=>{
+    y+=96; x.fillStyle=P.line; x.fillRect(PAD, y-62, maxW, 2);
+    y=drawRich(units(sec.title, true), PAD, y, maxW, 40, 56, P.ink);
+    (sec.paras||[]).forEach(p=>{ y+=60; y=drawRich(units(p), PAD, y, maxW, 30, 48, P.ink); });
+    (sec.items||[]).forEach(it=>{ const [l,b]=splitLabel(it); y+=56;
+      x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
+      const us = l ? [...units(l,true), {s:'：',bold:true}, ...units(b)] : units(b);
+      y=drawRich(us, PAD+32, y, maxW-32, 30, 46, P.ink); });
+    if (sec.tip){ y+=34; const top=y; const us=[...units(sec.tip[0]+'：',true), ...units(sec.tip[1])];
+      // measure by drawing off-canvas first
+      const endY = drawRich(us, -99999, y+48, maxW-48, 28, 44, P.ink);
+      x.fillStyle=P.sunk; rr(PAD, top, maxW, endY-top+30, 16); x.fill();
+      drawRich(us, PAD+24, y+48, maxW-48, 28, 44, P.ink); y=endY+30; }
+  });
+
+  // footer
+  y+=90; x.fillStyle=P.line; x.fillRect(PAD, y-50, maxW, 2);
+  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(metaText().join('　'), PAD, y);
+  y+=44; y=drawRich(units(DISCLAIMER), PAD, y, maxW, 26, 40, P.muted);
+  y+=90;
+  // invitation band: lets friends who see the picture find the test
+  const host = siteHost();
+  { const bandH = host ? 200 : 150; x.fillStyle=P.accent; x.fillRect(0, y, W, bandH);
+    x.fillStyle='#FFFFFF'; x.font=`400 44px ${ROUND}`; x.fillText('你的動物本色是什麼？也來測測看', PAD, y+86);
+    if (host){ x.font=`500 34px ${SANS}`; x.fillText(host, PAD, y+146); }
+    y += bandH; }
+
+  const out=document.createElement('canvas'); out.width=W; out.height=y;
+  const o=out.getContext('2d'); o.fillStyle=P.bg; o.fillRect(0,0,W,y);
+  o.drawImage(cv,0,0);
+  const url=out.toDataURL('image/png');
+  const blob = await new Promise(res=>out.toBlob(res,'image/png'));
+  lastImage = {url, blob, name:`動物本色-${codeLine(r,rep).split(' ')[0]}.png`};
+  if (reveal){ $('#share-img').src=url; $('#dl-img').href=url; $('#dl-img').download=lastImage.name; $('#share-out').hidden=false; }
+  return lastImage;
+}
+
+/* 分享測驗連結（不含個人結果）。頁首的「分享測驗」和結果頁的「邀請朋友來測驗」共用 */
+const testURL = () => SITE_URL ? `https://${SITE_URL}/` : location.origin + location.pathname;
+let toastTimer = 0;
+function toast(t){ const el=$('#toast'); el.textContent=t; clearTimeout(toastTimer); if (t) toastTimer=setTimeout(()=>el.textContent='', 4000); }
+/* 深色模式開關：沒選過時跟著系統顯示；切換後記住 */
+const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+const isDark = () => { const t=document.documentElement.dataset.theme; return t ? t==='dark' : !!(darkMQ && darkMQ.matches); };
+const syncTheme = () => $('#bar-theme').setAttribute('aria-checked', String(isDark()));
+$('#bar-theme').addEventListener('click', ()=>{
+  const t = isDark() ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t; try{ localStorage.setItem('disc-theme', t); }catch(e){}
+  syncTheme();
+});
+if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', syncTheme);
+syncTheme();
+$('#bar-share').addEventListener('click', ()=>shareTest('動物本色：DISC 行為風格測驗，大約 8 分鐘，測出你的本色是哪幾種動物！', toast));
+async function inviteFriends(){
+  return shareTest('我剛測出我的動物本色，大約 8 分鐘，你也來測測看你的本色是哪幾種動物！', t=>{ $('#invite-msg').textContent = t; });
+}
+async function shareTest(text, out){
+  const data = {title:'動物本色｜DISC 行為風格測驗', text, url:testURL()};
+  if (navigator.share){
+    try { await navigator.share(data); out(''); return; }
+    catch(e){ if (e && e.name==='AbortError'){ out(''); return; } }
+  }
+  try { await navigator.clipboard.writeText(`${data.text}\n${data.url}`); out('測驗連結已複製，可以直接貼給朋友。'); }
+  catch(e){ out(`請複製這個連結傳給朋友：${data.url}`); }
+}
+async function shareResult(r, where){
+  const msg = t => { const m=document.querySelector(`.share-msg[data-msg="${where}"]`); if (m) m.textContent=t; };
+  msg('正在產生圖片…');
+  const img = lastImage || await buildShareImage(r, false);
+  const label = animalLine(r);
+  const file = img.blob ? new File([img.blob], img.name, {type:'image/png'}) : null;
+  if (file && navigator.canShare && navigator.canShare({files:[file]})){
+    const host = siteHost(), link = host ? `\n你也來測測看：${location.protocol}//${host}` : '';
+    try { await navigator.share({files:[file], title:'我的動物本色', text:`我測出我的動物本色是「${label}」，你的是什麼？${link}`}); msg(''); return; }
+    catch(e){ if (e && e.name==='AbortError'){ msg(''); return; } }
+  }
+  if (img.blob && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+    try { await navigator.clipboard.write([new ClipboardItem({'image/png': img.blob})]); msg('結果圖片已複製，可以直接貼到 LINE、Messenger 等聊天室傳給朋友。'); return; }
+    catch(e){}
+  }
+  buildShareImage(r, true);
+  msg('這個瀏覽器不支援直接分享，請先下載圖片，再傳給朋友。');
+}
+
+if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
+</script>

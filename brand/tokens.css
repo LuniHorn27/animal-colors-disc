@@ -1,0 +1,40 @@
+/* 動物本色 品牌色彩與字型設定（定案 v1，2026-10-12）
+   淺色：霧白底；深色模式：中性近黑底（#0F0F0F，2026-10-12 改）。四種動物色在兩種底色上對比度都至少 3:1（WCAG 2.1 公式計算），
+   只用在圖形和大字；小字一律用 --ink。主要按鈕用 --ink，不用任何一種動物色。 */
+@import url("https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap");
+
+:root{
+  --bg:#F1F2F4;        /* 霧白：頁面底色 */
+  --surface:#FFFFFF;   /* 卡片 */
+  --sunk:#E3E5E8;      /* 凹陷區：進度條軌道、切換鈕底、長條圖軌道 */
+  --ink:#1F2329;       /* 文字、主要按鈕、四向圖的形狀 */
+  --muted:#5B6068;     /* 次要文字（白底 6.33） */
+  --faint:#8C9199;     /* 軸線、平均虛線 */
+  --line:#D7DADF;      /* 框線、四向圖刻度圈 */
+  --btn:#1F2329; --btn-ink:#FFFFFF;
+  --selected:#E6E8EB;  /* 選取中的選項底色，搭配 --ink 框線 */
+  --warn-bg:#FBF0DA; --warn-ink:#7A4A08;
+
+  /* 四種動物 */
+  --d:#D66A14;  /* 老虎 */
+  --i:#11968A;  /* 孔雀 */
+  --s:#5E9A47;  /* 無尾熊 */
+  --c:#6576DC;  /* 貓頭鷹 */
+  --x:#8A909A;  /* 變色龍（單色場合） */
+  --gold:#F3C24F; /* 只用在孔雀花紋裡 */
+
+  --font-round:"Huninn","Noto Sans TC","PingFang TC",sans-serif;  /* 標題、題目、動物名稱 */
+  --font-sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; /* 內文、按鈕、數字 */
+  --radius-card:14px; --radius-ctrl:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
+  --btn:#F2F2F2; --btn-ink:#0F0F0F; --selected:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F;
+  --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
+  --btn:#F2F2F2; --btn-ink:#0F0F0F; --selected:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F;
+  --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC;
+  color-scheme:dark}
