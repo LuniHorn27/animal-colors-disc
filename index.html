@@ -304,7 +304,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <p class="small muted" id="blind-step">第 1 頁，共 2 頁</p>
     <h2 id="blind-h">憑直覺，選一段最像的描述</h2>
     <div class="blind" id="blind-opts" role="group" aria-labelledby="blind-h"></div>
-    <div class="actions"><button class="btn" id="blind-prev" hidden>上一頁</button><button class="btn primary" id="blind-next" disabled>下一頁</button></div>
+    <div class="actions"><button class="btn" id="blind-prev" hidden>上一頁</button></div>
   </section>
 
   <section id="s-result" class="stack" hidden></section>
@@ -705,21 +705,22 @@ function renderBlind(page){
   $('#blind-step').textContent = `第 ${page+1} 頁，共 2 頁`;
   $('#blind-opts').innerHTML = st.blindOrders[page].map(t=>`<button class="opt" data-t="${t}" aria-pressed="${pick===t}">${BLIND_PARTS[t][page]}</button>`).join('');
   $('#blind-prev').hidden = page===0;
-  $('#blind-next').textContent = page===0 ? '下一頁' : '看我的動物本色';
-  $('#blind-next').disabled = !pick;
+  blindBusy = false;
 }
+/* 點一下就前進：第 1 頁 → 第 2 頁 → 結果（選項先亮一下，和作答題目一樣的節奏） */
+let blindBusy = false;
 $('#blind-opts').addEventListener('click', e=>{
-  const b=e.target.closest('.opt'); if(!b) return;
+  const b=e.target.closest('.opt'); if(!b || blindBusy) return;
+  blindBusy = true;
   if (blindPage===0) st.blind=b.dataset.t; else st.blind2=b.dataset.t;
   save();
   document.querySelectorAll('#blind-opts .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
-  $('#blind-next').disabled=false;
+  setTimeout(()=>{
+    if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); $('#blind-h').focus?.(); return; }
+    st.done=true; st.finishedAt=Date.now(); save(); renderResult(); show('s-result');
+  }, 220);
 });
 $('#blind-prev').addEventListener('click', ()=>{ renderBlind(0); window.scrollTo(0,0); });
-$('#blind-next').addEventListener('click', ()=>{
-  if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); $('#blind-h').focus?.(); return; }
-  st.done=true; st.finishedAt=Date.now(); save(); renderResult(); show('s-result');
-});
 
 /* 回到首頁：作答中（題目、最後幾個問題、盲選）和結果頁都要先確認。
    作答進度可從首頁「繼續上次的作答」接著做；結果可從首頁「查看我的結果」再打開 */
