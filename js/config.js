@@ -6,9 +6,9 @@
    ===================================================================== */
 window.DISC_CONFIG = {
   // Supabase → Project Settings → API → Project URL，例如 https://abcdefgh.supabase.co
-  supabaseUrl: '',
+  supabaseUrl: 'https://nfdumytvvhxieqvbwrsy.supabase.co',
   // Supabase → Project Settings → API → Project API keys → anon / public
-  supabaseAnonKey: '',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZHVteXR2dmh4aWVxdmJ3cnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODE2MTYsImV4cCI6MjEwNzQ1NzYxNn0.pbeecUE7bC9_43T5ZUhF1u6lVIluaNFJIdMUN2iIIG8',
   // Cloudflare → Turnstile → 你的網站 → Site Key
-  turnstileSiteKey: '',
+  turnstileSiteKey: '0x4AAAAAAFVcBGhv1gngpfCT',
 };

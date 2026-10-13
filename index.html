@@ -2,15 +2,15 @@
 <html lang="zh-Hant-TW">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>動物本色｜DISC 行為風格測驗</title>
+<title>測出你的動物本色｜DISC 行為風格測驗</title>
 <link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
 <meta name="description" content="每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。44 題，約 7–8 分鐘，測出你的動物本色。">
 <!-- 連結預覽（LINE、Facebook 等）。之後換網域時，og:url、og:image、下方程式裡的 SITE_URL 要一起改，並重新產生 brand/qr-site.svg -->
-<meta property="og:url" content="https://lunihorn27.github.io/animal-colors-disc/">
+<meta property="og:url" content="https://animal-colors-disc.pages.dev/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="動物本色｜DISC 行為風格測驗">
+<meta property="og:title" content="測出你的動物本色｜DISC 行為風格測驗">
 <meta property="og:description" content="每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。44 題，約 7–8 分鐘，測出你的動物本色。">
-<meta property="og:image" content="https://lunihorn27.github.io/animal-colors-disc/brand/og-image.png">
+<meta property="og:image" content="https://animal-colors-disc.pages.dev/brand/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="動物本色：測出你的動物本色，DISC 行為風格測驗">
@@ -221,6 +221,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 @media (hover:none){.kbd-hint{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<script>/* 舊網址（GitHub Pages）自動轉到正式網址，保留 ?c= 等參數 */if(location.hostname==='lunihorn27.github.io')location.replace('https://animal-colors-disc.pages.dev/'+location.search+location.hash);</script>
 <script>/* 深色模式：套用使用者上次的選擇，避免畫面先閃一下別的顏色 */try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
 <svg id="pat-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
@@ -280,21 +281,23 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   </section>
 
   <section id="s-info" class="stack" hidden>
-    <h2>最後幾個問題（選填）</h2>
-    <p class="muted">以下都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。</p>
+    <h2 id="info-h">最後幾個問題（選填）</h2>
+    <p class="muted" id="info-intro">以下都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。</p>
     <div class="info-grid stack">
-    <div class="form-row"><label for="uname">名字</label>
-      <input type="text" id="uname" autocomplete="name" maxlength="40"></div>
+    <div class="form-row"><label for="uname" id="uname-label">名字</label>
+      <input type="text" id="uname" autocomplete="name" maxlength="40" aria-describedby="uname-err">
+      <span class="field-err" id="uname-err" role="alert"></span></div>
     <div class="form-row"><label for="email">Email</label>
-      <input type="email" id="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="email-err">
+      <input type="email" id="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="email-hint email-err">
+      <span class="small muted" id="email-hint" hidden>填了之後，結果會寄到這個信箱。</span>
       <span class="field-err" id="email-err" role="alert"></span></div>
     <div class="form-row"><label for="age">年齡層</label>
       <select id="age"><option value="">請選擇</option><option>18 歲以下</option><option>18–24 歲</option><option>25–34 歲</option><option>35–44 歲</option><option>45–54 歲</option><option>55 歲以上</option></select></div>
     <div class="form-row"><label for="gender">性別</label>
       <select id="gender"><option value="">請選擇</option><option>生理男</option><option>生理女</option></select></div>
-    <div class="form-row"><label for="edu">學歷</label>
+    <div class="form-row" id="row-edu"><label for="edu">學歷</label>
       <select id="edu"><option value="">請選擇</option><option>國中以下</option><option>高中職</option><option>專科</option><option>大學</option><option>碩士</option><option>博士</option></select></div>
-    <div class="form-row"><label for="job">職業類別</label>
+    <div class="form-row" id="row-job"><label for="job">職業類別</label>
       <select id="job"><option value="">請選擇</option><option>學生</option><option>上班族</option><option>自由工作者</option><option>自營或創業</option><option>家管</option><option>待業中</option><option>退休</option><option>其他</option></select></div>
     </div>
     <div><button class="btn primary" id="info-next">下一步</button></div>
@@ -317,6 +320,8 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   <div class="actions"><button class="btn" id="hd-stay" autofocus>繼續作答</button><button class="btn primary" id="hd-go">回到首頁</button></div>
 </dialog>
 
+<script src="js/config.js"></script>
+<script src="js/backend.js"></script>
 <script>
 /* ===== 1. 題庫資料（題庫草稿 v0.4） ===== */
 const TYPES = ['D','I','S','C'];
@@ -615,8 +620,13 @@ let st = null;
 const save = () => { try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} };
 const load = () => { try{ return JSON.parse(localStorage.getItem(STORE)); }catch(e){ return null; } };
 const clear = () => { try{ localStorage.removeItem(STORE); }catch(e){} };
+/* 班級代碼：網址加上 ?c=A101，這份作答就會記錄班級（班級模式：名字必填，不問學歷和職業） */
+const COHORT = (()=>{ const c=new URLSearchParams(location.search).get('c'); return c && /^[A-Za-z0-9_-]{1,32}$/.test(c) ? c : null; })();
+const newSid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2));
+const BK = window.DiscBackend || {enabled:false};
 
 function show(id){
+  if (id==='s-info'){ infoMode(); if (BK.enabled) BK.prepare(); }
   ['s-home','s-quiz','s-info','s-blind','s-result'].forEach(s=>$('#'+s).hidden = s!==id);
   $('#app').classList.toggle('wide', id==='s-result');
   window.scrollTo(0,0);
@@ -628,7 +638,7 @@ const saved = load();
 if (saved && saved.seq && !saved.done) $('#resume').hidden=false;
 $('#agree').addEventListener('change', e=>$('#start').disabled=!e.target.checked);
 $('#start').addEventListener('click', ()=>{
-  st = {seq:drawSequence(), answers:{}, times:{}, idx:0, info:{}, blind:null, rating:null, done:false, startedAt:Date.now()};
+  st = {sid:newSid(), cohort:COHORT, seq:drawSequence(), answers:{}, times:{}, idx:0, info:{}, blind:null, rating:null, done:false, startedAt:Date.now()};
   save(); show('s-quiz'); renderQ();
 });
 $('#resume').addEventListener('click', ()=>{ const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0; show('s-quiz'); renderQ(); });
@@ -689,9 +699,27 @@ function showEmailErr(on){
 }
 $('#email').addEventListener('blur', ()=>showEmailErr(!emailOK()));
 $('#email').addEventListener('input', ()=>{ if ($('#email').getAttribute('aria-invalid')==='true' && emailOK()) showEmailErr(false); });
+const classMode = () => !!(st && st.cohort);
+function infoMode(){
+  const cm = classMode();
+  $('#info-h').textContent = cm ? '最後幾個問題' : '最後幾個問題（選填）';
+  $('#info-intro').textContent = cm ? '名字必填，其他可以不填。你的名字和測驗結果會提供給這次活動的老師，不會提供給其他人或公司。'
+    : '以下都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。';
+  $('#uname-label').textContent = cm ? '名字（必填）' : '名字';
+  $('#uname').required = cm;
+  $('#email-hint').hidden = !cm;
+  $('#row-edu').hidden = cm; $('#row-job').hidden = cm;
+}
+function showNameErr(on){
+  $('#uname').setAttribute('aria-invalid', String(on));
+  $('#uname-err').textContent = on ? '請填寫名字，老師才能把結果對應到你。' : '';
+}
+$('#uname').addEventListener('input', ()=>{ if ($('#uname').value.trim()) showNameErr(false); });
 $('#info-next').addEventListener('click', ()=>{
+  if (classMode() && !$('#uname').value.trim()){ showNameErr(true); $('#uname').focus(); return; }
   if (!emailOK()){ showEmailErr(true); $('#email').focus(); return; }
-  st.info={name:$('#uname').value.trim(), email:$('#email').value.trim(), age:$('#age').value, gender:$('#gender').value, edu:$('#edu').value, job:$('#job').value};
+  st.info={name:$('#uname').value.trim(), email:$('#email').value.trim(), age:$('#age').value, gender:$('#gender').value,
+    edu:classMode()?'':$('#edu').value, job:classMode()?'學生':$('#job').value};
   /* 盲選分兩頁：每型的描述拆成前後兩句，各頁四個選項、順序各自隨機。
      st.blind＝第 1 頁的選擇（沿用原本欄位，後端相容），st.blind2＝第 2 頁的選擇 */
   st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save();
@@ -717,7 +745,9 @@ $('#blind-opts').addEventListener('click', e=>{
   document.querySelectorAll('#blind-opts .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
   setTimeout(()=>{
     if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); $('#blind-h').focus?.(); return; }
-    st.done=true; st.finishedAt=Date.now(); save(); renderResult(); show('s-result');
+    st.done=true; st.finishedAt=Date.now(); if (BK.enabled && st.sid) st.sync='sending';
+    save(); renderResult(); show('s-result');
+    if (BK.enabled && st.sid) BK.queue(st);
   }, 220);
 });
 $('#blind-prev').addEventListener('click', ()=>{ renderBlind(0); window.scrollTo(0,0); });
@@ -939,8 +969,18 @@ function sectionHTML(sec){ return `<div class="card sec"><h3>${akHTML(sec.title)
 const DISCLAIMER = '以上內容僅供自我了解參考。本色是你平常最自在的做事方式；每個人身上都有四種動物，只是比例不同，在不同場合也會用其他動物的方式應對。';
 function metaText(){ return [`本次作答 ${st.seq.length} 題`, `作答時間 ${fmtDur(sumTimes(st))}`, `完成日期 ${new Date(st.finishedAt||Date.now()).toLocaleDateString('zh-TW')}`]; }
 function footMeta(note){
-  return `<div class="foot-meta">${note?`<p class="small muted">${note}</p>`:''}<div class="meta">${metaText().map(m=>`<span>${m}</span>`).join('')}</div></div>`;
+  return `<div class="foot-meta">${note?`<p class="small muted">${note}</p>`:''}<p class="small muted" id="sync-note" role="status">${syncText()}</p><div class="meta">${metaText().map(m=>`<span>${m}</span>`).join('')}</div></div>`;
 }
+/* 作答資料送出狀態（顯示在結果頁最下方） */
+const SYNC_TEXT = {sending:'正在送出作答資料…', sent:'作答資料已送出，謝謝你的參與。',
+  pending:'作答資料還沒送出（網路可能不穩定）。結果不受影響；重新整理或下次打開這個網頁時會自動補送。',
+  rejected:'作答資料無法送出，但結果不受影響。'};
+const syncText = () => (BK.enabled && st && st.sid && SYNC_TEXT[st.sync]) || '';
+if (BK.onSync) BK.onSync((sid, state)=>{
+  if (!st || st.sid!==sid) return;
+  st.sync = state; save();
+  const n = $('#sync-note'); if (n) n.textContent = syncText();
+});
 
 function renderResult(){
   const r = score(st), f = r.flags, el = $('#s-result');
@@ -1004,6 +1044,7 @@ function renderResult(){
   el.classList.toggle('mode-data', VIEW==='data');
   el.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
   $('#rate').addEventListener('click', e=>{const b=e.target.closest('.opt'); if(!b) return; st.rating=+b.dataset.v; save();
+    if (BK.enabled && st.sid) BK.rate(st.sid, st.rating).catch(()=>{});
     document.querySelectorAll('#rate .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#rate-msg').textContent='謝謝你的回饋！';});
   if (r.kind!=='none'){
     $('#make-img').addEventListener('click', ()=>buildShareImage(r, true));
@@ -1018,7 +1059,7 @@ function renderResult(){
 /* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
 let lastImage = null;
 /* 測驗網址：上線後若改用自訂網域，填在這裡（例如 'disc.example.tw'）；留空時自動用目前網站的網址，本機預覽時不顯示 */
-const SITE_URL = 'lunihorn27.github.io/animal-colors-disc';
+const SITE_URL = 'animal-colors-disc.pages.dev';
 const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
 /* QR Code 圖檔：brand/qr-site.svg（換網域時要重新產生）。載入失敗就不放 QR Code */
 const loadImage = src => new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
@@ -1270,4 +1311,9 @@ async function shareResult(r, where){
 
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
+/* 補送上次沒送出的作答（待送出區是空的就不會連線） */
+if (BK.enabled){
+  if (st && st.sid && st.sync && st.sync!=='sent' && st.sync!=='rejected' && !BK.isQueued(st.sid)) { st.sync='sent'; save(); }
+  BK.flush().catch(()=>{});
+}
 </script>

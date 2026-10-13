@@ -4,10 +4,12 @@
    設定（js/config.js）留空時 enabled = false，所有函式都不會連線。
 
    使用方式（畫面程式端）：
-     await DiscBackend.init();                     // 頁面載入時呼叫一次
-     DiscBackend.renderTurnstile(元素);             // 作答最後一步顯示機器人驗證
-     const r = await DiscBackend.submit(st);        // 看結果時送出作答
-     await DiscBackend.setRating(4);                // 「結果像你嗎？」
+     await DiscBackend.init();                     // 需要登入功能時，頁面載入時呼叫一次
+     DiscBackend.prepare();                         // 作答最後一步：在背景準備機器人驗證
+     DiscBackend.queue(st);                         // 看結果時：放進待送出區並送出
+     DiscBackend.flush();                           // 頁面載入時：補送上次沒送出的作答
+     DiscBackend.onSync((sid, state) => {});         // 送出狀態：'sending' | 'sent' | 'pending' | 'rejected'
+     DiscBackend.rate(st.sid, 4);                   // 「結果像你嗎？」
      await DiscBackend.signInWithGoogle(st);        // 保存結果（會跳轉到 Google）
      DiscBackend.user                               // 目前登入的會員（或 null）
      await DiscBackend.listMyResults();             // 我的歷次結果
@@ -23,11 +25,15 @@
   const SUPABASE_SRI = 'sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o';
   const TURNSTILE_JS = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
   const K_CLAIM = 'disc-claim-v1';      // 最近一次送出的 {id, token}
+  const K_CLAIMS = 'disc-claims-v1';    // 每份作答（sid）送出後拿到的 {id, token}，評分用
+  const K_OUTBOX = 'disc-outbox-v1';    // 待送出區：還沒成功送到伺服器的作答
   const K_RETURN = 'disc-return-v1';    // 登入跳轉前暫存的作答狀態
+  const COHORT_RE = /^[A-Za-z0-9_-]{1,32}$/;
+  const MAX_MS = 3600000;               // 伺服器接受的單題作答時間上限（1 小時）
 
   const enabled = !!(CFG.supabaseUrl && CFG.supabaseAnonKey && CFG.turnstileSiteKey);
-  let client = null, user = null, turnstileToken = null, turnstileWidget = null;
-  const listeners = [];
+  let client = null, user = null, turnstileToken = null, turnstileWidget = null, flushing = null;
+  const listeners = [], syncListeners = [];
 
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
@@ -45,9 +51,14 @@
     });
   }
 
-  async function init() {
-    if (!enabled) return null;
-    await loadScript(SUPABASE_JS, SUPABASE_SRI);
+  let initing = null;
+  function init() {
+    if (!enabled) return Promise.resolve(null);
+    if (!initing) initing = doInit().catch((e) => { initing = null; throw e; });
+    return initing;
+  }
+  async function doInit() {
+    if (!window.supabase) await loadScript(SUPABASE_JS, SUPABASE_SRI);
     client = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' },
     });
@@ -62,8 +73,20 @@
   }
 
   /* ---------- 機器人驗證（Cloudflare Turnstile） ---------- */
+  // 驗證框放在畫面底部；通常完全看不到，必要時才會出現讓使用者點一下
+  function turnstileBox() {
+    let el = document.getElementById('ts-box');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'ts-box';
+      el.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:50';
+      document.body.appendChild(el);
+    }
+    return el;
+  }
   async function renderTurnstile(el) {
-    if (!enabled || !el) return;
+    if (!enabled) return;
+    el = el || turnstileBox();
     if (!window.turnstile) await loadScript(TURNSTILE_JS);
     turnstileToken = null;
     if (turnstileWidget !== null) { try { window.turnstile.remove(turnstileWidget); } catch (e) {} }
@@ -76,40 +99,109 @@
       'error-callback': () => { turnstileToken = null; },
     });
   }
-  async function waitForToken(ms = 15000) {
+  async function waitForToken(ms = 20000) {
+    if (turnstileWidget === null) await renderTurnstile();
     const start = Date.now();
     while (!turnstileToken && Date.now() - start < ms) await new Promise((r) => setTimeout(r, 200));
     return turnstileToken;
   }
+  // 驗證碼只能用一次；用掉後重新取得一組，給下一份作答使用
+  function useToken() {
+    const t = turnstileToken;
+    turnstileToken = null;
+    try { window.turnstile.reset(turnstileWidget); } catch (e) {}
+    return t;
+  }
+  function prepare() { if (enabled && turnstileWidget === null) renderTurnstile().catch(() => {}); }
 
-  /* ---------- 送出作答 ---------- */
-  // st：畫面程式的作答狀態 {seq, answers, times, info, blind}
-  async function submit(st) {
-    if (!enabled) return null;
-    const token = await waitForToken();
-    if (!token) throw new Error('機器人驗證未完成');
-    const payload = {
+  /* ---------- 送出作答（待送出區） ---------- */
+  // 作答完成時先放進待送出區（存在瀏覽器），成功送到伺服器才移除。
+  // 網路中斷、關掉頁面、按「重新作答」都不會遺失，下次打開網頁會自動補送。
+  const outbox = () => store.get(K_OUTBOX) || [];
+  const setOutbox = (list) => store.set(K_OUTBOX, list);
+  const emit = (sid, state) => syncListeners.forEach((fn) => { try { fn(sid, state); } catch (e) {} });
+
+  function buildPayload(st) {
+    const info = st.info || {};
+    const name = (info.name || '').trim().slice(0, 40), email = (info.email || '').trim();
+    const p = {
       bank_version: BANK_VERSION,
       seq: st.seq,
       answers: st.answers,
-      times: st.times,
-      info: { age: (st.info && st.info.age) || '', gender: (st.info && st.info.gender) || '', job: (st.info && st.info.job) || '' },
+      times: Object.fromEntries(st.seq.map((id) => [id, Math.min(MAX_MS, Math.max(0, Math.round((st.times || {})[id] || 0)))])),
+      info: { age: info.age || '', gender: info.gender || '', edu: info.edu || '', job: info.job || '' },
       blind: st.blind || null,
-      turnstile_token: token,
+      blind2: st.blind2 || null,
     };
-    const { data, error } = await client.functions.invoke('submit', { body: payload });
-    turnstileToken = null;                     // 驗證碼只能使用一次
-    if (error) throw new Error('送出失敗');
-    store.set(K_CLAIM, { id: data.id, token: data.token, at: Date.now() });
-    return data;                               // {id, token, result}
+    if (name || email) p.contact = { name, email };
+    if (st.cohort && COHORT_RE.test(st.cohort)) p.cohort = st.cohort;
+    return p;
   }
 
-  async function setRating(rating) {
-    const c = store.get(K_CLAIM);
-    if (!enabled || !c) return false;
-    const { data, error } = await client.rpc('set_rating', { p_id: c.id, p_token: c.token, p_rating: rating });
+  // st：畫面程式的作答狀態，需要有 sid（每份作答一個隨機編號）
+  function queue(st) {
+    if (!enabled || !st || !st.sid) return;
+    const list = outbox().filter((x) => x.sid !== st.sid);
+    list.push({ sid: st.sid, payload: buildPayload(st), rating: st.rating || null, at: Date.now() });
+    setOutbox(list);
+    return flush();
+  }
+
+  // 依序送出待送出區裡的作答；同一時間只會有一個 flush 在跑
+  function flush() {
+    if (!enabled) return Promise.resolve();
+    if (!flushing) flushing = doFlush().finally(() => { flushing = null; });
+    return flushing;
+  }
+  async function doFlush() {
+    if (!outbox().length) return;
+    await init();
+    for (const item of outbox()) {
+      emit(item.sid, 'sending');
+      const token = await waitForToken();
+      if (!token) { emit(item.sid, 'pending'); return; }
+      const { data, error } = await client.functions.invoke('submit', {
+        body: Object.assign({}, item.payload, { turnstile_token: useToken() }),
+      });
+      if (error) {
+        const status = error.context && error.context.status;
+        if (status === 400) {                  // 資料格式不被接受：重送也沒用，從待送出區移除
+          setOutbox(outbox().filter((x) => x.sid !== item.sid));
+          emit(item.sid, 'rejected');
+          continue;
+        }
+        emit(item.sid, 'pending');             // 網路或伺服器問題：保留，下次再送
+        return;
+      }
+      const latest = outbox().find((x) => x.sid === item.sid) || item;
+      setOutbox(outbox().filter((x) => x.sid !== item.sid));
+      const claim = { id: data.id, token: data.token, at: Date.now() };
+      const claims = store.get(K_CLAIMS) || {};
+      claims[item.sid] = claim;
+      const keep = Object.entries(claims).sort((a, b) => b[1].at - a[1].at).slice(0, 10);
+      store.set(K_CLAIMS, Object.fromEntries(keep));
+      store.set(K_CLAIM, claim);
+      if (latest.rating) await sendRating(claim, latest.rating);
+      emit(item.sid, 'sent');
+    }
+  }
+
+  // 「結果像你嗎？」：還在待送出區就一起送；已經送出就直接補上評分
+  async function rate(sid, rating) {
+    if (!enabled || !sid) return false;
+    const list = outbox();
+    const item = list.find((x) => x.sid === sid);
+    if (item) { item.rating = rating; setOutbox(list); return true; }
+    const claim = (store.get(K_CLAIMS) || {})[sid];
+    if (!claim) return false;
+    await init();
+    return sendRating(claim, rating);
+  }
+  async function sendRating(claim, rating) {
+    const { data, error } = await client.rpc('set_rating', { p_id: claim.id, p_token: claim.token, p_rating: rating });
     return !error && data === true;
   }
+  const isQueued = (sid) => outbox().some((x) => x.sid === sid);
 
   /* ---------- 會員 ---------- */
   async function signInWithGoogle(stateToRestore) {
@@ -159,10 +251,11 @@
   async function signOut() { if (enabled) await client.auth.signOut(); user = null; }
 
   window.DiscBackend = {
-    enabled, init, renderTurnstile, submit, setRating,
+    enabled, init, prepare, renderTurnstile, queue, flush, rate, isQueued,
     signInWithGoogle, claimPending, takeReturnState, listMyResults,
     getRetest, setRetest, deleteMyData, signOut,
     onAuthChange(fn) { listeners.push(fn); },
+    onSync(fn) { syncListeners.push(fn); },
     get user() { return user; },
   };
 })();
