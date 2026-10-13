@@ -1,0 +1,8 @@
+# 不放上網站的檔案（語法同 .gitignore）
+.git
+.gitignore
+.assetsignore
+.nojekyll
+README.md
+wrangler.jsonc
+brand/og-image.html
