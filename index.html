@@ -5,7 +5,7 @@
 <title>動物本色｜DISC 行為風格測驗</title>
 <link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
 <meta name="description" content="每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。44 題，約 7–8 分鐘，測出你的動物本色。">
-<!-- 連結預覽（LINE、Facebook 等）。之後換網域時，og:url、og:image 和下方程式裡的 SITE_URL 要一起改 -->
+<!-- 連結預覽（LINE、Facebook 等）。之後換網域時，og:url、og:image、下方程式裡的 SITE_URL 要一起改，並重新產生 brand/qr-site.svg -->
 <meta property="og:url" content="https://lunihorn27.github.io/animal-colors-disc/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="動物本色｜DISC 行為風格測驗">
@@ -66,7 +66,7 @@ a.btn{text-decoration:none;color:var(--ink)}
 .type{display:flex;align-items:center;gap:12px}
 .type .lt{font-family:var(--round);font-size:32px;font-weight:400;line-height:1;width:34px;text-align:center}
 .type b{font-size:16px}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.dot{display:inline-block;width:18px;height:18px;border-radius:50%;flex:none}
 details{border-top:1px solid var(--line);padding-top:10px}
 summary{cursor:pointer;color:var(--accent);font-weight:500}
 details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
@@ -88,15 +88,22 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 .opt[aria-pressed="true"] .k{background:var(--accent);color:var(--accent-ink)}
 .nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
 .info-grid{gap:20px;max-width:560px}
+/* 電腦版：兩欄並排，填滿整個版面寬度（名字｜Email、年齡層｜性別、學歷｜職業類別） */
+@media (min-width:768px){.info-grid.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;max-width:none;align-items:start}}
 .form-row{display:flex;flex-direction:column;gap:6px}
 .form-row label{font-weight:500}
 select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:48px;padding:0 12px}
 .blind{display:flex;flex-direction:column;gap:10px}
 .blind .opt{padding:14px 16px;align-items:flex-start;line-height:1.7}
 /* result */
+.warn.inapp{display:flex;flex-direction:column;gap:10px;align-items:flex-start;margin-bottom:12px}
+.warn.inapp .btn{min-height:44px}
 .warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:12px 16px;font-size:15px}
 .hero{display:flex;flex-direction:column;gap:8px;padding:8px 0 8px}
 .hero .code{font-size:14px;color:var(--muted);letter-spacing:.04em}
+.hero h1 .tl{display:block}
+.hero h1 .tp{white-space:nowrap}
+.hero h1.two-t{font-size:clamp(26px,5.2vw,40px)}
 .hero h1{font-size:clamp(32px,8vw,44px)}
 .hero .one{font-size:18px}
 .prom{border-left:4px solid var(--accent);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
@@ -107,21 +114,28 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
 .ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
 .ak-S{background:color-mix(in srgb,var(--s) 22%,transparent)} .ak-C{background:color-mix(in srgb,var(--c) 20%,transparent)}
-.chart-svg{width:100%;max-width:440px;display:block;margin:0 auto}
+.chart-svg{width:100%;max-width:480px;display:block;margin:4px auto 0}
 @media (max-width:767.98px){.chart-card{padding-inline:6px}.chart-card>h3,.chart-card>.legend{padding-inline:14px}}
 .hero .eyebrow{font-size:14px;color:var(--muted)}
 .confirm{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--warn-bg);color:var(--warn-ink)}
 .confirm p{flex:1 1 220px}
-.brow{display:grid;grid-template-columns:88px minmax(0,1fr) 34px;align-items:center;gap:10px;margin:14px 0;font-size:15px}
-.btrack{position:relative;height:14px;border-radius:7px;background:var(--sunk)}
-.bfill{height:100%;border-radius:7px}
+.brow{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;align-items:center;gap:8px;margin:14px 0;font-size:15px}
+.brow>span:first-child{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
+.btrack{position:relative;height:18px;border-radius:9px;background:var(--sunk)}
+.bfill{height:100%;border-radius:9px}
 .bmean{position:absolute;top:-5px;bottom:-5px;width:0;border-left:2px dashed var(--faint)}
-.bval{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.bval{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:8px}
-.sec h3{margin-bottom:8px}
+.sec{padding:24px}
+.sec h3{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
+.sec h3::after{content:"";display:block;width:100%;height:4px;border-radius:2px;margin-top:6px;background:var(--main,var(--ink))}
 .sec ul{margin:0;padding-left:20px}
 .sec li{margin:4px 0}
-.tip{margin-top:10px;padding:10px 14px;border-radius:10px;background:var(--sunk);font-size:15px}
+.tip{margin-top:14px;padding:12px 16px;border-radius:12px;font-size:15px;background:color-mix(in srgb,var(--main,var(--ink)) 16%,var(--surface));border:1px solid color-mix(in srgb,var(--main,var(--ink)) 45%,transparent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tip{background:color-mix(in srgb,var(--main,var(--ink)) 24%,var(--surface))}}
+:root[data-theme="dark"] .tip{background:color-mix(in srgb,var(--main,var(--ink)) 24%,var(--surface))}
+/* 變色龍沒有主色：建議區塊用比卡片深一階的底色、不加框（加深色框的灰底看起來像停用的欄位；和卡片同色又會看不見） */
+#s-result.cham .tip{background:var(--sunk);border-color:transparent}
 .rate{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .rate .opt{min-height:44px;padding:0 14px}
 /* five in a row only when the card itself has room (it sits beside the share card on wide screens) */
@@ -173,9 +187,9 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .donut-legend li{display:flex;align-items:center;gap:6px;margin:0;min-width:0}
 .donut-legend svg{width:18px;height:18px;border-radius:50%;flex:none}
 .donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
-@media (max-width:767.98px){.donut .lab{display:none}.donut .c1{font-size:22px}.donut .c2{font-size:26px}.donut .c2.two{font-size:22px}.donut-legend{display:grid}
-  .chart-svg .ax{font-size:19px}.chart-svg .vl{font-size:19px}}
-.pbars{display:flex;flex-direction:column;gap:14px;position:relative;padding-top:24px;margin-top:4px}
+@media (max-width:767.98px){.donut .lab{display:none}.donut .c1{font-size:22px}.donut .c2{font-size:26px}.donut .cm .c1{font-size:16px}.donut .cm .c2.two{font-size:19px}.donut-legend{display:grid}
+  .chart-svg .ax,.chart-svg .vl,.chart-svg .an{font-size:20px}}
+.pbars{display:flex;flex-direction:column;gap:14px;position:relative;padding-top:8px;padding-bottom:26px;margin-top:4px}
 .pbar{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:15px}
 .pbar .nm{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
 .pbar .nm svg{width:18px;height:18px;flex:none;border-radius:50%}
@@ -183,8 +197,13 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .pbar .fl{display:block;height:100%;border-radius:9px;overflow:hidden}
 .pbar .fl svg{display:block;width:100%;height:100%}
 .pbar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.pbars .avgline{position:absolute;top:18px;bottom:-4px;border-left:2px dashed var(--muted);pointer-events:none}
-.pbars .avglab{position:absolute;top:0;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
+.pbars .avgline{position:absolute;top:2px;bottom:20px;border-left:2px dashed var(--muted);pointer-events:none}
+.pbars .avglab{position:absolute;bottom:0;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
+.bwrap{position:relative}
+/* 和自己的平均比較：高於平均＝強項，低於平均＝比較少用 */
+.vs-avg{margin:10px 0 0;padding-left:20px;list-style:disc;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.vs-avg li{margin:0}
+.vs-avg b{color:var(--ink)}
 .flower text{font-family:var(--sans);font-weight:700;fill:var(--ink)}
 .seg{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:var(--sunk);gap:4px}
 .seg button{font:inherit;font-size:15px;min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--muted)}
@@ -195,8 +214,6 @@ input[type=text],input[type=email]{font:inherit;color:var(--ink);background:var(
 input[aria-invalid="true"]{border-color:var(--err)}
 .field-err{font-size:14px;color:var(--err)}
 .field-err:empty{display:none}
-.quiz-top{margin:0 0 8px}
-.quiz-top .btn.link{padding:0 4px;margin-left:-4px}
 dialog{border:0;border-radius:16px;padding:24px;max-width:min(440px,calc(100vw - 32px));background:var(--surface);color:var(--ink)}
 dialog::backdrop{background:rgba(20,22,26,.45)}
 dialog h2{margin-bottom:8px}
@@ -220,6 +237,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 <div class="wrap" id="app">
 
   <section id="s-home" class="stack">
+    <div id="inapp-home"></div>
     <div class="home-col">
     <div class="home-hero">
       <div class="stack" style="gap:12px">
@@ -232,7 +250,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-D)"/></svg><span class="tx"><b>老虎</b><small>D 支配</small></span></div>
       <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-I)"/></svg><span class="tx"><b>孔雀</b><small>I 影響</small></span></div>
       <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-S)"/></svg><span class="tx"><b>無尾熊</b><small>S 穩定</small></span></div>
-      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-C)"/></svg><span class="tx"><b>貓頭鷹</b><small>C 謹慎</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-C)"/></svg><span class="tx"><b>貓頭鷹</b><small>C 分析</small></span></div>
     </div>
     <p>每個人身上都有這四種動物，只是比例不同。沒有好壞，也沒有哪一型比較好。</p>
     <p>共 44 題，大約 7–8 分鐘。請依照你<b>平常實際的樣子</b>作答，而不是你希望成為的樣子。</p>
@@ -243,13 +261,13 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <button class="btn primary" id="start" disabled>開始作答</button>
       <button class="btn" id="resume" hidden>繼續上次的作答</button>
+      <button class="btn" id="view-result" hidden>查看我的結果</button>
     </div>
     </div>
     </div>
   </section>
 
   <section id="s-quiz" hidden>
-    <p class="quiz-top"><button class="btn link" id="go-home">回到首頁</button></p>
     <div class="bar-top"><span id="qcount">第 1 題，共 44 題</span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
     <div class="progress" aria-hidden="true"><i id="qbar" style="width:0"></i></div>
     <p class="q" id="qtext" aria-live="polite"></p>
@@ -303,7 +321,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 /* ===== 1. 題庫資料（題庫草稿 v0.4） ===== */
 const TYPES = ['D','I','S','C'];
 const ANIMAL = {D:'老虎', I:'孔雀', S:'無尾熊', C:'貓頭鷹'};
-const TNAME = {D:'支配', I:'影響', S:'穩定', C:'謹慎'};
+const TNAME = {D:'支配', I:'影響', S:'穩定', C:'分析'};
 const TCOLOR = {D:'var(--d)', I:'var(--i)', S:'var(--s)', C:'var(--c)'};
 
 /* ===== 品牌：動物花紋（甲）與四瓣花。網頁 SVG 和分享圖片 canvas 共用同一份圖案資料 ===== */
@@ -392,7 +410,8 @@ const BLIND = {
   C:'我重視正確和品質，做決定前會先蒐集資料。我做事有條理、注意細節，喜歡有明確標準的環境。'};
 
 /* ===== 2. 解說內容（解說文字草稿 v0.1） ===== */
-const R = {
+/* 改寫前的解說文字（v1，網頁原本的版本），保留以便隨時換回 */
+const R_V1 = {
 D:{name:'老虎',code:'D 支配型',one:'果斷直接、勇於挑戰，習慣帶著大家往目標前進。',
  core:'你是行動派。遇到問題或阻礙時，你的第一個念頭通常不是「怎麼辦」，而是「怎麼解決」。你重視結果和效率，喜歡掌握主導權，也願意為自己的決定負責。對你來說，困難不是退縮的理由，而是證明自己的機會。',
  good:['決策快：資訊不完整時，也能判斷方向、先動起來','不怕挑戰：任務越困難，越能激發你的鬥志','目標明確：能把大家的注意力拉回重點','敢說真話：問題出現時會直接指出來，不讓事情一直拖著'],
@@ -426,7 +445,7 @@ S:{name:'無尾熊',code:'S 穩定型',one:'穩定可靠、體貼包容，是大
  env:['穩定、可預期，有明確的分工','重視團隊合作、氣氛和睦','能長期經營關係，而不是一直在競爭'],
  jobs:'行政、人資、客戶服務、護理、社工、教育輔導',
  tips:['和老虎：他們說話直接，不一定是針對你。需要時間時，可以明確說出需要多久','和孔雀：他們點子多、變化快，你可以幫忙提醒他們把事情收尾','和貓頭鷹：你們都重視穩定，但他們更重視正確，給他們回饋時可以具體一點']},
-C:{name:'貓頭鷹',code:'C 謹慎型',one:'細心嚴謹、講求精確，用事實和邏輯把事情做對。',
+C:{name:'貓頭鷹',code:'C 分析型',one:'細心嚴謹、講求精確，用事實和邏輯把事情做對。',
  core:'你重視品質和正確性，做決定前習慣先蒐集資料、弄清楚來龍去脈。你喜歡有明確標準和流程的環境，相信只要方法正確，結果自然會好。別人容易忽略的細節，往往逃不過你的眼睛。',
  good:['精確：能發現錯誤和漏洞，確保品質','分析力強：用邏輯和數據判斷，不容易被情緒或話術影響','有條理：做事按部就班，讓人信任你的成果','謹慎：行動前會評估風險，避免不必要的損失'],
  blind:['追求完美，可能花太多時間在細節上','資訊不夠時，不容易下決定','習慣先看到問題，有時讓人覺得太挑剔','比較少表達感受，別人不容易知道你在想什麼'],
@@ -494,7 +513,7 @@ CH:{name:'變色龍',code:'四型均衡',one:'彈性十足、善於調整，能�
  env:['需要跨部門合作、角色多元的環境'],jobs:'專案協調、跨部門窗口、顧問、新創團隊成員',tips:[],
  note:'四型分數接近，也可能是因為你正處於生活或工作的轉換期，或作答時心裡想的情境不太一樣。可以看看四向圖中哪一型稍微高一點，或過一段時間再測一次。'}
 };
-const SUB = {
+const SUB_V1 = {
  DI:'你在果斷之外也帶有熱情。推動事情時，懂得用說服和鼓勵讓大家跟上，而不只是下指令。',
  DS:'你在果斷之外也帶有耐心。雖然重視結果，但會顧及團隊的感受，願意等大家一起前進。',
  DC:'你在果斷之外也重視依據。做決定快，但會先抓住關鍵資料，要求又快又對。',
@@ -507,6 +526,27 @@ const SUB = {
  CD:'你的嚴謹帶有果斷。分析完就會推動執行，不會只停留在想法。',
  CI:'你的嚴謹帶有表達力。能把複雜的分析說得清楚易懂。',
  CS:'你的嚴謹帶有耐心。願意花時間把事情做好，也會顧及合作夥伴的感受。'};
+
+/* 解說文字 v3（2026-10-13 改寫：專業、清晰、精簡，帶同理心）。文字稿見「解說文字草稿.md」v0.3 */
+const R_V3 = {
+D:{name:"老虎",code:"D 支配型",one:"你習慣看準目標就行動，帶著大家把事情往前推。",core:["你重視結果與效率。遇到問題時，你的第一個念頭通常是「怎麼解決」，而不是「怎麼辦」。", "你願意做決定，也願意為決定負責。", "困難對你來說不是退縮的理由，而是值得接下的挑戰。", "你最能發揮的時候，是看得到進展、能自己掌握方向。", "最讓你疲憊的，是事情卡住不動，或決定權不在自己手上。", "別人有時覺得你太直接，但你的直接其實是想讓事情變好，並不是針對誰。"],good:["決策快：資訊不完整時，也能判斷方向，讓事情先動起來。", "不畏挑戰：任務越困難，越能激發你的投入。", "目標明確：討論失焦時，能把大家拉回真正重要的事。", "敢說真話：問題出現時會直接指出，不讓它一直拖著。"],blind:["求快的時候，可能來不及顧到細節，或身邊人的感受。", "你的直接是為了解決問題，但對方可能先感受到壓力或被否定。", "習慣自己掌握方向，比較難放手讓別人用他們的方式做。", "進度慢下來時容易焦急，這份急切有時會讓別人更緊張。"],comm:["你說話習慣先講結論，偏好簡短、有重點的對話。", "你欣賞直接表達意見的人，因為這樣最有效率。", "含糊或繞圈子的說法，反而會讓你不確定對方真正的意思。"],commTip:"和老虎溝通時，先講重點和結論，再補充細節。有不同意見可以直接說，同時附上理由，他們會認真考慮。",stress:["壓力大時，你可能變得更強勢、更急，想一個人把事情扛下來。", "你也可能改用下指令的方式推動進度。", "這些反應的背後，往往是你太想把事情做好，不想讓它失控。"],stressTip:"做決定前，先問一句「大家怎麼看？」多花一分鐘聽，常能省下之後更多的溝通時間。",env:["目標明確，看得到具體成果", "擁有決策權與自主空間", "節奏快、有挑戰，能持續面對新問題"],jobs:"創業、管理職、專案負責人、業務開發、營運主管、危機處理",tips:["和孔雀：他們重視互動與肯定，多給一句認可，他們會更有動力。", "和無尾熊：他們需要時間適應變化，重大調整盡量提早說明。", "和貓頭鷹：他們重視正確，給足資料和思考時間，別急著要答案。"]},
+I:{name:"孔雀",code:"I 影響型",one:"你用熱情和表達力帶動身邊的人，讓事情變得有活力。",core:["你相信事情會往好的方向發展，也相信人。", "你喜歡和人互動，擅長用熱情和故事打動別人，讓大家願意一起行動。", "在團體裡，你常是帶動氣氛、讓陌生人很快熟起來的那個人。", "你最能發揮的時候，是被看見、被肯定，和一群有活力的人一起做事。", "最讓你疲憊的，是長時間一個人處理重複、缺少互動的工作。", "你的熱情很真誠；也因為在乎人，別人的反應往往會影響你的心情。"],good:["感染力強：你的熱情能讓大家重新打起精神。", "善於表達：能把想法說得生動具體，讓人聽得進去。", "人脈廣：容易和不同背景的人建立關係。", "樂觀有彈性：情況改變時，能很快看到新的可能。"],blind:["想法多、起步快，後續的收尾和細節容易被擱著。", "不想讓人失望，有時答應得太多，讓時間不夠用。", "你很在意關係，被冷落或否定時，心情容易受到影響。", "做決定時傾向相信直覺，查證的步驟可能比較少。"],comm:["你說話生動、表情豐富，喜歡輕鬆、有來有往的對話。", "你樂於分享自己的想法和經驗。", "比起冷冰冰的數據，你更容易被具體的故事和人打動。"],commTip:"和孔雀溝通時，先營造輕鬆的氣氛，給他們表達的空間。重要的細節和期限，事後用文字再確認一次會更保險。",stress:["壓力大時，你的情緒起伏可能變大，說話也變快。", "為了避開不愉快，你可能把該處理的事往後延。", "這些反應的背後，往往是你不想讓氣氛變糟，也不想讓人失望。"],stressTip:"把重要的事寫下來、排出優先順序。答應別人之前，先確認自己的時間是否真的夠。",env:["能和人互動、合作", "氣氛開放，可以自由提出想法", "工作內容有變化，不會一成不變"],jobs:"行銷、公關、業務、活動企劃、講師、主持、客戶關係",tips:["和老虎：他們重視效率，討論時先講重點，熱情的部分可以放在後面。", "和無尾熊：他們步調較穩，一次不要拋出太多新點子，給他們時間消化。", "和貓頭鷹：他們重視依據，分享想法時多準備一些具體資料。"]},
+S:{name:"無尾熊",code:"S 穩定型",one:"你用穩定和耐心，讓身邊的人感到安心、可以依靠。",core:["你重視和諧與穩定，習慣在熟悉、友善的環境裡，用自己的步調把事情做好。", "你善於傾聽，常常比別人先察覺到誰需要幫忙，也願意在背後默默支持。", "對你來說，彼此信任的關係，比贏過別人更重要。", "你最能發揮的時候，是知道自己被需要、團隊之間互相信任。", "最讓你疲憊的，是頻繁的變動和激烈的衝突。", "別人常覺得你很好相處；其實你心裡很有自己的想法，只是習慣先照顧大家的感受。"],good:["可靠：答應的事會穩定做到，讓人放心交付。", "有耐心：願意花時間把事情做好，也願意等待別人。", "善於傾聽：讓人覺得被理解，相處起來很自在。", "團隊的黏著劑：能緩和緊張的氣氛，讓合作更順利。"],blind:["為了避免衝突，常把不同的意見先放在心裡。", "不忍心拒絕，容易把太多事攬到自己身上。", "面對突如其來的變化，需要比較多時間調整。", "習慣先配合別人，有時會忽略自己的需要。"],comm:["你說話溫和、有耐心，習慣先聽完別人的想法再表達。", "被催促或面對激烈的爭論時，你需要一點時間整理想法，才能說出真正的意見。"],commTip:"和無尾熊溝通時，語氣放緩，給他們思考的時間。想知道他們真正的想法，可以私下、用輕鬆的方式詢問。",stress:["壓力大時，你可能變得安靜、退縮，表面上答應，心裡其實並不認同。", "壓力累積久了，也可能在某個時刻一次爆發。", "這些反應的背後，往往是你一直替別人著想，卻把自己的感受放到最後。"],stressTip:"試著把「我覺得……」說出口。適時表達想法不會破壞關係，反而能讓別人更了解你。",env:["穩定、可預期，分工明確", "重視團隊合作、氣氛和睦", "能長期經營關係，而不是一直在競爭"],jobs:"行政、人資、客戶服務、護理、社工、教育輔導",tips:["和老虎：他們說話直接，不一定是針對你。需要時間時，可以明確說出需要多久。", "和孔雀：他們點子多、變化快，你可以幫忙提醒他們把事情收尾。", "和貓頭鷹：你們都重視穩定，他們更在意正確，給回饋時可以說得具體一點。"]},
+C:{name:"貓頭鷹",code:"C 分析型",one:"你習慣把事情想清楚、做正確，再交出去。",core:["你重視品質與正確性。", "面對一件事，你會先弄清楚標準、蒐集足夠的資訊，確認方向沒有問題才開始行動。", "對你來說，「做對」比「做快」更重要，因為一個沒注意到的錯誤，事後往往要花更多力氣補救。", "你最能發揮的時候，是有明確的標準、足夠的時間和資料。", "最讓你疲憊的，是規則一變再變，或被要求在沒有依據的情況下做決定。", "別人有時覺得你嚴格、冷靜；其實那份嚴格來自在乎，在乎成果，也不希望別人因為疏忽而吃虧。"],good:["精確：能察覺別人沒注意到的錯誤與漏洞，讓成果經得起檢查。", "分析力強：習慣用邏輯和事實判斷，不容易被情緒或說法左右。", "有條理：做事按部就班、前後一致，交給你的事讓人放心。", "風險意識：行動前會先想到可能出錯的地方，提早預防損失。"],blind:["想把事情做到完整，有時會在細節上多花時間，讓進度比預期慢。", "資訊還不夠時，你傾向再多確認一下，因此較難快速做決定。", "你習慣先指出問題，本意是幫忙把關，但對方可能先感受到被否定。", "你較少主動說出感受，身邊的人有時不確定你的想法或心情。"],comm:["你說話精準、有根據，偏好有邏輯、有資料的討論。", "聽到模糊的說法時，你會想先問清楚。這不是在質疑對方，而是想確保大家理解的是同一件事。"],commTip:"和貓頭鷹溝通時，提供具體的資訊和明確的期待，並給他們思考的時間。意見不同時，用事實討論會比用情緒說服更有效。",stress:["壓力大時，你可能對細節更加要求、反覆檢查，或暫時不太想和人討論。", "擔心出錯，也可能讓你的決定一再延後。", "這些反應的背後，往往是你太在意把事情做好。"],stressTip:"先為這件事訂一個「夠好」的標準，達到之後就先告一段落。不是每件事都需要一百分。",env:["有明確的標準、流程和品質要求", "能專心工作，不會一直被打斷", "重視專業與正確性"],jobs:"工程師、研究人員、數據分析、會計、品質管理、法務、稽核",tips:["和老虎：他們重視效率，可以先給結論與你的判斷，細節再補充。", "和孔雀：他們重視感受，指出問題前，先肯定做得好的地方。", "和無尾熊：他們不喜歡衝突，提出意見時，語氣可以放柔和一些。"]},
+DI:{name:"老虎＋孔雀",code:"DI 組合型",one:"你既有行動力也有感染力，能帶著大家一起朝目標前進。",core:["你同時有老虎的果斷和孔雀的熱情，兩種特質在你身上差不多明顯。", "看到機會時，你會想立刻行動，也會很自然地把身邊的人拉進來一起做。", "比起一個人埋頭苦幹，你更習慣站在前面，帶著一群人往前走。", "老虎的部分讓你敢做決定、願意承擔；孔雀的部分讓你懂得鼓舞人心。", "你推動事情，靠的不只是指令，也會用願景和熱情讓大家願意跟上。", "新鮮、有挑戰的事最能引起你的投入；一成不變的工作，則容易讓你失去動力。"],good:["能帶人也能衝：既能做決定，也能激勵大家一起行動。", "擅長開創：面對新機會，能很快行動，並找到願意支持的人。", "有說服力：說話有自信、有溫度，讓人願意相信你。", "反應快：情況改變時，能立刻調整方向，帶大家繼續前進。"],blind:["你的節奏很快，身邊的人可能還沒想清楚，就被推著往前走。", "同時開啟很多事，後續的追蹤和細節容易被擱著。", "自信加上熱情，有時會讓較安靜的人不敢說出不同意見。", "冗長的討論、流程和規定，容易讓你失去耐心。"],comm:["你說話熱情直接、充滿能量，喜歡快速討論、當場決定。", "你習慣先談願景和大方向，進入細節時容易覺得拖沓。", "對方的回應越熱烈，你越有精神。"],commTip:"和老虎＋孔雀溝通時，跟上他們的節奏，先談目標和方向，再補充細節。有不同意見可以直接說，重要的期限和分工，事後用文字再確認一次。",stress:["壓力大時，你可能變得更急、更強勢，想一個人主導全部，或用說服和氣勢壓過反對意見。", "你也可能一口氣答應更多事，讓自己和團隊都忙不過來。", "這些反應的背後，常是你非常想讓事情成功。"],stressTip:"找一位細心的夥伴幫你把關細節與進度。做決定前，刻意留一點時間，問問比較安靜的人怎麼想。",env:["變化快、有新挑戰，看得到成果", "能帶領團隊、站上台前、開拓新局", "有空間自己決定做法，不被太多規定綁住"],jobs:"創業、業務主管、行銷主管、新事業開發、品牌經理、活動或專案領導",tips:["和無尾熊：他們需要時間適應變化，討論時放慢速度，不要急著要他們當場答應。", "和貓頭鷹：他們重視依據，提出新想法時，準備好資料和具體的執行步驟。", "和老虎或孔雀：你們容易一拍即合，也容易一起忽略風險，記得找人幫忙檢查細節。"]},
+IS:{name:"孔雀＋無尾熊",code:"IS 組合型",one:"你溫暖又善解人意，讓身邊的人感到被重視。",core:["你同時有孔雀的熱情和無尾熊的體貼，兩種特質在你身上差不多明顯。", "你重視人，喜歡和人互動，也很在意別人的感受。", "你擅長建立關係、營造溫暖的氣氛，常是團隊裡讓人安心又自在的那個人。", "孔雀的部分讓你容易和人聊開、結交朋友；無尾熊的部分讓你願意傾聽、長期陪伴。", "你的人際關係通常不只廣，也很深。", "對你來說，大家相處融洽、彼此信任，是把事情做好的前提。"],good:["人緣好：容易讓人親近、信任，新朋友也很快就熟起來。", "同理心強：能察覺別人的情緒和需要，適時給予關心。", "善於協調：能在不同意見之間，找到大家都能接受的做法。", "營造好氣氛：讓合作變得輕鬆，新成員也容易融入。"],blind:["很難開口拒絕，容易委屈自己。", "必要的批評或壞消息不忍心說出口，讓問題拖得比較久。", "做決定時容易受感情影響，或擔心得罪人而遲遲無法決定。", "數據、細節和嚴格的規定，容易讓你覺得疏離、提不起勁。"],comm:["你說話親切溫和，喜歡聊天，也重視雙向的互動。", "你通常會先關心對方，再談正事，也會留意自己的話會不會讓人不舒服。", "遇到衝突時，你傾向先緩和氣氛，而不是當場爭出對錯。"],commTip:"和孔雀＋無尾熊溝通時，先關心近況再談正事。需要提出批評時，私下、溫和地說，也讓他們知道你肯定的部分。",stress:["壓力大時，你可能過度在意別人的看法，一直委屈自己。", "心情低落時，你可能不說出口，表面上仍保持笑容；累積久了，會突然覺得很累，想暫時離開人群。", "這些反應的背後，往往是你總是先照顧別人。"],stressTip:"練習說「這次我沒辦法」。先照顧好自己，才能繼續照顧別人。",env:["以人為中心，重視合作與關懷", "氣氛友善、彼此支持，而不是激烈競爭", "能長期經營關係，看見自己幫助了別人"],jobs:"客戶關係、人資、教育、諮商輔導、社工、社群經營、門市服務",tips:["和老虎：他們說話直接，不代表不在乎你。討論時先講重點，需要時間時直接說出來。", "和貓頭鷹：他們重視依據，提出想法時多準備具體內容，他們會更信任你。", "和孔雀或無尾熊：你們相處融洽，但可能一起避開難開口的事，記得把問題說出來。"]},
+SC:{name:"無尾熊＋貓頭鷹",code:"SC 組合型",one:"你穩健踏實、細心可靠，是讓人放心的執行者。",core:["你同時有無尾熊的穩定和貓頭鷹的嚴謹，兩種特質在你身上差不多明顯。", "你做事有計畫、按部就班，重視品質，也重視團隊和諧。", "你不追求鎂光燈，但交給你的事，大家都很放心。", "無尾熊的部分讓你有耐心、願意配合團隊；貓頭鷹的部分讓你注重細節、堅持把事情做對。", "你常是團隊裡默默把關的人：不一定第一個發言，卻會注意到大家漏掉的地方，並一步一步把事情完成。"],good:["穩定可靠：成果品質一致，很少出錯。", "細心有條理：重視流程和細節，動手前會先想好步驟。", "能長期投入：願意耐心把一件事做好、做久。", "守信用：答應的事會做到，讓人信任。"],blind:["面對突如其來的變化，需要比較多時間調整。", "不太主動爭取機會或表現自己，努力容易被忽略。", "做決定比較保守，可能錯過需要快速行動的時機。", "習慣把不同意見放在心裡，別人不容易察覺你其實有疑慮。"],comm:["你說話安靜、謹慎，開口前會先想清楚。", "你喜歡事先知道要討論什麼；有時間準備時，你的意見往往很有幫助。", "在人多或氣氛緊張的場合，你通常會先觀察，比較少當場發言。"],commTip:"和無尾熊＋貓頭鷹溝通時，有變化要提前告知，並給清楚的說明與準備時間。想聽他們的意見，可以事先把問題給他們，或私下詢問。",stress:["壓力大時，你可能變得退縮、焦慮，更堅持原本的做法。", "你也可能把擔心放在心裡，一個人反覆檢查、加班補救。", "這些反應的背後，往往是你不想讓任何人失望。"],stressTip:"遇到改變時，先列出「哪些事情不會變」，心裡會比較踏實。也試著主動說出你的意見，你的細心正是團隊需要的。",env:["穩定，有清楚的流程與分工", "重視品質與專業，願意給足時間把事情做好", "氣氛平和，不需要一直和人競爭或上台表現"],jobs:"行政管理、會計、品質管理、資料管理、技術支援、研究助理、公職",tips:["和老虎：他們重視速度，可以先給結論，再說明你擔心的地方和需要的時間。", "和孔雀：他們想法多、變化快，你可以幫忙把想法整理成可執行的步驟。", "和無尾熊或貓頭鷹：你們合作很踏實，但可能一起迴避改變，偶爾試試新做法也不錯。"]},
+CD:{name:"貓頭鷹＋老虎",code:"CD 組合型",one:"你理性又果斷，追求又快又對的結果。",core:["你同時有貓頭鷹的嚴謹和老虎的果斷，兩種特質在你身上差不多明顯。", "你重視事實和邏輯，也重視結果。", "你對自己和別人都有高標準，擅長分析問題，並推動解決方案。", "貓頭鷹的部分讓你想得清楚、看得深；老虎的部分讓你敢下決定、願意負責。", "你不會只停在分析，也不會沒想清楚就行動。", "遇到複雜的難題時，你常是那個冷靜拆解問題，然後說「就這樣做」的人。"],good:["想得清楚也做得到：分析完就能推動執行。", "標準高：要求品質，成果經得起檢驗。", "客觀：就事論事，不容易被情緒或人情左右。", "能解決複雜問題：遇到難題時冷靜拆解，找出關鍵。"],blind:["說話直接又講求精確，對方可能覺得冷淡或嚴厲。", "專注在問題本身時，容易忽略氣氛和別人的感受。", "你對自己要求很高，也容易用同樣的標準看待別人，對達不到的人少了一點耐心。", "你相信自己的判斷，有時較難接受別人的做法。"],comm:["你說話簡潔、理性，會直接指出問題，也會說明理由。", "你偏好有依據、有結論的討論，對沒有重點的會議比較沒耐心。", "你的回饋通常很具體，只是不一定會先顧及對方聽到時的感受。"],commTip:"和貓頭鷹＋老虎溝通時，用數據和邏輯說話，直接提出問題與解決方法。有不同意見可以說，但要準備好理由。",stress:["壓力大時，你可能變得更挑剔、更嚴厲，把事情都攬在自己身上、不願交給別人。", "你也可能把標準拉得更高，讓自己和團隊都喘不過氣。", "這些反應的背後，常是你對結果非常負責。"],stressTip:"給回饋時多加一句肯定，團隊會更願意跟上你的標準。也問問自己：「這件事真的需要我親自做嗎？」",env:["重視專業、標準與成果", "能獨立判斷、推動改善", "以能力和表現評價人，而不是靠人情"],jobs:"工程主管、策略分析、財務、管理顧問、技術專家、流程改善",tips:["和孔雀：他們重視感受與互動，指出問題之前，先肯定做得好的部分。", "和無尾熊：他們不喜歡衝突，需要調整時提早告知，語氣放柔和一些。", "和貓頭鷹或老虎：你們溝通很有效率，但意見不同時容易僵持，可以先說好用什麼標準決定。"]},
+DS:{name:"老虎＋無尾熊",code:"DS 對角型",one:"你堅定又體貼，能在目標和人情之間找到平衡。",core:["你身上同時有兩種方向相反的特質：老虎的果斷、重視結果，以及無尾熊的耐心、重視和諧，而且兩者都很明顯。", "在 DISC 理論裡，這兩種傾向位在相反的方向：一個主動推進，一個穩定配合。", "你可能會依場合切換：在工作上果斷推動，和朋友或家人相處時很隨和。", "你也可能目標很堅定，做法上卻很照顧每個人的感受。", "兩種特質配合得好時，你能把事情推動起來，也讓人願意跟隨。"],good:["兼顧目標和人：能推動進度，又不讓人覺得被犧牲。", "堅定但不強硬：能守住立場，同時維持關係。", "能依場合調整：需要時果斷，需要時包容。", "讓人信任又願意跟隨：大家知道你有方向，也知道你會照顧他們。"],blind:["平時很隨和，忍到某個程度才轉為強硬，別人可能覺得你突然變了一個人。", "想同時顧好進度和每個人，容易把太多責任攬在自己身上。", "對已經決定的方向很堅持，臨時改變做法比較困難。", "習慣自己扛，較少讓別人知道你的壓力。"],tension:["想推動進度，又擔心傷了感情，可能在兩者之間猶豫。", "別人可能覺得你「有時很強勢、有時又很好說話」，不容易捉摸。", "長時間在兩種角色之間切換，容易累積壓力。"],comm:["你會依情況直接或溫和地表達：談目標和決定時直接明確，談到人的感受時會放慢、多聽。", "你通常願意先聽完大家的想法，但心裡其實已經有了方向。"],commTip:"想了解老虎＋無尾熊，可以直接問：「這件事你比較在意結果，還是大家的感受？」他們通常會給你誠實的答案。",stress:["壓力大時，你可能在強勢和退讓之間擺盪：一下想全部自己決定，一下又什麼都配合。", "你也可能表面上維持和氣，心裡卻越來越煩躁。", "這些反應的背後，往往是你想同時顧好事情和每一個人。"],stressTip:"先釐清這件事最重要的是什麼，再決定要堅持還是配合。也可以讓身邊的人知道，你現在是「要往前推」還是「想先聽聽大家」，他們比較不會猜錯。",env:["需要同時照顧成果與人的角色", "目標清楚，團隊氣氛穩定、彼此信任", "能長期帶領同一群人，而不是一直更換團隊"],jobs:"團隊主管、專案協調、店長、運動教練、照護管理、營運主管",tips:["和孔雀：他們點子多、步調快，你可以幫他們把熱情變成具體目標。", "和貓頭鷹：他們重視依據，推動決定前，先給他們資料和思考的時間。", "和老虎或無尾熊：你同時理解這兩種人，在他們意見不同時，可以幫雙方說出對方在意的事。"],note:["對角組合代表兩種方向相反的傾向，分數都很高。", "如果你覺得不太像自己，可以看看上方圖表中各型的分數，想想哪一種比較接近平常的你。", "也可以過一段時間再測一次。"]},
+IC:{name:"孔雀＋貓頭鷹",code:"IC 對角型",one:"你熱情又嚴謹，能把複雜的事說得清楚又有趣。",core:["你身上同時有兩種方向相反的特質：孔雀的熱情外向，以及貓頭鷹的精確嚴謹，而且兩者都很明顯。", "在 DISC 理論裡，這兩種傾向位在相反的方向：一個外放、重視人和氣氛，一個內斂、重視事實和正確。", "你可能上台時很有感染力，準備時卻一絲不苟。", "你也可能在熟人面前很活潑，工作時很講究細節。", "兩種特質配合得好時，你能把專業的內容說得生動，讓人既聽得懂，也信得過。"],good:["表達加上專業：能讓專業內容變得好懂、有趣。", "兼具創意與嚴謹：想法有新意，也經得起檢驗。", "能和不同類型的人合作：和熱情的人聊得來，和講求精確的人也談得深。", "說服力有根據：別人覺得有趣，也覺得可信。"],blind:["對自己要求高，準備得太久，反而錯過分享的時機。", "既在意別人的評價，又在意做得對不對，容易對自己太嚴格。", "興致來時想法很多，冷靜下來又一一推翻，讓事情停在原地。", "互動和細節都想顧好，容易耗費太多力氣，讓自己很累。"],tension:["想自由發揮，又擔心不夠完美。", "在「趕快分享」和「再確認一次」之間拉扯。", "別人可能不容易捉摸你真正的風格。"],comm:["你說明事情時生動有趣，也會附上根據。", "你喜歡分享，但會先確定內容正確；被問到細節時，你通常答得出來。", "在不熟的場合你可能比較安靜，熟了以後才會展現活潑的一面。"],commTip:"和孔雀＋貓頭鷹討論時，可以同時給出想法和資料，他們兩者都重視。給回饋時，先肯定，再具體指出可以調整的地方。",stress:["壓力大時，你可能過度準備、一再修改。", "你的情緒也可能起伏較大：一下很有幹勁，一下又覺得自己做得不夠好。", "這些反應的背後，往往是你希望自己既精彩又正確。"],stressTip:"分清楚哪些場合需要完美、哪些場合先完成就好。給自己一個「到這裡就先交出去」的期限。",env:["需要把專業內容傳達給別人的角色", "能發揮創意，也重視品質與專業", "有時間好好準備，也有機會上台分享"],jobs:"講師、顧問、產品經理、技術業務、知識型內容創作、使用者研究",tips:["和老虎：他們重視速度，先給結論和你的建議，細節等他們問再補充。", "和無尾熊：他們喜歡穩定的步調，分享新想法時一次一個，給他們消化的時間。", "和孔雀或貓頭鷹：你同時理解這兩種人，可以幫熱情的人補上依據，也幫嚴謹的人把想法說得更好懂。"],note:["對角組合代表兩種方向相反的傾向，分數都很高。", "如果你覺得不太像自己，可以看看上方圖表中各型的分數，想想哪一種比較接近平常的你。", "也可以過一段時間再測一次。"]},
+CH:{name:"變色龍",code:"四型均衡",one:"你能依情境切換不同的風格，在各種場合都找得到合適的做法。",core:["你的四種傾向分數很接近，沒有特別突出的一型。", "這可能代表你能依場合和對象調整做法：需要決策時能果斷，需要帶動氣氛時能熱情，需要支持別人時能耐心，需要精確時也能細心。", "你可能很難用一個詞形容自己：同事覺得你有條理，朋友覺得你好聊，家人覺得你可靠。", "沒有單一的標籤，不代表你沒有個性；你只是習慣先看清楚情況，再選擇最合適的方式。"],good:["適應力強：在不同環境都能找到合適的做法。", "能理解不同的人：容易站在別人的角度思考。", "適合當橋樑：能在不同風格的人之間溝通協調。", "面對變化不慌：情況改變時，能換一種方式繼續前進。"],blind:["別人可能不容易看出你的核心風格，覺得不太了解你。", "有時你自己也不確定，真正喜歡的是哪一種方式。", "一直配合環境調整，久了可能會覺得累。", "每種做法似乎都可以，遇到需要表態的時候，反而比較難決定。"],comm:["你會依對象調整說話方式：和直接的人講重點，和熱情的人輕鬆聊，和需要時間的人放慢步調，和重視依據的人談資料。", "你和大部分的人都能溝通，也常是大家願意找來商量的人。"],commTip:"想知道變色龍真正的想法，可以直接問：「如果由你決定，你會怎麼做？」不要只看他們配合的樣子。",stress:["壓力大時，你可能不確定該用哪種方式應對，在幾種做法之間反覆。", "你也可能過度配合別人的期待，忘了自己的需要。", "這些反應的背後，往往是你很習慣替所有人著想。"],stressTip:"偶爾問問自己：「如果不用配合任何人，我最自在的方式是什麼？」",env:["需要跨部門合作、角色多元的環境", "工作內容有變化，能接觸不同的人和任務", "需要有人在不同意見之間找到共識"],jobs:"專案協調、跨部門窗口、顧問、新創團隊成員、營運管理、活動統籌",tips:["和老虎：直接說出你的立場，他們會更尊重你。", "和孔雀：你能接住他們的熱情，也可以適時把話題拉回重點。", "和無尾熊：你的彈性能讓他們安心，有變化時多給一點準備時間。", "和貓頭鷹：他們重視一致，說過的標準和做法盡量不要常改。"],note:["四型分數接近，可能代表你真的很有彈性。", "也可能是因為你正處於生活或工作的轉換期，或作答時心裡想的情境不太一樣（例如有些題目想的是工作，有些想的是家裡）。", "可以看看上方圖表中哪一型稍微高一點，或過一段時間，固定想著同一種情境再測一次。"]}
+};
+const SUB_V3 = {"DI": "你的果斷中帶有熱情。推動事情時，你會用說服和鼓勵讓大家跟上，而不只是下指令。", "DS": "你的果斷中帶有耐心。你重視結果，也會顧及團隊的感受，願意等大家一起前進。", "DC": "你的果斷中帶有嚴謹。你決定得快，但會先抓住關鍵資料，追求又快又對。", "ID": "你的熱情中帶有行動力。你不只鼓舞人，也會主動讓事情發生。", "IS": "你的熱情中帶有溫柔。除了帶動氣氛，你也在意每個人是否自在。", "IC": "你的熱情中帶有細心。分享想法時言之有物，讓人覺得有趣又可信。", "SD": "你的穩定中帶有堅持。平時隨和，但在重要的事情上會守住原則。", "SI": "你的穩定中帶有親和力。你可靠，也很容易和人打成一片。", "SC": "你的穩定中帶有嚴謹。做事踏實又細心，交給你的事很少出錯。", "CD": "你的嚴謹中帶有果斷。分析完就會推動執行，不會只停在想法。", "CI": "你的嚴謹中帶有表達力。你能把複雜的分析說得清楚易懂。", "CS": "你的嚴謹中帶有耐心。你願意花時間把事情做好，也會顧及合作夥伴的感受。"};
+/* 使用哪一版解說：預設 v3；網址加上 ?text=v1 可看改寫前的版本。要整個換回舊版，把 TEXT_DEFAULT 改成 'v1' */
+const TEXT_DEFAULT = 'v3';
+const TEXT_VER = new URLSearchParams(location.search).get('text') || TEXT_DEFAULT;
+const R = TEXT_VER==='v1' ? R_V1 : R_V3;
+const SUB = TEXT_VER==='v1' ? SUB_V1 : SUB_V3;
 
 /* ===== 3. 抽題與計分（不碰畫面） ===== */
 const GATE = 0.40;
@@ -681,19 +721,32 @@ $('#blind-next').addEventListener('click', ()=>{
   st.done=true; st.finishedAt=Date.now(); save(); renderResult(); show('s-result');
 });
 
-/* 回到首頁：作答中（題目、最後幾個問題、盲選）要先確認；進度會保存，可從首頁繼續 */
+/* 回到首頁：作答中（題目、最後幾個問題、盲選）和結果頁都要先確認。
+   作答進度可從首頁「繼續上次的作答」接著做；結果可從首頁「查看我的結果」再打開 */
 const inProgress = () => ['s-quiz','s-info','s-blind'].some(id=>!$('#'+id).hidden);
+const onResult = () => !$('#s-result').hidden;
 const homeDialog = $('#home-dialog');
-function askGoHome(){ if (homeDialog.showModal) homeDialog.showModal(); else if (window.confirm('要回到首頁嗎？你的作答進度會保存。')) goHome(); }
+const HOME_ASK = {
+  progress:{desc:'你的作答進度會保存在這個瀏覽器裡，之後可以在首頁按「繼續上次的作答」接著做。', stay:'繼續作答'},
+  result:{desc:'你的結果會保存在這個瀏覽器裡，之後可以在首頁按「查看我的結果」再打開。如果重新作答，這次的結果會被新的結果取代。', stay:'留在結果頁'}};
+function askGoHome(){
+  const m = onResult() ? HOME_ASK.result : HOME_ASK.progress;
+  $('#hd-desc').textContent = m.desc; $('#hd-stay').textContent = m.stay;
+  if (homeDialog.showModal) homeDialog.showModal(); else if (window.confirm('要回到首頁嗎？'+m.desc)) goHome();
+}
 function goHome(){
   if (homeDialog.open) homeDialog.close();
   $('#resume').hidden = !(st && st.seq && !st.done);
+  $('#view-result').hidden = !(st && st.done);
   show('s-home');
 }
-$('#go-home').addEventListener('click', askGoHome);
 $('#hd-stay').addEventListener('click', ()=>homeDialog.close());
 $('#hd-go').addEventListener('click', goHome);
-document.querySelector('.bar-brand').addEventListener('click', e=>{ if (inProgress()){ e.preventDefault(); askGoHome(); } });
+$('#view-result').addEventListener('click', ()=>{ if (st && st.done){ renderResult(); show('s-result'); } });
+document.querySelector('.bar-brand').addEventListener('click', e=>{
+  if (inProgress() || onResult()){ e.preventDefault(); askGoHome(); }
+  else if (!$('#s-home').hidden){ e.preventDefault(); window.scrollTo(0,0); }
+});
 
 /* result */
 const pct = m => Math.round((m-1)/4*100);
@@ -711,28 +764,55 @@ function chartGeom(r){
 }
 const DIRS = {D:[-1,-1],I:[1,-1],S:[1,1],C:[-1,1]};
 function chartSVG(r){
-  const cx=170, cy=170, R=118, k=Math.SQRT1_2, G=chartGeom(r);
+  /* 尺寸對齊「本色組成圈」：畫布寬 480、圓直徑 224，兩種模式的圖一樣大 */
+  const cx=240, cy=160, R=112, k=Math.SQRT1_2, G=chartGeom(r);
   let g='';
   g+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="1"/>`;
   G.rings.forEach(f=>g+=`<circle cx="${cx}" cy="${cy}" r="${R*f}" fill="none" stroke="var(--line)" stroke-width="1"/>`);
   g+=`<line x1="${cx}" y1="${cy-R-8}" x2="${cx}" y2="${cy+R+8}" stroke="var(--faint)" stroke-width="1"/>`;
   g+=`<line x1="${cx-R-8}" y1="${cy}" x2="${cx+R+8}" y2="${cy}" stroke="var(--faint)" stroke-width="1"/>`;
   const lab=(x,y,t,a='middle')=>`<text class="ax" x="${x}" y="${y}" text-anchor="${a}" font-size="14" fill="var(--muted)">${t}</text>`;
-  g+=lab(cx,22,'主動')+lab(cx,334,'配合')+lab(8,cy-8,'重事','start')+lab(332,cy-8,'重人','end');
-  TYPES.forEach(t=>{const d=DIRS[t]; g+=`<text x="${cx+d[0]*k*(R+46)}" y="${cy+d[1]*k*(R+46)+5}" text-anchor="middle" font-size="17" font-weight="700" fill="var(--ink)"><tspan fill="${TCOLOR[t]}">●</tspan> ${LBL(t)}</text>`;});
+  g+=lab(cx,cy-R-26,'主動')+lab(cx,cy+R+40,'配合')+lab(cx-R-22,cy+5,'重事','end')+lab(cx+R+22,cy+5,'重人','start');
+  TYPES.forEach(t=>{const d=DIRS[t]; g+=`<text class="an" x="${cx+d[0]*k*(R+46)}" y="${cy+d[1]*k*(R+46)+5}" text-anchor="middle" font-size="17" font-weight="700" fill="var(--ink)"><tspan fill="${TCOLOR[t]}">●</tspan> ${LBL(t)}</text>`;});
   g+=`<circle cx="${cx}" cy="${cy}" r="${R*G.mean}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
   const pts = TYPES.map(t=>{const d=DIRS[t], rr=R*G.frac(t); return [cx+d[0]*k*rr, cy+d[1]*k*rr];});
   g+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="var(--ink)" fill-opacity="0.08" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>`;
   TYPES.forEach((t,i)=>{const [x,y]=pts[i], d=DIRS[t];
     g+=`<circle cx="${x}" cy="${y}" r="5" fill="${TCOLOR[t]}" stroke="var(--surface)" stroke-width="2"/>`;
     g+=`<text x="${x+d[0]*10}" y="${y+5}" class="vl" text-anchor="${d[0]<0?'end':'start'}" font-size="16" font-weight="700" fill="var(--ink)" stroke="var(--surface)" stroke-width="4" paint-order="stroke">${pct(r.mean[t])}</text>`;});
-  return `<svg class="chart-svg" viewBox="-14 -14 368 368" role="img" aria-label="DISC 四向圖：${TYPES.map(t=>LBL(t)+' '+pct(r.mean[t])+' 分').join('、')}，你的平均 ${pct(r.avg)} 分">${g}</svg>`;
+  return `<svg class="chart-svg" viewBox="0 0 480 324" role="img" aria-label="DISC 四向圖：${TYPES.map(t=>LBL(t)+' '+pct(r.mean[t])+' 分').join('、')}，你的平均 ${pct(r.avg)} 分">${g}</svg>`;
+}
+/* 高於／低於自己平均的動物（和自己比，不是和別人比） */
+function avgGroups(r){
+  const a = pct(r.avg), g = {above:[], below:[], equal:[]};
+  TYPES.slice().sort((x,y)=>pct(r.mean[y])-pct(r.mean[x])).forEach(t=>{ const v=pct(r.mean[t]); (v>a?g.above:v<a?g.below:g.equal).push(t); });
+  return g;
+}
+const CHAM_BARS = '你的四種分數都很接近，沒有特別突出或特別少展現的一型，能依情境切換不同的風格。';
+function vsAvgHTML(r){
+  const g = avgGroups(r), ls = ts => ts.map(t=>akHTML(LBL(t))).join('、');
+  let h = `<ul class="vs-avg"><li>虛線是四種動物的平均（${pct(r.avg)} 分），用來比較四種動物之間的高和低。</li>`;
+  if (r.kind==='chameleon') h += `<li>${CHAM_BARS}</li>`;
+  else {
+  if (g.above.length) h += `<li><b>高於平均</b>：${ls(g.above)}。比較貼近你的行為風格，自然而然就會表現出來。</li>`;
+  if (g.equal.length) h += `<li><b>剛好在平均</b>：${ls(g.equal)}。偶爾會表現出來，但不是你最主要的風格。</li>`;
+  if (g.below.length) h += `<li><b>低於平均</b>：${ls(g.below)}。是你比較少展現的行為風格。不是做不到，只是需要刻意花力氣才能辦到。</li>`;
+  }
+  h += `<li>平均分數本身的高低，不代表能力或好壞，和個人作答時的習慣有關（例如比較常選「非常符合」，平均分數就會偏高）。重點是四種動物彼此的高和低。</li></ul>`;
+  return `<div>${h}</div>`;
+}
+/* 本色組成圈的說明：依結果類型給不同的第二點 */
+function donutNotes(r){
+  const top = r.kind==='single' ? `占比最大的 ${LBL(r.primary)}，就是你的本色。`
+    : (r.kind==='combo'||r.kind==='diag') ? `${LBL(r.order[0])} 和 ${LBL(r.order[1])} 的占比最大又很接近，所以兩種都是你的本色。`
+    : r.kind==='chameleon' ? '四種動物的占比都很接近，所以你是變色龍。' : '';
+  return ['把你四種動物的分數加起來當作 100%，看每一種各占多少。', '占比越大，代表這種動物在你身上越明顯。', top].filter(Boolean);
 }
 function barsHTML(r){
   const m = pct(r.avg);
-  return TYPES.map(t=>`<div class="brow"><span><span class="dot" style="background:${TCOLOR[t]}"></span>${LBL(t)}</span>
+  return `<div class="bwrap">` + TYPES.map(t=>`<div class="brow"><span><span class="dot" style="background:${TCOLOR[t]}"></span>${LBL(t)}</span>
     <div class="btrack"><div class="bfill" style="width:${pct(r.mean[t])}%;background:${TCOLOR[t]}"></div><div class="bmean" style="left:${m}%"></div></div>
-    <span class="bval">${pct(r.mean[t])}</span></div>`).join('');
+    <span class="bval">${pct(r.mean[t])}</span></div>`).join('') + `</div>`;
 }
 /* 標題：依分數高低排列，每個動物用自己的顏色 */
 function titleParts(r){
@@ -745,14 +825,17 @@ function codeLine(r, rep){
   if (r.kind==='diag') return `${r.order[0]}${r.order[1]} 對角型`;
   return rep.code;
 }
-/* 動物一律寫成「代號＋動物」（D 老虎）；「精確數據」模式的標題先寫代號組合 */
-function titleHTML(r){ return titleParts(r).map(p=>p.t?`<span style="color:${TCOLOR[p.t]}">${LBL(p.t)}</span>`:p.text).join(''); }
-const animalLine = r => titleParts(r).map(p=>p.t?LBL(p.t):p.text).join('');
-function dataTitle(r){
-  if (r.kind==='chameleon') return '四型接近';
-  if (r.kind==='single') return `${r.primary} 型（${TNAME[r.primary]}）`;
-  return `${r.order[0]}${r.order[1]} 型（${TNAME[r.order[0]]}＋${TNAME[r.order[1]]}）`;
+/* 結果標題（兩種模式相同）：「D 老虎（支配型）」，文字用該動物的顏色；組合型、對角型分兩行 */
+const TFULL = t => `${LBL(t)}（${TNAME[t]}型）`;
+function titleLines(r){
+  if (r.kind==='chameleon') return [[{text:'變色龍（四型均衡）', t:null}]];
+  if (r.kind==='single') return [[{text:TFULL(r.primary), t:r.primary}]];
+  return [[{text:TFULL(r.order[0]), t:r.order[0]}, {text:' ＋ ', t:null}, {text:TFULL(r.order[1]), t:r.order[1]}]];
 }
+function titleHTML(r){ return titleLines(r).map(l=>`<span class="tl">${l.map(p=>p.t?`<span class="tp" style="color:${TCOLOR[p.t]}">${p.text}</span>`:p.text).join('')}</span>`).join(''); }
+/* 標題下的小字：只有組合型、對角型需要（例如 DI 組合型） */
+const subLine = r => (r.kind==='combo'||r.kind==='diag') ? `${r.order[0]}${r.order[1]} ${r.kind==='combo'?'組合型':'對角型'}` : '';
+const animalLine = r => titleParts(r).map(p=>p.t?LBL(p.t):p.text).join('');
 function promText(r){
   const a=LBL(r.primary), b=LBL(r.secondary);
   if (r.level==='high') return `你的本色裡，${a} 最明顯，明顯高過其他動物。`;
@@ -795,15 +878,15 @@ function donutSVG(vals, center){
   /* 組合型（例如 D 老虎＋I 孔雀）分兩行，才放得進圓圈中間 */
   const parts = center.split('＋');
   g += parts.length>1
-    ? `<text x="${cx}" y="${cy-24}" text-anchor="middle" class="c1">你的本色</text><text x="${cx}" y="${cy+2}" text-anchor="middle" class="c2 two">${parts[0]}</text><text x="${cx}" y="${cy+28}" text-anchor="middle" class="c2 two">＋${parts[1]}</text>`
-    : `<text x="${cx}" y="${cy-10}" text-anchor="middle" class="c1">你的本色</text><text x="${cx}" y="${cy+18}" text-anchor="middle" class="c2">${center}</text>`;
+    ? `<text class="cm" x="${cx}" y="${cy}" text-anchor="middle"><tspan x="${cx}" dy="-2.7em" class="c1">你的本色</tspan><tspan x="${cx}" dy="1.6em" class="c2 two">${parts[0]}</tspan><tspan x="${cx}" dy="1.4em" class="c2 two">＋</tspan><tspan x="${cx}" dy="1.4em" class="c2 two">${parts[1]}</tspan></text>`
+    : `<text x="${cx}" y="${cy}" text-anchor="middle"><tspan x="${cx}" dy="-0.45em" class="c1">你的本色</tspan><tspan x="${cx}" dy="1.55em" class="c2">${center}</tspan></text>`;
   const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
   return `<svg class="flower donut" viewBox="-80 0 480 320" role="img" aria-label="本色組成：${TYPES.map(t=>LBL(t)+' '+pr[t]+'%').join('、')}">${g}</svg>${legend}`;
 }
 function patBarsHTML(vals, avg){
   const order = TYPES;
   const at = `calc(108px + (100% - 150px) * ${avg/100})`;
-  return `<div class="pbars" role="img" aria-label="${order.map(t=>LBL(t)+' '+vals[t]+' 分').join('、')}，你的平均 ${avg} 分">${order.map(t=>`<div class="pbar"><span class="nm"><svg viewBox="0 0 18 18" aria-hidden="true"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}</span><span class="tr"><span class="fl" style="width:${Math.max(1.5,vals[t])}%"><svg preserveAspectRatio="none" aria-hidden="true"><rect width="100%" height="100%" fill="url(#pat-${t})"/></svg></span></span><span class="v">${vals[t]}</span></div>`).join('')}<span class="avgline" style="left:${at}"></span><span class="avglab" style="left:${at}">你的平均 ${avg}</span></div>`;
+  return `<div class="pbars" role="img" aria-label="${order.map(t=>LBL(t)+' '+vals[t]+' 分').join('、')}，滿分 100，你的平均 ${avg} 分">${order.map(t=>`<div class="pbar"><span class="nm"><svg viewBox="0 0 18 18" aria-hidden="true"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}</span><span class="tr"><span class="fl" style="width:${Math.max(1.5,vals[t])}%"><svg preserveAspectRatio="none" aria-hidden="true"><rect width="100%" height="100%" fill="url(#pat-${t})"/></svg></span></span><span class="v">${vals[t]}</span></div>`).join('')}<span class="avgline" style="left:${at}"></span><span class="avglab" style="left:${at}">你的平均 ${avg}</span></div>`;
 }
 /* 結果呈現方式：brand＝動物本色（組成圈＋花紋長條），data＝精確數據（四向圖＋長條圖）。記住使用者的選擇 */
 let VIEW = (()=>{ try{ return localStorage.getItem('disc-view')==='data' ? 'data' : 'brand'; }catch(e){ return 'brand'; } })();
@@ -828,21 +911,25 @@ function splitLabel(x){ const i=x.indexOf('：'); return i>0&&i<12 ? [x.slice(0,
 function list(arr){ return `<ul>${arr.map(x=>{const [l,b]=splitLabel(x); return l?`<li><b>${akHTML(l)}</b>：${akHTML(b)}</li>`:`<li>${akHTML(b)}</li>`;}).join('')}</ul>`; }
 
 /* 解說的段落結構（網頁與分享圖片共用） */
+/* 較長的段落（核心特質、溝通方式、壓力、關於這個結果）：v3 是陣列，顯示成條列；v1 是一段文字 */
+const textOrList = v => Array.isArray(v) ? {bullets:v} : {paras:[v]};
 function reportSections(rep){
   const out = [
-    {title:'核心特質', paras:[rep.core]},
+    {title:'核心特質', ...textOrList(rep.core)},
     {title:'你的優勢', items:rep.good},
     {title:rep.blindTitle||'可能的盲點', items:rep.blind},
-    {title:'你的溝通方式', paras:[rep.comm], tip:rep.commTip?['給身邊的人',rep.commTip]:null},
-    {title:'壓力下的你', paras:[rep.stress], tip:['小建議',rep.stressTip]},
+    ...(rep.tension ? [{title:'兩種特質的拉扯', items:rep.tension}] : []),
+    {title:'你的溝通方式', ...textOrList(rep.comm), tip:rep.commTip?['給身邊的人',rep.commTip]:null},
+    {title:'壓力下的你', ...textOrList(rep.stress), tip:['小建議',rep.stressTip]},
     {title:'適合的工作環境與方向', items:rep.env, tip:['可能適合的方向（僅供參考）',rep.jobs]},
   ];
   if (rep.tips.length) out.push({title:'和其他動物相處的小提醒', items:rep.tips});
-  if (rep.note) out.push({title:'關於這個結果', paras:[rep.note]});
+  if (rep.note) out.push({title:'關於這個結果', ...textOrList(rep.note)});
   return out;
 }
 function sectionBody(sec){
   let b = (sec.paras||[]).map(p=>`<p>${akHTML(p)}</p>`).join('');
+  if (sec.bullets) b += `<ul>${sec.bullets.map(x=>`<li>${akHTML(x)}</li>`).join('')}</ul>`;
   if (sec.items) b += list(sec.items);
   if (sec.tip) b += `<p class="tip"><b>${sec.tip[0]}：</b>${akHTML(sec.tip[1])}</p>`;
   return b;
@@ -874,27 +961,26 @@ function renderResult(){
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
     const tentative = f.mostlyMid ? '（暫定）' : '';
     html += `<div class="hero"><span class="eyebrow">你的動物本色</span>
-      <h1 class="only-brand">${titleHTML(r)}${tentative}</h1><h1 class="only-data">${dataTitle(r)}${tentative}</h1>
-      <span class="code only-brand">${codeLine(r,rep)}</span><span class="code only-data">${animalLine(r)}</span><p class="one">${akHTML(rep.one)}</p>`;
+      <h1${titleLines(r)[0].length>1?' class="two-t"':''}>${titleHTML(r)}${tentative}</h1>${subLine(r)?`<span class="code">${subLine(r)}</span>`:''}<p class="one">${akHTML(rep.one)}</p>`;
     if (r.kind==='single') html += `<p class="prom">${akHTML(promText(r))}<br><span class="muted small">副型：${akHTML(LBL(r.secondary))}。${SUB[r.primary+r.secondary]}</span></p>`;
     html += `</div>`;
     html += `<div class="report">
       <aside class="side">
         <div class="seg" role="group" aria-label="結果呈現方式"><button type="button" data-view="brand" aria-pressed="${VIEW==='brand'}">動物本色</button><button type="button" data-view="data" aria-pressed="${VIEW==='data'}">精確數據</button></div>
         <div class="card chart-card only-brand"><h3>你的本色組成</h3>${donutSVG(vals, animalLine(r))}
-          <div class="legend"><span>每種動物占你四種傾向總和的比例，加起來是 100%。這是四種動物彼此比較的結果；每一型的實際分數請看下方。</span></div></div>
+          <div class="legend"><ul class="vs-avg">${donutNotes(r).map(t=>`<li>${akHTML(t)}</li>`).join('')}</ul></div></div>
         <div class="card only-brand"><h3>四種動物的分數</h3>${patBarsHTML(vals, pct(r.avg))}
-          <div class="legend"><span>長條越長，分數越高（滿分 100），依 D、I、S、C 排列。虛線是你的平均（${pct(r.avg)} 分）。</span></div></div>
+          <div class="legend">${vsAvgHTML(r)}</div></div>
         <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
           <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表這一型比你的平均突出；在虛線內，代表相對不明顯。每圈相差 10 分。</span></div></div>
         <div class="card only-data"><h3>四型分數</h3>${barsHTML(r)}
-          <div class="legend"><span>虛線：你的平均（${pct(r.avg)} 分）</span></div></div>
+          <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
       <div class="main">
         ${reportSections(rep).map(sectionHTML).join('')}
         <p class="small muted">${DISCLAIMER}</p>
         <div class="pair">${rating}
-          <div class="card" id="share-card"><h3>分享你的結果</h3>
+          <div class="card" id="share-card"><h3>分享你的結果</h3>${inAppNoteHTML('result')}
             <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
             <div class="actions" style="margin-top:12px"><button class="btn primary" id="make-img">產生結果圖片</button></div>
             <div id="share-out" hidden><img class="share-img" id="share-img" alt="我的動物本色結果圖片">
@@ -910,6 +996,10 @@ function renderResult(){
     </div>`;
   }
   el.innerHTML = html;
+  /* 主色：單一型用主型，組合型用分數較高的那一型，變色龍不設定（用墨色） */
+  const mainT = (r.kind==='single') ? r.primary : (r.kind==='combo'||r.kind==='diag') ? r.order[0] : null;
+  if (mainT) el.style.setProperty('--main', TCOLOR[mainT]); else el.style.removeProperty('--main');
+  el.classList.toggle('cham', r.kind==='chameleon');
   el.classList.toggle('mode-data', VIEW==='data');
   el.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
   $('#rate').addEventListener('click', e=>{const b=e.target.closest('.opt'); if(!b) return; st.rating=+b.dataset.v; save();
@@ -921,7 +1011,7 @@ function renderResult(){
   }
   $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
   $('#again-cancel').addEventListener('click', ()=>{ $('#again-confirm').hidden=true; $('#again').focus(); });
-  $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; show('s-home'); });
+  $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; $('#view-result').hidden=true; show('s-home'); });
 }
 
 /* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
@@ -929,6 +1019,8 @@ let lastImage = null;
 /* 測驗網址：上線後若改用自訂網域，填在這裡（例如 'disc.example.tw'）；留空時自動用目前網站的網址，本機預覽時不顯示 */
 const SITE_URL = 'lunihorn27.github.io/animal-colors-disc';
 const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
+/* QR Code 圖檔：brand/qr-site.svg（換網域時要重新產生）。載入失敗就不放 QR Code */
+const loadImage = src => new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
 async function buildShareImage(r, reveal){
   try { await document.fonts.ready; } catch(e){}
   const W=1080, PAD=110, maxW=W-PAD*2;
@@ -957,6 +1049,14 @@ async function buildShareImage(r, reveal){
     return Y + (lines.length-1)*lh;
   }
   const rr=(X,Y,w,h,rad)=>{x.beginPath();x.moveTo(X+rad,Y);x.arcTo(X+w,Y,X+w,Y+h,rad);x.arcTo(X+w,Y+h,X,Y+h,rad);x.arcTo(X,Y+h,X,Y,rad);x.arcTo(X,Y,X+w,Y,rad);x.closePath();};
+  // 和自己的平均比較：高於平均＝強項，低於平均＝比較少用
+  const drawVsAvg = (yy) => { const g=avgGroups(r), ls=ts=>ts.map(t=>LBL(t)).join('、');
+    yy = drawRich(units(`虛線是四種動物的平均（${pct(r.avg)} 分）。`), PAD, yy, maxW, 26, 40, P.muted);
+    if (r.kind==='chameleon'){ yy+=44; return drawRich(units(CHAM_BARS), PAD, yy, maxW, 26, 40, P.ink)+24; }
+    if (g.above.length){ yy+=44; yy = drawRich([...units('高於平均（貼近你的風格）：',true), ...units(ls(g.above))], PAD, yy, maxW, 26, 40, P.ink); }
+    if (g.equal.length){ yy+=44; yy = drawRich([...units('剛好在平均：',true), ...units(ls(g.equal))], PAD, yy, maxW, 26, 40, P.ink); }
+    if (g.below.length){ yy+=44; yy = drawRich([...units('低於平均（比較少展現）：',true), ...units(ls(g.below))], PAD, yy, maxW, 26, 40, P.ink); }
+    return yy+24; };
 
   x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
   let y=130;
@@ -965,10 +1065,10 @@ async function buildShareImage(r, reveal){
     x.save(); x.translate(PAD, y-38); x.scale(.48,.48); M.forEach(([d,t])=>{ x.fillStyle=P[t]; x.fill(new Path2D(d)); }); x.restore();
     x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText('動物本色', PAD+62, y);
     const bw=x.measureText('動物本色').width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText('DISC 行為風格測驗', PAD+62+bw+20, y); }
-  { const parts = VIEW==='data' ? [{text:dataTitle(r), t:null}] : titleParts(r).map(p=>({text:p.t?LBL(p.t):p.text, t:p.t})); let size=92; x.font=`400 ${size}px ${ROUND}`;
-    while (parts.reduce((w,p)=>w+x.measureText(p.text).width,0)>maxW && size>48){ size-=4; x.font=`400 ${size}px ${ROUND}`; }
-    y+=size+20; let px=PAD; parts.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }
-  y+=60; x.fillStyle=P.muted; x.font=`500 32px ${SANS}`; x.fillText(VIEW==='data' ? animalLine(r) : codeLine(r,rep), PAD, y);
+  { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0); let size=92; x.font=`400 ${size}px ${ROUND}`;
+    while (Math.max(...lines.map(lw))>maxW && size>32){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
+    lines.forEach(l=>{ y+=size+20; let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }); }
+  if (subLine(r)){ y+=60; x.fillStyle=P.muted; x.font=`500 32px ${SANS}`; x.fillText(subLine(r), PAD, y); }
   y+=76; y=drawRich(units(rep.one), PAD, y, maxW, 38, 58, P.ink);
   if (r.kind==='single'){
     y+=72;
@@ -1001,14 +1101,16 @@ async function buildShareImage(r, reveal){
   x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(`虛線圓：你的平均（${pct(r.avg)} 分）　點在虛線外代表比平均突出　每圈相差 10 分`, PAD, y);
 
   // score bars
-  y+=60; const barX=PAD+170, barW=maxW-170-80, mx=barX+barW*pct(r.avg)/100;
-  TYPES.forEach(t=>{ y+=58;
-    x.fillStyle=P[t]; x.beginPath(); x.arc(PAD+10,y-11,9,0,Math.PI*2); x.fill();
-    x.fillStyle=P.ink; x.font=`500 30px ${SANS}`; x.fillText(LBL(t), PAD+30, y);
-    x.fillStyle=P.sunk; rr(barX,y-26,barW,20,10); x.fill();
-    x.fillStyle=P[t]; rr(barX,y-26,Math.max(20,barW*pct(r.mean[t])/100),20,10); x.fill();
-    x.textAlign='right'; x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(String(pct(r.mean[t])), W-PAD, y); x.textAlign='left'; });
-  x.setLineDash([8,6]); x.strokeStyle=P.muted; x.lineWidth=2; x.beginPath(); x.moveTo(mx,y-3*58-36); x.lineTo(mx,y+4); x.stroke(); x.setLineDash([]);
+  y+=30; const barX=PAD+200, barW=maxW-200-80, mx=barX+barW*pct(r.avg)/100, top=y+8;
+  TYPES.forEach(t=>{ y+=64;
+    x.fillStyle=P[t]; x.beginPath(); x.arc(PAD+14,y-11,14,0,Math.PI*2); x.fill();
+    x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), PAD+38, y);
+    x.fillStyle=P.sunk; rr(barX,y-30,barW,26,13); x.fill();
+    x.fillStyle=P[t]; rr(barX,y-30,Math.max(26,barW*pct(r.mean[t])/100),26,13); x.fill();
+    x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(pct(r.mean[t])), W-PAD, y); x.textAlign='left'; });
+  x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(mx,top); x.lineTo(mx,y+14); x.stroke(); x.setLineDash([]);
+  y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(`你的平均 ${pct(r.avg)}`, mx, y); x.textAlign='left';
+  y = drawVsAvg(y+60);
 
   } else {
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
@@ -1020,15 +1122,17 @@ async function buildShareImage(r, reveal){
       x.fillStyle=canvasPattern(x,sg.t,2.2,0,0); x.fill(); x.lineWidth=7; x.lineJoin='round'; x.strokeStyle=P.card; x.stroke(); });
     x.font=`700 30px ${SANS}`; x.fillStyle=P.ink;
     donutLabels(segs, cx, cy, Ro+34, 42).forEach(l=>{ x.textAlign=l.anchor==='end'?'right':l.anchor==='start'?'left':'center'; x.fillText(`${LBL(l.t)} ${pr[l.t]}%`, l.x, l.y+10); });
-    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText('你的本色', cx, cy-18);
-    { const c=animalLine(r); let size=40; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>Ri*2-36 && size>24){ size-=2; x.font=`700 ${size}px ${SANS}`; }
-      x.fillStyle=P.ink; x.fillText(c, cx, cy+30); }
+    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText('你的本色', cx, animalLine(r).includes('＋') ? cy-48 : cy-18);
+    { const c=animalLine(r), parts=c.split('＋');
+      if (parts.length>1){ x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(parts[0], cx, cy+20); x.fillText('＋', cx, cy+62); x.fillText(parts[1], cx, cy+104); }
+      else { let size=40; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>Ri*2-36 && size>24){ size-=2; x.font=`700 ${size}px ${SANS}`; }
+        x.fillStyle=P.ink; x.fillText(c, cx, cy+30); } }
     x.textAlign='left';
-    y = cy+Ro+84; x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText('每種動物占你四種傾向總和的比例，加起來是 100%', PAD, y);
+    y = cy+Ro+84; donutNotes(r).forEach((t,i)=>{ if (i) y+=40; y = drawRich(units('・'+t), PAD, y, maxW, 24, 36, P.muted); });
     // 花紋長條（由高到低）
     y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText('四種動物的分數', PAD, y);
     const order=TYPES, barX=PAD+200, barW=maxW-200-80, ax=barX+barW*pct(r.avg)/100;
-    y += 56; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(`你的平均 ${pct(r.avg)}`, ax, y); x.textAlign='left';
+    y += 30;
     const top=y+8;
     order.forEach(t=>{ y+=64;
       x.fillStyle=canvasPattern(x,t,1.4,0,0); x.beginPath(); x.arc(PAD+14,y-11,14,0,Math.PI*2); x.fill();
@@ -1036,15 +1140,21 @@ async function buildShareImage(r, reveal){
       x.fillStyle=P.sunk; rr(barX,y-30,barW,26,13); x.fill();
       x.fillStyle=canvasPattern(x,t,1.4,0,0); rr(barX,y-30,Math.max(26,barW*vals[t]/100),26,13); x.fill();
       x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(vals[t]), W-PAD, y); x.textAlign='left'; });
-    x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(ax,top); x.lineTo(ax,y+10); x.stroke(); x.setLineDash([]);
-    y += 64; x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText('長條越長，分數越高（滿分 100）', PAD, y);
+    x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(ax,top); x.lineTo(ax,y+14); x.stroke(); x.setLineDash([]);
+    y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(`你的平均 ${pct(r.avg)}`, ax, y); x.textAlign='left';
+    y = drawVsAvg(y+60);
   }
 
   // full analysis
+  const mainT = (r.kind==='single') ? r.primary : (r.kind==='combo'||r.kind==='diag') ? r.order[0] : null;
+  const mainTint = mainT ? P[mainT+'t'] : P.sunk;
   reportSections(rep).forEach(sec=>{
     y+=96; x.fillStyle=P.line; x.fillRect(PAD, y-62, maxW, 2);
     y=drawRich(units(sec.title, true), PAD, y, maxW, 40, 56, P.ink);
     (sec.paras||[]).forEach(p=>{ y+=60; y=drawRich(units(p), PAD, y, maxW, 30, 48, P.ink); });
+    (sec.bullets||[]).forEach(it=>{ y+=56;
+      x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
+      y=drawRich(units(it), PAD+32, y, maxW-32, 30, 46, P.ink); });
     (sec.items||[]).forEach(it=>{ const [l,b]=splitLabel(it); y+=56;
       x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
       const us = l ? [...units(l,true), {s:'：',bold:true}, ...units(b)] : units(b);
@@ -1052,7 +1162,8 @@ async function buildShareImage(r, reveal){
     if (sec.tip){ y+=34; const top=y; const us=[...units(sec.tip[0]+'：',true), ...units(sec.tip[1])];
       // measure by drawing off-canvas first
       const endY = drawRich(us, -99999, y+48, maxW-48, 28, 44, P.ink);
-      x.fillStyle=P.sunk; rr(PAD, top, maxW, endY-top+30, 16); x.fill();
+      if (mainT){ x.fillStyle=mainTint; rr(PAD, top, maxW, endY-top+30, 16); x.fill(); }
+      else { rr(PAD, top, maxW, endY-top+30, 16); x.fillStyle=P.sunk; x.fill(); }
       drawRich(us, PAD+24, y+48, maxW-48, 28, 44, P.ink); y=endY+30; }
   });
 
@@ -1063,25 +1174,50 @@ async function buildShareImage(r, reveal){
   y+=90;
   // invitation band: lets friends who see the picture find the test
   const host = siteHost();
-  { const bandH = host ? 200 : 150; x.fillStyle=P.accent; x.fillRect(0, y, W, bandH);
-    x.fillStyle='#FFFFFF'; x.font=`400 44px ${ROUND}`; x.fillText('你的動物本色是什麼？也來測測看', PAD, y+86);
-    if (host){ x.font=`500 34px ${SANS}`; x.fillText(host, PAD, y+146); }
+  const qr = host ? await loadImage('brand/qr-site.svg') : null;
+  { const tile = 210, bandH = qr ? 320 : (host ? 200 : 150); x.fillStyle=P.accent; x.fillRect(0, y, W, bandH);
+    x.fillStyle='#FFFFFF'; x.font=`400 44px ${ROUND}`;
+    if (qr){
+      x.fillText('你的動物本色是什麼？', PAD, y+100); x.fillText('也來測測看', PAD, y+158);
+      x.fillStyle='rgba(255,255,255,.78)'; x.font=`500 26px ${SANS}`; x.fillText('掃描 QR Code，或打開網址：', PAD, y+222);
+      x.fillStyle='#FFFFFF'; x.fillText(host, PAD, y+262);
+    } else {
+      x.fillText('你的動物本色是什麼？也來測測看', PAD, y+86);
+      if (host){ x.font=`500 34px ${SANS}`; x.fillText(host, PAD, y+146); }
+    }
+    if (qr){ const qx=W-PAD-tile+20, qy=y+(bandH-tile)/2;
+      x.fillStyle='#FFFFFF'; rr(qx, qy, tile, tile, 16); x.fill();
+      x.imageSmoothingEnabled=false; x.drawImage(qr, qx+22, qy+22, tile-44, tile-44); x.imageSmoothingEnabled=true; }
     y += bandH; }
 
   const out=document.createElement('canvas'); out.width=W; out.height=y;
   const o=out.getContext('2d'); o.fillStyle=P.bg; o.fillRect(0,0,W,y);
   o.drawImage(cv,0,0);
-  const url=out.toDataURL('image/png');
+  /* 用 blob 網址而不是 data 網址：長圖的 data 網址有好幾 MB，安卓上常常下載失敗 */
   const blob = await new Promise(res=>out.toBlob(res,'image/png'));
+  if (lastImage && lastImage.url) URL.revokeObjectURL(lastImage.url);
+  const url = URL.createObjectURL(blob);
   lastImage = {url, blob, name:`動物本色-${codeLine(r,rep).split(' ')[0]}.png`};
   if (reveal){ $('#share-img').src=url; $('#dl-img').href=url; $('#dl-img').download=lastImage.name; $('#share-out').hidden=false; }
   return lastImage;
 }
 
+/* App 內建瀏覽器（LINE、Facebook、Instagram）常常不能下載檔案、不能叫出分享選單 */
+const UA = navigator.userAgent || '';
+const IN_APP = /\bLine\//i.test(UA) ? 'LINE' : /FBAN|FBAV|FB_IAB|FBIOS/i.test(UA) ? 'Facebook' : /Instagram/i.test(UA) ? 'Instagram' : '';
+function externalURL(){ const u=new URL(location.href); if (IN_APP==='LINE') u.searchParams.set('openExternalBrowser','1'); return u.toString(); }
+function inAppNoteHTML(where){
+  if (!IN_APP) return '';
+  const how = IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">改用瀏覽器開啟</a>` : `<span>請點右上角的「⋯」，選擇「在瀏覽器中開啟」。</span>`;
+  const why = where==='home'
+    ? `你正在 ${IN_APP} 的內建瀏覽器裡，作答完可能無法下載圖片或分享。建議先改用手機的瀏覽器（例如 Chrome、Safari）開啟再作答。`
+    : `你正在 ${IN_APP} 的內建瀏覽器裡，可能無法下載圖片或分享。可以直接截圖保存結果；改用瀏覽器開啟的話，需要重新作答。`;
+  return `<div class="warn inapp"><p>${why}</p>${how}</div>`;
+}
 /* 分享測驗連結（不含個人結果）。頁首的「分享測驗」和結果頁的「邀請朋友來測驗」共用 */
 const testURL = () => SITE_URL ? `https://${SITE_URL}/` : location.origin + location.pathname;
 let toastTimer = 0;
-function toast(t){ const el=$('#toast'); el.textContent=t; clearTimeout(toastTimer); if (t) toastTimer=setTimeout(()=>el.textContent='', 4000); }
+function toast(t, long){ const el=$('#toast'); el.textContent=t; clearTimeout(toastTimer); if (t) toastTimer=setTimeout(()=>el.textContent='', long ? 12000 : 4000); }
 /* 深色模式開關：沒選過時跟著系統顯示；切換後記住 */
 const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
 const isDark = () => { const t=document.documentElement.dataset.theme; return t ? t==='dark' : !!(darkMQ && darkMQ.matches); };
@@ -1103,8 +1239,14 @@ async function shareTest(text, out){
     try { await navigator.share(data); out(''); return; }
     catch(e){ if (e && e.name==='AbortError'){ out(''); return; } }
   }
-  try { await navigator.clipboard.writeText(`${data.text}\n${data.url}`); out('測驗連結已複製，可以直接貼給朋友。'); }
-  catch(e){ out(`請複製這個連結傳給朋友：${data.url}`); }
+  if (await copyText(`${data.text}\n${data.url}`)) out('測驗連結已複製，可以直接貼給朋友。');
+  else out(`請複製這個連結傳給朋友：${data.url}`, true);
+}
+/* 複製文字：先用新的剪貼簿功能，不行再用舊方法（App 內建瀏覽器常常只支援舊方法） */
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); return true; } catch(e){}
+  try { const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length); const ok=document.execCommand('copy'); ta.remove(); return ok; } catch(e){ return false; }
 }
 async function shareResult(r, where){
   const msg = t => { const m=document.querySelector(`.share-msg[data-msg="${where}"]`); if (m) m.textContent=t; };
@@ -1125,5 +1267,6 @@ async function shareResult(r, where){
   msg('這個瀏覽器不支援直接分享，請先下載圖片，再傳給朋友。');
 }
 
+$('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
 </script>
