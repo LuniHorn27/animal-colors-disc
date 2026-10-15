@@ -5,6 +5,7 @@
 
    使用方式（畫面程式端）：
      await DiscBackend.init();                     // 需要登入功能時，頁面載入時呼叫一次
+     await DiscBackend.checkClass('1029-A');        // 班級連結：開始作答前確認班級代碼
      DiscBackend.prepare();                         // 作答最後一步：在背景準備機器人驗證
      DiscBackend.queue(st);                         // 看結果時：放進待送出區並送出
      DiscBackend.flush();                           // 頁面載入時：補送上次沒送出的作答
@@ -70,6 +71,24 @@
     });
     if (user) await claimPending();
     return user;
+  }
+
+  /* ---------- 班級代碼檢查（開始作答前） ---------- */
+  // 回傳 {ok:true, name} 或 {ok:false, reason:'not_found'|'not_open'|'closed'}；
+  // 連不上伺服器時丟出錯誤，畫面程式不擋使用者（送出時伺服器還會再檢查一次）
+  async function checkClass(code) {
+    if (!enabled || !COHORT_RE.test(code || '')) return null;
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 8000);
+    try {
+      const res = await fetch(CFG.supabaseUrl + '/rest/v1/rpc/check_class', {
+        method: 'POST', signal: ctl.signal,
+        headers: { apikey: CFG.supabaseAnonKey, Authorization: 'Bearer ' + CFG.supabaseAnonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_code: code }),
+      });
+      if (!res.ok) throw new Error('check_class ' + res.status);
+      return await res.json();
+    } finally { clearTimeout(timer); }
   }
 
   /* ---------- 機器人驗證（Cloudflare Turnstile） ---------- */
@@ -266,7 +285,7 @@
   async function signOut() { if (enabled) await client.auth.signOut(); user = null; }
 
   window.DiscBackend = {
-    enabled, init, prepare, renderTurnstile, queue, flush, rate, isQueued,
+    enabled, init, checkClass, prepare, renderTurnstile, queue, flush, rate, isQueued,
     hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults,
     getRetest, setRetest, deleteMyData, signOut,
     onAuthChange(fn) { listeners.push(fn); },

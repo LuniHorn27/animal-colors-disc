@@ -72,6 +72,7 @@ summary{cursor:pointer;color:var(--accent);font-weight:500}
 details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 .consent{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--accent-soft);cursor:pointer}
 .consent input{width:22px;height:22px;margin-top:3px;accent-color:var(--accent);flex:none}
+.consent:has(input:disabled){opacity:.5;cursor:not-allowed}
 /* quiz */
 .bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .progress{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;margin:8px 0 28px}
@@ -268,6 +269,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <p>完成後，你會看到自己的動物本色、四種傾向的分布圖，以及溝通和職涯上的參考建議。</p>
     <p class="small muted">小提醒：結果僅供自我了解參考。你的作答會保存下來，用來讓這份測驗更準確；資料只用在這份測驗，不會挪作其他用途，也不會提供給其他人或公司。詳見<a href="privacy.html" style="color:inherit">隱私說明</a>。</p>
     <div class="start-card">
+    <p id="class-note" hidden></p>
     <label class="consent" for="agree"><input type="checkbox" id="agree"><span>我了解結果僅供參考，也同意保存我的作答，用來讓這份測驗更準確</span></label>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <button class="btn primary" id="start" disabled>開始作答</button>
@@ -662,7 +664,25 @@ function show(id){
 document.getElementById('home-flower').outerHTML = flowerSVG({D:82,I:64,S:44,C:56},{id:'home-flower'});
 const saved = load();
 if (saved && saved.seq && !saved.done) $('#resume').hidden=false;
-$('#agree').addEventListener('change', e=>$('#start').disabled=!e.target.checked);
+/* 班級連結：開始作答前確認班級代碼是管理者建好的班級，而且在開放時間內。
+   連不上伺服器時不擋，送出時伺服器還會再檢查一次班級是否存在 */
+let classBlocked = false;
+const syncStart = () => { $('#start').disabled = !$('#agree').checked || classBlocked; };
+if (COHORT && BK.enabled && BK.checkClass){
+  BK.checkClass(COHORT).then(r=>{
+    const note = $('#class-note');
+    if (r && r.ok){ note.className='small muted'; note.textContent='班級：'+r.name; note.hidden=false; }
+    else if (r && r.reason){
+      classBlocked = true;
+      note.className = 'warn';
+      note.textContent = r.reason==='not_open' ? '這個活動還沒開始，請等老師通知再作答。'
+        : r.reason==='closed' ? '這個活動已經結束。如果還需要作答，請向老師確認。'
+        : '活動連結有誤，請向老師確認。';
+      note.hidden = false; $('#agree').disabled = true; syncStart();
+    }
+  }).catch(()=>{});
+}
+$('#agree').addEventListener('change', syncStart);
 $('#start').addEventListener('click', ()=>{
   st = {sid:newSid(), cohort:COHORT, seq:drawSequence(), answers:{}, times:{}, idx:0, info:{}, blind:null, rating:null, done:false, startedAt:Date.now()};
   save(); show('s-quiz'); renderQ();

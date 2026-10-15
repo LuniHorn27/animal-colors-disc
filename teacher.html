@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>班級統計｜測出你的動物本色</title>
+<link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="brand/tokens.css">
+<script>try{const t=localStorage.getItem('disc-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:var(--font-round);font-weight:400;line-height:1.3;margin:0}
+.site-bar{background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-in{max-width:800px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:10px;font-family:var(--font-round);font-size:18px}
+.bar-in img{width:28px;height:28px}
+main{max-width:800px;margin:0 auto;padding:32px 16px 64px;display:flex;flex-direction:column;gap:40px}
+.head h1{font-size:clamp(28px,5vw,40px)}
+.status{margin:8px 0 0;color:var(--muted);font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.live{width:9px;height:9px;border-radius:50%;background:var(--s);flex:none}
+.status.off .live{background:var(--faint)}
+.status.err .live{background:var(--d)}
+.count{font-size:20px;color:var(--ink);margin:16px 0 0}
+.count b{font-size:clamp(34px,6vw,48px);font-weight:700;font-variant-numeric:tabular-nums;margin-right:4px}
+section h2{font-size:24px;margin-bottom:6px}
+.sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+
+/* 台下的動物：花紋長條，全頁唯一的重點 */
+.animals{display:flex;flex-direction:column;gap:14px}
+.arow{display:grid;grid-template-columns:96px 1fr 84px;align-items:center;gap:14px}
+.aname{font-family:var(--font-round);font-size:22px;line-height:1.2}
+.aname small{display:block;font-family:var(--font-sans);font-size:13px;color:var(--muted)}
+.atrack{height:44px;background:var(--sunk);border-radius:10px;overflow:hidden}
+.atrack svg{display:block;width:100%;height:100%}
+.anum{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.anum small{font-size:15px;font-weight:400;color:var(--muted);margin-left:2px}
+.anum.few{font-size:20px}
+
+/* 11 種結果：安靜的中性長條 */
+.labels{display:flex;flex-direction:column;gap:8px}
+.lrow{display:grid;grid-template-columns:170px 1fr 60px;align-items:center;gap:12px;font-size:16px}
+.lname{display:flex;align-items:center;gap:8px;min-width:0}
+.chips{display:inline-flex;gap:3px;flex:none}
+.chips i{width:10px;height:10px;border-radius:50%}
+.ltrack{height:12px;background:var(--sunk);border-radius:6px;overflow:hidden}
+.ltrack i{display:block;height:100%;background:var(--ink);border-radius:6px;transition:width .4s ease}
+.lnum{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.group-gap{height:6px}
+
+/* 分數分布：每位學生一個點 */
+.dist svg{display:block;width:100%;height:auto;overflow:visible}
+.dist text{font-family:var(--font-sans);fill:var(--muted);font-size:13px}
+.dist .tname{font-family:var(--font-round);fill:var(--ink);font-size:17px}
+.notes{margin:16px 0 0;padding-left:1.2em;color:var(--muted);font-size:15px}
+.notes li+li{margin-top:4px}
+
+.empty,.msg{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:24px;font-size:17px}
+.msg{background:var(--warn-bg);color:var(--warn-ink);border:0}
+.foot{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:16px}
+[hidden]{display:none!important}
+@media (max-width:560px){
+  .arow{grid-template-columns:72px 1fr 64px;gap:10px}
+  .aname{font-size:18px}
+  .atrack{height:36px}
+  .anum{font-size:22px}
+  .lrow{grid-template-columns:132px 1fr 44px;font-size:15px;gap:8px}
+}
+@media (prefers-reduced-motion:reduce){.ltrack i{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="pat-defs"></defs></svg>
+<header class="site-bar"><div class="bar-in"><img src="brand/logo-mark.svg" alt="">測出你的動物本色</div></header>
+
+<main>
+  <div class="head">
+    <h1 id="title">班級統計</h1>
+    <p class="status" id="status" role="status"><span class="live" aria-hidden="true"></span><span id="status-text">讀取中</span></p>
+    <p class="count" id="count" hidden><b id="count-n">0</b>人完成作答</p>
+  </div>
+
+  <div class="msg" id="msg" hidden></div>
+  <div class="empty" id="empty" hidden>還沒有人完成作答。學生送出後，這裡每 10 秒會自動更新。</div>
+
+  <section id="sec-animals" hidden aria-labelledby="h-animals">
+    <h2 id="h-animals">台下的動物</h2>
+    <p class="sub">組合型算在分數比較高的那一種動物；四種差不多的人算在變色龍。</p>
+    <div class="animals" id="animals"></div>
+  </section>
+
+  <section id="sec-labels" hidden aria-labelledby="h-labels">
+    <h2 id="h-labels">11 種結果</h2>
+    <p class="sub">每個人的完整結果類型。</p>
+    <div class="labels" id="labels"></div>
+  </section>
+
+  <section id="sec-dist" class="dist" hidden aria-labelledby="h-dist">
+    <h2 id="h-dist">四種動物的分數分布</h2>
+    <p class="sub">一個點是一位學生，不顯示名字。</p>
+    <div id="dist"></div>
+    <ul class="notes">
+      <li>分數代表行為上的偏好，不是能力高低，不適合拿來比較或排名。</li>
+      <li>點越集中，代表全班在這種動物上越接近；點越分散，代表班上差異越大。</li>
+    </ul>
+  </section>
+
+  <p class="foot" id="foot" hidden></p>
+</main>
+
+<script src="js/config.js"></script>
+<script>
+'use strict';
+const CFG = window.DISC_CONFIG || {};
+const TYPES = ['D','I','S','C'];
+const ANIMAL = {D:'老虎', I:'孔雀', S:'無尾熊', C:'貓頭鷹', CH:'變色龍'};
+const TNAME = {D:'支配', I:'影響', S:'穩定', C:'分析'};
+const COLOR = {D:'var(--d)', I:'var(--i)', S:'var(--s)', C:'var(--c)', CH:'var(--x)'};
+const LABELS = [['D'],['I'],['S'],['C'],['DI','D','I'],['IS','I','S'],['SC','S','C'],['CD','C','D'],['DS','D','S'],['IC','I','C'],['CH']];
+const REFRESH_MS = 10000;
+const $ = s => document.querySelector(s);
+
+/* 動物花紋（與首頁、結果頁同一份圖案） */
+const PAT = {
+  D:{w:44,h:44,rot:-32,scale:.9,base:'#D66A14',els:[['path','M0 9C11 3 24 15 44 7L44 14C25 22 11 10 0 15Z','#3A1C07'],['path','M0 31C13 26 27 37 44 30L44 35C27 43 13 32 0 37Z','#3A1C07']]},
+  I:{w:40,h:40,base:'#11968A',els:[['ell',10,11,8,10,0,'#0B4F66'],['ell',10,12,5,6.4,0,'#F3C24F'],['ell',10,13,2.8,2.8,0,'#142A4C'],['ell',30,31,8,10,0,'#0B4F66'],['ell',30,32,5,6.4,0,'#F3C24F'],['ell',30,33,2.8,2.8,0,'#142A4C']]},
+  S:{w:36,h:36,base:'#5E9A47',els:[['ell',9,10,3.6,8.5,38,'#3C6B30'],['ell',27,27,3.6,8.5,-38,'#3C6B30'],['ell',27,8,2.2,2.2,0,'#DCEBD3'],['ell',9,28,2.2,2.2,0,'#DCEBD3']]},
+  C:{w:20,h:16,base:'#6576DC',els:[['line','M0 16A10 10 0 0 1 20 16M-10 8A10 10 0 0 1 10 8M10 8A10 10 0 0 1 30 8','#222A6E',2]]}
+};
+$('#pat-defs').innerHTML = TYPES.map(t=>{
+  const p = PAT[t];
+  const els = p.els.map(e => e[0]==='path' ? `<path d="${e[1]}" fill="${e[2]}"/>`
+    : e[0]==='ell' ? `<ellipse cx="${e[1]}" cy="${e[2]}" rx="${e[3]}" ry="${e[4]}" transform="rotate(${e[5]} ${e[1]} ${e[2]})" fill="${e[6]}"/>`
+    : `<path d="${e[1]}" fill="none" stroke="${e[2]}" stroke-width="${e[3]}"/>`).join('');
+  const tf = p.rot ? ` patternTransform="rotate(${p.rot}) scale(${p.scale})"` : '';
+  return `<pattern id="pat-${t}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse"${tf}><rect width="${p.w}" height="${p.h}" fill="${p.base}"/>${els}</pattern>`;
+}).join('');
+
+/* 秘密連結放在網址 # 後面（不會送到伺服器的紀錄裡） */
+const TOKEN = (new URLSearchParams(location.hash.slice(1)).get('k') || '').trim();
+
+/* 人數：null 代表 1–2 人（伺服器不回傳確切人數，避免被猜出是誰） */
+const fmtN = n => n === null ? '1–2' : String(n);
+const barN = n => n === null ? 1.5 : (n || 0);
+
+function renderAnimals(a, included){
+  const keys = ['D','I','S','C','CH'];
+  const max = Math.max(1, ...keys.map(k => barN(a[k])));
+  $('#animals').innerHTML = keys.map(k=>{
+    const n = k in a ? a[k] : 0, w = barN(n) / max * 100;
+    const fill = k === 'CH' ? 'var(--x)' : `url(#pat-${k})`;
+    const sub = k === 'CH' ? '四型均衡' : `${k} ${TNAME[k]}`;
+    return `<div class="arow" role="img" aria-label="${ANIMAL[k]} ${fmtN(n)} 人">
+      <span class="aname" aria-hidden="true">${ANIMAL[k]}<small>${sub}</small></span>
+      <span class="atrack" aria-hidden="true"><svg preserveAspectRatio="none"><rect width="${w}%" height="100%" fill="${fill}" rx="10"/></svg></span>
+      <span class="anum${n===null?' few':''}" aria-hidden="true">${fmtN(n)}<small>人</small></span></div>`;
+  }).join('');
+}
+
+function renderLabels(l){
+  const max = Math.max(1, ...LABELS.map(([k]) => barN(l[k])));
+  $('#labels').innerHTML = LABELS.map(([k, ...parts], i)=>{
+    const n = k in l ? l[k] : 0;
+    const name = k === 'CH' ? '變色龍' : parts.length ? parts.map(t=>ANIMAL[t]).join('＋') : ANIMAL[k];
+    const chips = (k === 'CH' ? ['CH'] : parts.length ? parts : [k]).map(t=>`<i style="background:${COLOR[t]}"></i>`).join('');
+    const gap = (i === 4 || i === 8 || i === 10) ? '<div class="group-gap" aria-hidden="true"></div>' : '';
+    return `${gap}<div class="lrow"><span class="lname"><span class="chips" aria-hidden="true">${chips}</span>${name}</span>
+      <span class="ltrack" aria-hidden="true"><i style="width:${barN(n)/max*100}%"></i></span><span class="lnum">${fmtN(n)}</span></div>`;
+  }).join('');
+}
+
+/* 點狀分布：同一個位置的點往上下錯開，不重疊 */
+function renderDist(scores){
+  const W = 760, left = 104, right = 16, rowH = 92, top = 8, R = 5.5;
+  const X = v => left + v / 100 * (W - left - right);
+  const H = top + rowH * 4 + 26;
+  let out = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="四種動物的分數分布，一個點是一位學生">`;
+  [0, 50, 100].forEach(v => {
+    out += `<line x1="${X(v)}" x2="${X(v)}" y1="${top}" y2="${top + rowH * 4}" stroke="var(--line)" stroke-width="1"/>`;
+    out += `<text x="${X(v)}" y="${top + rowH * 4 + 20}" text-anchor="middle">${v}</text>`;
+  });
+  TYPES.forEach((t, row) => {
+    const cy = top + rowH * row + rowH / 2;
+    out += `<text class="tname" x="0" y="${cy + 6}">${ANIMAL[t]}</text>`;
+    const used = {};
+    (scores[t] || []).forEach(v => {
+      const bin = Math.round(X(v) / (R * 2.2));
+      const k = used[bin] = (used[bin] || 0) + 1;
+      const off = (k % 2 ? 1 : -1) * Math.floor(k / 2) * (R * 2.1);
+      if (Math.abs(off) > rowH / 2 - R) return;
+      out += `<circle cx="${X(v).toFixed(1)}" cy="${(cy + off).toFixed(1)}" r="${R}" fill="${COLOR[t]}" fill-opacity=".8"/>`;
+    });
+  });
+  $('#dist').innerHTML = out + '</svg>';
+}
+
+function setStatus(kind, text){
+  const s = $('#status');
+  s.className = 'status' + (kind ? ' ' + kind : '');
+  $('#status-text').textContent = text;
+}
+const clock = () => new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+
+function showMessage(text){
+  $('#msg').textContent = text; $('#msg').hidden = false;
+  ['#count','#empty','#sec-animals','#sec-labels','#sec-dist','#foot'].forEach(s => $(s).hidden = true);
+}
+
+let timer = null, failures = 0, stopped = false;
+async function load(){
+  if (stopped) return;
+  try {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+    const res = await fetch(CFG.supabaseUrl + '/rest/v1/rpc/class_stats', {
+      method: 'POST', signal: ctl.signal,
+      headers: {apikey: CFG.supabaseAnonKey, Authorization: 'Bearer ' + CFG.supabaseAnonKey, 'Content-Type': 'application/json'},
+      body: JSON.stringify({p_token: TOKEN}),
+    });
+    clearTimeout(to);
+    if (!res.ok) throw new Error(String(res.status));
+    const d = await res.json();
+    if (!d.ok){
+      stopped = true;
+      setStatus('off', '已停止更新');
+      showMessage('這個統計連結無效或已經到期。請向提供連結的人索取新的連結。');
+      return;
+    }
+    failures = 0;
+    $('#msg').hidden = true;
+    document.title = `${d.name}｜班級統計`;
+    $('#title').textContent = d.name;
+    $('#count-n').textContent = d.included; $('#count').hidden = false;
+    const has = d.included > 0;
+    $('#empty').hidden = has;
+    ['#sec-animals','#sec-labels','#sec-dist'].forEach(s => $(s).hidden = !has);
+    if (has){ renderAnimals(d.animals, d.included); renderLabels(d.labels); renderDist(d.scores); }
+    $('#foot').hidden = !d.excluded;
+    $('#foot').textContent = d.excluded ? `另有 ${d.excluded} 份作答不太可靠（注意力題答錯，或作答速度太快），沒有列入統計。` : '';
+    setStatus('', `自動更新中，最後更新 ${clock()}`);
+  } catch (e) {
+    failures++;
+    setStatus('err', `連線中斷，稍後會自動重試（最後嘗試 ${clock()}）`);
+  }
+}
+function schedule(){
+  clearInterval(timer);
+  if (!document.hidden && !stopped) timer = setInterval(load, REFRESH_MS);
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); schedule(); });
+
+if (!CFG.supabaseUrl || !/^[0-9a-f]{48}$/.test(TOKEN)){
+  setStatus('off', '沒有統計資料');
+  showMessage('這個統計連結不完整。請確認網址有完整複製，或向提供連結的人索取新的連結。');
+} else {
+  load(); schedule();
+}
+</script>
+</body>
+</html>
