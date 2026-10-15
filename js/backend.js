@@ -125,6 +125,7 @@
     const info = st.info || {};
     const name = (info.name || '').trim().slice(0, 40), email = (info.email || '').trim();
     const p = {
+      sid: st.sid,                             // 號碼牌：重送時伺服器靠它辨認，不會多存一筆
       bank_version: BANK_VERSION,
       seq: st.seq,
       answers: st.answers,
