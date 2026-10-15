@@ -729,7 +729,7 @@ const classMode = () => !!(st && st.cohort);
 function infoMode(){
   const cm = classMode();
   $('#info-h').textContent = cm ? '最後幾個問題' : '最後幾個問題（選填）';
-  $('#info-intro').textContent = cm ? '名字必填，其他可以不填。你的名字和測驗結果會提供給這次活動的老師，不會提供給其他人或公司。'
+  $('#info-intro').textContent = cm ? '名字必填，其他可以不填。你的名字和測驗結果會提供給舉辦這次活動的學校或單位，不會提供給其他人或公司。'
     : '以下都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。';
   $('#uname-label').textContent = cm ? '名字（必填）' : '名字';
   $('#uname').required = cm;
