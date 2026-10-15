@@ -204,11 +204,25 @@
   const isQueued = (sid) => outbox().some((x) => x.sid === sid);
 
   /* ---------- 會員 ---------- */
+  // 這個瀏覽器裡有沒有登入紀錄（或剛從 Google 登入回來）。沒有的話就不必載入登入程式
+  function hasSession() {
+    if (!enabled) return false;
+    try {
+      if (/[?&](code|error_description)=/.test(location.search)) return true;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') > 0) return true;
+      }
+    } catch (e) {}
+    return false;
+  }
   async function signInWithGoogle(stateToRestore) {
     if (!enabled) return;
+    await init();
     if (stateToRestore) store.set(K_RETURN, stateToRestore);
     const redirectTo = location.origin + location.pathname;
-    await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
+    const { error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
+    if (error) throw new Error('無法開始登入');
   }
   // 登入回來後，把剛剛那份作答歸到帳號
   async function claimPending() {
@@ -223,7 +237,7 @@
   async function listMyResults() {
     if (!enabled || !user) return [];
     const { data, error } = await client.from('responses')
-      .select('id, created_at, bank_version, seq, answers, times, info, blind, result, rating')
+      .select('id, created_at, bank_version, seq, answers, times, info, blind, blind2, cohort, result, rating')
       .order('created_at', { ascending: false }).limit(50);
     if (error) throw new Error('讀取失敗');
     return data;
@@ -252,7 +266,7 @@
 
   window.DiscBackend = {
     enabled, init, prepare, renderTurnstile, queue, flush, rate, isQueued,
-    signInWithGoogle, claimPending, takeReturnState, listMyResults,
+    hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults,
     getRetest, setRetest, deleteMyData, signOut,
     onAuthChange(fn) { listeners.push(fn); },
     onSync(fn) { syncListeners.push(fn); },

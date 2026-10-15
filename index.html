@@ -42,7 +42,7 @@
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.75;margin:0}
 .wrap{width:100%;padding-inline:clamp(16px,4vw,48px);padding-block:28px 64px}
-#s-home,#s-quiz,#s-info,#s-blind,#s-result{max-width:800px;margin-inline:auto}
+#s-home,#s-quiz,#s-info,#s-blind,#s-result,#s-history{max-width:800px;margin-inline:auto}
 .home-col{display:flex;flex-direction:column;gap:16px;padding-block:clamp(8px,3vh,32px)}
 .home-col h1{font-size:clamp(34px,5vw,52px);margin-bottom:4px}
 .home-col .types{margin:8px 0}
@@ -218,6 +218,16 @@ dialog{border:0;border-radius:16px;padding:24px;max-width:min(440px,calc(100vw -
 dialog::backdrop{background:rgba(20,22,26,.45)}
 dialog h2{margin-bottom:8px}
 dialog .actions{margin-top:20px;justify-content:flex-end}
+/* 會員：保存這次結果、我的歷次結果 */
+.account{display:flex;flex-direction:column;gap:12px}
+.account a,.hist-page a{color:inherit;text-underline-offset:3px}
+.check{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:4px;accent-color:var(--accent);flex:none}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.hist .opt{width:100%;justify-content:space-between;gap:16px;min-height:60px}
+.hist .opt b{font-weight:700}
+.hist .opt .small{flex:none;font-variant-numeric:tabular-nums}
+.view-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 @media (hover:none){.kbd-hint{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -256,13 +266,14 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <p>每個人身上都有這四種動物，只是比例不同。沒有好壞，也沒有哪一型比較好。</p>
     <p>共 44 題，大約 7–8 分鐘。請依照你<b>平常實際的樣子</b>作答，而不是你希望成為的樣子。</p>
     <p>完成後，你會看到自己的動物本色、四種傾向的分布圖，以及溝通和職涯上的參考建議。</p>
-    <p class="small muted">小提醒：結果僅供自我了解參考。你的作答會保存下來，用來讓這份測驗更準確；資料只用在這份測驗，不會挪作其他用途，也不會提供給其他人或公司。</p>
+    <p class="small muted">小提醒：結果僅供自我了解參考。你的作答會保存下來，用來讓這份測驗更準確；資料只用在這份測驗，不會挪作其他用途，也不會提供給其他人或公司。詳見<a href="privacy.html" style="color:inherit">隱私說明</a>。</p>
     <div class="start-card">
     <label class="consent" for="agree"><input type="checkbox" id="agree"><span>我了解結果僅供參考，也同意保存我的作答，用來讓這份測驗更準確</span></label>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <button class="btn primary" id="start" disabled>開始作答</button>
       <button class="btn" id="resume" hidden>繼續上次的作答</button>
       <button class="btn" id="view-result" hidden>查看我的結果</button>
+      <button class="btn" id="my-results" hidden>我的歷次結果</button>
     </div>
     </div>
     </div>
@@ -311,6 +322,21 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   </section>
 
   <section id="s-result" class="stack" hidden></section>
+
+  <section id="s-history" class="stack hist-page" hidden>
+    <h2>我的歷次結果</h2>
+    <p class="small muted" id="hist-who"></p>
+    <p class="muted" id="hist-msg" role="status"></p>
+    <ul class="hist" id="hist-list"></ul>
+    <div class="actions"><button class="btn" id="hist-home">回到首頁</button><button class="btn link" id="hist-out">登出</button></div>
+    <div class="card stack" style="gap:12px;margin-top:16px">
+      <h3>刪除我的資料</h3>
+      <p class="small muted">刪除這個帳號保存的所有結果，包含作答時填的名字和 Email。刪除後無法復原。</p>
+      <div><button class="btn" id="del-open">刪除我的資料</button></div>
+      <div class="confirm" id="del-confirm" hidden role="alert"><p>確定要刪除所有保存的結果嗎？刪除後無法復原。</p><button class="btn" id="del-cancel">保留資料</button><button class="btn primary" id="del-ok">確定刪除</button></div>
+      <p class="small muted" id="del-msg" role="status"></p>
+    </div>
+  </section>
 </div>
 
 <p class="toast" id="toast" role="status" aria-live="polite"></p>
@@ -617,7 +643,7 @@ function score(st){
 const $ = s => document.querySelector(s);
 const STORE='disc-proto-v1';
 let st = null;
-const save = () => { try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} };
+const save = () => { if (st && st.viewOnly) return; try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} };
 const load = () => { try{ return JSON.parse(localStorage.getItem(STORE)); }catch(e){ return null; } };
 const clear = () => { try{ localStorage.removeItem(STORE); }catch(e){} };
 /* 班級代碼：網址加上 ?c=A101，這份作答就會記錄班級（班級模式：名字必填，不問學歷和職業） */
@@ -627,7 +653,7 @@ const BK = window.DiscBackend || {enabled:false};
 
 function show(id){
   if (id==='s-info'){ infoMode(); if (BK.enabled) BK.prepare(); }
-  ['s-home','s-quiz','s-info','s-blind','s-result'].forEach(s=>$('#'+s).hidden = s!==id);
+  ['s-home','s-quiz','s-info','s-blind','s-result','s-history'].forEach(s=>$('#'+s).hidden = s!==id);
   $('#app').classList.toggle('wide', id==='s-result');
   window.scrollTo(0,0);
 }
@@ -767,6 +793,7 @@ function askGoHome(){
 }
 function goHome(){
   if (homeDialog.open) homeDialog.close();
+  if (st && st.viewOnly) st = load();
   $('#resume').hidden = !(st && st.seq && !st.done);
   $('#view-result').hidden = !(st && st.done);
   show('s-home');
@@ -1054,6 +1081,7 @@ function renderResult(){
   $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
   $('#again-cancel').addEventListener('click', ()=>{ $('#again-confirm').hidden=true; $('#again').focus(); });
   $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; $('#view-result').hidden=true; show('s-home'); });
+  resultExtras(r);
 }
 
 /* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
@@ -1309,6 +1337,110 @@ async function shareResult(r, where){
   msg('這個瀏覽器不支援直接分享，請先下載圖片，再傳給朋友。');
 }
 
+/* ===== 會員：Google 登入、保存結果、我的歷次結果 ===== */
+const AUTH_HOST = 'nfdumytvvhxieqvbwrsy.supabase.co';
+const CONTACT = 'a21420000@gmail.com';
+let USER = null;
+const fmtDate = t => new Date(t).toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
+/* 結果頁的額外區塊：看過去的結果時顯示提示列；看自己剛做完的結果時顯示「保存這次結果」 */
+function resultExtras(r){
+  const el = $('#s-result');
+  if (st.viewOnly){
+    el.insertAdjacentHTML('afterbegin', `<div class="card view-bar"><p>這是你在 ${fmtDate(st.finishedAt)} 的結果。</p><button class="btn" id="back-history">回到我的歷次結果</button></div>`);
+    $('#back-history').addEventListener('click', openHistory);
+    ['#again','#again-confirm','#rate'].forEach(q=>{ const x=$(q); if (!x) return; (q==='#rate' ? x.closest('.card') : x).hidden = true; });
+    return;
+  }
+  if (!BK.enabled || r.kind==='none') return;
+  const anchor = el.querySelector('.pair');
+  if (!anchor) return;
+  anchor.insertAdjacentHTML('afterend', '<div class="card account" id="save-card"></div>');
+  renderSaveCard();
+}
+function renderSaveCard(note){
+  const box = $('#save-card'); if (!box) return;
+  if (USER){
+    box.innerHTML = `<h3>已保存到你的帳號</h3>
+      <p class="small muted">登入帳號：${esc(USER.email||'')}</p>
+      <label class="check"><input type="checkbox" id="retest-ok"><span>有重測活動時，寄信邀請我</span></label>
+      <div class="actions"><button class="btn" id="go-history">查看我的歷次結果</button><button class="btn link" id="sign-out">登出</button></div>`;
+    $('#go-history').addEventListener('click', openHistory);
+    $('#sign-out').addEventListener('click', signOut);
+    const cb = $('#retest-ok');
+    BK.getRetest().then(v=>{ cb.checked = v; }).catch(()=>{});
+    cb.addEventListener('change', ()=>{ BK.setRetest(cb.checked).catch(()=>{ cb.checked = !cb.checked; }); });
+    return;
+  }
+  const blocked = IN_APP ? `<div class="warn inapp"><span>Google 不允許在 ${IN_APP} 的內建瀏覽器裡登入。請改用手機的瀏覽器（例如 Chrome、Safari）打開這個網頁再登入。</span>${IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">改用瀏覽器開啟</a>` : ''}</div>` : '';
+  box.innerHTML = `<h3>保存這次結果</h3>
+    <p>用 Google 帳號登入後，這次的結果會存在你的帳號裡，換手機或過一陣子回來都看得到。</p>
+    ${blocked}
+    <div class="actions"><button class="btn primary" id="sign-in"${IN_APP?' disabled':''}>用 Google 帳號登入</button></div>
+    <p class="small muted" id="sign-in-msg" role="status">${note||''}</p>
+    <p class="small muted">登入畫面會顯示「${AUTH_HOST}」，這是本站存放資料的服務。我們只會取得你的 Email 和名稱，詳見<a href="privacy.html">隱私說明</a>。</p>`;
+  $('#sign-in').addEventListener('click', async ()=>{
+    const b = $('#sign-in'); b.disabled = true; $('#sign-in-msg').textContent = '正在前往 Google 登入…';
+    try { await BK.signInWithGoogle(); }
+    catch(e){ b.disabled = false; $('#sign-in-msg').textContent = '無法連線到登入服務。請確認網路後再按一次。'; }
+  });
+}
+async function signOut(){
+  try { await BK.signOut(); } catch(e){}
+  USER = null; authUI(); goHome();
+}
+function authUI(){
+  $('#my-results').hidden = !USER;
+  if (!$('#s-result').hidden && !(st && st.viewOnly)) renderSaveCard();
+}
+/* 我的歷次結果 */
+let HIST = [];
+async function openHistory(){
+  if (st && st.viewOnly) st = load();
+  show('s-history');
+  $('#hist-who').textContent = USER ? `登入帳號：${USER.email||''}` : '';
+  $('#hist-list').innerHTML = ''; $('#hist-msg').textContent = '正在讀取…';
+  $('#del-confirm').hidden = true; $('#del-msg').textContent = '';
+  try { HIST = await BK.listMyResults(); }
+  catch(e){ $('#hist-msg').textContent = '無法讀取結果。請確認網路後，回到首頁再按一次「我的歷次結果」。'; return; }
+  if (!HIST.length){ $('#hist-msg').textContent = '這個帳號還沒有保存的結果。做完測驗後，在結果頁按「用 Google 帳號登入」，結果就會保存到這裡。'; return; }
+  $('#hist-msg').textContent = `共 ${HIST.length} 次結果，點一下可以打開。`;
+  $('#hist-list').innerHTML = HIST.map((row,i)=>{
+    const r = score({seq:row.seq, answers:row.answers, times:row.times||{}});
+    return `<li><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? '暫時無法判定' : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button></li>`;
+  }).join('');
+}
+$('#hist-list').addEventListener('click', e=>{
+  const b = e.target.closest('[data-i]'); if (!b) return;
+  const row = HIST[+b.dataset.i];
+  st = {seq:row.seq, answers:row.answers, times:row.times||{}, info:row.info||{}, blind:row.blind, blind2:row.blind2, rating:row.rating,
+        done:true, finishedAt:Date.parse(row.created_at), viewOnly:true};
+  lastImage = null; renderResult(); show('s-result');
+});
+$('#my-results').addEventListener('click', openHistory);
+$('#hist-home').addEventListener('click', goHome);
+$('#hist-out').addEventListener('click', signOut);
+$('#del-open').addEventListener('click', ()=>{ $('#del-confirm').hidden = false; $('#del-cancel').focus(); });
+$('#del-cancel').addEventListener('click', ()=>{ $('#del-confirm').hidden = true; $('#del-open').focus(); });
+$('#del-ok').addEventListener('click', async ()=>{
+  $('#del-confirm').hidden = true; $('#del-msg').textContent = '正在刪除…';
+  try {
+    const n = await BK.deleteMyData();
+    HIST = []; $('#hist-list').innerHTML = ''; $('#hist-msg').textContent = '';
+    $('#del-msg').textContent = `已刪除 ${n} 筆結果。如果也要刪除登入帳號本身，請寄信到 ${CONTACT}。`;
+  } catch(e){ $('#del-msg').textContent = '刪除沒有完成。請確認網路後再試一次。'; }
+});
+/* 有登入紀錄（或剛從 Google 登入回來）才載入登入程式 */
+if (BK.enabled && BK.hasSession()){
+  const q = new URLSearchParams(location.search);
+  const cancelled = q.has('error_description');
+  BK.init().then(u=>{
+    USER = u; BK.takeReturnState();
+    if (q.has('code') || cancelled) history.replaceState(null, '', location.pathname + location.hash);
+    authUI();
+    if (cancelled) renderSaveCard('登入沒有完成。需要的話，可以再按一次「用 Google 帳號登入」。');
+  }).catch(()=>{});
+  BK.onAuthChange(u=>{ USER = u; authUI(); });
+}
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
 /* 補送上次沒送出的作答（待送出區是空的就不會連線） */
