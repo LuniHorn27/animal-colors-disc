@@ -177,6 +177,10 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 /* brand */
 .site-bar{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px);padding-top:env(safe-area-inset-top,0px)}
+/* 作答頁：上方工具列固定在畫面頂端（切換「全部列出」的按鈕在這裡），題目進度固定在工具列下方 */
+body.on-quiz .site-bar{position:sticky;top:0;z-index:10}
+body.on-quiz .quiz-head{top:calc(61px + env(safe-area-inset-top,0px))}
+body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .bar-in{max-width:800px;margin-inline:auto;min-height:60px;display:flex;align-items:center;gap:16px}
 .bar-brand{display:flex;align-items:center;gap:10px;min-height:44px;min-width:0;font-family:var(--round);font-size:18px;line-height:1.3;color:var(--ink);text-decoration:none;flex:0 1 auto}
 .bar-brand svg{width:28px;height:28px;flex:none}
@@ -731,6 +735,7 @@ function show(id){
   ['s-home','s-quiz','s-info','s-blind','s-result','s-history'].forEach(s=>$('#'+s).hidden = s!==id);
   if (id!=='s-result') document.body.classList.remove('dock-on');
   $('#bar-qmode').hidden = id!=='s-quiz';
+  document.body.classList.toggle('on-quiz', id==='s-quiz');
   $('#app').classList.toggle('wide', id==='s-result');
   window.scrollTo(0,0);
 }
