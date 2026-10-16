@@ -154,6 +154,8 @@
       blind2: st.blind2 || null,
     };
     if (name || email) p.contact = { name, email };
+    // 勾選「想進一步了解」才送；電話、LINE ID 可以是空字串
+    if (info.followup) p.followup = { phone: info.followup.phone || '', line: info.followup.line || '' };
     if (st.cohort && COHORT_RE.test(st.cohort)) p.cohort = st.cohort;
     return p;
   }

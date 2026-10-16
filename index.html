@@ -235,7 +235,14 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.14)}
 #s-result:not(.mode-data) .only-data{display:none!important}
 #s-result.mode-data .only-brand{display:none!important}
-input[type=text],input[type=email]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:48px;padding:0 12px;width:100%}
+/* 想進一步了解：勾選後才出現電話、LINE ID */
+.followup{margin:8px 0 0;padding:18px 20px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface);display:flex;flex-direction:column;gap:14px;min-width:0}
+.followup legend{float:left;width:100%;padding:0;font-family:var(--round);font-size:20px;line-height:1.35}
+.followup legend+*{clear:both}
+.fu-more{display:flex;flex-direction:column;gap:14px}
+.fu-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (min-width:768px){.fu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}}
+input[type=text],input[type=email],input[type=tel]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:48px;padding:0 12px;width:100%}
 input[aria-invalid="true"]{border-color:var(--err)}
 .field-err{font-size:14px;color:var(--err)}
 .field-err:empty{display:none}
@@ -339,6 +346,22 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <div class="form-row" id="row-job"><label for="job">職業類別</label>
       <select id="job"><option value="">請選擇</option><option>學生</option><option>上班族</option><option>自由工作者</option><option>自營或創業</option><option>家管</option><option>待業中</option><option>退休</option><option>其他</option></select></div>
     </div>
+    <fieldset class="followup" id="followup">
+      <legend>想更深入了解自己嗎？</legend>
+      <label class="check" for="fu-want"><input type="checkbox" id="fu-want" aria-controls="fu-more" aria-expanded="false"><span>我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果</span></label>
+      <div class="fu-more" id="fu-more" hidden>
+        <p class="small muted">方便的話，留下電話或 LINE ID（填一個就可以），顧問會主動和你聯絡。</p>
+        <div class="fu-grid">
+          <div class="form-row"><label for="fu-phone">電話</label>
+            <input type="tel" id="fu-phone" autocomplete="tel" inputmode="tel" maxlength="20" aria-describedby="fu-phone-err">
+            <span class="field-err" id="fu-phone-err" role="alert"></span></div>
+          <div class="form-row"><label for="fu-line">LINE ID</label>
+            <input type="text" id="fu-line" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="21" aria-describedby="fu-line-err">
+            <span class="field-err" id="fu-line-err" role="alert"></span></div>
+        </div>
+        <p class="small muted">電話和 LINE ID 只用來和你聯絡這件事，不會提供給其他人或單位。</p>
+      </div>
+    </fieldset>
     <div><button class="btn primary" id="info-next">下一步</button></div>
   </section>
 
@@ -815,11 +838,30 @@ function showNameErr(on){
   $('#uname-err').textContent = on ? '請填寫名字，老師才能把結果對應到你。' : '';
 }
 $('#uname').addEventListener('input', ()=>{ if ($('#uname').value.trim()) showNameErr(false); });
+/* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
+const FU = {
+  phone:{el:'#fu-phone', err:'#fu-phone-err', ok:v=>/^[0-9+() -]{8,20}$/.test(v) && v.replace(/\D/g,'').length>=8,
+    msg:'電話號碼好像不完整，例如 0912-345-678。不想留也可以空白。'},
+  line:{el:'#fu-line', err:'#fu-line-err', ok:v=>/^@?[A-Za-z0-9._-]{4,20}$/.test(v),
+    msg:'LINE ID 是 4–20 個英文、數字或 . _ -，可以在 LINE 的「個人檔案」裡找到。不想留也可以空白。'}};
+const fuOK = k => { const v=$(FU[k].el).value.trim(); return !v || FU[k].ok(v); };
+function showFuErr(k, on){ $(FU[k].el).setAttribute('aria-invalid', String(on)); $(FU[k].err).textContent = on ? FU[k].msg : ''; }
+Object.keys(FU).forEach(k=>{
+  $(FU[k].el).addEventListener('blur', ()=>showFuErr(k, !fuOK(k)));
+  $(FU[k].el).addEventListener('input', ()=>{ if ($(FU[k].el).getAttribute('aria-invalid')==='true' && fuOK(k)) showFuErr(k, false); });
+});
+$('#fu-want').addEventListener('change', ()=>{
+  const on = $('#fu-want').checked;
+  $('#fu-more').hidden = !on; $('#fu-want').setAttribute('aria-expanded', String(on));
+});
 $('#info-next').addEventListener('click', ()=>{
   if (classMode() && !$('#uname').value.trim()){ showNameErr(true); $('#uname').focus(); return; }
   if (!emailOK()){ showEmailErr(true); $('#email').focus(); return; }
+  const want = $('#fu-want').checked;
+  if (want){ for (const k of Object.keys(FU)) if (!fuOK(k)){ showFuErr(k, true); $(FU[k].el).focus(); return; } }
   st.info={name:$('#uname').value.trim(), email:$('#email').value.trim(), age:$('#age').value, gender:$('#gender').value,
-    edu:classMode()?'':$('#edu').value, job:classMode()?'學生':$('#job').value};
+    edu:classMode()?'':$('#edu').value, job:classMode()?'學生':$('#job').value,
+    followup: want ? {phone:$('#fu-phone').value.trim(), line:$('#fu-line').value.trim()} : null};
   /* 盲選分兩頁：每型的描述拆成前後兩句，各頁四個選項、順序各自隨機。
      st.blind＝第 1 頁的選擇（沿用原本欄位，後端相容），st.blind2＝第 2 頁的選擇 */
   st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save();
