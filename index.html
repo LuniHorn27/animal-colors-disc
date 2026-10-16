@@ -352,7 +352,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   </section>
 
   <section id="s-info" class="stack" hidden>
-    <h2 id="info-h">最後幾個問題（選填）</h2>
+    <h2 id="info-h">個人資料</h2>
     <p class="muted" id="info-intro">以下都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。</p>
     <div class="info-grid stack">
     <div class="form-row"><label for="uname" id="uname-label">名字</label>
@@ -372,10 +372,10 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <select id="job"><option value="">請選擇</option><option>學生</option><option>上班族</option><option>自由工作者</option><option>自營或創業</option><option>家管</option><option>待業中</option><option>退休</option><option>其他</option></select></div>
     </div>
     <fieldset class="followup" id="followup">
-      <legend>如有意願，請留下您的聯絡資訊</legend>
+      <legend>想要更深入了解自己嗎？</legend>
       <label class="check" for="fu-want"><input type="checkbox" id="fu-want" aria-controls="fu-more" aria-expanded="false"><span>我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果</span></label>
       <div class="fu-more" id="fu-more" hidden>
-        <p class="small muted">方便的話，留下電話或 LINE ID（填一個就可以），顧問會主動和你聯絡。</p>
+        <p class="small muted">如有意願，請留下您的聯絡資訊</p>
         <div class="fu-grid">
           <div class="form-row"><label for="fu-phone">電話</label>
             <input type="tel" id="fu-phone" autocomplete="tel" inputmode="tel" maxlength="20" aria-describedby="fu-phone-err">
@@ -384,7 +384,6 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
             <input type="text" id="fu-line" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="21" aria-describedby="fu-line-err">
             <span class="field-err" id="fu-line-err" role="alert"></span></div>
         </div>
-        <p class="small muted">電話和 LINE ID 只用來和你聯絡這件事，不會提供給其他人或單位。</p>
       </div>
     </fieldset>
     <div><button class="btn primary" id="info-next">查看我的結果</button></div>
@@ -924,7 +923,6 @@ $('#email').addEventListener('input', ()=>{ if ($('#email').getAttribute('aria-i
 const classMode = () => !!(st && st.cohort);
 function infoMode(){
   const cm = classMode();
-  $('#info-h').textContent = cm ? '最後幾個問題' : '最後幾個問題（選填）';
   $('#info-intro').textContent = cm ? '名字必填，其他可以不填。你的名字和測驗結果會提供給舉辦這次活動的學校或單位，不會提供給其他人或公司。'
     : '以下都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。';
   $('#uname-label').textContent = cm ? '名字（必填）' : '名字';
