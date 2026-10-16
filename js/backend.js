@@ -157,6 +157,9 @@
     // 勾選「想進一步了解」才送；電話、LINE ID 可以是空字串
     if (info.followup) p.followup = { phone: info.followup.phone || '', line: info.followup.line || '' };
     if (st.cohort && COHORT_RE.test(st.cohort)) p.cohort = st.cohort;
+    // 作答方式：一題一頁（page）、全部列出（list），中途切換過就是 mixed
+    const modes = (st.modes || []).filter((m) => m === 'page' || m === 'list');
+    if (modes.length) p.layout = modes.length > 1 ? 'mixed' : modes[0];
     return p;
   }
 
