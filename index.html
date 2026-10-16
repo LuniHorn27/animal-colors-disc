@@ -91,8 +91,7 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 /* 單頁作答：44 題一路往下，每題五格橫排，每格下面都有文字（注意力題要靠文字找到對的格子） */
 .quiz-head{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;margin-top:-12px}
 .quiz-head .progress{margin:8px 0 0}
-.qmode{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin:12px 0 20px}
-.qmode .seg{width:min(240px,64%)}
+#qpage,#qall{margin-top:20px}
 .quiz-head{padding-bottom:12px;border-bottom:1px solid var(--line)}
 .qlist{list-style:none;margin:8px 0 0;padding:0}
 /* 一題一頁時，表頭不需要固定在上方 */
@@ -287,6 +286,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span>測出你的動物本色</span></a>
     <nav class="bar-nav" aria-label="網站導覽"></nav>
     <div class="bar-actions">
+      <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" title="全部列出" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl">全部列出</span></button>
       <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false" title="深色模式"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl">深色模式</span></button>
       <button type="button" class="bar-btn" id="bar-share" title="分享測驗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">分享測驗</span></button>
     </div>
@@ -332,8 +332,6 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <div class="bar-top"><span id="qcount">第 1 題，共 44 題</span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
       <div class="progress" aria-hidden="true"><i id="qbar" style="width:0"></i></div>
     </div>
-    <div class="qmode"><span class="small muted" id="qmode-l">作答方式</span>
-      <div class="seg" role="group" aria-labelledby="qmode-l"><button type="button" data-qmode="page" aria-pressed="true">一題一頁</button><button type="button" data-qmode="list" aria-pressed="false">全部列出</button></div></div>
     <div id="qpage">
       <p class="q" id="qtext" aria-live="polite"></p>
       <div class="opts" id="opts" role="group" aria-label="符合程度"></div>
@@ -733,6 +731,7 @@ function show(id){
   if (id==='s-info'){ infoMode(); if (BK.enabled) BK.prepare(); }
   ['s-home','s-quiz','s-info','s-blind','s-result','s-history'].forEach(s=>$('#'+s).hidden = s!==id);
   if (id!=='s-result') document.body.classList.remove('dock-on');
+  $('#bar-qmode').hidden = id!=='s-quiz';
   $('#app').classList.toggle('wide', id==='s-result');
   window.scrollTo(0,0);
 }
@@ -788,7 +787,7 @@ const firstOpen = () => st.seq.find(id=>!st.answers[id]);
 function renderQuiz(){
   st.modes = Array.from(new Set([...(st.modes||[]), QMODE])); save();
   $('#s-quiz').classList.toggle('mode-page', QMODE==='page');
-  document.querySelectorAll('[data-qmode]').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.qmode===QMODE)));
+  $('#bar-qmode').setAttribute('aria-checked', String(QMODE==='list'));
   $('#qpage').hidden = QMODE!=='page'; $('#qall').hidden = QMODE!=='list';
   $('#qpct').hidden = QMODE!=='page';
   if (QMODE==='page') renderQ(); else renderList();
@@ -802,7 +801,8 @@ function setQMode(m){
   renderQuiz();
   if (m==='list' && at && st.idx>0) requestAnimationFrame(()=>$('#q-'+at).scrollIntoView({block:'start'}));
 }
-document.querySelectorAll('[data-qmode]').forEach(b=>b.addEventListener('click', ()=>setQMode(b.dataset.qmode)));
+/* 上方工具列的「全部列出」開關（和深色模式同一種按鈕），只在作答頁出現 */
+$('#bar-qmode').addEventListener('click', ()=>{ if (st && !$('#s-quiz').hidden) setQMode(QMODE==='list' ? 'page' : 'list'); });
 function quizProgress(){
   const n = answeredN(), total = st.seq.length;
   $('#qbar').style.width = Math.round((QMODE==='page' ? st.idx : n)/total*100)+'%';
