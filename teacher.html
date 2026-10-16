@@ -25,13 +25,14 @@ main{max-width:800px;margin:0 auto;padding:32px 16px 64px;display:flex;flex-dire
 .status.err .live{background:var(--d)}
 .count{font-size:20px;color:var(--ink);margin:16px 0 0}
 .count b{font-size:clamp(34px,6vw,48px);font-weight:700;font-variant-numeric:tabular-nums;margin-right:4px}
+.count-note{margin:4px 0 0;color:var(--muted);font-size:15px}
 section h2{font-size:24px;margin-bottom:6px}
 .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
 
 /* 台下的動物：花紋長條，全頁唯一的重點 */
 .animals{display:flex;flex-direction:column;gap:14px}
-.arow{display:grid;grid-template-columns:96px 1fr 84px;align-items:center;gap:14px}
-.aname{font-family:var(--font-round);font-size:22px;line-height:1.2}
+.arow{display:grid;grid-template-columns:118px 1fr 84px;align-items:center;gap:14px}
+.aname{font-family:var(--font-round);font-size:22px;line-height:1.2;white-space:nowrap}
 .aname small{display:block;font-family:var(--font-sans);font-size:13px;color:var(--muted)}
 .atrack{height:44px;background:var(--sunk);border-radius:10px;overflow:hidden}
 .atrack svg{display:block;width:100%;height:100%}
@@ -40,15 +41,15 @@ section h2{font-size:24px;margin-bottom:6px}
 .anum.few{font-size:20px}
 
 /* 11 種結果：安靜的中性長條 */
-.labels{display:flex;flex-direction:column;gap:8px}
-.lrow{display:grid;grid-template-columns:170px 1fr 60px;align-items:center;gap:12px;font-size:16px}
+.labels{display:grid;grid-template-columns:max-content minmax(60px,1fr) max-content;align-items:center;column-gap:14px;row-gap:10px;font-size:16px}
+.lrow{display:contents}
 .lname{display:flex;align-items:center;gap:8px;min-width:0}
 .chips{display:inline-flex;gap:3px;flex:none}
 .chips i{width:10px;height:10px;border-radius:50%}
 .ltrack{height:12px;background:var(--sunk);border-radius:6px;overflow:hidden}
 .ltrack i{display:block;height:100%;background:var(--ink);border-radius:6px;transition:width .4s ease}
 .lnum{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
-.group-gap{height:6px}
+.group-gap{grid-column:1/-1;height:2px}
 
 /* 分數分布：每位學生一個點 */
 .dist svg{display:block;width:100%;height:auto;overflow:visible}
@@ -62,11 +63,11 @@ section h2{font-size:24px;margin-bottom:6px}
 .foot{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:16px}
 [hidden]{display:none!important}
 @media (max-width:560px){
-  .arow{grid-template-columns:72px 1fr 64px;gap:10px}
+  .arow{grid-template-columns:92px 1fr 56px;gap:10px}
   .aname{font-size:18px}
   .atrack{height:36px}
   .anum{font-size:22px}
-  .lrow{grid-template-columns:132px 1fr 44px;font-size:15px;gap:8px}
+  .labels{font-size:15px;column-gap:10px}
 }
 @media (prefers-reduced-motion:reduce){.ltrack i{transition:none}}
 </style>
@@ -80,6 +81,7 @@ section h2{font-size:24px;margin-bottom:6px}
     <h1 id="title">班級統計</h1>
     <p class="status" id="status" role="status"><span class="live" aria-hidden="true"></span><span id="status-text">讀取中</span></p>
     <p class="count" id="count" hidden><b id="count-n">0</b>人完成作答</p>
+    <p class="count-note" id="count-note" hidden></p>
   </div>
 
   <div class="msg" id="msg" hidden></div>
@@ -120,6 +122,7 @@ const TNAME = {D:'支配', I:'影響', S:'穩定', C:'分析'};
 const COLOR = {D:'var(--d)', I:'var(--i)', S:'var(--s)', C:'var(--c)', CH:'var(--x)'};
 const LABELS = [['D'],['I'],['S'],['C'],['DI','D','I'],['IS','I','S'],['SC','S','C'],['CD','C','D'],['DS','D','S'],['IC','I','C'],['CH']];
 const REFRESH_MS = 10000;
+const LBL = k => k === 'CH' ? '變色龍' : `${k} ${ANIMAL[k]}`;
 const $ = s => document.querySelector(s);
 
 /* 動物花紋（與首頁、結果頁同一份圖案） */
@@ -141,21 +144,20 @@ $('#pat-defs').innerHTML = TYPES.map(t=>{
 /* 秘密連結放在網址 # 後面（不會送到伺服器的紀錄裡） */
 const TOKEN = (new URLSearchParams(location.hash.slice(1)).get('k') || '').trim();
 
-/* 人數：null 代表 1–2 人（伺服器不回傳確切人數，避免被猜出是誰） */
-const fmtN = n => n === null ? '1–2' : String(n);
-const barN = n => n === null ? 1.5 : (n || 0);
+const fmtN = n => String(n || 0);
+const barN = n => n || 0;
 
-function renderAnimals(a, included){
+function renderAnimals(a){
   const keys = ['D','I','S','C','CH'];
   const max = Math.max(1, ...keys.map(k => barN(a[k])));
   $('#animals').innerHTML = keys.map(k=>{
     const n = k in a ? a[k] : 0, w = barN(n) / max * 100;
     const fill = k === 'CH' ? 'var(--x)' : `url(#pat-${k})`;
-    const sub = k === 'CH' ? '四型均衡' : `${k} ${TNAME[k]}`;
-    return `<div class="arow" role="img" aria-label="${ANIMAL[k]} ${fmtN(n)} 人">
-      <span class="aname" aria-hidden="true">${ANIMAL[k]}<small>${sub}</small></span>
+    const sub = k === 'CH' ? '四型均衡' : `${TNAME[k]}型`;
+    return `<div class="arow" role="img" aria-label="${LBL(k)} ${fmtN(n)} 人">
+      <span class="aname" aria-hidden="true">${LBL(k)}<small>${sub}</small></span>
       <span class="atrack" aria-hidden="true"><svg preserveAspectRatio="none"><rect width="${w}%" height="100%" fill="${fill}" rx="10"/></svg></span>
-      <span class="anum${n===null?' few':''}" aria-hidden="true">${fmtN(n)}<small>人</small></span></div>`;
+      <span class="anum" aria-hidden="true">${fmtN(n)}<small>人</small></span></div>`;
   }).join('');
 }
 
@@ -163,7 +165,7 @@ function renderLabels(l){
   const max = Math.max(1, ...LABELS.map(([k]) => barN(l[k])));
   $('#labels').innerHTML = LABELS.map(([k, ...parts], i)=>{
     const n = k in l ? l[k] : 0;
-    const name = k === 'CH' ? '變色龍' : parts.length ? parts.map(t=>ANIMAL[t]).join('＋') : ANIMAL[k];
+    const name = parts.length ? parts.map(LBL).join('＋') : LBL(k);
     const chips = (k === 'CH' ? ['CH'] : parts.length ? parts : [k]).map(t=>`<i style="background:${COLOR[t]}"></i>`).join('');
     const gap = (i === 4 || i === 8 || i === 10) ? '<div class="group-gap" aria-hidden="true"></div>' : '';
     return `${gap}<div class="lrow"><span class="lname"><span class="chips" aria-hidden="true">${chips}</span>${name}</span>
@@ -171,9 +173,13 @@ function renderLabels(l){
   }).join('');
 }
 
-/* 點狀分布：同一個位置的點往上下錯開，不重疊 */
+/* 點狀分布：同一個位置的點往上下錯開，不重疊。
+   依畫面實際寬度畫圖，手機上文字才不會被縮得太小 */
+let lastScores = null;
 function renderDist(scores){
-  const W = 760, left = 104, right = 16, rowH = 92, top = 8, R = 5.5;
+  lastScores = scores;
+  const W = Math.max(300, Math.round($('#dist').clientWidth || 760));
+  const left = W < 500 ? 88 : 104, right = 12, rowH = 92, top = 8, R = W < 500 ? 4.5 : 5.5;
   const X = v => left + v / 100 * (W - left - right);
   const H = top + rowH * 4 + 26;
   let out = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="四種動物的分數分布，一個點是一位學生">`;
@@ -183,7 +189,7 @@ function renderDist(scores){
   });
   TYPES.forEach((t, row) => {
     const cy = top + rowH * row + rowH / 2;
-    out += `<text class="tname" x="0" y="${cy + 6}">${ANIMAL[t]}</text>`;
+    out += `<text class="tname" x="0" y="${cy + 6}">${LBL(t)}</text>`;
     const used = {};
     (scores[t] || []).forEach(v => {
       const bin = Math.round(X(v) / (R * 2.2));
@@ -205,7 +211,7 @@ const clock = () => new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minu
 
 function showMessage(text){
   $('#msg').textContent = text; $('#msg').hidden = false;
-  ['#count','#empty','#sec-animals','#sec-labels','#sec-dist','#foot'].forEach(s => $(s).hidden = true);
+  ['#count','#count-note','#empty','#sec-animals','#sec-labels','#sec-dist','#foot'].forEach(s => $(s).hidden = true);
 }
 
 let timer = null, failures = 0, stopped = false;
@@ -213,7 +219,7 @@ async function load(){
   if (stopped) return;
   try {
     const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
-    const res = await fetch(CFG.supabaseUrl + '/rest/v1/rpc/class_stats', {
+    const res = await fetch(CFG.supabaseUrl + '/rest/v1/rpc/class_stats_v2', {
       method: 'POST', signal: ctl.signal,
       headers: {apikey: CFG.supabaseAnonKey, Authorization: 'Bearer ' + CFG.supabaseAnonKey, 'Content-Type': 'application/json'},
       body: JSON.stringify({p_token: TOKEN}),
@@ -231,13 +237,13 @@ async function load(){
     $('#msg').hidden = true;
     document.title = `${d.name}｜班級統計`;
     $('#title').textContent = d.name;
-    $('#count-n').textContent = d.included; $('#count').hidden = false;
-    const has = d.included > 0;
+    $('#count-n').textContent = d.total; $('#count').hidden = false;
+    $('#count-note').hidden = !d.flagged;
+    $('#count-note').textContent = d.flagged ? `其中 ${d.flagged} 份可能不太可靠（作答太快，或注意力題沒有照指示選），仍列入下面的統計。` : '';
+    const has = d.total > 0;
     $('#empty').hidden = has;
     ['#sec-animals','#sec-labels','#sec-dist'].forEach(s => $(s).hidden = !has);
-    if (has){ renderAnimals(d.animals, d.included); renderLabels(d.labels); renderDist(d.scores); }
-    $('#foot').hidden = !d.excluded;
-    $('#foot').textContent = d.excluded ? `另有 ${d.excluded} 份作答不太可靠（注意力題答錯，或作答速度太快），沒有列入統計。` : '';
+    if (has){ renderAnimals(d.animals); renderLabels(d.labels); renderDist(d.scores); }
     setStatus('', `自動更新中，最後更新 ${clock()}`);
   } catch (e) {
     failures++;
@@ -248,6 +254,8 @@ function schedule(){
   clearInterval(timer);
   if (!document.hidden && !stopped) timer = setInterval(load, REFRESH_MS);
 }
+let resizeT = null;
+window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (lastScores) renderDist(lastScores); }, 150); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); schedule(); });
 
 if (!CFG.supabaseUrl || !/^[0-9a-f]{48}$/.test(TOKEN)){
