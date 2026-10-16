@@ -195,6 +195,13 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .bar-btn svg{width:20px;height:20px;flex:none}
 .bar-btn[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .bar-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* 結果頁手機版：底部固定「儲存／分享結果圖片」，捲到分享卡片時收起來；寬螢幕不顯示 */
+.share-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;transition:transform .2s ease,visibility 0s}
+.share-dock .btn{width:100%;max-width:480px}
+.share-dock.off{transform:translateY(110%);visibility:hidden;transition:transform .2s ease,visibility 0s .2s}
+@media (max-width:767.98px){#s-result:has(.share-dock){padding-bottom:72px}body.dock-on .toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
+@media (min-width:768px){.share-dock{display:none}}
+@media (prefers-reduced-motion:reduce){.share-dock,.share-dock.off{transition:none}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100vw - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:20;margin:0}
 .toast:empty{display:none}
 .home-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center}
@@ -725,6 +732,7 @@ const BK = window.DiscBackend || {enabled:false};
 function show(id){
   if (id==='s-info'){ infoMode(); if (BK.enabled) BK.prepare(); }
   ['s-home','s-quiz','s-info','s-blind','s-result','s-history'].forEach(s=>$('#'+s).hidden = s!==id);
+  if (id!=='s-result') document.body.classList.remove('dock-on');
   $('#app').classList.toggle('wide', id==='s-result');
   window.scrollTo(0,0);
 }
@@ -1271,7 +1279,8 @@ function renderResult(){
         <p class="small muted" id="invite-msg" role="status"></p>
         ${footMeta('')}
       </div>
-    </div>`;
+    </div>
+    <div class="share-dock" id="share-dock"><button type="button" class="btn primary" id="dock-share">儲存／分享結果圖片</button></div>`;
   }
   el.innerHTML = html;
   /* 主色：單一型用主型，組合型用分數較高的那一型，變色龍不設定（用墨色） */
@@ -1285,6 +1294,7 @@ function renderResult(){
     document.querySelectorAll('#rate .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#rate-msg').textContent='謝謝你的回饋！';});
   if (r.kind!=='none'){
     $('#make-img').addEventListener('click', ()=>buildShareImage(r, true));
+    setupShareDock();
     el.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click', ()=>shareResult(r, b.dataset.share)));
     $('#invite').addEventListener('click', inviteFriends);
   }
@@ -1292,6 +1302,24 @@ function renderResult(){
   $('#again-cancel').addEventListener('click', ()=>{ $('#again-confirm').hidden=true; $('#again').focus(); });
   $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; $('#view-result').hidden=true; show('s-home'); });
   resultExtras(r);
+}
+
+/* 底部固定按鈕：按了捲到分享卡片並產生圖片；分享卡片出現在畫面上時收起來 */
+let dockObs = null;
+function setupShareDock(){
+  const dock = $('#share-dock'), card = $('#share-card');
+  if (dockObs) dockObs.disconnect();
+  if (!dock || !card) return;
+  const setOn = on => { dock.classList.toggle('off', !on); dock.setAttribute('aria-hidden', String(!on)); document.body.classList.toggle('dock-on', on); };
+  setOn(true);
+  if ('IntersectionObserver' in window){
+    dockObs = new IntersectionObserver(es=>es.forEach(e=>setOn(!e.isIntersecting)), {threshold:0.2});
+    dockObs.observe(card);
+  }
+  $('#dock-share').addEventListener('click', ()=>{
+    card.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
+    if ($('#share-out').hidden) $('#make-img').click();
+  });
 }
 
 /* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
