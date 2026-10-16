@@ -217,13 +217,11 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 @media (hover:hover){.bar-btn:hover .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}}
 .bar-btn:focus-visible .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}
 .bar-actions .bar-btn:last-child .lbl{left:auto;right:0;transform:none}
-/* 結果頁手機版：底部固定「儲存／分享結果圖片」，捲到分享卡片時收起來；寬螢幕不顯示 */
-.share-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;transition:transform .2s ease,visibility 0s}
+/* 結果頁手機版：底部固定「儲存／分享結果圖片」，捲動時一直顯示 */
+.share-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center}
 .share-dock .btn{width:100%;max-width:480px}
-.share-dock.off{transform:translateY(110%);visibility:hidden;transition:transform .2s ease,visibility 0s .2s}
 @media (max-width:767.98px){#s-result:has(.share-dock){padding-bottom:72px}body.dock-on .toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
 @media (min-width:768px){.share-dock{display:none}}
-@media (prefers-reduced-motion:reduce){.share-dock,.share-dock.off{transition:none}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100vw - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:20;margin:0}
 .toast:empty{display:none}
 .home-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center}
@@ -1331,18 +1329,11 @@ function renderResult(){
   resultExtras(r);
 }
 
-/* 底部固定按鈕：按了捲到分享卡片並產生圖片；分享卡片出現在畫面上時收起來 */
-let dockObs = null;
+/* 底部固定按鈕：一直顯示；按了捲到分享卡片並產生圖片 */
 function setupShareDock(){
   const dock = $('#share-dock'), card = $('#share-card');
-  if (dockObs) dockObs.disconnect();
   if (!dock || !card) return;
-  const setOn = on => { dock.classList.toggle('off', !on); dock.setAttribute('aria-hidden', String(!on)); document.body.classList.toggle('dock-on', on); };
-  setOn(true);
-  if ('IntersectionObserver' in window){
-    dockObs = new IntersectionObserver(es=>es.forEach(e=>setOn(!e.isIntersecting)), {threshold:0.2});
-    dockObs.observe(card);
-  }
+  document.body.classList.add('dock-on');
   $('#dock-share').addEventListener('click', ()=>{
     card.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
     if ($('#share-out').hidden) $('#make-img').click();
