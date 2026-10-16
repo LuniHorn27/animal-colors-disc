@@ -259,6 +259,10 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 .hist .opt{width:100%;justify-content:space-between;gap:16px;min-height:60px}
 .hist .opt b{font-weight:700}
 .hist .opt .small{flex:none;font-variant-numeric:tabular-nums}
+.hist-row{display:flex;align-items:stretch;gap:8px}
+.hist-row .opt{flex:1 1 auto;min-width:0}
+.hist-row .hist-del{flex:none}
+.hist .confirm{margin-top:8px}
 .view-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 @media (hover:none){.kbd-hint{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -380,7 +384,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <p class="muted" id="hist-msg" role="status"></p>
     <ul class="hist" id="hist-list"></ul>
     <div class="actions"><button class="btn" id="hist-home">回到首頁</button><button class="btn link" id="hist-out">登出</button></div>
-    <div class="card stack" style="gap:12px;margin-top:16px">
+    <div class="card stack" id="del-all-card" style="gap:12px;margin-top:16px" hidden>
       <h3>刪除我的資料</h3>
       <p class="small muted">刪除這個帳號保存的所有結果，包含作答時填的名字和 Email。刪除後無法復原。</p>
       <div><button class="btn" id="del-open">刪除我的資料</button></div>
@@ -1520,11 +1524,34 @@ async function openHistory(){
   catch(e){ $('#hist-msg').textContent = '無法讀取結果。請確認網路後，回到首頁再按一次「我的歷次結果」。'; return; }
   if (!HIST.length){ $('#hist-msg').textContent = '這個帳號還沒有保存的結果。做完測驗後，在結果頁按「用 Google 帳號登入」，結果就會保存到這裡。'; return; }
   $('#hist-msg').textContent = `共 ${HIST.length} 次結果，點一下可以打開。`;
+  renderHistList();
+}
+function renderHistList(){
   $('#hist-list').innerHTML = HIST.map((row,i)=>{
     const r = score({seq:row.seq, answers:row.answers, times:row.times||{}});
-    return `<li><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? '暫時無法判定' : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button></li>`;
+    return `<li><div class="hist-row"><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? '暫時無法判定' : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button><button class="btn link hist-del" data-del="${i}" aria-label="刪除 ${fmtDate(row.created_at)} 的結果">刪除</button></div>
+      <div class="confirm" data-confirm="${i}" hidden role="alert"><p>確定要刪除 ${fmtDate(row.created_at)} 的這次結果嗎？刪除後無法復原。</p><button class="btn" data-keep="${i}">保留</button><button class="btn primary" data-delok="${i}">確定刪除</button></div></li>`;
   }).join('');
 }
+/* 單筆刪除：按「刪除」先出現確認，按「確定刪除」才真的刪 */
+$('#hist-list').addEventListener('click', async e=>{
+  const d = e.target.closest('[data-del],[data-keep],[data-delok]'); if (!d) return;
+  e.stopImmediatePropagation();
+  const i = +(d.dataset.del ?? d.dataset.keep ?? d.dataset.delok), box = $(`[data-confirm="${i}"]`);
+  if (d.dataset.del !== undefined){ box.hidden = false; box.querySelector('[data-keep]').focus(); return; }
+  if (d.dataset.keep !== undefined){ box.hidden = true; $(`[data-del="${i}"]`).focus(); return; }
+  box.querySelectorAll('button').forEach(x=>x.disabled = true);
+  $('#hist-msg').textContent = '正在刪除…';
+  try {
+    await BK.deleteMyResult(HIST[i].id);
+    HIST.splice(i, 1);
+    renderHistList();
+    $('#hist-msg').textContent = HIST.length ? `已刪除這次結果。還有 ${HIST.length} 次結果，點一下可以打開。` : '已刪除這次結果。這個帳號目前沒有保存的結果。';
+  } catch(err){
+    box.querySelectorAll('button').forEach(x=>x.disabled = false);
+    $('#hist-msg').textContent = '刪除沒有完成。請確認網路後再按一次「確定刪除」。';
+  }
+});
 $('#hist-list').addEventListener('click', e=>{
   const b = e.target.closest('[data-i]'); if (!b) return;
   const row = HIST[+b.dataset.i];

@@ -284,12 +284,22 @@
     return data;
   }
 
+  // 刪除自己的某一次結果（id＝listMyResults 回傳的 id），回傳刪掉幾筆（0 或 1）
+  async function deleteMyResult(id) {
+    if (!enabled || !user) return 0;
+    const { data, error } = await client.rpc('delete_my_result', { p_id: id });
+    if (error) throw new Error('刪除失敗');
+    const c = store.get(K_CLAIM);
+    if (c && c.id === id) store.del(K_CLAIM);
+    return data;
+  }
+
   async function signOut() { if (enabled) await client.auth.signOut(); user = null; }
 
   window.DiscBackend = {
     enabled, init, checkClass, prepare, renderTurnstile, queue, flush, rate, isQueued,
     hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults,
-    getRetest, setRetest, deleteMyData, signOut,
+    getRetest, setRetest, deleteMyData, deleteMyResult, signOut,
     onAuthChange(fn) { listeners.push(fn); },
     onSync(fn) { syncListeners.push(fn); },
     get user() { return user; },
