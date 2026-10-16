@@ -169,14 +169,25 @@
     const list = outbox().filter((x) => x.sid !== st.sid);
     list.push({ sid: st.sid, payload: buildPayload(st), rating: st.rating || null, at: Date.now() });
     setOutbox(list);
+    retryN = 0;
     return flush();
   }
 
   // 依序送出待送出區裡的作答；同一時間只會有一個 flush 在跑
   function flush() {
     if (!enabled) return Promise.resolve();
-    if (!flushing) flushing = doFlush().finally(() => { flushing = null; });
+    if (!flushing) flushing = doFlush().catch((e) => { scheduleRetry(); throw e; }).finally(() => { flushing = null; });
     return flushing;
+  }
+
+  // 送出失敗（網路不穩、伺服器忙碌）時自動再試：約 3、8、20 秒後各一次，之後要等下次打開網頁。
+  // 間隔多加 0–50% 隨機，避免全班同時重送。號碼牌 sid 讓重送不會多存一筆；400 不重試。
+  const RETRY_S = [3, 8, 20];
+  let retryN = 0, retryTimer = null;
+  function scheduleRetry() {
+    if (retryTimer || retryN >= RETRY_S.length) return;
+    const ms = RETRY_S[retryN++] * 1000 * (1 + Math.random() * 0.5);
+    retryTimer = setTimeout(() => { retryTimer = null; flush().catch(() => {}); }, ms);
   }
   async function doFlush() {
     if (!outbox().length) return;
@@ -184,7 +195,7 @@
     for (const item of outbox()) {
       emit(item.sid, 'sending');
       const token = await waitForToken();
-      if (!token) { emit(item.sid, 'pending'); return; }
+      if (!token) { emit(item.sid, 'pending'); scheduleRetry(); return; }
       const { data, error } = await client.functions.invoke('submit', {
         body: Object.assign({}, item.payload, { turnstile_token: useToken() }),
       });
@@ -195,7 +206,8 @@
           emit(item.sid, 'rejected');
           continue;
         }
-        emit(item.sid, 'pending');             // 網路或伺服器問題：保留，下次再送
+        emit(item.sid, 'pending');             // 網路或伺服器問題：保留，稍後自動再試
+        scheduleRetry();
         return;
       }
       const latest = outbox().find((x) => x.sid === item.sid) || item;
@@ -209,6 +221,7 @@
       if (latest.rating) await sendRating(claim, latest.rating);
       emit(item.sid, 'sent');
     }
+    retryN = 0;
   }
 
   // 「結果像你嗎？」：還在待送出區就一起送；已經送出就直接補上評分
