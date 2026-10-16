@@ -91,6 +91,11 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 /* 單頁作答：44 題一路往下，每題五格橫排，每格下面都有文字（注意力題要靠文字找到對的格子） */
 .quiz-head{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;margin-top:-12px}
 .quiz-head .progress{margin:8px 0 0}
+/* 作答提醒：放在題號旁邊的淺底小標籤，看得到但不搶題目的焦點；手機上空間不夠時換到下一行 */
+.qcount-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-width:0}
+.qhint{display:inline-block;padding:1px 10px;border-radius:999px;background:var(--accent-soft);color:var(--ink);font-size:13px;font-weight:500;line-height:1.7}
+.bar-top{align-items:flex-start}
+.qhint,.bar-top .meta>span{white-space:nowrap}
 #qpage,#qall{margin-top:20px}
 .quiz-head{padding-bottom:12px;border-bottom:1px solid var(--line)}
 .qlist{list-style:none;margin:8px 0 0;padding:0}
@@ -337,7 +342,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 
   <section id="s-quiz" hidden>
     <div class="quiz-head">
-      <div class="bar-top"><span id="qcount">第 1 題，共 44 題</span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
+      <div class="bar-top"><span class="qcount-wrap"><span id="qcount">第 1 題，共 44 題</span><span class="qhint">請依直覺選出「最符合」你的模樣。</span></span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
       <div class="progress" aria-hidden="true"><i id="qbar" style="width:0"></i></div>
     </div>
     <div id="qpage">
@@ -349,7 +354,6 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       </div>
     </div>
     <div id="qall" hidden>
-      <p class="small muted">請依直覺選出「最符合」你的模樣。</p>
       <ol class="qlist" id="qlist"></ol>
       <div class="quiz-end">
         <p class="field-err" id="quiz-err" role="alert"></p>
