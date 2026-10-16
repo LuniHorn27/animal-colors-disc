@@ -770,8 +770,6 @@ if (saved && saved.seq && !saved.done) $('#resume').hidden=false;
    連不上伺服器時不擋，送出時伺服器還會再檢查一次班級是否存在 */
 let classBlocked = false;
 const syncStart = () => { $('#start').disabled = !$('#agree').checked || classBlocked; };
-/* 班級連結：名字和結果會提供給舉辦單位，首頁的小提醒也要說清楚 */
-if (COHORT) $('#home-note').textContent = '小提醒：測驗結果是幫助認識自己的參考，不是能力的評分；你的作答將會保存下來，以利優化測驗及系統；你的名字和結果會提供給舉辦這次活動的學校或單位，將不會挪作其他用途。';
 if (COHORT && BK.enabled && BK.checkClass){
   BK.checkClass(COHORT).then(r=>{
     const note = $('#class-note');
