@@ -221,7 +221,13 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .share-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center}
 .share-dock .btn{width:100%;max-width:480px}
 @media (max-width:767.98px){#s-result:has(.share-dock){padding-bottom:72px}body.dock-on .toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
-@media (min-width:768px){.share-dock{display:none}}
+/* 電腦版：改成內容欄右下角的圓角小按鈕，不橫跨整個畫面 */
+@media (min-width:768px){
+  .share-dock{left:auto;right:max(clamp(16px,4vw,48px), calc((100vw - 800px) / 2));bottom:24px;padding:0;background:none;border:0}
+  .share-dock .btn{width:auto;border-radius:999px;padding:0 22px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+  #s-result:has(.share-dock){padding-bottom:88px}
+  body.dock-on .toast{bottom:88px}
+}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100vw - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:20;margin:0}
 .toast:empty{display:none}
 .home-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center}
