@@ -1624,13 +1624,9 @@ function renderSaveCard(note){
   if (USER){
     box.innerHTML = `<h3>已保存到你的帳號</h3>
       <p class="small muted">登入帳號：${esc(USER.email||'')}</p>
-      <label class="check"><input type="checkbox" id="retest-ok"><span>有重測活動時，寄信邀請我</span></label>
       <div class="actions"><button class="btn" id="go-history">查看我的歷次結果</button><button class="btn link" id="sign-out">登出</button></div>`;
     $('#go-history').addEventListener('click', openHistory);
     $('#sign-out').addEventListener('click', signOut);
-    const cb = $('#retest-ok');
-    BK.getRetest().then(v=>{ cb.checked = v; }).catch(()=>{});
-    cb.addEventListener('change', ()=>{ BK.setRetest(cb.checked).catch(()=>{ cb.checked = !cb.checked; }); });
     return;
   }
   const blocked = IN_APP ? `<div class="warn inapp"><span>Google 不允許在 ${IN_APP} 的內建瀏覽器裡登入。請改用手機的瀏覽器（例如 Chrome、Safari）打開這個網頁再登入。</span>${IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">改用瀏覽器開啟</a>` : ''}</div>` : '';
