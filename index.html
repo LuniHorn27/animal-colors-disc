@@ -382,7 +382,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
         <p class="small muted">電話和 LINE ID 只用來和你聯絡這件事，不會提供給其他人或單位。</p>
       </div>
     </fieldset>
-    <div><button class="btn primary" id="info-next">下一步</button></div>
+    <div><button class="btn primary" id="info-next">查看我的結果</button></div>
   </section>
 
   <section id="s-blind" class="stack" hidden>
@@ -758,7 +758,14 @@ $('#start').addEventListener('click', ()=>{
   st = {sid:newSid(), cohort:COHORT, seq:drawSequence(), answers:{}, times:{}, idx:0, info:{}, blind:null, rating:null, done:false, startedAt:Date.now()};
   save(); show('s-quiz'); renderQuiz();
 });
-$('#resume').addEventListener('click', ()=>{ const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0; show('s-quiz'); renderQuiz(); });
+/* 繼續上次的作答：題目沒答完回到題目；答完了就接著直覺題或最後幾個問題 */
+$('#resume').addEventListener('click', ()=>{
+  const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0;
+  const allDone = st.seq.every(id=>st.answers[id]);
+  if (allDone && st.blindOrders && st.blind && st.blind2){ show('s-info'); return; }
+  if (allDone && st.blindOrders){ renderBlind(st.blind ? 1 : 0); show('s-blind'); return; }
+  show('s-quiz'); renderQuiz();
+});
 
 /* quiz：兩種作答方式，使用者可以切換（記在這台裝置上，預設一題一頁）
    一題一頁（page）：st.idx 是目前這一題；全部列出（list）：44 題放在同一頁。
@@ -802,8 +809,11 @@ function record(id, v){
   const now = performance.now();
   st.answers[id]=v; st.times[id]=(st.times[id]||0)+Math.round(now-lastAt); lastAt = now;
 }
-/* 都答完了就到下一步；還有沒答的，一題一頁跳到那一題，全部列出則標示出來 */
-function quizDone(){ show('s-info'); }
+/* 流程：題目 → 直覺題（兩頁）→ 最後幾個問題 → 結果。直覺題放在基本資料前面，
+   免得填完基本資料就以為測驗已經結束。
+   直覺題分兩頁：每型的描述拆成前後兩句，各頁四個選項、順序各自隨機。
+   st.blind＝第 1 頁的選擇（沿用原本欄位，後端相容），st.blind2＝第 2 頁的選擇 */
+function quizDone(){ st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save(); renderBlind(0); show('s-blind'); }
 
 /* 一題一頁 */
 function renderQ(){
@@ -897,7 +907,7 @@ $('#demo').addEventListener('click', ()=>{
     else v=Math.max(1,Math.min(5,Math.round(lean[it.t]+(Math.random()-.5)*1.6)));
     st.answers[id]=v; st.times[id]=3000+Math.round(Math.random()*6000);
   });
-  st.idx=st.seq.length-1; save(); show('s-info');
+  st.idx=st.seq.length-1; save(); quizDone();
 });
 
 /* info */
@@ -948,10 +958,9 @@ $('#info-next').addEventListener('click', ()=>{
   st.info={name:$('#uname').value.trim(), email:$('#email').value.trim(), age:$('#age').value, gender:$('#gender').value,
     edu:classMode()?'':$('#edu').value, job:classMode()?'學生':$('#job').value,
     followup: want ? {phone:$('#fu-phone').value.trim(), line:$('#fu-line').value.trim()} : null};
-  /* 盲選分兩頁：每型的描述拆成前後兩句，各頁四個選項、順序各自隨機。
-     st.blind＝第 1 頁的選擇（沿用原本欄位，後端相容），st.blind2＝第 2 頁的選擇 */
-  st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save();
-  renderBlind(0); show('s-blind');
+  st.done=true; st.finishedAt=Date.now(); if (BK.enabled && st.sid) st.sync='sending';
+  save(); renderResult(); show('s-result');
+  if (BK.enabled && st.sid) BK.queue(st);
 });
 const BLIND_PARTS = Object.fromEntries(TYPES.map(t=>[t, BLIND[t].split('。').filter(Boolean).map(x=>x+'。')]));
 let blindPage = 0;
@@ -973,9 +982,7 @@ $('#blind-opts').addEventListener('click', e=>{
   document.querySelectorAll('#blind-opts .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
   setTimeout(()=>{
     if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); $('#blind-h').focus?.(); return; }
-    st.done=true; st.finishedAt=Date.now(); if (BK.enabled && st.sid) st.sync='sending';
-    save(); renderResult(); show('s-result');
-    if (BK.enabled && st.sid) BK.queue(st);
+    show('s-info');
   }, 220);
 });
 $('#blind-prev').addEventListener('click', ()=>{ renderBlind(0); window.scrollTo(0,0); });
