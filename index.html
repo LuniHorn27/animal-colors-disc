@@ -863,7 +863,6 @@ function renderList(){
   if (f && f!==st.seq[0]) requestAnimationFrame(()=>$('#q-'+f).scrollIntoView({block:'start'}));
 }
 function answerList(id, v){
-  const was = st.answers[id];
   record(id, v);
   st.idx = Math.min(answeredN(), st.seq.length-1); save();
   const li = $('#q-'+id);
@@ -871,11 +870,7 @@ function answerList(id, v){
   li.classList.remove('missing');
   quizProgress();
   if (!document.querySelector('.qi.missing')) $('#quiz-err').textContent = '';
-  if (was) return;
-  /* 第一次回答這一題：捲到它後面第一個還沒回答的題目 */
-  const i = st.seq.indexOf(id), next = st.seq.slice(i+1).find(x=>!st.answers[x]);
-  const target = next ? $('#q-'+next) : $('.quiz-end');
-  setTimeout(()=>target.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:next?'start':'center'}), 220);
+  /* 回答後不自動捲動（使用者覺得一直被帶著跑很累），由使用者自己往下滑 */
 }
 $('#qlist').addEventListener('click', e=>{ const b=e.target.closest('.sc'); if(b) answerList(b.closest('.qi').dataset.id, +b.dataset.v); });
 $('#quiz-done').addEventListener('click', ()=>{
