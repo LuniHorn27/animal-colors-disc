@@ -143,6 +143,14 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .hero .one{font-size:18px}
 .prom{border-left:4px solid var(--accent);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
 .report{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.fold-btn{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface);text-align:left}
+.fold-btn:hover{border-color:var(--faint)}
+.fold-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fold-h{font-family:var(--round);font-size:22px;line-height:1.35}
+.fold-btn svg{width:24px;height:24px;flex:none;transition:transform .2s ease}
+.fold-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.fold-body{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+@media (prefers-reduced-motion:reduce){.fold-btn svg{transition:none}}
 .side,.main{display:flex;flex-direction:column;gap:16px;min-width:0}
 .pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
 .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
@@ -1196,6 +1204,15 @@ function list(arr){ return `<ul>${arr.map(x=>{const [l,b]=splitLabel(x); return 
 /* 解說的段落結構（網頁與分享圖片共用） */
 /* 較長的段落（核心特質、溝通方式、壓力、關於這個結果）：v3 是陣列，顯示成條列；v1 是一段文字 */
 const textOrList = v => Array.isArray(v) ? {bullets:v} : {paras:[v]};
+/* 詳細解析收進「詳細測驗解析」：預設收起來，讓結果頁一開始不會太長 */
+function foldHTML(secs){
+  const names = secs.map(x=>x.title);
+  const hint = names.slice(0,3).join('、') + (names.length>3 ? `等 ${names.length} 個主題` : '');
+  return `<div class="fold"><button type="button" class="fold-btn" id="fold-btn" aria-expanded="false" aria-controls="fold-body">
+      <span class="fold-t"><span class="fold-h">詳細測驗解析</span><span class="small muted">${akHTML(hint)}</span></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="fold-body" id="fold-body" hidden>${secs.map(sectionHTML).join('')}</div></div>`;
+}
 function reportSections(rep){
   const out = [
     {title:'核心特質', ...textOrList(rep.core)},
@@ -1279,7 +1296,7 @@ function renderResult(){
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
           </div>
         </div>
-        ${reportSections(rep).map(sectionHTML).join('')}
+        ${foldHTML(reportSections(rep))}
         <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         ${rating}
         <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button></div>
@@ -1297,6 +1314,8 @@ function renderResult(){
   el.classList.toggle('cham', r.kind==='chameleon');
   el.classList.toggle('mode-data', VIEW==='data');
   el.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
+  const fb = $('#fold-btn');
+  if (fb) fb.addEventListener('click', ()=>{ const on = fb.getAttribute('aria-expanded')!=='true'; fb.setAttribute('aria-expanded', String(on)); $('#fold-body').hidden = !on; });
   $('#rate').addEventListener('click', e=>{const b=e.target.closest('.opt'); if(!b) return; st.rating=+b.dataset.v; save();
     if (BK.enabled && st.sid) BK.rate(st.sid, st.rating).catch(()=>{});
     document.querySelectorAll('#rate .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#rate-msg').textContent='謝謝你的回饋！';});
