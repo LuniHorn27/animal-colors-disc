@@ -267,7 +267,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <p>每個人身上都有這四種動物，只是比例不同。沒有好壞，也沒有哪一型比較好。</p>
     <p>共 44 題，大約 7–8 分鐘。請依照你<b>平常實際的樣子</b>作答，而不是你希望成為的樣子。</p>
     <p>完成後，你會看到自己的動物本色、四種傾向的分布圖，以及溝通和職涯上的參考建議。</p>
-    <p class="small muted">小提醒：結果僅供自我了解參考。你的作答會保存下來，用來讓這份測驗更準確；資料只用在這份測驗，不會挪作其他用途，也不會提供給其他人或公司。詳見<a href="privacy.html" style="color:inherit">隱私說明</a>。</p>
+    <p class="small muted"><span id="home-note">小提醒：測驗結果是幫助你認識自己的參考，不是能力的評分。你的作答會保存下來，用來研究和改進這份測驗，不會提供給其他人或公司。</span>詳見<a href="privacy.html" style="color:inherit">隱私說明</a>。</p>
     <div class="start-card">
     <p id="class-note" hidden></p>
     <label class="consent" for="agree"><input type="checkbox" id="agree"><span>我了解結果僅供參考，也同意保存我的作答，用來讓這份測驗更準確</span></label>
@@ -668,6 +668,8 @@ if (saved && saved.seq && !saved.done) $('#resume').hidden=false;
    連不上伺服器時不擋，送出時伺服器還會再檢查一次班級是否存在 */
 let classBlocked = false;
 const syncStart = () => { $('#start').disabled = !$('#agree').checked || classBlocked; };
+/* 班級連結：名字和結果會提供給舉辦單位，首頁的小提醒也要說清楚 */
+if (COHORT) $('#home-note').textContent = '小提醒：測驗結果是幫助你認識自己的參考，不是能力的評分。你的作答會保存下來，用來研究和改進這份測驗；你的名字和結果會提供給舉辦這次活動的學校或單位，不會提供給其他人或公司。';
 if (COHORT && BK.enabled && BK.checkClass){
   BK.checkClass(COHORT).then(r=>{
     const note = $('#class-note');
