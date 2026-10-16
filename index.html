@@ -198,6 +198,10 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .bar-btn svg{width:20px;height:20px;flex:none}
 .bar-btn[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .bar-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* 滑鼠移到按鈕上（或用鍵盤移到按鈕上）時，按鈕下方浮出名稱；最右邊的按鈕靠右對齊，避免超出畫面 */
+@media (hover:hover){.bar-btn:hover .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}}
+.bar-btn:focus-visible .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.bar-actions .bar-btn:last-child .lbl{left:auto;right:0;transform:none}
 /* 結果頁手機版：底部固定「儲存／分享結果圖片」，捲到分享卡片時收起來；寬螢幕不顯示 */
 .share-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;transition:transform .2s ease,visibility 0s}
 .share-dock .btn{width:100%;max-width:480px}
@@ -290,9 +294,9 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span>測出你的動物本色</span></a>
     <nav class="bar-nav" aria-label="網站導覽"></nav>
     <div class="bar-actions">
-      <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" title="全部列出" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl">全部列出</span></button>
-      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false" title="深色模式"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl">深色模式</span></button>
-      <button type="button" class="bar-btn" id="bar-share" title="分享測驗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">分享測驗</span></button>
+      <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl">全部列出</span></button>
+      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl">深色模式</span></button>
+      <button type="button" class="bar-btn" id="bar-share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">分享測驗</span></button>
     </div>
   </div>
 </header>
