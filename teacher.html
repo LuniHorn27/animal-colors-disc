@@ -29,18 +29,27 @@ main{max-width:800px;margin:0 auto;padding:32px 16px 64px;display:flex;flex-dire
 section h2{font-size:24px;margin-bottom:6px}
 .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
 
-/* 台下的動物：花紋長條，全頁唯一的重點 */
+/* 男女比例：一條分段長條，下面是圖例 */
+.split{display:flex;height:40px;border-radius:10px;overflow:hidden;gap:2px;background:var(--sunk)}
+.split span{display:flex;align-items:center;padding:0 12px;font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;min-width:0;transition:flex-grow .4s ease}
+.split .m{background:#5B7FA6;color:#fff}
+.split .f{background:#B5728E;color:#fff}
+.split .u{background:var(--sunk);color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;margin:10px 0 0;padding:0;list-style:none;font-size:15px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.legend b{color:var(--ink);font-weight:500}
+
+/* 主要動物：花紋長條，全頁唯一的重點 */
 .animals{display:flex;flex-direction:column;gap:14px}
-.arow{display:grid;grid-template-columns:118px 1fr 84px;align-items:center;gap:14px}
+.arow{display:grid;grid-template-columns:118px 1fr 76px;align-items:center;gap:14px}
 .aname{font-family:var(--font-round);font-size:22px;line-height:1.2;white-space:nowrap}
 .aname small{display:block;font-family:var(--font-sans);font-size:13px;color:var(--muted)}
 .atrack{height:44px;background:var(--sunk);border-radius:10px;overflow:hidden}
 .atrack svg{display:block;width:100%;height:100%}
-.anum{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-.anum small{font-size:15px;font-weight:400;color:var(--muted);margin-left:2px}
-.anum.few{font-size:20px}
+.anum{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;line-height:1.1}
+.anum small{display:block;font-size:14px;font-weight:400;color:var(--muted)}
 
-/* 11 種結果：安靜的中性長條 */
+/* 完整類型：安靜的中性長條，分成四組 */
 .labels{display:grid;grid-template-columns:max-content minmax(60px,1fr) max-content;align-items:center;column-gap:14px;row-gap:10px;font-size:16px}
 .lrow{display:contents}
 .lname{display:flex;align-items:center;gap:8px;min-width:0}
@@ -48,8 +57,11 @@ section h2{font-size:24px;margin-bottom:6px}
 .chips i{width:10px;height:10px;border-radius:50%}
 .ltrack{height:12px;background:var(--sunk);border-radius:6px;overflow:hidden}
 .ltrack i{display:block;height:100%;background:var(--ink);border-radius:6px;transition:width .4s ease}
-.lnum{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
-.group-gap{grid-column:1/-1;height:2px}
+.lnum{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lnum small{color:var(--muted);font-size:13px;margin-left:6px}
+.lgroup{grid-column:1/-1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding-bottom:5px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
+.lgroup:first-child{margin-top:0}
+.lgroup b{color:var(--ink);font-weight:500;font-size:15px}
 
 /* 分數分布：每位學生一個點 */
 .dist svg{display:block;width:100%;height:auto;overflow:visible}
@@ -63,13 +75,13 @@ section h2{font-size:24px;margin-bottom:6px}
 .foot{color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:16px}
 [hidden]{display:none!important}
 @media (max-width:560px){
-  .arow{grid-template-columns:92px 1fr 56px;gap:10px}
+  .arow{grid-template-columns:92px 1fr 60px;gap:10px}
   .aname{font-size:18px}
   .atrack{height:36px}
   .anum{font-size:22px}
   .labels{font-size:15px;column-gap:10px}
 }
-@media (prefers-reduced-motion:reduce){.ltrack i{transition:none}}
+@media (prefers-reduced-motion:reduce){.ltrack i,.split span{transition:none}}
 </style>
 </head>
 <body>
@@ -87,20 +99,27 @@ section h2{font-size:24px;margin-bottom:6px}
   <div class="msg" id="msg" hidden></div>
   <div class="empty" id="empty" hidden>還沒有人完成作答。學生送出後，這裡每 10 秒會自動更新。</div>
 
+  <section id="sec-gender" hidden aria-labelledby="h-gender">
+    <h2 id="h-gender">男女比例</h2>
+    <p class="sub">依作答時選填的性別。</p>
+    <div class="split" id="split" aria-hidden="true"></div>
+    <ul class="legend" id="legend"></ul>
+  </section>
+
   <section id="sec-animals" hidden aria-labelledby="h-animals">
-    <h2 id="h-animals">台下的動物</h2>
-    <p class="sub">組合型算在分數比較高的那一種動物；四種差不多的人算在變色龍。</p>
+    <h2 id="h-animals">主要動物</h2>
+    <p class="sub">每人只算一種：組合型算分數較高的那種，四種差不多的算變色龍。</p>
     <div class="animals" id="animals"></div>
   </section>
 
   <section id="sec-labels" hidden aria-labelledby="h-labels">
-    <h2 id="h-labels">11 種結果</h2>
-    <p class="sub">每個人的完整結果類型。</p>
+    <h2 id="h-labels">完整類型</h2>
+    <p class="sub">和學生結果頁上的 11 種類型相同。</p>
     <div class="labels" id="labels"></div>
   </section>
 
   <section id="sec-dist" class="dist" hidden aria-labelledby="h-dist">
-    <h2 id="h-dist">四種動物的分數分布</h2>
+    <h2 id="h-dist">分數分布</h2>
     <p class="sub">一個點是一位學生，不顯示名字。</p>
     <div id="dist"></div>
     <ul class="notes">
@@ -121,6 +140,8 @@ const ANIMAL = {D:'老虎', I:'孔雀', S:'無尾熊', C:'貓頭鷹', CH:'變色
 const TNAME = {D:'支配', I:'影響', S:'穩定', C:'分析'};
 const COLOR = {D:'var(--d)', I:'var(--i)', S:'var(--s)', C:'var(--c)', CH:'var(--x)'};
 const LABELS = [['D'],['I'],['S'],['C'],['DI','D','I'],['IS','I','S'],['SC','S','C'],['CD','C','D'],['DS','D','S'],['IC','I','C'],['CH']];
+/* 完整類型的四組：在第幾個類型之前放小標題 */
+const GROUPS = {0:['單一型','一種動物特別明顯'], 4:['組合型','相鄰兩種差不多明顯'], 8:['對角型','方向相反的兩種都明顯'], 10:['變色龍','四種差不多']};
 const REFRESH_MS = 10000;
 const LBL = k => k === 'CH' ? '變色龍' : `${k} ${ANIMAL[k]}`;
 const $ = s => document.querySelector(s);
@@ -145,31 +166,52 @@ $('#pat-defs').innerHTML = TYPES.map(t=>{
 const TOKEN = (new URLSearchParams(location.hash.slice(1)).get('k') || '').trim();
 
 const fmtN = n => String(n || 0);
-const barN = n => n || 0;
+/* 百分比：用最大餘數法取整數，盡量讓加總剛好 100%。
+   人數相同的項目一定顯示相同的百分比；遇到同分搶最後幾個 1% 時寧可加總差 1–2%，也不讓同樣人數顯示不同百分比 */
+function pct(counts){
+  const total = counts.reduce((a, b) => a + b, 0);
+  if (!total) return counts.map(() => 0);
+  const raw = counts.map(n => n / total * 100), out = raw.map(Math.floor);
+  let left = 100 - out.reduce((a, b) => a + b, 0);
+  const groups = {};
+  counts.forEach((n, i) => { if (n > 0 && raw[i] > out[i]) (groups[n] = groups[n] || []).push(i); });
+  Object.values(groups).sort((a, b) => (raw[b[0]] - out[b[0]]) - (raw[a[0]] - out[a[0]])).forEach(g => {
+    if (g.length <= left){ g.forEach(i => out[i]++); left -= g.length; }
+  });
+  return out;
+}
+
+function renderGender(g){
+  const parts = [['m','生理男', g['生理男'] || 0], ['f','生理女', g['生理女'] || 0], ['u','未填', g[''] || 0]];
+  const ps = pct(parts.map(p => p[2]));
+  $('#split').innerHTML = parts.map(([c, name, n], i) => n ? `<span class="${c}" style="flex-grow:${n}">${c === 'u' ? n : name + ' ' + n}</span>` : '').join('');
+  $('#legend').innerHTML = parts.filter(p => p[0] !== 'u' || p[2]).map(([c, name, n]) =>
+    `<li><i class="${c}" style="background:${c==='m'?'#5B7FA6':c==='f'?'#B5728E':'var(--sunk)'}"></i>${name} <b>${n}</b> 人（${ps[parts.findIndex(p => p[0] === c)]}%）</li>`).join('');
+}
 
 function renderAnimals(a){
   const keys = ['D','I','S','C','CH'];
-  const max = Math.max(1, ...keys.map(k => barN(a[k])));
-  $('#animals').innerHTML = keys.map(k=>{
-    const n = k in a ? a[k] : 0, w = barN(n) / max * 100;
+  const ns = keys.map(k => a[k] || 0), ps = pct(ns);
+  $('#animals').innerHTML = keys.map((k, i)=>{
+    const n = ns[i], w = ps[i];
     const fill = k === 'CH' ? 'var(--x)' : `url(#pat-${k})`;
     const sub = k === 'CH' ? '四型均衡' : `${TNAME[k]}型`;
-    return `<div class="arow" role="img" aria-label="${LBL(k)} ${fmtN(n)} 人">
+    return `<div class="arow" role="img" aria-label="${LBL(k)} ${w}%，${n} 人">
       <span class="aname" aria-hidden="true">${LBL(k)}<small>${sub}</small></span>
       <span class="atrack" aria-hidden="true"><svg preserveAspectRatio="none"><rect width="${w}%" height="100%" fill="${fill}" rx="10"/></svg></span>
-      <span class="anum" aria-hidden="true">${fmtN(n)}<small>人</small></span></div>`;
+      <span class="anum" aria-hidden="true">${w}%<small>${n} 人</small></span></div>`;
   }).join('');
 }
 
 function renderLabels(l){
-  const max = Math.max(1, ...LABELS.map(([k]) => barN(l[k])));
+  const ns = LABELS.map(([k]) => l[k] || 0), ps = pct(ns);
   $('#labels').innerHTML = LABELS.map(([k, ...parts], i)=>{
-    const n = k in l ? l[k] : 0;
+    const n = ns[i];
     const name = parts.length ? parts.map(LBL).join('＋') : LBL(k);
     const chips = (k === 'CH' ? ['CH'] : parts.length ? parts : [k]).map(t=>`<i style="background:${COLOR[t]}"></i>`).join('');
-    const gap = (i === 4 || i === 8 || i === 10) ? '<div class="group-gap" aria-hidden="true"></div>' : '';
-    return `${gap}<div class="lrow"><span class="lname"><span class="chips" aria-hidden="true">${chips}</span>${name}</span>
-      <span class="ltrack" aria-hidden="true"><i style="width:${barN(n)/max*100}%"></i></span><span class="lnum">${fmtN(n)}</span></div>`;
+    const head = GROUPS[i] ? `<div class="lgroup"><b>${GROUPS[i][0]}</b><span>${GROUPS[i][1]}</span></div>` : '';
+    return `${head}<div class="lrow"><span class="lname"><span class="chips" aria-hidden="true">${chips}</span>${name}</span>
+      <span class="ltrack" aria-hidden="true"><i style="width:${ps[i]}%"></i></span><span class="lnum">${ps[i]}%<small>${n} 人</small></span></div>`;
   }).join('');
 }
 
@@ -211,7 +253,7 @@ const clock = () => new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minu
 
 function showMessage(text){
   $('#msg').textContent = text; $('#msg').hidden = false;
-  ['#count','#count-note','#empty','#sec-animals','#sec-labels','#sec-dist','#foot'].forEach(s => $(s).hidden = true);
+  ['#count','#count-note','#empty','#sec-gender','#sec-animals','#sec-labels','#sec-dist','#foot'].forEach(s => $(s).hidden = true);
 }
 
 let timer = null, failures = 0, stopped = false;
@@ -242,8 +284,9 @@ async function load(){
     $('#count-note').textContent = d.flagged ? `其中 ${d.flagged} 份可能不太可靠（作答太快，或注意力題沒有照指示選），仍列入下面的統計。` : '';
     const has = d.total > 0;
     $('#empty').hidden = has;
-    ['#sec-animals','#sec-labels','#sec-dist'].forEach(s => $(s).hidden = !has);
-    if (has){ renderAnimals(d.animals); renderLabels(d.labels); renderDist(d.scores); }
+    ['#sec-gender','#sec-animals','#sec-labels','#sec-dist'].forEach(s => $(s).hidden = !has);
+    $('#sec-gender').hidden = !has || !d.gender;
+    if (has){ if (d.gender) renderGender(d.gender); renderAnimals(d.animals); renderLabels(d.labels); renderDist(d.scores); }
     setStatus('', `自動更新中，最後更新 ${clock()}`);
   } catch (e) {
     failures++;
