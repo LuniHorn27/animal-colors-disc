@@ -1092,7 +1092,7 @@ function renderResult(){
   html += warns.map(w=>`<div class="warn">${w}</div>`).join('');
   const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。</p><button class="btn" id="again-cancel">保留結果</button><button class="btn primary" id="again-ok">清除並重新作答</button></div>`;
   const shareBtns = (id) => `<button class="btn" data-share="${id}">分享圖片</button>`;
-  const rating = `<div class="card rate-card"><h3>這個結果像你嗎？</h3><div class="rate" id="rate">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}"><span class="k">${v}</span>${['完全不像','不太像','普通','有點像','非常像'][v-1]}</button>`).join('')}</div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
+  const rating = `<div class="card rate-card"><h3>這個結果像你嗎？</h3><p class="small muted" style="margin-top:4px">看完上面的結果，憑第一印象選一個就好。</p><div class="rate" id="rate">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}"><span class="k">${v}</span>${['完全不像','不太像','普通','有點像','非常像'][v-1]}</button>`).join('')}</div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
   if (r.kind==='none'){
     html += `<div class="hero"><span class="eyebrow">你的動物本色</span><h1>暫時無法判定</h1>
       <p class="one">你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。</p></div>
@@ -1119,8 +1119,6 @@ function renderResult(){
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
       <div class="main">
-        ${reportSections(rep).map(sectionHTML).join('')}
-        <p class="small muted">${DISCLAIMER}</p>
         <div class="pair">${rating}
           <div class="card" id="share-card"><h3>分享你的結果</h3>${inAppNoteHTML('result')}
             <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
@@ -1130,6 +1128,8 @@ function renderResult(){
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
           </div>
         </div>
+        ${reportSections(rep).map(sectionHTML).join('')}
+        <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button></div>
         ${confirmHTML}
         <p class="small muted" id="invite-msg" role="status"></p>
@@ -1426,7 +1426,7 @@ function resultExtras(r){
     return;
   }
   if (!BK.enabled || r.kind==='none') return;
-  const anchor = el.querySelector('.pair');
+  const anchor = el.querySelector('#disclaimer');
   if (!anchor) return;
   anchor.insertAdjacentHTML('afterend', '<div class="card account" id="save-card"></div>');
   renderSaveCard();
