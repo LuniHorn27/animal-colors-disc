@@ -88,6 +88,30 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 .opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .opt[aria-pressed="true"] .k{background:var(--accent);color:var(--accent-ink)}
 .nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+/* 單頁作答：44 題一路往下，每題五格橫排，每格下面都有文字（注意力題要靠文字找到對的格子） */
+.quiz-head{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;margin-top:-12px}
+.quiz-head .progress{margin:8px 0 0}
+.quiz-head{padding-bottom:12px;border-bottom:1px solid var(--line)}
+.qlist{list-style:none;margin:8px 0 0;padding:0}
+.qi{padding:22px 0;border-top:1px solid var(--line);scroll-margin-top:64px}
+.qi:first-child{border-top:none}
+.qn{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.qn .miss{display:none;margin-left:8px;color:var(--err);font-weight:500}
+.qi.missing .qn .miss{display:inline}
+.qt{font-family:var(--round);font-size:clamp(19px,2.2vw,22px);line-height:1.55;margin:2px 0 14px;text-wrap:pretty}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.sc{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;border:0;background:none;text-align:center;min-width:0}
+.sc .n{display:flex;align-items:center;justify-content:center;width:100%;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:17px;font-weight:500;font-variant-numeric:tabular-nums;transition:border-color .15s,background .15s}
+.sc .l{font-size:12px;line-height:1.35;color:var(--muted)}
+.sc .l span{display:block}
+.sc[aria-pressed="true"] .n{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sc[aria-pressed="true"] .l{color:var(--ink);font-weight:500}
+.sc:focus-visible{outline:none}
+.sc:focus-visible .n{outline:3px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.sc:hover .n{border-color:var(--faint)}}
+@media (min-width:768px){.sc .n{height:52px}.sc .l{font-size:14px}.sc .l span{display:inline}}
+.quiz-end{margin-top:4px;padding-top:24px;border-top:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.quiz-end .field-err:empty{display:none}
 .info-grid{gap:20px;max-width:560px}
 /* 電腦版：兩欄並排，填滿整個版面寬度（名字｜Email、年齡層｜性別、學歷｜職業類別） */
 @media (min-width:768px){.info-grid.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;max-width:none;align-items:start}}
@@ -282,13 +306,15 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   </section>
 
   <section id="s-quiz" hidden>
-    <div class="bar-top"><span id="qcount">第 1 題，共 44 題</span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
-    <div class="progress" aria-hidden="true"><i id="qbar" style="width:0"></i></div>
-    <p class="q" id="qtext" aria-live="polite"></p>
-    <div class="opts" id="opts" role="group" aria-label="符合程度"></div>
-    <div class="nav">
-      <button class="btn" id="prev">上一題</button>
-      <span class="small muted kbd-hint">可用數字鍵 1–5 作答</span>
+    <div class="quiz-head">
+      <div class="bar-top"><span id="qcount">已答 0 題，共 44 題</span><span id="qtime">作答時間 00:00</span></div>
+      <div class="progress" aria-hidden="true"><i id="qbar" style="width:0"></i></div>
+    </div>
+    <p class="small muted">依照你平常實際的樣子，選出每一句話符合你的程度。<span class="kbd-hint">也可以用數字鍵 1–5 回答目前這一題。</span></p>
+    <ol class="qlist" id="qlist"></ol>
+    <div class="quiz-end">
+      <p class="field-err" id="quiz-err" role="alert"></p>
+      <button class="btn primary" id="quiz-done">下一步</button>
     </div>
     <p style="margin-top:32px" id="demo-row" hidden><button class="btn link" id="demo">示範：自動填完（測試用）</button></p>
   </section>
@@ -687,43 +713,69 @@ if (COHORT && BK.enabled && BK.checkClass){
 $('#agree').addEventListener('change', syncStart);
 $('#start').addEventListener('click', ()=>{
   st = {sid:newSid(), cohort:COHORT, seq:drawSequence(), answers:{}, times:{}, idx:0, info:{}, blind:null, rating:null, done:false, startedAt:Date.now()};
-  save(); show('s-quiz'); renderQ();
+  save(); show('s-quiz'); renderQuiz();
 });
-$('#resume').addEventListener('click', ()=>{ const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0; show('s-quiz'); renderQ(); });
+$('#resume').addEventListener('click', ()=>{ const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0; show('s-quiz'); renderQuiz(); });
 
-/* quiz */
-let shownAt = 0, busy=false;
-function renderQ(){
-  const id = st.seq[st.idx], it = BYID[id], total = st.seq.length;
-  const done = Math.round(st.idx/total*100);
-  $('#qcount').textContent = `第 ${st.idx+1} 題，共 ${total} 題`;
-  $('#qpct').textContent = `已完成 ${done}%`;
-  $('#qbar').style.width = done+'%';
-  $('#qtext').textContent = it.text;
-  $('#opts').innerHTML = SCALE.map((s,i)=>`<button class="opt" data-v="${i+1}" aria-pressed="${st.answers[id]===i+1}"><span class="k">${i+1}</span>${s}</button>`).join('');
-  $('#prev').disabled = st.idx===0;
-  shownAt = performance.now(); busy=false; tick();
+/* quiz：44 題放在同一頁。每題的作答時間＝從上一次作答（或打開這一頁）到這一次作答的時間，
+   改答前面的題目時，時間加在被改的那一題 */
+let lastAt = 0;
+const SCALE_L = [['非常','不符合'],['有點','不符合'],['普通'],['有點','符合'],['非常','符合']];
+const reduceMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const answeredN = () => st.seq.filter(id=>st.answers[id]).length;
+function renderQuiz(){
+  $('#qlist').innerHTML = st.seq.map((id,i)=>`<li class="qi" id="q-${id}" data-id="${id}">
+    <p class="qn">第 ${i+1} 題<span class="miss">尚未回答</span></p>
+    <p class="qt" id="qt-${id}">${esc(BYID[id].text)}</p>
+    <div class="scale" role="group" aria-labelledby="qt-${id}">${SCALE.map((sv,k)=>`<button type="button" class="sc" data-v="${k+1}" aria-pressed="${st.answers[id]===k+1}" aria-label="${k+1} ${sv}"><span class="n" aria-hidden="true">${k+1}</span><span class="l" aria-hidden="true">${SCALE_L[k].map(x=>`<span>${x}</span>`).join('')}</span></button>`).join('')}</div>
+  </li>`).join('');
+  $('#quiz-err').textContent = '';
+  lastAt = performance.now(); quizProgress(); tick();
+  const first = st.seq.find(id=>!st.answers[id]);
+  if (first && first!==st.seq[0]) requestAnimationFrame(()=>$('#q-'+first).scrollIntoView({block:'start'}));
 }
-function tick(){ if (st && !$('#s-quiz').hidden) $('#qtime').textContent = '作答時間 '+fmtClock(sumTimes(st)+(performance.now()-shownAt)); }
+function quizProgress(){
+  const n = answeredN(), total = st.seq.length;
+  $('#qcount').textContent = `已答 ${n} 題，共 ${total} 題`;
+  $('#qbar').style.width = Math.round(n/total*100)+'%';
+}
+function tick(){ if (st && !$('#s-quiz').hidden) $('#qtime').textContent = '作答時間 '+fmtClock(sumTimes(st)+(performance.now()-lastAt)); }
 setInterval(tick, 1000);
-function answer(v){
-  if (busy) return; busy=true;
-  const id = st.seq[st.idx];
-  st.answers[id]=v; st.times[id]=(st.times[id]||0)+Math.round(performance.now()-shownAt);
-  document.querySelectorAll('#opts .opt').forEach(b=>b.setAttribute('aria-pressed', String(+b.dataset.v===v)));
-  save();
-  setTimeout(()=>{
-    if (st.idx < st.seq.length-1){ st.idx++; save(); renderQ(); }
-    else { show('s-info'); }
-  }, 220);
+function answer(id, v){
+  const was = st.answers[id], now = performance.now();
+  st.answers[id]=v; st.times[id]=(st.times[id]||0)+Math.round(now-lastAt); lastAt = now;
+  st.idx = answeredN(); save();
+  const li = $('#q-'+id);
+  li.querySelectorAll('.sc').forEach(b=>b.setAttribute('aria-pressed', String(+b.dataset.v===v)));
+  li.classList.remove('missing');
+  quizProgress();
+  if (!document.querySelector('.qi.missing')) $('#quiz-err').textContent = '';
+  if (was) return;
+  /* 第一次回答這一題：捲到它後面第一個還沒回答的題目 */
+  const i = st.seq.indexOf(id), next = st.seq.slice(i+1).find(x=>!st.answers[x]);
+  const target = next ? $('#q-'+next) : $('.quiz-end');
+  setTimeout(()=>target.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:next?'start':'center'}), 220);
 }
-$('#opts').addEventListener('click', e=>{ const b=e.target.closest('.opt'); if(b) answer(+b.dataset.v); });
-$('#prev').addEventListener('click', ()=>{ if(st.idx>0){ st.idx--; save(); renderQ(); } });
+$('#qlist').addEventListener('click', e=>{ const b=e.target.closest('.sc'); if(b) answer(b.closest('.qi').dataset.id, +b.dataset.v); });
+$('#quiz-done').addEventListener('click', ()=>{
+  const left = st.seq.filter(id=>!st.answers[id]);
+  if (!left.length){ show('s-info'); return; }
+  left.forEach(id=>$('#q-'+id).classList.add('missing'));
+  $('#quiz-err').textContent = `還有 ${left.length} 題沒有回答，已經幫你移到第 ${st.seq.indexOf(left[0])+1} 題。`;
+  const li = $('#q-'+left[0]);
+  li.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
+  li.querySelector('.sc').focus({preventScroll:true});
+});
 document.addEventListener('keydown', e=>{
-  if ($('#s-quiz').hidden || $('#home-dialog').open) return;
-  if (e.key>='1' && e.key<='5') answer(+e.key);
-  else if (e.key==='ArrowLeft') $('#prev').click();
-  else if (e.key==='ArrowRight' && st.answers[st.seq[st.idx]] && st.idx<st.seq.length-1){ st.idx++; save(); renderQ(); }
+  if ($('#s-quiz').hidden || $('#home-dialog').open || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!(e.key>='1' && e.key<='5')) return;
+  /* 鍵盤焦點在某一題裡就回答那一題，否則回答第一個還沒回答的題目 */
+  const cur = document.activeElement && document.activeElement.closest && document.activeElement.closest('.qi');
+  const id = cur ? cur.dataset.id : st.seq.find(x=>!st.answers[x]);
+  if (!id) return;
+  answer(id, +e.key);
+  const nx = st.seq.slice(st.seq.indexOf(id)+1).find(x=>!st.answers[x]);
+  if (nx) setTimeout(()=>$('#q-'+nx+' .sc').focus({preventScroll:true}), 240);
 });
 /* 自動填完只給開發測試用：網址加上 ?dev 才會出現，避免受試者產生假資料 */
 $('#demo-row').hidden = !new URLSearchParams(location.search).has('dev');
