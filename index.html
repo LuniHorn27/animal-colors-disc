@@ -768,8 +768,13 @@ function show(id){
   $('#bar-qmode').hidden = id!=='s-quiz';
   document.body.classList.toggle('on-quiz', id==='s-quiz');
   $('#app').classList.toggle('wide', id==='s-result');
+  if (FLOW.includes(id)) guardOn();
   window.scrollTo(0,0);
 }
+/* 手機的返回鍵／返回手勢：整個網站是同一個網頁，進入作答、結果等畫面時先多記一筆瀏覽紀錄（網址不變），
+   按返回時就由網頁自己處理（見下方 popstate），不會直接離開網站 */
+const FLOW = ['s-quiz','s-blind','s-info','s-result','s-history'];
+function guardOn(){ try{ if (!(history.state && history.state.disc)) history.pushState({disc:1}, ''); }catch(e){} }
 
 /* home */
 document.getElementById('home-flower').outerHTML = flowerSVG({D:82,I:64,S:44,C:56},{id:'home-flower'});
@@ -1109,6 +1114,17 @@ $('#view-result').addEventListener('click', ()=>{ if (st && st.done){ renderResu
 document.querySelector('.bar-brand').addEventListener('click', e=>{
   if (inProgress() || onResult()){ e.preventDefault(); askGoHome(); }
   else if (!$('#s-home').hidden){ e.preventDefault(); window.scrollTo(0,0); }
+});
+
+/* 按返回時：作答中 → 跳出「要回到首頁嗎？」；結果頁 → 回到首頁（結果有保存）；
+   看過去的結果 → 回到我的歷次結果；首頁 → 照常離開網站 */
+window.addEventListener('popstate', ()=>{
+  if (restartDialog.open) restartDialog.close();
+  if (homeDialog.open){ homeDialog.close(); guardOn(); return; }
+  if (inProgress()){ guardOn(); askGoHome(); return; }
+  if (!$('#s-history').hidden){ goHome(); return; }
+  if (onResult()){ if (st && st.viewOnly){ guardOn(); openHistory(); } else goHome(); return; }
+  if (!(history.state && history.state.disc)) history.back();
 });
 
 /* result */
@@ -1814,7 +1830,7 @@ if (BK.enabled && BK.hasSession()){
   const cancelled = q.has('error_description');
   BK.init().then(u=>{
     USER = u; BK.takeReturnState();
-    if (q.has('code') || cancelled) history.replaceState(null, '', location.pathname + location.hash);
+    if (q.has('code') || cancelled) history.replaceState(history.state, '', location.pathname + location.hash);
     authUI();
     if (cancelled) renderSaveCard('登入沒有完成。需要的話，可以再按一次「用 Google 帳號登入」。');
   }).catch(()=>{});
