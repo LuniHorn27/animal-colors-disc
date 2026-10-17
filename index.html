@@ -159,12 +159,9 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .side,.main{display:flex;flex-direction:column;gap:16px;min-width:0}
 .pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
 .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-/* 內文裡的「D 老虎」等：不加底色，用動物色的粗體字標示。淺色模式把動物色加深一點，白底上的字才讀得清楚 */
-.ak{font-weight:700;white-space:nowrap;color:var(--ak)}
-.ak-D{--ak:color-mix(in srgb,var(--d) 75%,#000)} .ak-I{--ak:color-mix(in srgb,var(--i) 75%,#000)}
-.ak-S{--ak:color-mix(in srgb,var(--s) 75%,#000)} .ak-C{--ak:color-mix(in srgb,var(--c) 75%,#000)}
-:root[data-theme="dark"] .ak-D{--ak:var(--d)} :root[data-theme="dark"] .ak-I{--ak:var(--i)} :root[data-theme="dark"] .ak-S{--ak:var(--s)} :root[data-theme="dark"] .ak-C{--ak:var(--c)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ak-D{--ak:var(--d)} :root:not([data-theme="light"]) .ak-I{--ak:var(--i)} :root:not([data-theme="light"]) .ak-S{--ak:var(--s)} :root:not([data-theme="light"]) .ak-C{--ak:var(--c)}}
+.ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
+.ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
+.ak-S{background:color-mix(in srgb,var(--s) 22%,transparent)} .ak-C{background:color-mix(in srgb,var(--c) 20%,transparent)}
 .chart-svg{width:100%;max-width:480px;display:block;margin:4px auto 0}
 @media (max-width:767.98px){.chart-card{padding-inline:6px}.chart-card>h3,.chart-card>.legend{padding-inline:14px}}
 .hero .eyebrow{font-size:14px;color:var(--muted)}
