@@ -123,6 +123,10 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .warn.inapp{display:flex;flex-direction:column;gap:10px;align-items:flex-start;margin-bottom:12px}
 .warn.inapp .btn{min-height:44px}
 .warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:12px 16px;font-size:15px}
+.sync-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
+.sync-banner p{flex:1 1 220px;margin:0}
+.sync-banner .btn{min-height:44px}
+.sync-banner.ok{background:var(--sunk);color:var(--ink)}
 .hero{display:flex;flex-direction:column;gap:8px;padding:8px 0 8px}
 .hero .code{font-size:14px;color:var(--muted);letter-spacing:.04em}
 .hero h1 .tl{display:block}
@@ -408,7 +412,8 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
         </div>
       </div>
     </fieldset>
-    <div><button class="btn primary" id="info-next">查看我的結果</button></div>
+    <div class="stack" style="gap:8px;align-items:flex-start"><button class="btn primary" id="info-next">查看我的結果</button>
+      <p class="small muted" id="info-wait" role="status"></p></div>
   </section>
 
   <section id="s-blind" class="stack" hidden>
@@ -1030,9 +1035,22 @@ $('#info-next').addEventListener('click', ()=>{
   st.info={name:$('#uname').value.trim(), email:$('#email').value.trim(), age:$('#age').value, gender:$('#gender').value,
     edu:classMode()?'':$('#edu').value, job:classMode()?'學生':$('#job').value,
     followup: want ? {phone:$('#fu-phone').value.trim(), line:$('#fu-line').value.trim()} : null};
-  st.done=true; st.finishedAt=Date.now(); if (BK.enabled && st.sid) st.sync='sending';
-  save(); renderResult(); show('s-result');
-  if (BK.enabled && st.sid) BK.queue(st);
+  st.done=true; st.finishedAt=Date.now();
+  if (!(BK.enabled && st.sid)){ save(); renderResult(); show('s-result'); return; }
+  /* 先送出作答，確認送到了再顯示結果；最多等 15 秒，還沒送到就先顯示結果，
+     結果頁最上方會提示「還沒送出」並提供「再送一次」（背景也會自動再試） */
+  st.sync='sending'; save();
+  const btn = $('#info-next'); btn.disabled = true; btn.textContent = '正在送出作答…';
+  $('#info-wait').textContent = '通常幾秒內就會完成，請不要關閉這個頁面。';
+  BK.queue(st);
+  const sid = st.sid, t0 = Date.now();
+  const wait = setInterval(()=>{
+    const fin = !st || st.sid!==sid || st.sync==='sent' || st.sync==='rejected';
+    if (!fin && Date.now()-t0 < 15000) return;
+    clearInterval(wait);
+    btn.disabled = false; btn.textContent = '查看我的結果'; $('#info-wait').textContent = '';
+    if (st && st.sid===sid && !$('#s-info').hidden){ renderResult(); show('s-result'); }
+  }, 200);
 });
 const BLIND_PARTS = Object.fromEntries(TYPES.map(t=>[t, BLIND[t].split('。').filter(Boolean).map(x=>x+'。')]));
 let blindPage = 0;
@@ -1299,10 +1317,21 @@ const SYNC_TEXT = {sending:'正在送出作答資料…', sent:'作答資料已�
   pending:'作答資料還沒送出（網路可能不穩定）。結果不受影響；重新整理或下次打開這個網頁時會自動補送。',
   rejected:'作答資料無法送出，但結果不受影響。'};
 const syncText = () => (BK.enabled && st && st.sid && SYNC_TEXT[st.sync]) || '';
+/* 結果頁最上方的提示：作答資料還沒送出時才出現，送出後改成「已送出」 */
+const syncBannerHTML = () => (BK.enabled && st && st.sid && !st.viewOnly && st.sync && st.sync!=='sent' && st.sync!=='rejected')
+  ? `<div class="warn sync-banner" id="sync-banner" role="status"><p id="sync-banner-t">作答資料還沒送出，網頁會自動再試。請先不要關閉這個頁面。</p><button type="button" class="btn" id="sync-retry">再送一次</button></div>` : '';
+function syncBanner(){
+  const b = $('#sync-banner'); if (!b || !st) return;
+  if (st.sync==='sent'){ b.classList.add('ok'); $('#sync-banner-t').textContent = '作答資料已送出，謝謝你。'; $('#sync-retry').hidden = true; return; }
+  if (st.sync==='rejected'){ b.hidden = true; return; }
+  const sending = st.sync==='sending';
+  $('#sync-retry').disabled = sending; $('#sync-retry').textContent = sending ? '正在送出…' : '再送一次';
+}
 if (BK.onSync) BK.onSync((sid, state)=>{
   if (!st || st.sid!==sid) return;
   st.sync = state; save();
   const n = $('#sync-note'); if (n) n.textContent = syncText();
+  syncBanner();
 });
 
 function renderResult(){
@@ -1310,7 +1339,7 @@ function renderResult(){
   const warns = [];
   if (f.mostlyMid && r.kind!=='none') warns.push('你大部分的題目都選了「普通」，這份結果的參考性較低。如果想得到更準確的結果，可以重新作答，盡量選擇「有點符合」或「有點不符合」。');
   if (f.fast || f.longRun) warns.push('這次作答速度較快，或連續選了很多相同的答案，結果可能不夠準確。');
-  let html = '';
+  let html = syncBannerHTML();
   html += warns.map(w=>`<div class="warn">${w}</div>`).join('');
   const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。</p><button class="btn" id="again-cancel">保留結果</button><button class="btn primary" id="again-ok">清除並重新作答</button></div>`;
   const shareBtns = (id) => `<button class="btn" data-share="${id}">分享圖片</button>`;
@@ -1396,6 +1425,8 @@ function renderResult(){
   $('#again-cancel').addEventListener('click', ()=>{ $('#again-confirm').hidden=true; $('#again').focus(); });
   $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; $('#view-result').hidden=true; syncHomeButtons(); show('s-home'); });
   resultExtras(r);
+  const rb = $('#sync-retry');
+  if (rb){ rb.addEventListener('click', ()=>{ if (BK.flush) BK.flush().catch(()=>{}); }); syncBanner(); }
 }
 
 /* 底部固定按鈕：一直顯示；按了捲到分享卡片並產生圖片 */
