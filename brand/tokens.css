@@ -1,7 +1,7 @@
 /* 動物本色 品牌色彩與字型設定（定案 v1，2026-10-12）
    淺色：霧白底；深色模式：中性近黑底（#0F0F0F，2026-10-12 改）。四種動物色在兩種底色上對比度都至少 3:1（WCAG 2.1 公式計算），
    只用在圖形和大字；小字一律用 --ink。主要按鈕用 --ink，不用任何一種動物色。 */
-@import url("https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap");
+/* 字型由各頁面用 <link> 載入 Google Fonts（Huninn、Noto Sans TC 400/500/700），不在這裡 @import，避免字型晚一步才開始下載 */
 
 :root{
   --bg:#F1F2F4;        /* 霧白：頁面底色 */
@@ -14,6 +14,7 @@
   --btn:#1F2329; --btn-ink:#FFFFFF;
   --selected:#E6E8EB;  /* 選取中的選項底色，搭配 --ink 框線 */
   --warn-bg:#FBF0DA; --warn-ink:#7A4A08;
+  --err:#B3261E;       /* 表單錯誤訊息、錯誤框線 */
 
   /* 四種動物 */
   --d:#D66A14;  /* 老虎 */
@@ -30,11 +31,11 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
-  --btn:#F2F2F2; --btn-ink:#0F0F0F; --selected:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F;
+  --btn:#F2F2F2; --btn-ink:#0F0F0F; --selected:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F; --err:#FF9A8F;
   --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
-  --btn:#F2F2F2; --btn-ink:#0F0F0F; --selected:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F;
+  --btn:#F2F2F2; --btn-ink:#0F0F0F; --selected:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F; --err:#FF9A8F;
   --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC;
   color-scheme:dark}

@@ -18,29 +18,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="brand/tokens.css">
 <style>
-/* Dark mode: neutral near-black (#0F0F0F, not pure black, to avoid text halation) with brighter animal colors.
+/* 顏色、字型變數統一來自 brand/tokens.css（和 privacy.html、teacher.html 共用），這裡不再另外定義。
+   Dark mode: neutral near-black (#0F0F0F, not pure black, to avoid text halation) with brighter animal colors.
    Layout: a full-width site bar on top, then one reading column (max 800px) on every screen, including results — no side-by-side text columns.
    Brand 動物本色 (brand/tokens.css): neutral 霧白 ground so the four animal colors stay equal; buttons use ink, never an animal color. */
-:root{
-  --bg:#F1F2F4; --surface:#FFFFFF; --sunk:#E3E5E8; --ink:#1F2329; --muted:#5B6068; --faint:#8C9199; --line:#D7DADF;
-  --accent:#1F2329; --accent-ink:#FFFFFF; --accent-soft:#E6E8EB;
-  --warn-bg:#FBF0DA; --warn-ink:#7A4A08; --err:#B3261E;
-  --d:#D66A14; --i:#11968A; --s:#5E9A47; --c:#6576DC;
-  --round:"Huninn","Noto Sans TC","PingFang TC",sans-serif; --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
-  --accent:#F2F2F2; --accent-ink:#0F0F0F; --accent-soft:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F; --err:#FF9A8F;
-  --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0F0F0F; --surface:#1C1C1C; --sunk:#2A2A2A; --ink:#F2F2F2; --muted:#B3B3B3; --faint:#7A7A7A; --line:#333333;
-  --accent:#F2F2F2; --accent-ink:#0F0F0F; --accent-soft:#2A2A2A; --warn-bg:#3A2D12; --warn-ink:#F0CF8F; --err:#FF9A8F;
-  --d:#E8822E; --i:#1FB3A5; --s:#78B45E; --c:#8293EC; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.75;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:16px;line-height:1.75;margin:0}
 .wrap{width:100%;padding-inline:clamp(16px,4vw,48px);padding-block:28px 64px}
 #s-home,#s-quiz,#s-info,#s-blind,#s-result,#s-history{max-width:800px;margin-inline:auto}
 .home-col{display:flex;flex-direction:column;gap:16px;padding-block:clamp(8px,3vh,32px)}
@@ -48,7 +34,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16p
 .home-col .types{margin:8px 0}
 @media (min-width:768px){.home-col .types{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .start-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:16px}
-h1,h2,h3{font-family:var(--round);font-weight:400;font-synthesis:none;line-height:1.35;text-wrap:balance;margin:0}
+h1,h2,h3{font-family:var(--font-round);font-weight:400;font-synthesis:none;line-height:1.35;text-wrap:balance;margin:0}
 h1{font-size:30px} h2{font-size:22px} h3{font-size:18px}
 p{margin:0}
 .stack{display:flex;flex-direction:column;gap:16px}
@@ -57,27 +43,27 @@ p{margin:0}
 button{font:inherit;color:inherit;cursor:pointer}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:500}
 a.btn{text-decoration:none;color:var(--ink)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.link{border:none;background:none;min-height:44px;padding:0 4px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:3px solid var(--btn);outline-offset:2px}
 .types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0}
 .type{border-radius:12px;padding:12px 14px;background:var(--sunk)}
 .type{display:flex;align-items:center;gap:12px}
-.type .lt{font-family:var(--round);font-size:32px;font-weight:400;line-height:1;width:34px;text-align:center}
+.type .lt{font-family:var(--font-round);font-size:32px;font-weight:400;line-height:1;width:34px;text-align:center}
 .type b{font-size:16px}
 .dot{display:inline-block;width:18px;height:18px;border-radius:50%;flex:none}
 details{border-top:1px solid var(--line);padding-top:10px}
-summary{cursor:pointer;color:var(--accent);font-weight:500}
+summary{cursor:pointer;color:var(--btn);font-weight:500}
 details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
-.consent{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--accent-soft);cursor:pointer}
-.consent input{width:22px;height:22px;margin-top:3px;accent-color:var(--accent);flex:none}
+.consent{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--selected);cursor:pointer}
+.consent input{width:22px;height:22px;margin-top:3px;accent-color:var(--btn);flex:none}
 .consent:has(input:disabled){opacity:.5;cursor:not-allowed}
 /* quiz */
 .bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .progress{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;margin:8px 0 28px}
-.progress i{display:block;height:100%;background:var(--accent);transition:width .25s ease}
-.q{font-family:var(--round);font-size:clamp(22px,2.6vw,32px);font-weight:400;font-synthesis:none;line-height:1.5;min-height:3em;margin-bottom:24px;text-wrap:pretty}
+.progress i{display:block;height:100%;background:var(--btn);transition:width .25s ease}
+.q{font-family:var(--font-round);font-size:clamp(22px,2.6vw,32px);font-weight:400;font-synthesis:none;line-height:1.5;min-height:3em;margin-bottom:24px;text-wrap:pretty}
 .opts{display:flex;flex-direction:column;gap:10px}
 .opt{display:flex;align-items:center;gap:14px;min-height:54px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);text-align:left;transition:border-color .15s,background .15s}
 /* 手機寬度的一題一頁：選項由上往下是「非常符合」到「非常不符合」（電腦版維持由左到右 1→5） */
@@ -87,8 +73,8 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
   .opts .opt{flex:1 1 0;min-width:0;flex-direction:column;justify-content:center;text-align:center;min-height:104px;gap:10px;padding:12px 8px}
 }
 .opt .k{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--sunk);font-size:14px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
-.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
-.opt[aria-pressed="true"] .k{background:var(--accent);color:var(--accent-ink)}
+.opt[aria-pressed="true"]{border-color:var(--btn);background:var(--selected)}
+.opt[aria-pressed="true"] .k{background:var(--btn);color:var(--btn-ink)}
 .nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
 /* 單頁作答：44 題一路往下，每題五格橫排，每格下面都有文字（注意力題要靠文字找到對的格子） */
 .quiz-head{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:12px;margin-top:-12px}
@@ -110,16 +96,16 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 .qn{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .qn .miss{display:none;margin-left:8px;color:var(--err);font-weight:500}
 .qi.missing .qn .miss{display:inline}
-.qt{font-family:var(--round);font-size:clamp(19px,2.2vw,22px);line-height:1.55;margin:2px 0 14px;text-wrap:pretty}
+.qt{font-family:var(--font-round);font-size:clamp(19px,2.2vw,22px);line-height:1.55;margin:2px 0 14px;text-wrap:pretty}
 .scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 .sc{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;border:0;background:none;text-align:center;min-width:0}
 .sc .n{display:flex;align-items:center;justify-content:center;width:100%;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:17px;font-weight:500;font-variant-numeric:tabular-nums;transition:border-color .15s,background .15s}
 .sc .l{font-size:12px;line-height:1.35;color:var(--muted)}
 .sc .l span{display:block}
-.sc[aria-pressed="true"] .n{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sc[aria-pressed="true"] .n{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
 .sc[aria-pressed="true"] .l{color:var(--ink);font-weight:500}
 .sc:focus-visible{outline:none}
-.sc:focus-visible .n{outline:3px solid var(--accent);outline-offset:2px}
+.sc:focus-visible .n{outline:3px solid var(--btn);outline-offset:2px}
 @media (hover:hover){.sc:hover .n{border-color:var(--faint)}}
 @media (min-width:768px){.sc .n{height:52px}.sc .l{font-size:14px}.sc .l span{display:inline}}
 .quiz-end{margin-top:4px;padding-top:24px;border-top:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start;gap:12px}
@@ -144,12 +130,12 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .hero h1.two-t{font-size:clamp(26px,5.2vw,40px)}
 .hero h1{font-size:clamp(32px,8vw,44px)}
 .hero .one{font-size:18px}
-.prom{border-left:4px solid var(--accent);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
+.prom{border-left:4px solid var(--btn);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
 .report{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 .fold-btn{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface);text-align:left}
 .fold-btn:hover{border-color:var(--faint)}
 .fold-t{display:flex;flex-direction:column;gap:2px;min-width:0}
-.fold-h{font-family:var(--round);font-size:22px;line-height:1.35}
+.fold-h{font-family:var(--font-round);font-size:22px;line-height:1.35}
 .fold-btn svg{width:24px;height:24px;flex:none;transition:transform .2s ease}
 .fold-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .fold-body{display:flex;flex-direction:column;gap:16px;margin-top:16px}
@@ -204,7 +190,7 @@ body.on-quiz .site-bar{position:sticky;top:0;z-index:10}
 body.on-quiz .quiz-head{top:calc(61px + env(safe-area-inset-top,0px))}
 body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .bar-in{max-width:800px;margin-inline:auto;min-height:60px;display:flex;align-items:center;gap:16px}
-.bar-brand{display:flex;align-items:center;gap:10px;min-height:44px;min-width:0;font-family:var(--round);font-size:18px;line-height:1.3;color:var(--ink);text-decoration:none;flex:0 1 auto}
+.bar-brand{display:flex;align-items:center;gap:10px;min-height:44px;min-width:0;font-family:var(--font-round);font-size:18px;line-height:1.3;color:var(--ink);text-decoration:none;flex:0 1 auto}
 .bar-brand svg{width:28px;height:28px;flex:none}
 /* 之後新增的頁面連結放在 .bar-nav 裡；目前所在頁面加 aria-current="page" */
 .bar-nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;min-width:0}
@@ -250,7 +236,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .flower .pt{stroke:var(--surface);stroke-linejoin:round}
 .home-hero .flower .pt{stroke:var(--bg)}
 .donut{width:100%;max-width:480px;margin:4px auto 0}
-.donut text{font-family:var(--sans);font-weight:700;fill:var(--ink)}
+.donut text{font-family:var(--font-sans);font-weight:700;fill:var(--ink)}
 .donut .lab{font-size:13px}
 .donut .c1{font-size:12px;font-weight:400;fill:var(--muted)}
 .donut .c2{font-size:16px}
@@ -276,7 +262,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .vs-avg{margin:10px 0 0;padding-left:20px;list-style:disc;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
 .vs-avg li{margin:0}
 .vs-avg b{color:var(--ink)}
-.flower text{font-family:var(--sans);font-weight:700;fill:var(--ink)}
+.flower text{font-family:var(--font-sans);font-weight:700;fill:var(--ink)}
 .seg{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:var(--sunk);gap:4px}
 .seg button{font:inherit;font-size:15px;min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.14)}
@@ -284,7 +270,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 #s-result.mode-data .only-brand{display:none!important}
 /* 想進一步了解：勾選後才出現電話、LINE ID */
 .followup{margin:8px 0 0;padding:18px 20px 20px;border:1px solid var(--line);border-radius:14px;background:var(--surface);display:flex;flex-direction:column;gap:14px;min-width:0}
-.followup legend{float:left;width:100%;padding:0;font-family:var(--round);font-size:20px;line-height:1.35}
+.followup legend{float:left;width:100%;padding:0;font-family:var(--font-round);font-size:20px;line-height:1.35}
 .followup legend+*{clear:both}
 .fu-more{display:flex;flex-direction:column;gap:14px}
 .fu-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
@@ -301,7 +287,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 .account{display:flex;flex-direction:column;gap:12px}
 .account a,.hist-page a{color:inherit;text-underline-offset:3px}
 .check{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
-.check input{width:20px;height:20px;margin-top:4px;accent-color:var(--accent);flex:none}
+.check input{width:20px;height:20px;margin-top:4px;accent-color:var(--btn);flex:none}
 .hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .hist .opt{width:100%;justify-content:space-between;gap:16px;min-height:60px}
 .hist .opt b{font-weight:700}
