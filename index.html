@@ -184,9 +184,7 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 /* 變色龍沒有主色：建議區塊用比卡片深一階的底色、不加框（加深色框的灰底看起來像停用的欄位；和卡片同色又會看不見） */
 #s-result.cham .tip{background:var(--sunk);border-color:transparent}
 /* 這個測驗解析像你嗎？：主型動物顏色的卡片，五個大方塊排成一列，兩端寫「完全不像／非常像」，選了之後用主色填滿 */
-.rate-card{--rate-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));background:var(--rate-bg);border:2px solid var(--main,var(--ink))}
-:root[data-theme="dark"] .rate-card{--rate-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rate-card{--rate-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
+.rate-card{border:2px solid var(--main,var(--ink))}
 .rate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
 .rate .opt{justify-content:center;min-height:56px;padding:0;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
 .rate .opt[aria-pressed="true"]{background:var(--main,var(--ink));border-color:var(--main,var(--ink));color:var(--btn-ink)}
