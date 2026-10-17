@@ -1294,9 +1294,12 @@ function donutSVG(vals, center, tops=[]){
   g += parts.length>1
     ? `<g class="cm">${line(-36,'c1','你的本色')}${line(-11,'c2 two',parts[0])}${line(11,'c2 two','＋')}${line(33,'c2 two',parts[1])}</g>`
     : line(-19,'c1','你的本色') + line(12,'c2',center);
-  /* 右邊的比例：固定 D、I、S、C 的順序和大小；本色那一型旁邊放冠軍頭冠（一型是金色，組合型兩型都是銀色） */
-  const crown = tops.length===1 ? 'gold' : 'silver';
-  const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}${tops.includes(t)?CROWN(crown):''}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
+  /* 右邊的比例：固定 D、I、S、C 的順序和大小；本色的型旁邊放冠軍頭冠。
+     比例最高的是金色；組合型的第二型是銀色，但兩型分數完全一樣時兩個都是金色 */
+  /* 用原始分數比較（百分比四捨五入後，一樣的分數也可能顯示成 34%、33%） */
+  const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
+  const crownOf = t => !tops.includes(t) ? '' : CROWN(t===ranked[0] || vals[t]===vals[ranked[0]] ? 'gold' : 'silver');
+  const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}${crownOf(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
   return `<svg class="flower donut" viewBox="40 40 240 240" role="img" aria-label="本色組成：${TYPES.map(t=>LBL(t)+' '+pr[t]+'%').join('、')}">${g}</svg>${legend}`;
 }
 function patBarsHTML(vals, avg){
