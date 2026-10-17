@@ -1292,12 +1292,12 @@ function list(arr){ return `<ul>${arr.map(x=>{const [l,b]=splitLabel(x); return 
 /* 解說的段落結構（網頁與分享圖片共用） */
 /* 較長的段落（核心特質、溝通方式、壓力、關於這個結果）：v3 是陣列，顯示成條列；v1 是一段文字 */
 const textOrList = v => Array.isArray(v) ? {bullets:v} : {paras:[v]};
-/* 解析：第一段「核心特質」直接顯示在組成圖下面，其他主題收進「更多解析」（預設收起來，讓結果頁一開始不會太長） */
+/* 詳細解析收進「詳細測驗解析」：預設收起來，讓結果頁一開始不會太長 */
 function foldHTML(secs){
   const names = secs.map(x=>x.title);
   const hint = names.slice(0,3).join('、') + (names.length>3 ? `等 ${names.length} 個主題` : '');
   return `<div class="fold"><button type="button" class="fold-btn" id="fold-btn" aria-expanded="false" aria-controls="fold-body">
-      <span class="fold-t"><span class="fold-h">更多解析</span><span class="small muted">${akHTML(hint)}</span></span>
+      <span class="fold-t"><span class="fold-h">詳細測驗解析</span><span class="small muted">${akHTML(hint)}</span></span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="fold-body" id="fold-body" hidden>${secs.map(sectionHTML).join('')}</div></div>`;
 }
@@ -1373,19 +1373,15 @@ function renderResult(){
       <h1${titleLines(r)[0].length>1?' class="two-t"':''}>${titleHTML(r)}${tentative}</h1>${subLine(r)?`<span class="code">${subLine(r)}</span>`:''}<p class="one">${akHTML(rep.one)}</p>`;
     if (r.kind==='single') html += `<p class="prom">${akHTML(promText(r))}<br><span class="muted small">副型：${akHTML(LBL(r.secondary))}。${SUB[r.primary+r.secondary]}</span></p>`;
     html += `</div>`;
-    const secs = reportSections(rep);
     html += `<div class="report">
       <aside class="side">
         <div class="seg" role="group" aria-label="結果呈現方式"><button type="button" data-view="brand" aria-pressed="${VIEW==='brand'}">動物本色</button><button type="button" data-view="data" aria-pressed="${VIEW==='data'}">精確數據</button></div>
         <div class="card chart-card only-brand"><h3>你的本色組成</h3>${donutSVG(vals, animalLine(r))}
           <div class="legend"><ul class="vs-avg">${donutNotes(r).map(t=>`<li>${akHTML(t)}</li>`).join('')}</ul></div></div>
-        <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
-          <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表這一型比你的平均突出；在虛線內，代表相對不明顯。每圈相差 10 分。</span></div></div>
-        ${sectionHTML(secs[0])}
-        ${foldHTML(secs.slice(1))}
-        <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         <div class="card only-brand"><h3>四種動物的分數</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
+        <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
+          <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表這一型比你的平均突出；在虛線內，代表相對不明顯。每圈相差 10 分。</span></div></div>
         <div class="card only-data"><h3>四型分數</h3>${barsHTML(r)}
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
@@ -1399,6 +1395,8 @@ function renderResult(){
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
           </div>
         </div>
+        ${foldHTML(reportSections(rep))}
+        <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         ${rating}
         <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button><button class="btn" id="go-home">回到首頁</button></div>
         ${confirmHTML}
