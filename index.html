@@ -183,14 +183,14 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 :root[data-theme="dark"] .tip{background:color-mix(in srgb,var(--main,var(--ink)) 24%,var(--surface))}
 /* 變色龍沒有主色：建議區塊用比卡片深一階的底色、不加框（加深色框的灰底看起來像停用的欄位；和卡片同色又會看不見） */
 #s-result.cham .tip{background:var(--sunk);border-color:transparent}
-.rate{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.rate .opt{min-height:44px;padding:0 14px}
-/* five in a row only when the card itself has room (it sits beside the share card on wide screens) */
-.rate-card{container-type:inline-size}
-@container (min-width:440px){
-  .rate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
-  .rate .opt{flex-direction:column;justify-content:center;gap:6px;min-height:80px;padding:8px 4px;font-size:14px;text-align:center}
-}
+/* 這個測驗解析像你嗎？：主型動物顏色的卡片，五個大方塊排成一列，兩端寫「完全不像／非常像」，選了之後用主色填滿 */
+.rate-card{--rate-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));background:var(--rate-bg);border:2px solid var(--main,var(--ink))}
+:root[data-theme="dark"] .rate-card{--rate-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rate-card{--rate-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
+.rate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
+.rate .opt{justify-content:center;min-height:56px;padding:0;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.rate .opt[aria-pressed="true"]{background:var(--main,var(--ink));border-color:var(--main,var(--ink));color:var(--btn-ink)}
+.rate-ends{display:flex;justify-content:space-between;gap:12px;margin-top:6px;font-size:14px;color:var(--muted)}
 .share-img{display:block;width:100%;max-width:360px;max-height:520px;object-fit:cover;object-position:top;height:auto;margin:12px auto 0;border-radius:12px;border:1px solid var(--line)}
 .foot-meta{border-top:1px solid var(--line);padding-top:14px;margin-top:24px;display:flex;flex-direction:column;gap:6px}
 .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -1379,7 +1379,8 @@ function renderResult(){
   html += warns.map(w=>`<div class="warn">${w}</div>`).join('');
   const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。</p><button class="btn" id="again-cancel">保留結果</button><button class="btn primary" id="again-ok">清除並重新作答</button></div>`;
   const shareBtns = (id) => `<button class="btn" data-share="${id}">分享圖片</button>`;
-  const rating = `<div class="card rate-card"><h3>這個測驗解析像你嗎？</h3><p class="small muted" style="margin-top:4px">讀完上面的解析，選一個最接近你感覺的答案。</p><div class="rate" id="rate">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}"><span class="k">${v}</span>${['完全不像','不太像','普通','有點像','非常像'][v-1]}</button>`).join('')}</div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
+  const RATE_L = ['完全不像','不太像','普通','有點像','非常像'];
+  const rating = `<div class="card rate-card"><h3>這個測驗解析像你嗎？</h3><p class="small muted" style="margin-top:4px">點一下就好，幫我們讓測驗更準確。</p><div class="rate" id="rate" role="group" aria-label="這個測驗解析像你嗎？">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends" aria-hidden="true"><span>完全不像</span><span>非常像</span></div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
   if (r.kind==='none'){
     html += `<div class="hero"><span class="eyebrow">你的動物本色</span><h1>暫時無法判定</h1>
       <p class="one">你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。</p></div>
