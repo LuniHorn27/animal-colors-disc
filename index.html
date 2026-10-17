@@ -174,8 +174,8 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .bval{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:8px}
 .sec{padding:24px}
-.sec h3{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
-.sec h3::after{content:"";display:block;width:100%;height:4px;border-radius:2px;margin-top:6px;background:var(--main,var(--ink))}
+.sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
+.sec h3::after,h3.hl::after{content:"";display:block;width:100%;height:4px;border-radius:2px;margin-top:6px;background:var(--main,var(--ink))}
 .sec ul{margin:0;padding-left:20px}
 .sec li{margin:4px 0}
 .tip{margin-top:14px;padding:12px 16px;border-radius:12px;font-size:15px;background:color-mix(in srgb,var(--main,var(--ink)) 16%,var(--surface));border:1px solid color-mix(in srgb,var(--main,var(--ink)) 45%,transparent)}
@@ -1403,7 +1403,7 @@ function renderResult(){
   const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。</p><button class="btn" id="again-cancel">保留結果</button><button class="btn primary" id="again-ok">清除並重新作答</button></div>`;
   const shareBtns = (id) => `<button class="btn" data-share="${id}">分享圖片</button>`;
   const RATE_L = ['完全不像','不太像','普通','有點像','非常像'];
-  const rating = `<div class="card rate-card"><div class="rate-head"><h3>這個測驗解析像你嗎？</h3><span class="small muted">點一下就好，幫我們讓測驗更準確。</span></div><div class="rate" id="rate" role="group" aria-label="這個測驗解析像你嗎？">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends" aria-hidden="true"><span>完全不像</span><span>非常像</span></div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
+  const rating = `<div class="card rate-card"><div class="rate-head"><h3 class="hl">這個測驗解析像你嗎？</h3><span class="small muted">點一下就好，幫我們讓測驗更準確。</span></div><div class="rate" id="rate" role="group" aria-label="這個測驗解析像你嗎？">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends" aria-hidden="true"><span>完全不像</span><span>非常像</span></div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
   if (r.kind==='none'){
     html += `<div class="hero"><span class="eyebrow">你的動物本色</span><h1>暫時無法判定</h1>
       <p class="one">你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。</p></div>
@@ -1434,7 +1434,7 @@ function renderResult(){
         <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         ${rating}
         <div class="pair">
-          <div class="card" id="share-card"><h3>分享你的結果</h3>${inAppNoteHTML('result')}
+          <div class="card" id="share-card"><h3 class="hl">分享你的結果</h3>${inAppNoteHTML('result')}
             <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
             <div class="actions" style="margin-top:12px"><button class="btn primary" id="make-img">產生結果圖片</button></div>
             <div id="share-out" hidden><img class="share-img" id="share-img" alt="我的動物本色結果圖片">
@@ -1783,7 +1783,7 @@ function resultExtras(r){
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
   if (USER){
-    box.innerHTML = `<h3>已保存到你的帳號</h3>
+    box.innerHTML = `<h3 class="hl">已保存到你的帳號</h3>
       <p class="small muted">登入帳號：${esc(USER.email||'')}</p>
       <div class="actions"><button class="btn" id="go-history">查看我的歷次結果</button><button class="btn link" id="sign-out">登出</button></div>`;
     $('#go-history').addEventListener('click', openHistory);
@@ -1791,7 +1791,7 @@ function renderSaveCard(note){
     return;
   }
   const blocked = IN_APP ? `<div class="warn inapp"><span>Google 不允許在 ${IN_APP} 的內建瀏覽器裡登入。請改用手機的瀏覽器（例如 Chrome、Safari）打開這個網頁再登入。</span>${IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">改用瀏覽器開啟</a>` : ''}</div>` : '';
-  box.innerHTML = `<h3>想保留這次結果嗎？</h3>
+  box.innerHTML = `<h3 class="hl">想保留這次結果嗎？</h3>
     <p>用 Google 帳號登入後，這次的結果會存在你的帳號裡，換手機或過一陣子回來都看得到。</p>
     ${blocked}
     <div class="actions"><button class="btn primary" id="sign-in"${IN_APP?' disabled':''}>用 Google 帳號登入</button></div>
