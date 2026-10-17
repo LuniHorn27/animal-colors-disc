@@ -45,6 +45,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 a.btn{text-decoration:none;color:var(--ink)}
 .btn.primary{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
+/* 結果頁的主要按鈕用主型動物的顏色（變色龍用墨色）；淺色模式把顏色加深一點，白字才讀得清楚 */
+.btn.main-c{--mc:color-mix(in srgb,var(--main,var(--btn)) 80%,#000);background:var(--mc);border-color:var(--mc);color:#fff}
+:root[data-theme="dark"] .btn.main-c{--mc:var(--main,var(--btn));color:var(--btn-ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.main-c{--mc:var(--main,var(--btn));color:var(--btn-ink)}}
 .btn.link{border:none;background:none;min-height:44px;padding:0 4px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 :focus-visible{outline:3px solid var(--btn);outline-offset:2px}
 .types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0}
@@ -1419,7 +1423,7 @@ function renderResult(){
         <div class="pair">
           <div class="card" id="share-card"><h3>分享你的結果</h3>${inAppNoteHTML('result')}
             <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
-            <div class="actions" style="margin-top:12px"><button class="btn primary" id="make-img">產生結果圖片</button></div>
+            <div class="actions" style="margin-top:12px"><button class="btn primary main-c" id="make-img">產生結果圖片</button></div>
             <div id="share-out" hidden><img class="share-img" id="share-img" alt="我的動物本色結果圖片">
               <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn" id="dl-img" download="動物本色-結果.png">下載圖片</a>${shareBtns('card')}</div>
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
@@ -1777,7 +1781,7 @@ function renderSaveCard(note){
   box.innerHTML = `<h3>想保留這次結果嗎？</h3>
     <p>用 Google 帳號登入後，這次的結果會存在你的帳號裡，換手機或過一陣子回來都看得到。</p>
     ${blocked}
-    <div class="actions"><button class="btn primary" id="sign-in"${IN_APP?' disabled':''}>用 Google 帳號登入</button></div>
+    <div class="actions"><button class="btn primary main-c" id="sign-in"${IN_APP?' disabled':''}>用 Google 帳號登入</button></div>
     <p class="small muted" id="sign-in-msg" role="status">${note||''}</p>`;
   $('#sign-in').addEventListener('click', async ()=>{
     const b = $('#sign-in'); b.disabled = true; $('#sign-in-msg').textContent = '正在前往 Google 登入…';
