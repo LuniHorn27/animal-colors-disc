@@ -379,7 +379,6 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 
   <section id="s-info" class="stack" hidden>
     <h2 id="info-h">個人資料</h2>
-    <p class="muted" id="info-intro">除了標示必填的欄位，其他都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。</p>
     <div class="info-grid stack">
     <div class="form-row"><label for="uname" id="uname-label">名字</label>
       <input type="text" id="uname" autocomplete="name" maxlength="40" aria-describedby="uname-err">
@@ -1008,7 +1007,6 @@ const classMode = () => !!(st && st.cohort);
 function infoMode(){
   const cm = classMode();
   /* 說明文字：班級連結和一般連結用同一段（使用者決定，2026-10-16） */
-  $('#info-intro').textContent = '除了標示必填的欄位，其他都可以不填。這些資料只用來讓測驗更準確，不會提供給其他人或公司。';
   $('#uname-label').textContent = cm ? '名字（必填）' : '名字';
   $('#uname').required = cm;
   $('#email-hint').hidden = !cm;
