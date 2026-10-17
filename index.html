@@ -150,7 +150,11 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .fold-btn svg{width:24px;height:24px;flex:none;transition:transform .2s ease}
 .fold-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .fold-body{display:flex;flex-direction:column;gap:16px;margin-top:16px}
-@media (prefers-reduced-motion:reduce){.fold-btn svg{transition:none}}
+/* 「詳細測驗解析」還沒打開時，捲到畫面上就整個框框輕輕浮起兩次，提示可以點開 */
+@keyframes fold-float{0%,100%{transform:translateY(0);box-shadow:0 0 0 rgba(0,0,0,0)}50%{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.14);border-color:var(--faint)}}
+.fold-btn.nudge{animation:fold-float 1.4s ease-in-out 2}
+.fold-btn[aria-expanded="true"].nudge{animation:none}
+@media (prefers-reduced-motion:reduce){.fold-btn svg{transition:none}.fold-btn.nudge{animation:none}}
 .side,.main{display:flex;flex-direction:column;gap:16px;min-width:0}
 .pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
 .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
@@ -1353,6 +1357,15 @@ function renderResult(){
   el.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
   const fb = $('#fold-btn');
   if (fb) fb.addEventListener('click', ()=>{ const on = fb.getAttribute('aria-expanded')!=='true'; fb.setAttribute('aria-expanded', String(on)); $('#fold-body').hidden = !on; });
+  if (fb && window.IntersectionObserver){
+    const io = new IntersectionObserver(es=>es.forEach(e=>{
+      if (!e.isIntersecting) return;
+      if (fb.getAttribute('aria-expanded')==='true'){ io.disconnect(); return; }
+      fb.classList.remove('nudge'); void fb.offsetWidth; fb.classList.add('nudge');
+    }), {threshold:.8});
+    io.observe(fb);
+    fb.addEventListener('animationend', ()=>fb.classList.remove('nudge'));
+  }
   $('#rate').addEventListener('click', e=>{const b=e.target.closest('.opt'); if(!b) return; st.rating=+b.dataset.v; save();
     if (BK.enabled && st.sid) BK.rate(st.sid, st.rating).catch(()=>{});
     document.querySelectorAll('#rate .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#rate-msg').textContent='謝謝你的回饋！';});
