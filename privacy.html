@@ -28,25 +28,30 @@ a{color:inherit;text-underline-offset:3px}
 .lead{font-size:17px}
 .back{display:inline-flex;align-items:center;min-height:48px;padding:0 22px;margin-top:32px;border-radius:12px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:500}
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.lang-sw{margin:0 0 8px;text-align:right}
+.lang-sw a{color:var(--muted)}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
-<header class="site-bar"><div class="bar-in"><a class="bar-brand" href="./"><img src="brand/logo-mark.svg" alt="">測出你的動物本色</a></div></header>
+<header class="site-bar"><div class="bar-in"><a class="bar-brand" href="./"><img src="brand/logo-mark.svg" alt=""><span id="brand-t">測出你的動物本色</span></a></div></header>
 <main>
+<p class="lang-sw"><a href="?lang=en" data-lang-to="en" lang="en">English</a></p>
+<div data-lang="zh">
   <h1>隱私說明</h1>
-  <p class="muted">最後更新：2026 年 10 月 16 日</p>
+  <p class="muted">最後更新：2026 年 10 月 18 日</p>
   <p class="lead">這份說明告訴你，使用「測出你的動物本色｜DISC 行為風格測驗」時，我們會收集哪些資料、拿來做什麼、存放在哪裡，以及你可以怎麼查詢或刪除自己的資料。</p>
 
   <h2>我們收集哪些資料</h2>
   <ul>
     <li><b>作答資料：</b>抽到的題目、每一題的答案和作答時間、作答方式（一題一頁或全部列出）、最後兩頁「選一段最像你的描述」的選擇、「這個結果像你嗎？」的評分，以及根據答案算出的結果。</li>
+    <li><b>作答語言：</b>你作答時使用的語言（中文或英文）。</li>
     <li><b>基本資料（選填）：</b>年齡層、性別、學歷、職業類別。</li>
     <li><b>名字和 Email：</b>一般作答時是選填；參加班級活動時，名字必填。</li>
     <li><b>進一步了解的意願和聯絡方式（選填）：</b>你勾選「想進一步了解」時，我們會記錄這個意願；你也可以留下電話或 LINE ID，讓我們和你聯絡。</li>
     <li><b>班級代碼：</b>從老師提供的活動連結進入時，會自動記錄你參加的是哪一場活動。</li>
     <li><b>登入資料（你選擇登入時）：</b>用 Google 帳號登入時，我們會取得你的 Google 帳號 Email 和名稱；用 Email 登入時，會取得你用來登入的 Email。</li>
     <li><b>防止自動程式的檢查：</b>送出作答前，Cloudflare Turnstile 會檢查瀏覽器資訊和 IP 位址，用來分辨真人和自動程式。我們不會保存這些資訊。</li>
-    <li><b>存在你裝置上的資料：</b>作答進度、你的結果、深色模式設定，以及還沒送出的作答，會存在你自己的瀏覽器裡，讓你下次打開時可以接著使用。</li>
+    <li><b>存在你裝置上的資料：</b>作答進度、你的結果、深色模式和語言設定，以及還沒送出的作答，會存在你自己的瀏覽器裡，讓你下次打開時可以接著使用。</li>
   </ul>
 
   <h2>資料的用途</h2>
@@ -86,5 +91,83 @@ a{color:inherit;text-underline-offset:3px}
   <p class="muted">這份說明更新時，會修改上方的「最後更新」日期。</p>
 
   <a class="back" href="./">回到測驗</a>
+</div>
+<div data-lang="en" lang="en" hidden>
+  <h1>Privacy Policy</h1>
+  <p class="muted">Last updated: 18 October 2026</p>
+  <p class="lead">This English version is provided for convenience. If it differs from the Chinese version, the Chinese version prevails.</p>
+  <p class="lead">This policy explains what information we collect when you use "What's Your Inner Animal? | DISC Behavioral Style Test," what we use it for, where it is stored, and how you can access or delete your own data.</p>
+
+  <h2>What we collect</h2>
+  <ul>
+    <li><b>Your answers:</b> the questions you were given, your answer and response time for each question, how you answered (one question per page or all questions on one page), your choices on the last two pages ("pick the description that sounds most like you"), your rating of "Does this analysis sound like you?", and the result calculated from your answers.</li>
+    <li><b>Language:</b> the language you used to take the test (Chinese or English).</li>
+    <li><b>Basic information (optional):</b> age group, gender, education, and occupation.</li>
+    <li><b>Name and email:</b> optional when you take the test on your own; your name is required when you take part in a class activity.</li>
+    <li><b>Interest in learning more, and contact details (optional):</b> if you check the box to learn more, we record that you are interested. You can also leave a phone number or LINE ID so we can contact you.</li>
+    <li><b>Class code:</b> if you open the test from an activity link provided by a teacher, we automatically record which activity you joined.</li>
+    <li><b>Sign-in information (if you choose to sign in):</b> when you sign in with Google, we receive the email address and name of your Google account. When you sign in with email, we receive the email address you use to sign in.</li>
+    <li><b>Bot check:</b> before your answers are sent, Cloudflare Turnstile checks browser information and your IP address to tell people apart from automated programs. We do not keep this information.</li>
+    <li><b>Data stored on your device:</b> your progress, your result, your dark mode and language settings, and any answers not yet sent are stored in your own browser so you can continue next time.</li>
+  </ul>
+
+  <h2>How we use your data</h2>
+  <ul>
+    <li>To calculate and show your test result.</li>
+    <li>To improve this test: we analyze the quality of the questions and the accuracy of the test, and build reference standards. These analyses use data without names or email addresses.</li>
+    <li>When you take part in an activity run by a school or organization: your name and test result will be provided to that school or organization for student guidance and activity-related purposes.</li>
+    <li>If you enter your email: to send your result to your email address.</li>
+    <li>If you check the box to learn more and leave a phone number or LINE ID: to contact you about career directions or a more detailed explanation of your result. Your phone number and LINE ID will not be given to schools or organizations.</li>
+    <li>If you sign in: to save your past results.</li>
+  </ul>
+  <p>We do not sell your data, use it for advertising, or give it to any person or company other than those listed above.</p>
+
+  <h2>Use of Google account data</h2>
+  <p>When you sign in with Google, we only receive your email address and name, and we use them only to identify your account and save your results. This data is not used for advertising and is not passed on to anyone else. Our use of Google account data complies with the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+  <h2>Where your data is stored and how it is protected</h2>
+  <ul>
+    <li>Your answers and account data are stored in a Supabase database hosted in Tokyo, Japan. The website is served by Cloudflare.</li>
+    <li>All data is encrypted while it is sent over the internet (HTTPS).</li>
+    <li>Names, email addresses, phone numbers, and LINE IDs are stored separately from your answers, and only the site administrator can read them.</li>
+    <li>The database has access rules: people who are not signed in cannot read any data, and signed-in users can only read their own results.</li>
+  </ul>
+
+  <h2>How long we keep your data</h2>
+  <p>We keep data only for as long as needed for the purposes above. You can ask us to delete it at any time.</p>
+
+  <h2>Your rights</h2>
+  <p>Under Taiwan's Personal Data Protection Act, you can ask to look up, view, or get a copy of your data, and you can ask us to add to, correct, stop using, or delete it.</p>
+  <ul>
+    <li><b>If you have signed in:</b> on the "My past results" page, there is a "Delete" button next to each result, so you can delete any result yourself. To delete all your data at once, or the account itself, please email the address below.</li>
+    <li><b>If you have not signed in:</b> please email the address below with the date you took the test and the name or email you entered, so we can find your data.</li>
+  </ul>
+
+  <h2>Contact us</h2>
+  <p>If you have any questions about this policy, or want to access or delete your data, please email <a href="mailto:a21420000@gmail.com">a21420000@gmail.com</a>.</p>
+  <p class="muted">When this policy is updated, we will change the "Last updated" date above.</p>
+
+  <a class="back" href="./">Back to the test</a>
+</div>
 </main>
+<script>/* 語言：網址的 ?lang=（zh 或 en）→ 上次選的 → 中文。點切換連結會記住選擇 */
+(function(){
+  var q = (new URLSearchParams(location.search).get('lang') || '').toLowerCase(), s = null;
+  try { s = localStorage.getItem('disc-lang'); } catch(e){}
+  function show(lang, save){
+    var en = lang === 'en';
+    document.querySelector('[data-lang="zh"]').hidden = en;
+    document.querySelector('[data-lang="en"]').hidden = !en;
+    document.documentElement.lang = en ? 'en' : 'zh-Hant-TW';
+    document.title = en ? "Privacy Policy | What's Your Inner Animal? | DISC Behavioral Style Test" : '隱私說明｜測出你的動物本色｜DISC 行為風格測驗';
+    document.getElementById('brand-t').textContent = en ? "What's Your Inner Animal?" : '測出你的動物本色';
+    var a = document.querySelector('[data-lang-to]');
+    a.dataset.langTo = en ? 'zh' : 'en'; a.textContent = en ? '中文' : 'English'; a.lang = en ? 'zh-Hant-TW' : 'en';
+    a.href = '?lang=' + a.dataset.langTo;
+    if (save) { try { localStorage.setItem('disc-lang', lang); } catch(e){} }
+  }
+  show(q === 'en' || q === 'zh' ? q : (s === 'en' ? 'en' : 'zh'), q === 'en' || q === 'zh');
+  document.querySelector('[data-lang-to]').addEventListener('click', function(e){ e.preventDefault(); show(this.dataset.langTo, true); history.replaceState(null, '', '?lang=' + document.documentElement.lang.slice(0, 2)); });
+})();
+</script>
 </html>
