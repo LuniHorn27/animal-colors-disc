@@ -423,7 +423,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     </div>
     <h2 id="blind-h">憑直覺，選一段最像的描述</h2>
     <div class="blind" id="blind-opts" role="group" aria-labelledby="blind-h"></div>
-    <div class="actions"><button class="btn" id="blind-prev" hidden>上一題</button></div>
+    <div class="actions"><button class="btn" id="blind-prev">上一題</button></div>
   </section>
 
   <section id="s-result" class="stack" hidden></section>
@@ -891,7 +891,10 @@ function record(id, v){
    免得填完基本資料就以為測驗已經結束。
    直覺題分兩頁：每型的描述拆成前後兩句，各頁四個選項、順序各自隨機。
    st.blind＝第 1 頁的選擇（沿用原本欄位，後端相容），st.blind2＝第 2 頁的選擇 */
-function quizDone(){ const had = optsFocused($('#s-quiz')); st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save(); show('s-blind'); renderBlind(0, had); }
+function quizDone(){ const had = optsFocused($('#s-quiz'));
+  /* 從直覺題按「上一題」回去改題目再回來時，保留原本的選項順序和選擇 */
+  if (!st.blindOrders){ st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; }
+  save(); show('s-blind'); renderBlind(0, had); }
 
 /* 一題一頁 */
 /* 重畫選項時，鍵盤焦點原本在選項上（或剛從上一題的選項過來），就把焦點放回新選項：
@@ -1068,7 +1071,6 @@ function renderBlind(page, hadFocus){
   $('#blind-pct').textContent = `已完成 ${Math.round(no/total*100)}%`;
   $('#bbar').style.width = Math.round(no/total*100)+'%';
   $('#blind-opts').innerHTML = st.blindOrders[page].map(t=>`<button class="opt" data-t="${t}" aria-pressed="${pick===t}">${BLIND_PARTS[t][page]}</button>`).join('');
-  $('#blind-prev').hidden = page===0;
   blindBusy = false;
   refocusOpts($('#blind-opts'), had);
 }
@@ -1085,7 +1087,12 @@ $('#blind-opts').addEventListener('click', e=>{
     show('s-info');
   }, 220);
 });
-$('#blind-prev').addEventListener('click', ()=>{ renderBlind(0, optsFocused($('#s-blind'))); window.scrollTo(0,0); });
+/* 第 2 頁的上一題回到第 1 頁；第 1 頁的上一題回到最後一題題目 */
+$('#blind-prev').addEventListener('click', ()=>{
+  if (blindPage===1){ renderBlind(0, optsFocused($('#s-blind'))); window.scrollTo(0,0); return; }
+  st.idx = st.seq.length-1; save(); show('s-quiz'); renderQuiz();
+  if (QMODE==='list') requestAnimationFrame(()=>$('#q-'+st.seq[st.idx]).scrollIntoView({block:'start'}));
+});
 
 /* 回到首頁：作答中（題目、最後幾個問題、盲選）和結果頁都要先確認。
    作答進度可從首頁「繼續上次的作答」接著做；結果可從首頁「查看我的結果」再打開 */
