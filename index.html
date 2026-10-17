@@ -1513,8 +1513,8 @@ async function buildShareImage(r, reveal){
   { // brand row: logo mark + name
     const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
     x.save(); x.translate(PAD, y-38); x.scale(.48,.48); M.forEach(([d,t])=>{ x.fillStyle=P[t]; x.fill(new Path2D(d)); }); x.restore();
-    x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText('動物本色', PAD+62, y);
-    const bw=x.measureText('動物本色').width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText('DISC 行為風格測驗', PAD+62+bw+20, y); }
+    x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText('測出你的動物本色', PAD+62, y);
+    const bw=x.measureText('測出你的動物本色').width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText('DISC 行為風格測驗', PAD+62+bw+20, y); }
   { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0); let size=92; x.font=`400 ${size}px ${ROUND}`;
     while (Math.max(...lines.map(lw))>maxW && size>32){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
     lines.forEach(l=>{ y+=size+20; let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }); }
