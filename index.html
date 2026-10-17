@@ -189,7 +189,10 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 /* 1–5：墨色（和「開始作答」等主要按鈕同色）。沒選的是墨色框線和數字，選了之後填滿：淺色模式黑底白字、深色模式白底黑字 */
 .rate .opt{justify-content:center;min-height:56px;padding:0;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--btn);border:2px solid var(--btn)}
 .rate .opt[aria-pressed="true"]{background:var(--btn);border-color:var(--btn);color:var(--btn-ink)}
-.rate-ends{display:flex;justify-content:space-between;gap:12px;margin-top:6px;font-size:14px;color:var(--muted)}
+/* 兩端是「完全不像／非常像」，中間是「謝謝你的回饋！」（同一行、在卡片水平置中） */
+.rate-ends{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:12px;margin-top:6px;font-size:14px;color:var(--muted)}
+.rate-ends>:last-child{text-align:right}
+#rate-msg{white-space:nowrap}
 .share-img{display:block;width:100%;max-width:360px;max-height:520px;object-fit:cover;object-position:top;height:auto;margin:12px auto 0;border-radius:12px;border:1px solid var(--line)}
 .foot-meta{border-top:1px solid var(--line);padding-top:14px;margin-top:24px;display:flex;flex-direction:column;gap:6px}
 .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -1403,7 +1406,7 @@ function renderResult(){
   const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。</p><button class="btn" id="again-cancel">保留結果</button><button class="btn primary" id="again-ok">清除並重新作答</button></div>`;
   const shareBtns = (id) => `<button class="btn" data-share="${id}">分享圖片</button>`;
   const RATE_L = ['完全不像','不太像','普通','有點像','非常像'];
-  const rating = `<div class="card rate-card"><div class="rate-head"><h3 class="hl">這個測驗解析像你嗎？</h3><span class="small muted">點一下就好，幫我們讓測驗更準確。</span></div><div class="rate" id="rate" role="group" aria-label="這個測驗解析像你嗎？">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends" aria-hidden="true"><span>完全不像</span><span>非常像</span></div><p class="small muted" id="rate-msg" style="margin-top:8px">${st.rating?'謝謝你的回饋！':''}</p></div>`;
+  const rating = `<div class="card rate-card"><div class="rate-head"><h3 class="hl">這個測驗解析像你嗎？</h3><span class="small muted">點一下就好，幫我們讓測驗更準確。</span></div><div class="rate" id="rate" role="group" aria-label="這個測驗解析像你嗎？">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">完全不像</span><span id="rate-msg" role="status">${st.rating?'謝謝你的回饋！':''}</span><span aria-hidden="true">非常像</span></div></div>`;
   if (r.kind==='none'){
     html += `<div class="hero"><span class="eyebrow">你的動物本色</span><h1>暫時無法判定</h1>
       <p class="one">你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。</p></div>
