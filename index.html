@@ -186,8 +186,11 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 /* 這個測驗解析像你嗎？：主型動物顏色的卡片，五個大方塊排成一列，兩端寫「完全不像／非常像」，選了之後用主色填滿 */
 .rate-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px}
 .rate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
-.rate .opt{justify-content:center;min-height:56px;padding:0;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--main,var(--ink));border:2px solid var(--main,var(--ink))}
-.rate .opt[aria-pressed="true"]{background:var(--main,var(--ink));border-color:var(--main,var(--ink));color:var(--btn-ink)}
+/* 1–5 的顏色：主型動物色，淺色模式加深一點（白底上的數字、主色底上的白字才讀得清楚）；深色模式用原本的動物色 */
+.rate .opt{--mc:color-mix(in srgb,var(--main,var(--btn)) 80%,#000);justify-content:center;min-height:56px;padding:0;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--mc);border:2px solid var(--mc)}
+:root[data-theme="dark"] .rate .opt{--mc:var(--main,var(--btn))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rate .opt{--mc:var(--main,var(--btn))}}
+.rate .opt[aria-pressed="true"]{background:var(--mc);border-color:var(--mc);color:var(--btn-ink)}
 .rate-ends{display:flex;justify-content:space-between;gap:12px;margin-top:6px;font-size:14px;color:var(--muted)}
 .share-img{display:block;width:100%;max-width:360px;max-height:520px;object-fit:cover;object-position:top;height:auto;margin:12px auto 0;border-radius:12px;border:1px solid var(--line)}
 .foot-meta{border-top:1px solid var(--line);padding-top:14px;margin-top:24px;display:flex;flex-direction:column;gap:6px}
