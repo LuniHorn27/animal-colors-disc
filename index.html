@@ -225,6 +225,9 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 /* 結果頁手機版：底部固定「儲存／分享結果圖片」，捲動時一直顯示 */
 .share-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center}
 .share-dock .btn{width:100%;max-width:480px}
+/* 分享卡出現在畫面上時，底部按鈕先藏起來（同一件事不要同時出現兩個按鈕） */
+.share-dock{transition:opacity .2s ease,transform .2s ease}
+.share-dock.away{opacity:0;transform:translateY(16px);pointer-events:none;visibility:hidden;transition:opacity .2s ease,transform .2s ease,visibility 0s .2s}
 @media (max-width:767.98px){#s-result:has(.share-dock){padding-bottom:72px}body.dock-on .toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
 /* 電腦版：改成內容欄右下角的圓角小按鈕，不橫跨整個畫面 */
 @media (min-width:768px){
@@ -1396,6 +1399,10 @@ function setupShareDock(){
   const dock = $('#share-dock'), card = $('#share-card');
   if (!dock || !card) return;
   document.body.classList.add('dock-on');
+  if (window.IntersectionObserver){
+    const io = new IntersectionObserver(es=>es.forEach(e=>dock.classList.toggle('away', e.isIntersecting)), {threshold:.25});
+    io.observe(card);
+  }
   $('#dock-share').addEventListener('click', ()=>{
     card.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
     if ($('#share-out').hidden) $('#make-img').click();
