@@ -1343,7 +1343,7 @@ function sectionBody(sec){
   return b;
 }
 function sectionHTML(sec){ return `<div class="card sec"><h3>${akHTML(sec.title)}</h3>${sectionBody(sec)}</div>`; }
-const DISCLAIMER = '以上內容僅供自我了解參考。本色是你平常最自在的做事方式；每個人身上都有四種動物，只是比例不同，在不同場合也會用其他動物的方式應對。';
+const DISCLAIMER = '以上內容僅供自我了解參考，非能力評分。';
 function metaText(){ return [`本次作答 ${st.seq.length + BLIND_N} 題`, `作答時間 ${fmtDur(sumTimes(st))}`, `完成日期 ${new Date(st.finishedAt||Date.now()).toLocaleDateString('zh-TW')}`]; }
 function footMeta(note){
   return `<div class="foot-meta">${note?`<p class="small muted">${note}</p>`:''}<p class="small muted" id="sync-note" role="status">${syncText()}</p><div class="meta">${metaText().map(m=>`<span>${m}</span>`).join('')}</div></div>`;
