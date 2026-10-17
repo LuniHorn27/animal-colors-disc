@@ -881,14 +881,24 @@ function record(id, v){
    免得填完基本資料就以為測驗已經結束。
    直覺題分兩頁：每型的描述拆成前後兩句，各頁四個選項、順序各自隨機。
    st.blind＝第 1 頁的選擇（沿用原本欄位，後端相容），st.blind2＝第 2 頁的選擇 */
-function quizDone(){ st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save(); renderBlind(0); show('s-blind'); }
+function quizDone(){ const had = optsFocused($('#s-quiz')); st.blind=null; st.blind2=null; st.blindOrders=[shuffle(TYPES), shuffle(TYPES)]; save(); show('s-blind'); renderBlind(0, had); }
 
 /* 一題一頁 */
+/* 重畫選項時，鍵盤焦點原本在選項上（或剛從上一題的選項過來），就把焦點放回新選項：
+   有選過的放在選過的那一個，沒有就放在第一個。用手指或滑鼠作答的人不受影響 */
+const optsFocused = box => !!(document.activeElement && box.contains(document.activeElement));
+function refocusOpts(box, had){
+  if (!had) return;
+  const b = box.querySelector('.opt[aria-pressed="true"]') || box.querySelector('.opt');
+  if (b) b.focus({preventScroll:true});
+}
 function renderQ(){
   const id = st.seq[st.idx], it = BYID[id];
+  const had = optsFocused($('#opts'));
   quizProgress();
   $('#qtext').textContent = it.text;
   $('#opts').innerHTML = SCALE.map((sv,i)=>`<button class="opt" data-v="${i+1}" aria-pressed="${st.answers[id]===i+1}"><span class="k">${i+1}</span>${sv}</button>`).join('');
+  refocusOpts($('#opts'), had);
   $('#prev').disabled = st.idx===0;
   lastAt = performance.now(); busy=false; tick();
 }
@@ -1026,9 +1036,10 @@ $('#info-next').addEventListener('click', ()=>{
 });
 const BLIND_PARTS = Object.fromEntries(TYPES.map(t=>[t, BLIND[t].split('。').filter(Boolean).map(x=>x+'。')]));
 let blindPage = 0;
-function renderBlind(page){
+function renderBlind(page, hadFocus){
   blindPage = page;
   const pick = page===0 ? st.blind : st.blind2;
+  const had = hadFocus ?? optsFocused($('#blind-opts'));
   const no = st.seq.length + page, total = totalQ();
   $('#blind-step').textContent = `第 ${no+1} 題，共 ${total} 題`;
   $('#blind-pct').textContent = `已完成 ${Math.round(no/total*100)}%`;
@@ -1036,6 +1047,7 @@ function renderBlind(page){
   $('#blind-opts').innerHTML = st.blindOrders[page].map(t=>`<button class="opt" data-t="${t}" aria-pressed="${pick===t}">${BLIND_PARTS[t][page]}</button>`).join('');
   $('#blind-prev').hidden = page===0;
   blindBusy = false;
+  refocusOpts($('#blind-opts'), had);
 }
 /* 點一下就前進：第 1 頁 → 第 2 頁 → 結果（選項先亮一下，和作答題目一樣的節奏） */
 let blindBusy = false;
@@ -1046,11 +1058,11 @@ $('#blind-opts').addEventListener('click', e=>{
   save();
   document.querySelectorAll('#blind-opts .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
   setTimeout(()=>{
-    if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); $('#blind-h').focus?.(); return; }
+    if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); return; }
     show('s-info');
   }, 220);
 });
-$('#blind-prev').addEventListener('click', ()=>{ renderBlind(0); window.scrollTo(0,0); });
+$('#blind-prev').addEventListener('click', ()=>{ renderBlind(0, optsFocused($('#s-blind'))); window.scrollTo(0,0); });
 
 /* 回到首頁：作答中（題目、最後幾個問題、盲選）和結果頁都要先確認。
    作答進度可從首頁「繼續上次的作答」接著做；結果可從首頁「查看我的結果」再打開 */
