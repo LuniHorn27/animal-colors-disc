@@ -245,8 +245,10 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .flower .pt{stroke:var(--surface);stroke-linejoin:round}
 .home-hero .flower .pt{stroke:var(--bg)}
 /* 你的本色組成：圓餅圖在左、比例在右（手機上說明文字排到下面整行；電腦版說明放在比例下面） */
-.donut-side{display:grid;grid-template-columns:140px minmax(0,1fr);grid-template-areas:"pie legend" "notes notes";gap:16px;align-items:center;margin-top:8px}
-@media (min-width:768px){.donut-side{grid-template-columns:220px minmax(0,1fr);grid-template-areas:"pie legend" "pie notes";column-gap:32px;row-gap:4px;align-items:start}.donut-side .donut{align-self:center}}
+/* 圓餅圖盡量維持 200px，畫面變窄時先縮右邊的比例和說明（比例至少留 150px），真的不夠才把圓餅圖縮到 130px；
+   灰色說明一律放在比例下面 */
+.donut-side{display:grid;grid-template-columns:minmax(130px,200px) minmax(150px,1fr);grid-template-areas:"pie legend" "pie notes";column-gap:clamp(16px,4vw,32px);row-gap:8px;align-items:start;margin-top:8px}
+.donut-side .donut{align-self:center}
 .donut{grid-area:pie;width:100%;display:block}
 .donut text{font-family:var(--font-sans);font-weight:700;fill:var(--ink)}
 .donut .c1{font-size:19px;font-weight:400;fill:var(--muted)}
