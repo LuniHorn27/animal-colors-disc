@@ -134,7 +134,10 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .hero h1 .tp{white-space:nowrap}
 .hero h1.two-t{font-size:clamp(26px,5.2vw,40px)}
 .hero h1{font-size:clamp(32px,8vw,44px)}
-.hero .one{font-size:18px}
+/* 結果標題下的一句話：用主型動物的顏色（變色龍用墨色）；淺色模式加深一點，字才讀得清楚 */
+.hero .one{font-size:18px;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
+:root[data-theme="dark"] .hero .one{color:var(--main,var(--ink))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero .one{color:var(--main,var(--ink))}}
 .prom{border-left:4px solid var(--btn);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
 .report{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 /* 詳細測驗解析：用這個人主型動物的顏色當底色和框線（變色龍用墨色），先露出幾行「核心特質」再淡掉，下面一顆按鈕點開全部 */
