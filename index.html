@@ -1185,7 +1185,7 @@ function donutNotes(r){
   const top = r.kind==='single' ? `占比最大的 ${LBL(r.primary)}，就是你的本色。`
     : (r.kind==='combo'||r.kind==='diag') ? `${LBL(r.order[0])} 和 ${LBL(r.order[1])} 的占比最大又很接近，所以兩種都是你的本色。`
     : r.kind==='chameleon' ? '四種動物的占比都很接近，所以你是變色龍。' : '';
-  return ['把你四種動物的分數加起來當作 100%，看每一種各占多少。', '占比越大，代表這種動物在你身上越明顯。', top].filter(Boolean);
+  return ['占比越大，代表這種動物在你身上越明顯。', top].filter(Boolean);
 }
 function barsHTML(r){
   const m = pct(r.avg);
