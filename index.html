@@ -1381,7 +1381,7 @@ function renderResult(){
         <div class="card only-brand"><h3>四種動物的分數</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
         <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
-          <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表這一型比你的平均突出；在虛線內，代表相對不明顯。每圈相差 10 分。</span></div></div>
+          <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。</span></div></div>
         <div class="card only-data"><h3>四型分數</h3>${barsHTML(r)}
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
@@ -1542,7 +1542,7 @@ async function buildShareImage(r, reveal){
     x.textAlign='center'; x.fillStyle=P.ink; x.fillText(LBL(t), lx+12, ly);});
   x.textAlign='left';
   y = cy+Rr+110;
-  x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(`虛線圓：你的平均（${pct(r.avg)} 分）　點在虛線外代表比平均突出　每圈相差 10 分`, PAD, y);
+  x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(`虛線圓：你的平均（${pct(r.avg)} 分）　點在虛線外代表此型較明顯`, PAD, y);
 
   // score bars
   y+=30; const barX=PAD+200, barW=maxW-200-80, mx=barX+barW*pct(r.avg)/100, top=y+8;
