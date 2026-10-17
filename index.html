@@ -250,6 +250,8 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
    灰色說明一律放在比例下面 */
 .donut-side{display:grid;grid-template-columns:minmax(130px,200px) minmax(150px,1fr);grid-template-areas:"pie legend" "pie notes";column-gap:clamp(16px,4vw,32px);row-gap:8px;align-items:start;margin-top:8px}
 .donut-side .donut{align-self:center}
+/* 手機寬度：灰色說明改成整行放在圓餅圖下面，卡片才不會太高 */
+@media (max-width:767.98px){.donut-side{grid-template-areas:"pie legend" "notes notes"}}
 .donut{grid-area:pie;width:100%;display:block}
 .donut text{font-family:var(--font-sans);font-weight:700;fill:var(--ink)}
 .donut .c1{font-size:19px;font-weight:400;fill:var(--muted)}
