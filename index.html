@@ -345,9 +345,9 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <p id="class-note" hidden></p>
     <label class="consent" for="agree"><input type="checkbox" id="agree"><span>我了解結果僅供參考，也同意保存我的作答。</span></label>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn primary" id="resume" hidden>繼續上次的作答</button>
+      <button class="btn primary" id="view-result" hidden>查看我的結果</button>
       <button class="btn primary" id="start" disabled>開始作答</button>
-      <button class="btn" id="resume" hidden>繼續上次的作答</button>
-      <button class="btn" id="view-result" hidden>查看我的結果</button>
       <button class="btn" id="my-results" hidden>我的歷次結果</button>
     </div>
     </div>
@@ -445,6 +445,11 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   <h2 id="hd-title">要回到首頁嗎？</h2>
   <p id="hd-desc" class="muted">你的作答進度會保存在這個瀏覽器裡，之後可以在首頁按「繼續上次的作答」接著做。</p>
   <div class="actions"><button class="btn" id="hd-stay" autofocus>繼續作答</button><button class="btn primary" id="hd-go">回到首頁</button></div>
+</dialog>
+<dialog id="restart-dialog" aria-labelledby="rd-title" aria-describedby="rd-desc">
+  <h2 id="rd-title">要重新作答嗎？</h2>
+  <p id="rd-desc" class="muted"></p>
+  <div class="actions"><button class="btn" id="rd-keep" autofocus></button><button class="btn primary" id="rd-ok">清除並重新作答</button></div>
 </dialog>
 
 <script src="js/config.js"></script>
@@ -766,6 +771,15 @@ function show(id){
 document.getElementById('home-flower').outerHTML = flowerSVG({D:82,I:64,S:44,C:56},{id:'home-flower'});
 const saved = load();
 if (saved && saved.seq && !saved.done) $('#resume').hidden=false;
+/* 首頁按鈕：有作答進度或結果時，「開始作答」改成「重新作答」，按了先確認（避免不小心清掉），
+   「繼續上次的作答」或「查看我的結果」改成主要按鈕 */
+const homeState = () => { const s = (st && st.seq && !st.viewOnly) ? st : load(); return !(s && s.seq) ? null : s.done ? 'result' : 'progress'; };
+function syncHomeButtons(){
+  const has = homeState();
+  $('#start').textContent = has ? '重新作答' : '開始作答';
+  $('#start').classList.toggle('primary', !has);
+}
+syncHomeButtons();
 /* 班級連結：開始作答前確認班級代碼是管理者建好的班級，而且在開放時間內。
    連不上伺服器時不擋，送出時伺服器還會再檢查一次班級是否存在 */
 let classBlocked = false;
@@ -785,10 +799,30 @@ if (COHORT && BK.enabled && BK.checkClass){
   }).catch(()=>{});
 }
 $('#agree').addEventListener('change', syncStart);
-$('#start').addEventListener('click', ()=>{
+function beginQuiz(){
   st = {sid:newSid(), cohort:COHORT, seq:drawSequence(), answers:{}, times:{}, idx:0, info:{}, blind:null, rating:null, done:false, startedAt:Date.now()};
   save(); show('s-quiz'); renderQuiz();
+}
+const restartDialog = $('#restart-dialog');
+$('#start').addEventListener('click', ()=>{
+  const has = homeState();
+  if (!has){ beginQuiz(); return; }
+  if (has==='progress'){
+    const s = (st && st.seq && !st.done) ? st : load(), n = s.seq.filter(id=>s.answers[id]).length;
+    $('#rd-desc').textContent = `你上次已經答了 ${n} 題。重新作答會清除這些作答，從第 1 題開始，清除後無法復原。`;
+    $('#rd-keep').textContent = '繼續上次的作答';
+  } else {
+    $('#rd-desc').textContent = '重新作答會清除這個瀏覽器裡保存的結果，清除後無法復原。如果想留著，可以先到「查看我的結果」儲存結果圖片。';
+    $('#rd-keep').textContent = '保留結果';
+  }
+  if (restartDialog.showModal) restartDialog.showModal();
+  else if (window.confirm($('#rd-desc').textContent)){ clear(); beginQuiz(); }
 });
+$('#rd-keep').addEventListener('click', ()=>{
+  restartDialog.close();
+  if (homeState()==='progress') $('#resume').click();
+});
+$('#rd-ok').addEventListener('click', ()=>{ restartDialog.close(); clear(); beginQuiz(); });
 /* 繼續上次的作答：題目沒答完回到題目；答完了就接著直覺題或最後幾個問題 */
 $('#resume').addEventListener('click', ()=>{
   const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0;
@@ -1031,6 +1065,7 @@ function goHome(){
   if (st && st.viewOnly) st = load();
   $('#resume').hidden = !(st && st.seq && !st.done);
   $('#view-result').hidden = !(st && st.done);
+  syncHomeButtons();
   show('s-home');
 }
 $('#hd-stay').addEventListener('click', ()=>homeDialog.close());
@@ -1329,7 +1364,7 @@ function renderResult(){
   }
   $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
   $('#again-cancel').addEventListener('click', ()=>{ $('#again-confirm').hidden=true; $('#again').focus(); });
-  $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; $('#view-result').hidden=true; show('s-home'); });
+  $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; $('#view-result').hidden=true; syncHomeButtons(); show('s-home'); });
   resultExtras(r);
 }
 
