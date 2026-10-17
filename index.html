@@ -1319,7 +1319,7 @@ function renderResult(){
     html += `<div class="hero"><span class="eyebrow">你的動物本色</span><h1>暫時無法判定</h1>
       <p class="one">你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。</p></div>
       <div class="report"><aside class="side"><div class="card">${chartSVG(r)}</div></aside>
-      <div class="main">${rating}<div class="actions"><button class="btn primary" id="again">重新作答</button></div>${confirmHTML}${footMeta('')}</div></div>`;
+      <div class="main">${rating}<div class="actions"><button class="btn primary" id="again">重新作答</button><button class="btn" id="go-home">回到首頁</button></div>${confirmHTML}${footMeta('')}</div></div>`;
   } else {
     const rep = R[r.key];
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
@@ -1353,7 +1353,7 @@ function renderResult(){
         ${foldHTML(reportSections(rep))}
         <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         ${rating}
-        <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button></div>
+        <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button><button class="btn" id="go-home">回到首頁</button></div>
         ${confirmHTML}
         <p class="small muted" id="invite-msg" role="status"></p>
         ${footMeta('')}
@@ -1389,6 +1389,8 @@ function renderResult(){
     $('#invite').addEventListener('click', inviteFriends);
   }
   $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
+  /* 結果會保存在這個瀏覽器裡，首頁可以按「查看我的結果」再打開，所以不用再確認 */
+  $('#go-home').addEventListener('click', goHome);
   $('#again-cancel').addEventListener('click', ()=>{ $('#again-confirm').hidden=true; $('#again').focus(); });
   $('#again-ok').addEventListener('click', ()=>{ clear(); st=null; lastImage=null; $('#agree').checked=false; $('#start').disabled=true; $('#resume').hidden=true; $('#view-result').hidden=true; syncHomeButtons(); show('s-home'); });
   resultExtras(r);
