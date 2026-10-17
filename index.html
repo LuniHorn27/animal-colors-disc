@@ -1188,13 +1188,13 @@ function avgGroups(r){
 const CHAM_BARS = '你的四種分數都很接近，沒有特別突出或特別少展現的一型，能依情境切換不同的風格。';
 function vsAvgHTML(r){
   const g = avgGroups(r), ls = ts => ts.map(t=>akHTML(LBL(t))).join('、');
-  let h = `<ul class="vs-avg"><li>虛線是四種動物的平均（${pct(r.avg)} 分），用來比較四種動物之間的高和低。</li>`;
-  h += `<li>平均分數本身的高低，不代表能力或好壞，和個人作答時的習慣有關（例如：比較常選「非常符合」，平均分數就會偏高）。</li>`;
+  let h = `<ul class="vs-avg"><li>虛線是四種動物的平均（${pct(r.avg)} 分），用來比較高和低。</li>`;
+  h += `<li>平均分數的高和低，不代表能力或好壞，和個人作答時的習慣有關（例如：比較多選「非常符合」，平均分數就會偏高）。</li>`;
   if (r.kind==='chameleon') h += `<li>${CHAM_BARS}</li>`;
   else {
   if (g.above.length) h += `<li><b>高於平均</b>：${ls(g.above)}。比較貼近你的行為風格，自然而然就會表現出來。</li>`;
   if (g.equal.length) h += `<li><b>剛好在平均</b>：${ls(g.equal)}。偶爾會表現出來，但不是你最主要的風格。</li>`;
-  if (g.below.length) h += `<li><b>低於平均</b>：${ls(g.below)}。是你比較少展現的行為風格。不是做不到，只是需要刻意花力氣才能辦到。</li>`;
+  if (g.below.length) h += `<li><b>低於平均</b>：${ls(g.below)}。是比較少展現的行為風格。不是做不到，只是需要多花力氣。</li>`;
   }
   h += `</ul>`;
   return `<div>${h}</div>`;
