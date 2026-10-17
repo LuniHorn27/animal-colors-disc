@@ -1745,8 +1745,7 @@ function renderSaveCard(note){
     <p>用 Google 帳號登入後，這次的結果會存在你的帳號裡，換手機或過一陣子回來都看得到。</p>
     ${blocked}
     <div class="actions"><button class="btn primary" id="sign-in"${IN_APP?' disabled':''}>用 Google 帳號登入</button></div>
-    <p class="small muted" id="sign-in-msg" role="status">${note||''}</p>
-    <p class="small muted">使用前，請先詳閱《<a href="privacy.html">隱私說明</a>》</p>`;
+    <p class="small muted" id="sign-in-msg" role="status">${note||''}</p>`;
   $('#sign-in').addEventListener('click', async ()=>{
     const b = $('#sign-in'); b.disabled = true; $('#sign-in-msg').textContent = '正在前往 Google 登入…';
     try { await BK.signInWithGoogle(); }
