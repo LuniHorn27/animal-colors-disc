@@ -61,7 +61,7 @@ window.DISC_LANG_EN = {
   "rd.result": "Starting over will erase the result saved in this browser. This can't be undone. If you want to keep it, go to \"View my result\" first and save the result image.",
   "quiz.count": "Question {n} of {total}",
   "quiz.countList": "{n} of {total} answered",
-  "quiz.hint": "Go with your first instinct and pick what fits you best",
+  "quiz.hint": "Go with your first instinct",
   "quiz.pct": "{p}% done",
   "quiz.time": "Time {t}",
   "quiz.optsAria": "How well this describes you",
