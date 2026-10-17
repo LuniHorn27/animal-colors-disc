@@ -259,12 +259,10 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .donut-legend{grid-area:legend;list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;font-weight:700;align-self:center}
 .donut-legend li{display:flex;align-items:center;gap:8px;margin:0;min-width:0;white-space:nowrap}
 .donut-legend svg.pat{width:18px;height:18px;border-radius:50%;flex:none}
-/* 頭冠放在動物圖示左邊；每一列都留同樣寬的位置，四列和下面的說明才會對齊 */
-.crown-slot{width:24px;flex:none;display:flex;align-items:center}
-.crown{width:24px;height:21px;flex:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.crown{width:24px;height:21px;flex:none;margin-left:-1px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
 :root{--crown-gold-edge:#8A5A00;--crown-gold-gem:#C8372D;--crown-silver-edge:#5F6772;--crown-silver-gem:#3E6FB8}
 .donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
-.donut-side .legend{grid-area:notes;margin-top:0;padding-left:32px}
+.donut-side .legend{grid-area:notes;margin-top:0}
 @media (max-width:767.98px){.chart-svg .ax,.chart-svg .vl,.chart-svg .an{font-size:20px}}
 .pbars{display:flex;flex-direction:column;gap:14px;position:relative;padding-top:8px;padding-bottom:26px;margin-top:4px}
 .pbar{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:15px}
@@ -1299,7 +1297,7 @@ function donutSVG(vals, center, tops=[]){
   /* 用原始分數比較（百分比四捨五入後，一樣的分數也可能顯示成 34%、33%） */
   const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
   const crownOf = t => !tops.includes(t) ? '' : CROWN(t===ranked[0] || vals[t]===vals[ranked[0]] ? 'gold' : 'silver');
-  const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><span class="crown-slot">${crownOf(t)}</span><svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
+  const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}${crownOf(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
   return `<svg class="flower donut" viewBox="40 40 240 240" role="img" aria-label="本色組成：${TYPES.map(t=>LBL(t)+' '+pr[t]+'%').join('、')}">${g}</svg>${legend}`;
 }
 function patBarsHTML(vals, avg){
