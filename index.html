@@ -1422,7 +1422,7 @@ function renderResult(){
     const tentative = f.mostlyMid ? '（暫定）' : '';
     html += `<div class="hero"><span class="eyebrow">你的動物本色</span>
       <h1${titleLines(r)[0].length>1?' class="two-t"':''}>${titleHTML(r)}${tentative}</h1>${subLine(r)?`<span class="code">${subLine(r)}</span>`:''}<p class="one">${akHTML(rep.one)}</p>`;
-    if (r.kind==='single') html += `<p class="prom">${akHTML(promText(r))}<br><span class="muted small">副型：${akHTML(LBL(r.secondary))}。${SUB[r.primary+r.secondary]}</span></p>`;
+    if (r.kind==='single') html += `<p class="prom">${akHTML(promText(r))}<br>副型：${akHTML(LBL(r.secondary))}。${SUB[r.primary+r.secondary]}</p>`;
     html += `</div>`;
     html += `<div class="report">
       <aside class="side">
