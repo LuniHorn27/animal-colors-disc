@@ -1392,6 +1392,8 @@ function renderResult(){
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
       <div class="main">
+        ${foldHTML(reportSections(rep))}
+        <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         <div class="pair">
           <div class="card" id="share-card"><h3>分享你的結果</h3>${inAppNoteHTML('result')}
             <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
@@ -1401,8 +1403,6 @@ function renderResult(){
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
           </div>
         </div>
-        ${foldHTML(reportSections(rep))}
-        <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
         ${rating}
         <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button><button class="btn" id="go-home">回到首頁</button></div>
         ${confirmHTML}
