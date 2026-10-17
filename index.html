@@ -1415,6 +1415,7 @@ function renderResult(){
       <div class="main">
         ${foldHTML(reportSections(rep))}
         <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
+        ${rating}
         <div class="pair">
           <div class="card" id="share-card"><h3>分享你的結果</h3>${inAppNoteHTML('result')}
             <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
@@ -1424,7 +1425,6 @@ function renderResult(){
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
           </div>
         </div>
-        ${rating}
         <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button><button class="btn" id="go-home">回到首頁</button></div>
         ${confirmHTML}
         <p class="small muted" id="invite-msg" role="status"></p>
@@ -1758,7 +1758,7 @@ function resultExtras(r){
     return;
   }
   if (!BK.enabled || r.kind==='none') return;
-  const anchor = el.querySelector('.rate-card');
+  const sc = el.querySelector('#share-card'), anchor = sc ? sc.closest('.pair') : el.querySelector('.rate-card');
   if (!anchor) return;
   anchor.insertAdjacentHTML('afterend', '<div class="card account" id="save-card"></div>');
   renderSaveCard();
