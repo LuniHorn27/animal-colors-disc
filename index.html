@@ -1399,6 +1399,7 @@ if (BK.onSync) BK.onSync((sid, state)=>{
   st.sync = state; save();
   const n = $('#sync-note'); if (n) n.textContent = syncText();
   syncBanner();
+  if (state==='sent') renderPeerCard();
 });
 
 function renderResult(){
@@ -1787,6 +1788,19 @@ function resultExtras(r){
   if (!anchor) return;
   anchor.insertAdjacentHTML('afterend', '<div class="card account" id="save-card"></div>');
   renderSaveCard();
+  $('#save-card').insertAdjacentHTML('afterend', '<div class="card" id="peer-card"></div>');
+  renderPeerCard();
+}
+/* 他評「換個角度看自己」的入口：放在「想保留這次結果嗎？」下面，自己的結果處理好了再邀請別人評。
+   要等作答送出、拿到這份作答的編號（disc-claims-v1）之後才能按 */
+function renderPeerCard(){
+  const box = $('#peer-card'); if (!box || !st) return;
+  let rid = null;
+  try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
+  box.innerHTML = `<h3 class="hl">換個角度看自己</h3>
+    <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？邀請朋友、家人、老師花 2–3 分鐘評評你，看看兩邊哪裡不同。</p>
+    <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">邀請朋友評評我</a>` : '<button class="btn primary" disabled>邀請朋友評評我</button>'}</div>
+    ${rid ? '' : '<p class="small muted">作答資料送出後就能邀請。</p>'}`;
 }
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
