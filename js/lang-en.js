@@ -352,7 +352,7 @@ window.DISC_LANG_EN = {
   "C06": "I usually do things in order, finishing them one step at a time.",
   "C07": "I like to keep my things neat and well organized.",
   "C08": "I feel more at ease when there are clear rules to follow.",
-  "C09": "Before making a decision, I do enough research first.",
+  "C09": "Before making a decision, I do thorough research first.",
   "C10": "I trust data and evidence more than feelings.",
   "C11": "When I hear a piece of news, I first check whether it is true.",
   "C12": "I like to understand the full story behind things.",
@@ -434,7 +434,7 @@ window.DISC_LANG_EN = {
     "Quick decisions: Even without complete information, you can choose a direction and get things moving.",
     "Ready for challenges: The harder the task, the more committed you become.",
     "Clear goals: When a discussion loses focus, you can bring everyone back to what really matters.",
-    "Honest: When a problem comes up, you point it out directly instead of letting it drag on."
+    "Speaks up: When a problem comes up, you point it out directly instead of letting it drag on."
    ],
    "blind": [
     "When you are in a hurry, you may miss details or overlook how the people around you feel.",
@@ -817,7 +817,7 @@ window.DISC_LANG_EN = {
     "Trusted and followed: People know you have a direction, and they know you will look after them."
    ],
    "blind": [
-    "You are usually easygoing, but once you have had enough, you turn firm. Others may feel you suddenly became a different person.",
+    "You are usually easygoing, but once you reach your limit, you turn firm. Others may feel you suddenly became a different person.",
     "Because you want to take care of both progress and every person, you can take on too much responsibility.",
     "You hold firmly to a direction once it is decided, so changing plans at the last minute is hard for you.",
     "You tend to carry things on your own and rarely let others know you are under pressure."
