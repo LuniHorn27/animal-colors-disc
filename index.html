@@ -135,8 +135,8 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 /* 組合型標題（例如「D 老虎（支配型） ＋ C 貓頭鷹（分析型）」約 19.5 個字寬）：維持一行，字級跟著內容欄寬度縮放，最大 40px */
 .hero h1.two-t{font-size:min(40px,5cqi)}
 .hero h1{font-size:clamp(32px,8vw,44px)}
-/* 結果標題下的一句話：用主型動物的顏色（變色龍用墨色）；淺色模式加深一點，字才讀得清楚 */
-.hero .one{font-size:18px;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
+/* 結果標題下的一句話：粉圓字型（和標題同一種），手機 18px、電腦最大 21px；用主型動物的顏色（變色龍用墨色），淺色模式加深一點，字才讀得清楚 */
+.hero .one{font-family:var(--font-round);font-synthesis:none;font-size:clamp(18px,4.2cqi,21px);line-height:1.6;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
 :root[data-theme="dark"] .hero .one{color:var(--main,var(--ink))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero .one{color:var(--main,var(--ink))}}
 .prom{border-left:4px solid var(--btn);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
