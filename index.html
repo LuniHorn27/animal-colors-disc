@@ -324,6 +324,8 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 .hist-row .opt{flex:1 1 auto;min-width:0}
 .hist-row .hist-del{flex:none}
 .hist .confirm{margin-top:8px}
+/* 他評「換個角度看自己」：歷次結果每一筆下面的入口 */
+.hist-peer{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:var(--ink);text-underline-offset:3px}
 .view-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 @media (hover:none){.kbd-hint{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -1833,14 +1835,20 @@ function authUI(){
   if (!$('#s-result').hidden && !(st && st.viewOnly)) renderSaveCard();
 }
 /* 我的歷次結果 */
-let HIST = [];
+let HIST = [], PEER_INV = [];
+/* 他評入口：這次結果已經有邀請就打開對照結果，還沒有就去產生邀請 */
+function histPeerHTML(row){
+  const hit = PEER_INV.find(x=>x.response_id===row.id);
+  return hit ? `<a class="hist-peer" href="peer.html#k=${esc(hit.code)}">看朋友的評價（${+hit.n||0} 人評過）›</a>`
+             : `<a class="hist-peer" href="peer.html#from=${esc(row.id)}">邀請朋友評評我 ›</a>`;
+}
 async function openHistory(){
   if (st && st.viewOnly) st = load();
   show('s-history');
   $('#hist-who').textContent = USER ? `登入帳號：${USER.email||''}` : '';
   $('#hist-list').innerHTML = ''; $('#hist-msg').textContent = '正在讀取…';
   $('#del-confirm').hidden = true; $('#del-msg').textContent = '';
-  try { HIST = await BK.listMyResults(); }
+  try { [HIST, PEER_INV] = await Promise.all([BK.listMyResults(), BK.myPeerInvites ? BK.myPeerInvites() : []]); }
   catch(e){ $('#hist-msg').textContent = '無法讀取結果。請確認網路後，回到首頁再按一次「我的歷次結果」。'; return; }
   if (!HIST.length){ $('#hist-msg').textContent = '這個帳號還沒有保存的結果。做完測驗後，在結果頁按「用 Google 帳號登入」，結果就會保存到這裡。'; return; }
   $('#hist-msg').textContent = `共 ${HIST.length} 次結果，點一下可以打開。`;
@@ -1850,6 +1858,7 @@ function renderHistList(){
   $('#hist-list').innerHTML = HIST.map((row,i)=>{
     const r = score({seq:row.seq, answers:row.answers, times:row.times||{}});
     return `<li><div class="hist-row"><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? '暫時無法判定' : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button><button class="btn link hist-del" data-del="${i}" aria-label="刪除 ${fmtDate(row.created_at)} 的結果">刪除</button></div>
+      ${r.kind==='none' ? '' : histPeerHTML(row)}
       <div class="confirm" data-confirm="${i}" hidden role="alert"><p>確定要刪除 ${fmtDate(row.created_at)} 的這次結果嗎？刪除後無法復原。</p><button class="btn" data-keep="${i}">保留</button><button class="btn primary" data-delok="${i}">確定刪除</button></div></li>`;
   }).join('');
 }
