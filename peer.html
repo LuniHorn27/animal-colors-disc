@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>換個角度看自己｜動物本色</title>
+<link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
+<!-- 測試階段：還沒從主測驗加入口，先不讓搜尋引擎收錄 -->
+<meta name="robots" content="noindex">
+<meta name="description" content="邀請朋友、家人、老師用特質詞評評你，和你的自評對照，看看別人眼中的你。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="brand/tokens.css">
+<style>
+/* 他評「換個角度看自己」：顏色、字型變數來自 brand/tokens.css（和 index.html 共用），版面元件比照 index.html 結果頁。
+   這裡只多定義他評對照用的線條色 --peer（深淺兩種模式）。 */
+:root{--peer:#C2410C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--peer:#FB923C}}
+:root[data-theme="dark"]{--peer:#FB923C}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:16px;line-height:1.75;margin:0}
+h1,h2,h3{font-family:var(--font-round);font-weight:400;font-synthesis:none;line-height:1.35;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4vw,36px)} h2{font-size:22px} h3{font-size:18px}
+p{margin:0}
+a{color:inherit}
+.wrap{max-width:800px;margin-inline:auto;padding-inline:clamp(16px,4vw,48px);padding-block:28px 64px;box-sizing:content-box}
+.stack{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.muted{color:var(--muted)} .small{font-size:14px} .note{font-size:13px;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:500;color:var(--ink);text-decoration:none}
+.btn.primary{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btns{display:flex;gap:8px}
+.btns .btn{flex:1}
+:focus-visible{outline:3px solid var(--btn);outline-offset:2px}
+.warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:12px 16px;font-size:15px}
+.err{color:var(--err);font-size:14px}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:500}
+.input{min-height:48px;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface);font:inherit;color:var(--ink);width:100%}
+.link-box{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--sunk);border-radius:10px;padding:10px 12px;word-break:break-all;user-select:all}
+.warn .link-box{background:var(--surface);color:var(--ink)}
+.lead{font-size:17px;line-height:1.65}
+ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+/* 頁首（同 index.html） */
+.site-bar{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px);padding-top:env(safe-area-inset-top,0px)}
+.bar-in{max-width:800px;margin-inline:auto;min-height:60px;display:flex;align-items:center;gap:16px}
+.bar-brand{display:flex;align-items:center;gap:10px;min-height:44px;min-width:0;font-family:var(--font-round);font-size:18px;line-height:1.3;color:var(--ink);text-decoration:none;flex:0 1 auto}
+.bar-brand svg{width:28px;height:28px;flex:none}
+.bar-actions{display:flex;gap:4px;flex:none;margin-left:auto}
+.bar-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.bar-btn:hover{background:var(--sunk)}
+.bar-btn svg{width:20px;height:20px;flex:none}
+.bar-btn[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* 關係、分組 */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:0 16px;font-size:15px}
+.chip[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+.chip .n{color:var(--faint);margin-left:4px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.7}
+/* 作答 */
+.top{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress{height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--btn);transition:width .2s}
+.qt{font-family:var(--font-round);font-size:21px;line-height:1.5}
+.qt em{font-style:normal;border-bottom:2px solid var(--ink)}
+.words{display:flex;flex-direction:column;gap:10px}
+.pick-head,.word{display:grid;grid-template-columns:minmax(0,1fr) 60px 60px;gap:6px;align-items:center}
+.pick-head{padding:0 6px 0 14px;font-size:14px;font-weight:700;text-align:center;margin-bottom:-4px}
+.word{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 14px}
+.word span{font-family:var(--font-round);font-size:18px;min-width:0}
+.word.is-most{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.pick{display:flex;align-items:center;justify-content:center;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--faint);padding:0}
+.pick svg{width:20px;height:20px}
+.pick.most[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+.pick.least[aria-pressed="true"]{background:var(--sunk);color:var(--ink);border:2px solid var(--ink)}
+.q-hint{font-size:14px;color:var(--muted);min-height:1.6em;margin:0}
+/* 結果 */
+.chart{width:100%;max-width:340px;display:block;margin:0 auto}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pair .card{padding:10px 8px;display:flex;flex-direction:column;gap:4px;text-align:center}
+.pair h3{font-size:15px}
+.pair b{font-size:14px}
+.legend{display:flex;gap:16px;font-size:14px;align-items:center;flex-wrap:wrap}
+.dotc{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.dotc.self{background:var(--ink)} .dotc.peer{border:2px solid var(--peer)}
+.db{display:flex;flex-direction:column;gap:12px}
+.db-row{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;font-size:14px}
+.db-track{position:relative;height:28px}
+.db-track .axis{position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
+.db-track .mid{position:absolute;left:50%;top:2px;bottom:2px;border-left:1.5px dashed var(--faint)}
+.db-track .seg{position:absolute;top:calc(50% - 3px);height:6px;border-radius:3px;background:var(--sunk)}
+.db-track .pt{position:absolute;top:calc(50% - 8px);width:16px;height:16px;border-radius:50%;margin-left:-8px}
+.db-track .pt.self{background:var(--ink)}
+.db-track .pt.peer{background:var(--surface);border:3px solid var(--peer)}
+.db-scale{display:grid;grid-template-columns:64px 1fr;font-size:12px;color:var(--faint)}
+.db-scale div{display:flex;justify-content:space-between}
+.sec{padding:24px}
+.sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
+.sec h3::after,h3.hl::after{content:"";display:block;width:100%;height:4px;border-radius:2px;margin-top:6px;background:var(--main,var(--ink))}
+.sec ul{margin:0;padding-left:20px}
+.sec li{margin:4px 0}
+.tip{margin-top:14px;padding:12px 16px;border-radius:12px;font-size:15px;background:color-mix(in srgb,var(--main,var(--ink)) 16%,var(--surface));border:1px solid color-mix(in srgb,var(--main,var(--ink)) 45%,transparent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tip{background:color-mix(in srgb,var(--main,var(--ink)) 24%,var(--surface))}}
+:root[data-theme="dark"] .tip{background:color-mix(in srgb,var(--main,var(--ink)) 24%,var(--surface))}
+.cham .tip{background:var(--sunk);border-color:transparent}
+.tip b{display:block;font-size:14px}
+.named{display:flex;flex-direction:column;gap:8px}
+.named .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 6px;background:var(--sunk);color:var(--muted);margin-left:6px}
+.switch{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.switch button{width:52px;height:32px;border-radius:16px;border:1px solid var(--line);background:var(--sunk);position:relative;flex:none}
+.switch button::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s}
+.switch button[aria-checked="true"]{background:var(--ink);border-color:var(--ink)}
+.switch button[aria-checked="true"]::after{left:23px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:60}
+/* 動物標籤、花紋（同 index.html） */
+.ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
+.ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
+.ak-S{background:color-mix(in srgb,var(--s) 22%,transparent)} .ak-C{background:color-mix(in srgb,var(--c) 20%,transparent)}
+.types{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.type{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:12px;background:var(--sunk);text-align:center}
+.type .pat{width:34px;height:34px;border-radius:50% 50% 50% 6px;display:block}
+.type b{font-family:var(--font-round);font-weight:400;font-size:16px;line-height:1.3}
+.type small{font-size:12px;color:var(--muted)}
+.chips.rel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.chips.rel .chip{padding:0}
+/* 評的人結果（同 index.html 結果頁的標題、一句話、可展開的解析卡片） */
+.hero{display:flex;flex-direction:column;gap:6px}
+.hero .eyebrow{font-size:15px;color:var(--muted)}
+.hero h1{font-size:clamp(26px,7vw,40px)}
+.hero h1 .tl{display:inline-block;white-space:nowrap}
+.hero h1 .plus{margin:0 6px;color:var(--muted)}
+.hero .one{font-size:18px;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
+:root[data-theme="dark"] .hero .one{color:var(--main,var(--ink))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero .one{color:var(--main,var(--ink))}}
+.flower{width:100%;max-width:280px;display:block;margin:0 auto}
+.flower text{fill:var(--ink);font-weight:700}
+.flower .pt{stroke:var(--surface)}
+.mini-cta{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px;border-radius:14px;border:2px solid var(--main,var(--ink));background:var(--fold-bg)}
+:root[data-theme="dark"] .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
+.fold-h{font-family:var(--font-round);font-size:22px;line-height:1.35}
+.fold-peek{position:relative;align-self:stretch;max-height:116px;overflow:hidden;font-size:15px}
+.fold-peek ul{margin:0;padding-left:20px} .fold-peek li{margin:4px 0}
+.fold-peek::after{content:"";position:absolute;left:0;right:0;bottom:0;height:72px;background:linear-gradient(to bottom,transparent,var(--fold-bg));pointer-events:none}
+.fold-card.open .fold-peek{display:none}
+.fold-btn{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 20px;border:0;border-radius:999px;background:var(--main,var(--ink));color:var(--btn-ink);font-size:19px;font-weight:700}
+.fold-btn svg{width:22px;height:22px;flex:none;transition:transform .2s ease}
+.fold-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.fold-body{display:flex;flex-direction:column;gap:16px;align-self:stretch}
+/* 作答中要離開時的確認（同 index.html 的「要回到首頁嗎？」） */
+.leave{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(560px,calc(100% - 32px));z-index:70;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;background:var(--warn-bg);color:var(--warn-ink);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+svg text{font-family:var(--font-sans)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
+
+<header class="site-bar">
+  <div class="bar-in">
+    <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span>測出你的動物本色</span></a>
+    <div class="bar-actions">
+      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl">深色模式</span></button>
+    </div>
+  </div>
+</header>
+<svg id="pat-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
+<main class="wrap" id="app"></main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="js/config.js"></script>
+<script src="js/peer-bank.js"></script>
+<script src="js/peer-report.js"></script>
+<script src="js/peer-backend.js"></script>
+<script>
+'use strict';
+const B = PeerBank, R = PeerReport, P = PeerBackend, esc = R.esc, $ = (s) => document.querySelector(s);
+const TYPES = B.TYPES;
+const ANIMAL = { D: '老虎', I: '孔雀', S: '無尾熊', C: '貓頭鷹' };
+const COLOR = { D: 'var(--d)', I: 'var(--i)', S: 'var(--s)', C: 'var(--c)' };
+const DIRS = { D: [-1, -1], I: [1, -1], S: [1, 1], C: [-1, 1] };
+const TNAME = { D: '支配', I: '影響', S: '穩定', C: '分析' };
+const ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
+const ICON_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ---------- 動物花紋、四瓣花（和 index.html 同一份圖案資料） ---------- */
+const PAT = {
+  D:{w:44,h:44,rot:-32,scale:.9,base:'#D66A14',els:[['path','M0 9C11 3 24 15 44 7L44 14C25 22 11 10 0 15Z','#3A1C07'],['path','M0 31C13 26 27 37 44 30L44 35C27 43 13 32 0 37Z','#3A1C07']]},
+  I:{w:40,h:40,base:'#11968A',els:[['ell',10,11,8,10,0,'#0B4F66'],['ell',10,12,5,6.4,0,'#F3C24F'],['ell',10,13,2.8,2.8,0,'#142A4C'],['ell',30,31,8,10,0,'#0B4F66'],['ell',30,32,5,6.4,0,'#F3C24F'],['ell',30,33,2.8,2.8,0,'#142A4C']]},
+  S:{w:36,h:36,base:'#5E9A47',els:[['ell',9,10,3.6,8.5,38,'#3C6B30'],['ell',27,27,3.6,8.5,-38,'#3C6B30'],['ell',27,8,2.2,2.2,0,'#DCEBD3'],['ell',9,28,2.2,2.2,0,'#DCEBD3']]},
+  C:{w:20,h:16,base:'#6576DC',els:[['line','M0 16A10 10 0 0 1 20 16M-10 8A10 10 0 0 1 10 8M10 8A10 10 0 0 1 30 8','#222A6E',2]]}
+};
+function patSVG(t){
+  const p = PAT[t];
+  const els = p.els.map(e => e[0]==='path' ? `<path d="${e[1]}" fill="${e[2]}"/>`
+    : e[0]==='ell' ? `<ellipse cx="${e[1]}" cy="${e[2]}" rx="${e[3]}" ry="${e[4]}" transform="rotate(${e[5]} ${e[1]} ${e[2]})" fill="${e[6]}"/>`
+    : `<path d="${e[1]}" fill="none" stroke="${e[2]}" stroke-width="${e[3]}"/>`).join('');
+  const tf = p.rot ? ` patternTransform="rotate(${p.rot}) scale(${p.scale})"` : '';
+  return `<pattern id="pat-${t}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse"${tf}><rect width="${p.w}" height="${p.h}" fill="${p.base}"/>${els}</pattern>`;
+}
+document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('');
+const swatch = (t) => `<svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-${t})"/></svg>`;
+// 四瓣花：方向同四向圖；半徑用分數的平方根換算，面積才和分數成正比。v：-1~1，0 是四型平均（虛線圓）
+const PETAL = { D: [180, 270], I: [270, 360], S: [0, 90], C: [90, 180] };
+function petalPath(cx, cy, r, a1, a2) {
+  const p = (a) => [cx + r * Math.cos(a * Math.PI / 180), cy + r * Math.sin(a * Math.PI / 180)].map((x) => +x.toFixed(1));
+  const [x1, y1] = p(a1), [x2, y2] = p(a2);
+  return `M${cx} ${cy}L${x1} ${y1}A${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y2}Z`;
+}
+function flowerSVG(v, label) {
+  const cx = 120, cy = 120, R0 = 100, span = spanOf(v);
+  const val = (t) => Math.max(4, Math.min(100, 50 + 45 * v[t] / span));
+  const r = (x) => R0 * Math.sqrt(x / 100);
+  let g = TYPES.map((t) => `<path class="pt" d="${petalPath(cx, cy, r(val(t)), ...PETAL[t])}" fill="url(#pat-${t})" stroke-width="4"/>`).join('');
+  g += `<circle cx="${cx}" cy="${cy}" r="${r(50).toFixed(1)}" fill="none" stroke="var(--surface)" stroke-width="4" opacity=".7"/><circle cx="${cx}" cy="${cy}" r="${r(50).toFixed(1)}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="5 4"/>`;
+  const L = { D: [4, 14, 'start'], I: [236, 14, 'end'], S: [236, 234, 'end'], C: [4, 234, 'start'] };
+  g += TYPES.map((t) => `<text x="${L[t][0]}" y="${L[t][1]}" text-anchor="${L[t][2]}" font-size="13">${t} ${ANIMAL[t]}</text>`).join('');
+  return `<svg class="flower" viewBox="0 0 240 240" role="img" aria-label="${esc(label)}">${g}</svg>`;
+}
+
+/* ---------- 結果標題：和 index.html 一樣寫成「I 孔雀（影響型）」，組合型依分數高低排 ---------- */
+function typesOf(res) {
+  const key = keyOf(res);
+  if (key === 'CH') return [];
+  const ts = key.split('');
+  const order = (res && res.order) || TYPES;
+  return ts.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+}
+const mainColor = (res) => { const ts = typesOf(res); return ts.length ? COLOR[ts[0]] : null; };
+function heroTitle(res) {
+  const ts = typesOf(res);
+  if (!ts.length) return '<span class="tl">變色龍</span>';
+  return ts.map((t) => `<span class="tl" style="color:${COLOR[t]}">${t} ${ANIMAL[t]}（${TNAME[t]}型）</span>`).join('<span class="plus">＋</span>');
+}
+const ak = (t) => `<span class="ak ak-${t}">${ANIMAL[t]}</span>`;
+
+/* ---------- 深色模式開關（同 index.html：沒選過時跟著系統，切換後記住） ---------- */
+const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : !!(darkMQ && darkMQ.matches); };
+const syncTheme = () => $('#bar-theme').setAttribute('aria-checked', String(isDark()));
+$('#bar-theme').addEventListener('click', () => {
+  const t = isDark() ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t; try { localStorage.setItem('disc-theme', t); } catch (e) {}
+  syncTheme();
+});
+if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', syncTheme);
+syncTheme();
+
+/* ---------- 作答中要離開時先確認（C2） ---------- */
+let quizActive = false;
+document.querySelector('.bar-brand').addEventListener('click', (e) => {
+  if (!quizActive) return;
+  e.preventDefault();
+  if (document.querySelector('.leave')) return;
+  const box = document.createElement('div');
+  box.className = 'leave'; box.setAttribute('role', 'alertdialog'); box.setAttribute('aria-label', '要離開嗎？');
+  box.innerHTML = '<p><b>要離開嗎？</b>已經選的答案會消失，評價也不會送出。</p><div class="btns"><button class="btn primary" data-stay>繼續作答</button><button class="btn" data-go>離開</button></div>';
+  document.body.appendChild(box);
+  box.querySelector('[data-stay]').focus();
+  box.querySelector('[data-stay]').addEventListener('click', () => box.remove());
+  box.querySelector('[data-go]').addEventListener('click', () => { quizActive = false; location.href = './'; });
+});
+const PRIVACY = 'privacy.html#peer';
+const app = $('#app');
+const view = (html, keepScroll = false) => { app.innerHTML = html; if (!keepScroll) window.scrollTo(0, 0); };
+// 網址很快換來換去時，較早、還在等伺服器的畫面不能蓋掉新的：每次 render 拿一個編號，等完伺服器先確認自己還是最新的
+let renderId = 0;
+class Stale extends Error {}
+const still = (my) => { if (my !== renderId) throw new Stale(); };
+const pageUrl = (hash) => location.origin + location.pathname + hash;
+const keyOf = (r) => (!r || !r.key || r.kind === 'none' || r.kind === 'chameleon') ? 'CH' : r.key;
+const typeName = (key) => R.TEXT[key].name + '型';
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => { t.hidden = true; }, 2200);
+}
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); toast('已複製'); }
+  catch (e) { toast('無法自動複製，請長按連結自行複製'); }
+}
+function message(title, body, actions = '') {
+  view(`<div class="stack"><h2>${title}</h2><p class="muted">${body}</p>${actions}</div>`);
+}
+const failView = () => message('連不上伺服器', '請檢查網路，稍後再試一次。', '<button class="btn primary" onclick="render()">再試一次</button>');
+
+/* ---------- 四向圖（方向同 index.html：老虎左上、孔雀右上、無尾熊右下、貓頭鷹左下） ---------- */
+// layers: [{v:{D,I,S,C}（-1~1）, peer:boolean}]；span：同一張圖或並排的圖要用同一個刻度
+function spanOf(...vals) { return Math.max(0.3, ...vals.flatMap((v) => TYPES.map((t) => Math.abs(v[t])))); }
+function chartSVG(layers, span, { small = false } = {}) {
+  const W = small ? 180 : 320, H = small ? 180 : 290, R0 = small ? 56 : 112, cx = W / 2, cy = H / 2, k = Math.SQRT1_2;
+  const frac = (x) => 0.5 + (x / span) * 0.42;
+  let g = `<circle cx="${cx}" cy="${cy}" r="${R0}" fill="none" stroke="var(--line)"/>`;
+  g += `<line x1="${cx}" y1="${cy - R0 - 6}" x2="${cx}" y2="${cy + R0 + 6}" stroke="var(--faint)"/><line x1="${cx - R0 - 6}" y1="${cy}" x2="${cx + R0 + 6}" y2="${cy}" stroke="var(--faint)"/>`;
+  g += `<circle cx="${cx}" cy="${cy}" r="${R0 * 0.5}" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="5 4"/>`;
+  TYPES.forEach((t) => {
+    const d = DIRS[t], off = R0 + (small ? 24 : 32);
+    g += `<text x="${cx + d[0] * k * off}" y="${cy + d[1] * k * off + 5}" text-anchor="middle" font-size="${small ? 11 : 14}" font-weight="700" fill="var(--ink)"><tspan fill="${COLOR[t]}">●</tspan>${ANIMAL[t]}</text>`;
+  });
+  layers.forEach((L) => {
+    const pts = TYPES.map((t) => { const d = DIRS[t], r = R0 * frac(L.v[t]); return [cx + d[0] * k * r, cy + d[1] * k * r]; });
+    const stroke = L.peer ? 'var(--peer)' : 'var(--ink)';
+    g += `<polygon points="${pts.map((p) => p.join(',')).join(' ')}" fill="${stroke}" fill-opacity="0.07" stroke="${stroke}" stroke-width="${small ? 2 : 2.5}"${L.peer ? ' stroke-dasharray="6 4"' : ''} stroke-linejoin="round"/>`;
+    pts.forEach((p, i) => { g += `<circle cx="${p[0]}" cy="${p[1]}" r="${small ? 3.5 : 4.5}" fill="${L.peer ? 'var(--surface)' : COLOR[TYPES[i]]}" stroke="${L.peer ? stroke : 'var(--surface)'}" stroke-width="2"/>`; });
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" aria-hidden="true">${g}</svg>`;
+}
+
+/* =====================================================================
+   一、邀請頁（邀請人）
+   ===================================================================== */
+// from：從主測驗結果頁或「我的歷次結果」進來時，指定替哪一份作答產生邀請
+async function renderInvite(my, from = null) {
+  await P.init(); still(my);
+  const own = P.loadOwner();
+  if (own && own.code && own.ownerToken && (!from || !own.responseId || own.responseId === from)) return renderLinks(own);
+  if (P.user) {
+    const mine = await P.getMyInvites(); still(my);
+    const hit = from ? mine.find((x) => x.response_id === from) : null;
+    if (hit) { location.hash = '#k=' + hit.code; return; }
+    if (!from && mine.length && !P.latestClaim()) { location.hash = '#k=' + mine[0].code; return; }
+  }
+  if (from && !P.user && !P.resultClaim(from).token) {
+    return message('請先登入帳號',
+      '這次的結果不是在這個瀏覽器做的。登入帳號後，就能替這次結果邀請朋友。',
+      '<button class="btn primary block" id="go-login">登入帳號</button><a class="btn block" href="./">回到首頁</a>') || bindLogin();
+  }
+  if (!from && !P.latestClaim() && !P.user) {
+    return message('請先完成主測驗',
+      '「換個角度看自己」是拿你的自評和別人眼中的你對照，所以要先做完主測驗。做完後回到這一頁，就能產生邀請連結。',
+      `<a class="btn primary block" href="./">開始我的測驗</a>${P.user ? '' : '<button class="btn block" id="go-login">在其他裝置做過？登入帳號</button>'}`)
+      || bindLogin();
+  }
+  view(`<div class="stack">
+    <h1>換個角度看自己</h1>
+    <div class="stack" style="gap:6px">
+      <p class="lead">朋友、家人、老師眼中的你，<br>和你認為的自己，<br>可能一樣，也可能不同。</p>
+      <p class="muted small">邀請他們花 2–3 分鐘，從幾組特質詞中，選出最像你和最不像你的詞。</p>
+    </div>
+    <form class="card stack" id="inv-form" novalidate style="gap:10px">
+      <label class="f">大家通常怎麼稱呼你？
+        <input class="input" id="nick" maxlength="12" autocomplete="nickname" required>
+      </label>
+      <p class="note" id="nick-hint">題目將顯示：「以下哪個詞最像 小安？」</p>
+    </form>
+    <ul class="dots small muted">
+      <li>評的人可以匿名，也可以留名字</li>
+      <li>連結不會過期，之後想再邀請別人，傳同一個連結就好</li>
+      <li>評的人看不到你自己的測驗結果</li>
+    </ul>
+    <p class="err" id="inv-err" hidden></p>
+    <button class="btn primary block" id="inv-go" form="inv-form" disabled>產生邀請連結</button>
+  </div>`);
+  const nick = $('#nick'), go = $('#inv-go');
+  nick.addEventListener('input', () => {
+    const v = nick.value.trim();
+    go.disabled = !v;
+    $('#nick-hint').textContent = `題目將顯示：「以下哪個詞最像 ${v || '小安'}？」`;
+  });
+  $('#inv-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const v = nick.value.trim();
+    if (!v) return;
+    go.disabled = true; go.textContent = '產生中…';
+    try {
+      const out = await P.createInvite(v, from);
+      if (!out) {
+        $('#inv-err').innerHTML = '找不到你的測驗結果，請先<a href="./">完成主測驗</a>。';
+        $('#inv-err').hidden = false;
+        go.disabled = false; go.textContent = '產生邀請連結';
+        return;
+      }
+      renderLinks(P.loadOwner());
+    } catch (err) {
+      $('#inv-err').textContent = '產生失敗，請稍後再試一次。';
+      $('#inv-err').hidden = false;
+      go.disabled = false; go.textContent = '產生邀請連結';
+    }
+  });
+}
+function bindLogin() {
+  const b = $('#go-login');
+  if (b) b.addEventListener('click', () => P.signInWithGoogle().catch(() => toast('無法開始登入')));
+}
+
+function renderLinks(own) {
+  const inviteUrl = pageUrl('#r=' + own.code), ownerUrl = pageUrl(`#k=${own.code}.${own.ownerToken}`);
+  view(`<div class="stack">
+    <h1>換個角度看自己</h1>
+    <div class="card stack" style="gap:10px">
+      <p style="font-weight:500">傳給想邀請的人</p>
+      <div class="link-box">${esc(inviteUrl)}</div>
+      <div class="btns"><button class="btn" id="cp-inv">複製連結</button>${navigator.share ? '<button class="btn" id="sh-inv">分享…</button>' : ''}</div>
+      <p class="note">題目會稱呼你「${esc(own.nickname || '')}」。</p>
+    </div>
+    <div class="warn stack" style="gap:8px">
+      <p><b>你的專屬結果連結</b>：用來回來看結果。請自己保存，<b>不要</b>傳給別人，拿到這個連結的人都能看到結果。</p>
+      <div class="link-box">${esc(ownerUrl)}</div>
+      <div class="btns"><button class="btn" id="cp-own">複製</button>${P.user ? '' : '<button class="btn" id="go-login">登入帳號</button>'}</div>
+      <p class="small">${P.user ? '已經存到你的帳號。' : '登入後，之後可以在「我的歷次結果」再看到，不用自己保存連結。'}</p>
+    </div>
+    <a class="btn primary block" href="#k=${own.code}.${own.ownerToken}">看對照結果</a>
+    <a class="btn block" href="./">回到首頁</a>
+  </div>`);
+  $('#cp-inv').addEventListener('click', () => copy(inviteUrl));
+  $('#cp-own').addEventListener('click', () => copy(ownerUrl));
+  const sh = $('#sh-inv');
+  if (sh) sh.addEventListener('click', () => navigator.share({ title: '換個角度看自己', text: `在你眼中，${own.nickname}是哪一種動物？`, url: inviteUrl }).catch(() => {}));
+  bindLogin();
+}
+
+/* =====================================================================
+   二、評的人
+   ===================================================================== */
+async function renderRate(code, my) {
+  await P.init();
+  const inv = await P.getInvite(code); still(my);
+  if (!inv) return message('找不到這個邀請', '連結可能不完整，請向邀請你的人再要一次。');
+  const done = P.loadRated(code);
+  if (done) return renderRaterResult(inv.nickname, done, true);
+  if (!inv.isOpen) return message('這個邀請目前沒有開放', '邀請你的人已經暫停接受新的評價。');
+  const nm = esc(inv.nickname);
+  view(`<div class="stack">
+    <h1>在你眼中，<br>${nm}是哪一種動物？</h1>
+    <div class="types" aria-hidden="true">${TYPES.map((t) => `<div class="type">${swatch(t)}<b>${ANIMAL[t]}</b><small>${t} ${TNAME[t]}</small></div>`).join('')}</div>
+    <div class="stack" style="gap:6px">
+      <p>這是一份 DISC 行為風格測驗。DISC 把人做事和與人相處的習慣分成四種，分別用老虎、孔雀、無尾熊、貓頭鷹代表。</p>
+      <p class="muted small">共 ${B.ITEM_COUNT} 題，每題 4 個詞，選一個<b>最像</b>${nm}的、一個<b>最不像</b>的，約 2–3 分鐘。</p>
+    </div>
+    <div class="card stack" style="gap:10px">
+      <p style="font-weight:500" id="rel-l">你是${nm}的…</p>
+      <div class="chips rel" role="group" aria-labelledby="rel-l">${B.RELATIONS.map((r) => `<button type="button" class="chip" aria-pressed="false" data-rel="${r}">${r}</button>`).join('')}</div>
+    </div>
+    <div class="card stack" style="gap:8px">
+      <label class="f">你的名字（選填）
+        <input class="input" id="rname" maxlength="20" autocomplete="name">
+      </label>
+      <p class="note">如果未填名字，${nm}將不知道是誰做的測驗。</p>
+    </div>
+    <p class="small muted">你的作答只會用來產生${nm}的結果，詳見<a href="${PRIVACY}">隱私說明</a>。</p>
+    <div class="stack" style="gap:6px">
+      <p class="q-hint" id="r-hint">先選你和${nm}的關係，就可以開始。</p>
+      <button class="btn primary block" id="r-start" disabled aria-describedby="r-hint">開始</button>
+    </div>
+  </div>`);
+  let relation = null;
+  app.querySelectorAll('[data-rel]').forEach((b) => b.addEventListener('click', () => {
+    relation = b.dataset.rel;
+    app.querySelectorAll('[data-rel]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    $('#r-start').disabled = false;
+    $('#r-hint').hidden = true;
+  }));
+  $('#r-start').addEventListener('click', () => {
+    if (!relation) return;
+    P.prepareBot();
+    runQuiz(code, inv.nickname, relation, $('#rname').value.trim());
+  });
+}
+
+function runQuiz(code, nick, relation, name) {
+  const seq = B.makeSeq(), picks = {}, times = {}, n = seq.length, sid = P.newSid();
+  let idx = 0, shownAt = Date.now(), advanceTimer = null, locked = false;
+  const nm = esc(nick);
+
+  quizActive = true;
+  // 還差什麼才能往下：一個詞不能同時是最像和最不像
+  function hint(p, last) {
+    if (!p.most && !p.least) return '選一個最像、一個最不像。同一個詞不能兩個都選。';
+    if (!p.least) return '再選一個最不像。';
+    if (!p.most) return '再選一個最像。';
+    return last ? '都選好了，按「送出」。' : '都選好了，馬上跳到下一題。';
+  }
+  // focus：重畫後要把焦點放回去的按鈕 [詞, most|least]；同一題重畫時不捲動
+  function draw(focus = null) {
+    const it = seq[idx], key = B.itemKey(it.i), p = picks[key] || {};
+    const complete = p.most && p.least, last = idx === n - 1;
+    view(`<div class="stack">
+      <div class="top"><span>第 ${idx + 1} / ${n} 題</span><span>${Math.round(idx / n * 100)}%</span></div>
+      <div class="progress" aria-hidden="true"><i style="width:${idx / n * 100}%"></i></div>
+      <p class="qt">以下哪個詞最像 <em>${nm}</em>？<br>哪個最不像？</p>
+      <div class="pick-head" aria-hidden="true"><span></span><span>最像</span><span>最不像</span></div>
+      <div class="words">${it.w.map((w) => `<div class="word${p.most === w ? ' is-most' : ''}">
+        <span>${esc(B.WORDS[w])}</span>
+        <button type="button" class="pick most" aria-pressed="${p.most === w}" data-w="${w}" data-k="most" aria-label="${esc(B.WORDS[w])}：最像"${locked ? ' disabled' : ''}>${ICON_CHECK}</button>
+        <button type="button" class="pick least" aria-pressed="${p.least === w}" data-w="${w}" data-k="least" aria-label="${esc(B.WORDS[w])}：最不像"${locked ? ' disabled' : ''}>${ICON_X}</button>
+      </div>`).join('')}</div>
+      <p class="q-hint">${hint(p, last)}</p>
+      <p class="err" id="q-err" hidden></p>
+      <div class="btns">
+        <button class="btn" id="q-prev" ${idx === 0 || locked ? 'disabled' : ''}>上一題</button>
+        ${last ? `<button class="btn primary" id="q-send" ${complete ? '' : 'disabled'}>送出</button>`
+               : `<button class="btn primary" id="q-next" ${complete ? '' : 'disabled'}>下一題</button>`}
+      </div>
+    </div>`, !!focus);
+    app.querySelectorAll('.pick').forEach((b) => b.addEventListener('click', () => choose(b.dataset.w, b.dataset.k)));
+    if (focus) { const f = app.querySelector(`.pick[data-w="${focus[0]}"][data-k="${focus[1]}"]`); if (f) f.focus({ preventScroll: true }); }
+    $('#q-prev').addEventListener('click', () => go(-1));
+    const nx = $('#q-next'); if (nx) nx.addEventListener('click', () => go(1));
+    const sd = $('#q-send'); if (sd) sd.addEventListener('click', send);
+  }
+  function choose(w, kind) {
+    if (locked) return;
+    const it = seq[idx], key = B.itemKey(it.i), p = picks[key] = picks[key] || {};
+    const other = kind === 'most' ? 'least' : 'most';
+    p[kind] = w;
+    if (p[other] === w) delete p[other];
+    if (p.most && p.least) times[key] = (times[key] || 0) + (Date.now() - shownAt), shownAt = Date.now();
+    draw([w, kind]);
+    clearTimeout(advanceTimer);
+    if (p.most && p.least && idx < n - 1) advanceTimer = setTimeout(() => go(1), 350);
+  }
+  function go(d) {
+    if (locked) return;
+    clearTimeout(advanceTimer);
+    idx = Math.max(0, Math.min(n - 1, idx + d));
+    shownAt = Date.now();
+    draw();
+  }
+  async function send() {
+    // 送出後答案就固定：之後重送（同一個號碼牌）送的一定是同一份答案
+    locked = true;
+    app.querySelectorAll('.pick').forEach((b) => { b.disabled = true; });
+    const btn = $('#q-send');
+    btn.disabled = true; btn.textContent = '送出中…';
+    $('#q-prev').disabled = true;
+    seq.forEach((it) => { const k = B.itemKey(it.i); times[k] = Math.min(600000, Math.round(times[k] || 0)); });
+    const out = await P.submitRating({ sid, code, relation, name, seq, picks, times });
+    if (out.ok) { quizActive = false; return renderRaterResult(nick, out, false); }
+    const msg = { closed: '這個邀請目前沒有開放，無法送出。', not_found: '找不到這個邀請，無法送出。',
+      network: '網路不穩，請稍後再按一次送出。', invalid: '送出失敗，請重新整理頁面再作答一次。' }[out.error];
+    const e = $('#q-err'); e.textContent = msg; e.hidden = false;
+    if (out.error === 'network') { btn.disabled = false; btn.textContent = '再送一次'; }
+    else btn.textContent = '無法送出';
+  }
+  draw();
+}
+
+function renderRaterResult(nick, rec, again) {
+  const key = keyOf(rec.result), t = R.TEXT[key], nm = esc(nick);
+  const main = mainColor(rec.result);
+  const secs = R.sections(key, nick);
+  const peek = secs[0].items.slice(0, 3);
+  view(`<div class="stack${key === 'CH' ? ' cham' : ''}" style="gap:20px${main ? ';--main:' + main : ''}">
+    ${again ? `<p class="muted small">你已經評過${nm}了，這是你上次的結果。</p>`
+            : `<div><h2>謝謝你！</h2><p class="muted" style="margin-top:4px">你的回答已經送出，<br>${nm}會在結果裡看到大家的評價。</p></div>`}
+    <div class="hero">
+      <p class="eyebrow">在你眼中，${nm}的動物本色是</p>
+      <h1>${heroTitle(rec.result)}</h1>
+      <p class="one">${R.fill(t.one, nick)}</p>
+    </div>
+    <div class="card stack" style="gap:8px">
+      ${flowerSVG(B.normPeer(rec.scores), `在你眼中，${nick}四種動物的明顯程度`)}
+      <p class="note" style="text-align:center">花瓣越大，代表在你眼中越明顯；虛線是四種動物的平均。</p>
+    </div>
+    <div class="card mini-cta">
+      <p style="font-weight:500">想知道自己是哪一種動物嗎？</p>
+      <a class="btn" href="./">換你測測看</a>
+    </div>
+    <div class="fold-card" id="fold">
+      <p class="fold-h">${R.fill('{name}的完整解析', nick)}</p>
+      <div class="fold-peek" aria-hidden="true"><ul>${peek.map((x) => `<li>${x}</li>`).join('')}</ul></div>
+      <button type="button" class="fold-btn" aria-expanded="false" aria-controls="fold-body">看完整解析${ICON_DOWN}</button>
+      <div class="fold-body" id="fold-body" hidden>
+        ${secs.map((x) => `<div class="card sec"><h3>${x.title}</h3><ul>${x.items.map((y) => `<li>${y}</li>`).join('')}</ul>${x.tip ? `<div class="tip"><b>${x.tip[0]}</b>${x.tip[1]}</div>` : ''}</div>`).join('')}
+      </div>
+    </div>
+    <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。${nm}自己的測驗結果和其他人的評價，你都看不到。</p>
+    <p class="note">評價編號：${esc(rec.ref || '')}（想刪除這筆評價時，請附上這個編號，詳見<a href="${PRIVACY}">隱私說明</a>）</p>
+    <div class="card stack" style="gap:10px;background:var(--selected);border:none">
+      <h2 style="font-size:20px">想要了解自己的動物本色嗎？</h2>
+      <p class="small">每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。花幾分鐘，看看你的組合是什麼樣子。</p>
+      <p class="small muted">44 題｜約 5–10 分鐘</p>
+      <a class="btn primary block" href="./">開始我的測驗</a>
+    </div>
+  </div>`);
+  const fold = $('#fold'), fb = fold.querySelector('.fold-btn');
+  fb.addEventListener('click', () => {
+    const open = fb.getAttribute('aria-expanded') !== 'true';
+    fb.setAttribute('aria-expanded', String(open));
+    fb.firstChild.textContent = open ? '收起解析' : '看完整解析';
+    fold.classList.toggle('open', open);
+    $('#fold-body').hidden = !open;
+  });
+}
+
+/* =====================================================================
+   三、對照結果頁（邀請人）
+   ===================================================================== */
+async function renderOwner(code, token, my) {
+  await P.init(); still(my);
+  const own = P.loadOwner();
+  if (!token && own && own.code === code) token = own.ownerToken;
+  const res = await P.getResults(code, token); still(my);
+  if (!res) {
+    if (own && own.code === code) P.saveOwner(null);
+    return message('這個連結已經失效',
+      '可能已經在其他裝置重新產生過連結，舊的專屬結果連結就不能再用了。請用最新的連結，或登入帳號後再打開。',
+      `${P.user ? '' : '<button class="btn primary block" id="go-login">登入帳號</button>'}<a class="btn block" href="#">回到邀請頁</a>`) || bindLogin();
+  }
+  if (token && !P.user && (!own || own.code !== code || own.ownerToken !== token)) P.saveOwner({ code, ownerToken: token, nickname: res.nickname });
+  let group = '全部';
+  const draw = () => {
+    const g = res.groups.find((x) => x.relation === group) || res.groups[0];
+    const total = res.groups[0].n;
+    const inviteUrl = pageUrl('#r=' + code);
+    let body;
+    if (!total) {
+      body = `<div class="card stack" style="gap:10px;text-align:center">
+        <p style="font-weight:700">還沒有人評過</p>
+        <p class="small muted">把邀請連結傳給朋友、家人或老師，有人評完就會出現在這裡。</p>
+        <button class="btn primary" id="cp-inv2">複製邀請連結</button>
+      </div>`;
+    } else {
+      const selfN = B.normSelf(res.self_mean), peerN = B.normPeer(g.scores), span = spanOf(selfN, peerN);
+      const selfKey = keyOf(res.self_result), peerKey = B.classify(g.scores).key;
+      const pos = (x) => (50 + (x / span) * 45).toFixed(1);
+      const rows = TYPES.map((t) => {
+        const a = pos(selfN[t]), b = pos(peerN[t]), lo = Math.min(a, b), w = Math.abs(a - b);
+        return `<div class="db-row"><span><span class="dotc" style="background:${COLOR[t]}"></span>${ANIMAL[t]}</span>
+          <div class="db-track"><div class="axis"></div><div class="mid"></div><div class="seg" style="left:${lo}%;width:${w}%"></div>
+          <div class="pt peer" style="left:${b}%"></div><div class="pt self" style="left:${a}%"></div></div></div>`;
+      }).join('');
+      const lines = B.gapLines(selfN, peerN);
+      const gapHTML = lines.length ? lines.map((x) => x.dir === 'peer'
+        ? `<li>別人覺得你比自己認為的更像${ak(x.t)}：${B.FEATURE[x.t]}。</li>`
+        : `<li>你覺得自己很有${ak(x.t)}的一面，但別人比較少感受到。</li>`).join('')
+        : '<li>別人眼中的你，和你自評的樣子很接近。</li>';
+      const named = res.named.length ? `<div class="card named">
+          <p style="font-weight:700">有留名字的人</p>
+          ${res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><b>${typeName(keyOf(x.result))}</b></div>`).join('')}
+          <p class="small muted">${res.n_anon ? `另有 ${res.n_anon} 位匿名，只算進上面的平均。` : '沒有匿名的評價。'}</p>
+        </div>` : `<p class="small muted">${res.n_anon} 位都是匿名，只算進上面的平均。</p>`;
+      body = `<div class="chips" role="group" aria-label="依關係篩選">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${x.relation}<span class="n">${x.n}</span></button>`).join('')}</div>
+        <div class="pair">
+          <div class="card"><h3>你自評</h3>${chartSVG([{ v: selfN, peer: false }], span, { small: true })}<b>${typeName(selfKey)}</b></div>
+          <div class="card"><h3>別人眼中</h3>${chartSVG([{ v: peerN, peer: false }], span, { small: true })}<b>${typeName(peerKey)}</b></div>
+        </div>
+        <div class="card db">
+          <p style="font-weight:700">四種動物逐一比較</p>
+          <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>別人眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
+          ${rows}
+          <div class="db-scale"><span></span><div><span>比較少展現</span><span>平均</span><span>比較常展現</span></div></div>
+        </div>
+        <ul class="dots">${gapHTML}</ul>
+        ${named}
+        <p class="note">他評題目少、尚未驗證，類型和落差僅供參考。</p>`;
+    }
+    view(`<div class="stack">
+      <h1>換個角度看自己</h1>
+      <h2 style="font-size:20px">你眼中的自己 vs 別人眼中的你</h2>
+      ${body}
+      <div class="card stack" style="gap:12px">
+        <div class="switch"><span id="sw-l">接受新的評價</span><button type="button" role="switch" aria-labelledby="sw-l" aria-checked="${res.is_open}" id="sw"></button></div>
+        <button class="btn" id="cp-inv">複製邀請連結</button>
+      </div>
+    </div>`);
+    app.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { group = b.dataset.g; draw(); }));
+    $('#cp-inv').addEventListener('click', () => copy(inviteUrl));
+    const c2 = $('#cp-inv2'); if (c2) c2.addEventListener('click', () => copy(inviteUrl));
+    $('#sw').addEventListener('click', async (e) => {
+      const want = !res.is_open, b = e.currentTarget;
+      b.disabled = true;
+      try {
+        if (!(await P.setOpen(code, token, want))) throw new Error('rejected');
+        res.is_open = want;
+        toast(want ? '已重新開放' : '已停止接受新的評價');
+      } catch (err) { toast('設定失敗，請稍後再試'); }
+      draw();
+    });
+  };
+  draw();
+}
+
+/* ---------- 路由 ---------- */
+async function render() {
+  if (!P.enabled) return message('目前無法使用', '網站還沒有設定好後端，請稍後再試。');
+  const h = P.parseHash(location.hash);
+  const my = ++renderId;
+  try {
+    if (h.mode === 'rate') await renderRate(h.code, my);
+    else if (h.mode === 'owner') await renderOwner(h.code, h.token, my);
+    else await renderInvite(my, h.from || null);
+  } catch (e) { if (!(e instanceof Stale) && my === renderId) failView(); }
+}
+window.addEventListener('hashchange', render);
+render();
+</script>
