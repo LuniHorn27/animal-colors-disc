@@ -44,6 +44,17 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:500}
 .link-box{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--sunk);border-radius:10px;padding:10px 12px;word-break:break-all;user-select:all}
 .warn .link-box{background:var(--surface);color:var(--ink)}
 .lead{font-size:17px;line-height:1.65}
+/* 產生連結之後 */
+.ready,.saved{display:flex;align-items:center;gap:10px}
+.saved{align-items:flex-start;gap:12px}
+.ready .ok,.saved .ok{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;font-weight:700}
+.ready .ok{background:var(--btn);color:var(--btn-ink)}
+.saved .ok{background:var(--s);color:#fff}
+.url{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stat b{font-family:var(--font-round);font-weight:400;font-size:26px;font-variant-numeric:tabular-nums}
+.btn.text{border:none;background:none;min-height:44px;color:inherit;text-decoration:underline;text-underline-offset:3px;font-weight:500}
+.btn svg{width:20px;height:20px;flex:none}
 ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 /* 自評花色 ⇄ 大家眼中（邀請頁）：單一型一個圓、組合型兩個圓、變色龍灰色圓；還不知道的一邊是打問號的虛線圓 */
 .peer-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
@@ -420,30 +431,64 @@ function bindLogin() {
   if (b) b.addEventListener('click', () => P.signInWithGoogle().catch(() => toast('無法開始登入')));
 }
 
+/* ---------- 傳出邀請連結：手機用系統分享選單，另外放「用 LINE 傳送」；不支援分享的瀏覽器，主按鈕改成複製 ---------- */
+const ICON_SHARE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const shareText = (nick) => `在你眼中，${nick}是哪一種動物？`;
+const lineUrl = (nick, url) => 'https://line.me/R/share?text=' + encodeURIComponent(shareText(nick) + '\n' + url);
+function shareBtnsHTML(nick, url, { copy = true } = {}) {
+  return (navigator.share ? `<button class="btn primary block" data-act="share">${ICON_SHARE}傳給朋友</button>` : '<button class="btn primary block" data-act="copy">複製邀請連結</button>')
+    + `<a class="btn block" href="${esc(lineUrl(nick, url))}" target="_blank" rel="noopener">用 LINE 傳送</a>`
+    + (copy && navigator.share ? '<button class="btn block" data-act="copy">複製邀請連結</button>' : '');
+}
+function bindShare(root, nick, url) {
+  root.querySelectorAll('[data-act="share"]').forEach((b) => b.addEventListener('click', () =>
+    navigator.share({ title: '換個角度看自己', text: shareText(nick), url }).catch(() => {})));
+  root.querySelectorAll('[data-act="copy"]').forEach((b) => b.addEventListener('click', () => copy(url)));
+}
+
 function renderLinks(own) {
-  const inviteUrl = pageUrl('#r=' + own.code), ownerUrl = pageUrl(`#k=${own.code}.${own.ownerToken}`);
+  const inviteUrl = pageUrl('#r=' + own.code), ownerUrl = pageUrl(`#k=${own.code}.${own.ownerToken}`), nick = own.nickname || '';
+  const saveHTML = P.user
+    ? `<div class="card"><div class="saved"><span class="ok">✓</span><div><p style="font-weight:500">已存到你的帳號</p><p class="small muted">之後在「我的歷次結果」就能回來看。</p></div></div></div>`
+    : `<div class="warn stack" style="gap:10px" id="save-box">
+        <h3 style="font-size:18px;color:var(--ink)">保存你的結果連結</h3>
+        <p class="small">之後要靠它回來看大家眼中的你。登入後會存在帳號裡，換手機也看得到。</p>
+        <button class="btn primary block" id="go-login">用 Google 帳號登入保存</button>
+        <button class="btn text" id="self-save">不登入，改成自己保存連結</button>
+        <div class="stack" id="self-box" style="gap:8px" hidden>
+          <p class="small">請存在只有你看得到的地方（例如傳給自己、加入書籤）。<b>不要</b>傳給別人，拿到這個連結的人都能看到結果。</p>
+          <div class="link-box">${esc(ownerUrl)}</div>
+          <button class="btn block" id="cp-own">複製結果連結</button>
+        </div>
+      </div>`;
   view(`<div class="stack">
     <h1>換個角度看自己</h1>
+    <div class="card stack" style="gap:10px" id="send-box">
+      <div class="ready"><span class="ok">✓</span><p style="font-weight:500">邀請連結準備好了</p></div>
+      <p class="small muted">傳給朋友、家人、老師，請他們花 2–3 分鐘選出最像你的詞。題目會稱呼你「${esc(nick)}」。</p>
+      ${shareBtnsHTML(nick, inviteUrl)}
+      <p class="url">${esc(inviteUrl.replace(/^https?:\/\//, ''))}</p>
+    </div>
+    ${saveHTML}
     <div class="card stack" style="gap:10px">
-      <p style="font-weight:500">傳給想邀請的人</p>
-      <div class="link-box">${esc(inviteUrl)}</div>
-      <div class="btns"><button class="btn" id="cp-inv">複製連結</button>${navigator.share ? '<button class="btn" id="sh-inv">分享…</button>' : ''}</div>
-      <p class="note">題目會稱呼你「${esc(own.nickname || '')}」。</p>
+      <div class="stat"><span id="n-line">目前 0 人回覆</span><b id="n-num">0</b></div>
+      <a class="btn block" id="go-owner" href="#k=${own.code}.${own.ownerToken}">看對照結果</a>
     </div>
-    <div class="warn stack" style="gap:8px">
-      <p><b>你的專屬結果連結</b>：用來回來看結果。請自己保存，<b>不要</b>傳給別人，拿到這個連結的人都能看到結果。</p>
-      <div class="link-box">${esc(ownerUrl)}</div>
-      <div class="btns"><button class="btn" id="cp-own">複製</button>${P.user ? '' : '<button class="btn" id="go-login">登入帳號</button>'}</div>
-      <p class="small">${P.user ? '已經存到你的帳號。' : '登入後，之後可以在「我的歷次結果」再看到，不用自己保存連結。'}</p>
-    </div>
-    <a class="btn primary block" href="#k=${own.code}.${own.ownerToken}">看對照結果</a>
-    <a class="btn block" href="./">回到首頁</a>
   </div>`);
-  $('#cp-inv').addEventListener('click', () => copy(inviteUrl));
-  $('#cp-own').addEventListener('click', () => copy(ownerUrl));
-  const sh = $('#sh-inv');
-  if (sh) sh.addEventListener('click', () => navigator.share({ title: '換個角度看自己', text: `在你眼中，${own.nickname}是哪一種動物？`, url: inviteUrl }).catch(() => {}));
+  bindShare($('#send-box'), nick, inviteUrl);
+  const ss = $('#self-save');
+  if (ss) ss.addEventListener('click', () => { $('#self-box').hidden = false; ss.hidden = true; });
+  const co = $('#cp-own'); if (co) co.addEventListener('click', () => copy(ownerUrl));
   bindLogin();
+  // 目前幾個人回覆：有人回覆後，「看對照結果」才變成主要按鈕
+  const my = renderId;
+  P.getResults(own.code, own.ownerToken).then((res) => {
+    if (my !== renderId || !res || !res.groups || !res.groups[0]) return;
+    const n = +res.groups[0].n || 0;
+    $('#n-line').textContent = n ? `已有 ${n} 人回覆` : '目前 0 人回覆';
+    $('#n-num').textContent = n;
+    if (n) $('#go-owner').classList.add('primary');
+  }).catch(() => {});
 }
 
 /* =====================================================================
