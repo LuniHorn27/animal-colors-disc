@@ -646,7 +646,7 @@ function runQuiz(code, nick, relation) {
   draw();
 }
 
-// 作答完的畫面：中間和頁尾放同一張「換你測測看」卡片（同一件事用同一個名字）
+// 作答完的畫面：頁尾的「換你測測看」卡片
 const ctaHTML = () => `<div class="card stack" style="gap:10px;background:var(--selected);border:none">
       <h2 style="font-size:20px">想要了解自己的動物本色嗎？</h2>
       <p class="small">測完後，換你邀請朋友，了解在另一個視角中你是哪一種動物。</p>
@@ -670,7 +670,6 @@ function renderRaterResult(nick, rec, again) {
       ${flowerSVG(B.normPeer(rec.scores), `在你眼中，${nick}四種動物的明顯程度`)}
       <p class="note" style="text-align:center">花瓣越大，代表在你眼中越明顯；虛線是四種動物的平均。</p>
     </div>
-    ${ctaHTML()}
     <div class="fold-card" id="fold">
       <p class="fold-h">${R.fill('{name}的完整解析', nick)}</p>
       <div class="fold-peek" aria-hidden="true"><ul>${peek.map((x) => `<li>${x}</li>`).join('')}</ul></div>
