@@ -172,6 +172,9 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .hero .one{font-family:var(--font-round);font-synthesis:none;font-size:clamp(18px,4.2cqi,21px);line-height:1.6;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
 :root[data-theme="dark"] .hero .one{color:var(--main,var(--ink))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero .one{color:var(--main,var(--ink))}}
+/* 送出後的確認列：小小一條，讓結果標題當主角 */
+.sent{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 16px 6px 6px;font-size:15px;width:fit-content}
+.sent .ok{width:26px;height:26px;border-radius:50%;background:var(--s);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
 .flower{width:100%;max-width:280px;display:block;margin:0 auto}
 .flower text{fill:var(--ink);font-weight:700}
 .flower .pt{stroke:var(--surface)}
@@ -660,7 +663,7 @@ function renderRaterResult(nick, rec, again) {
   const peek = secs[0].items.slice(0, 3);
   view(`<div class="stack${key === 'CH' ? ' cham' : ''}" style="gap:20px${main ? ';--main:' + main : ''}">
     ${again ? `<p class="muted small">你已經回覆過${nm}了，這是你上次的結果。</p>`
-            : `<div><h2>謝謝你！</h2><p class="muted" style="margin-top:4px">你的回覆已經送出，<br>${nm}會在結果裡看到大家的回覆。</p></div>`}
+            : `<div class="sent" role="status"><span class="ok" aria-hidden="true">✓</span>已送給${nm}，謝謝你！</div>`}
     <div class="hero">
       <p class="eyebrow">在你眼中，${nm}的動物本色${heroCode(rec.result)}</p>
       ${heroH1(rec.result)}
