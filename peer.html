@@ -23,10 +23,7 @@
 <link rel="stylesheet" href="brand/tokens.css">
 <style>
 /* 他評「換個角度看自己」：顏色、字型變數來自 brand/tokens.css（和 index.html 共用），版面元件比照 index.html 結果頁。
-   這裡只多定義他評對照用的線條色 --peer（深淺兩種模式）。 */
-:root{--peer:#C2410C}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--peer:#FB923C}}
-:root[data-theme="dark"]{--peer:#FB923C}
+   「你自評」和「大家眼中」用形狀區分（實心墨點／空心墨圈），四種動物的顏色只留給動物本身。 */
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:16px;line-height:1.75;margin:0}
@@ -116,17 +113,22 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 /* 結果 */
 .legend{display:flex;gap:16px;font-size:14px;align-items:center;flex-wrap:wrap}
 .dotc{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.dotc.self{background:var(--ink)} .dotc.peer{border:2px solid var(--peer)}
+.dotc.self{background:var(--ink)} .dotc.peer{border:2px solid var(--ink)}
 .db{display:flex;flex-direction:column;gap:12px}
-.db-row{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;font-size:14px}
+.db-row,.db-head,.db-scale{display:grid;grid-template-columns:64px 1fr 34px 34px;column-gap:6px;align-items:center}
+.db-row{font-size:14px}
+.db-row > span:first-child{white-space:nowrap}
+.db-row .v{font-variant-numeric:tabular-nums;text-align:right}
+.db-row .v.s{font-weight:700}
+.db-head{font-size:12px;color:var(--muted);text-align:right;margin-bottom:-6px}
 .db-track{position:relative;height:28px}
 .db-track .axis{position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
 .db-track .mid{position:absolute;left:50%;top:2px;bottom:2px;border-left:1.5px dashed var(--faint)}
 .db-track .seg{position:absolute;top:calc(50% - 3px);height:6px;border-radius:3px;background:var(--sunk)}
 .db-track .pt{position:absolute;top:calc(50% - 8px);width:16px;height:16px;border-radius:50%;margin-left:-8px}
 .db-track .pt.self{background:var(--ink)}
-.db-track .pt.peer{background:var(--surface);border:3px solid var(--peer)}
-.db-scale{display:grid;grid-template-columns:64px 1fr;font-size:12px;color:var(--faint)}
+.db-track .pt.peer{background:var(--surface);border:3px solid var(--ink)}
+.db-scale{font-size:12px;color:var(--faint)}
 .db-scale div{display:flex;justify-content:space-between}
 .sec{padding:24px}
 .sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
@@ -346,6 +348,8 @@ function message(title, body, actions = '') {
 }
 const failView = () => message('連不上伺服器', '請檢查網路，稍後再試一次。', '<button class="btn primary" onclick="render()">再試一次</button>');
 
+// 逐一比較的數字：和四型平均的差距 ×100，例如 −12、+38
+const fmtGap = (v) => { const n = Math.round(v * 100); return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'; };
 // 同一張圖或並排比較時要用同一個刻度：四型分數（-1~1）裡離 0 最遠的值，最小 0.3
 function spanOf(...vals) { return Math.max(0.3, ...vals.flatMap((v) => TYPES.map((t) => Math.abs(v[t])))); }
 
@@ -714,7 +718,8 @@ async function renderOwner(code, token, my) {
         const a = pos(selfN[t]), b = pos(peerN[t]), lo = Math.min(a, b), w = Math.abs(a - b);
         return `<div class="db-row"><span><span class="dotc" style="background:${COLOR[t]}"></span>${ANIMAL[t]}</span>
           <div class="db-track"><div class="axis"></div><div class="mid"></div><div class="seg" style="left:${lo}%;width:${w}%"></div>
-          <div class="pt peer" style="left:${b}%"></div><div class="pt self" style="left:${a}%"></div></div></div>`;
+          <div class="pt peer" style="left:${b}%"></div><div class="pt self" style="left:${a}%"></div></div>
+          <span class="v s">${fmtGap(selfN[t])}</span><span class="v">${fmtGap(peerN[t])}</span></div>`;
       }).join('');
       const lines = B.gapLines(selfN, peerN);
       const gapHTML = lines.length ? lines.map((x) => x.dir === 'peer'
@@ -743,8 +748,10 @@ async function renderOwner(code, token, my) {
         <div class="card db">
           <p style="font-weight:700">四種動物逐一比較</p>
           <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>大家眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
+          <div class="db-head" aria-hidden="true"><span></span><span></span><span>你</span><span>大家</span></div>
           ${rows}
-          <div class="db-scale"><span></span><div><span>比較少展現</span><span>平均</span><span>比較常展現</span></div></div>
+          <div class="db-scale"><span></span><div><span>較少</span><span>平均</span><span>較常</span></div><span></span><span></span></div>
+          <p class="note">數字是和平均的差距：0 是四種動物的平均，正數代表比平均更常展現，負數代表比較少展現。兩邊的題目不同，已換算成同一個尺度（暫定），適合比較高低，不適合和主測驗的分數直接比。</p>
         </div>
         <ul class="dots">${gapHTML}</ul>
         ${named}
