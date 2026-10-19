@@ -177,6 +177,15 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .hero .one{font-family:var(--font-round);font-synthesis:none;font-size:clamp(18px,4.2cqi,21px);line-height:1.6;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
 :root[data-theme="dark"] .hero .one{color:var(--main,var(--ink))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero .one{color:var(--main,var(--ink))}}
+/* 朋友作答完：底部固定「換你測測看」（同 index.html 的 .share-dock） */
+.cta-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;transition:opacity .2s ease,transform .2s ease}
+.cta-dock .btn{width:100%;max-width:480px}
+.cta-dock.away{opacity:0;transform:translateY(16px);pointer-events:none;visibility:hidden;transition:opacity .2s ease,transform .2s ease,visibility 0s .2s}
+#app:has(.cta-dock){padding-bottom:88px}
+@media (min-width:768px){
+  .cta-dock{left:auto;right:max(clamp(16px,4vw,48px), calc((100vw - 800px) / 2));bottom:24px;padding:0;background:none;border:0}
+  .cta-dock .btn{width:auto;border-radius:999px;padding:0 22px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+}
 /* 送出後的確認列：小小一條，讓結果標題當主角 */
 .sent{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 16px 6px 6px;font-size:15px;width:fit-content}
 .sent .ok{width:26px;height:26px;border-radius:50%;background:var(--s);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
@@ -647,12 +656,21 @@ function runQuiz(code, nick, relation) {
 }
 
 // 作答完的畫面：頁尾的「換你測測看」卡片
-const ctaHTML = () => `<div class="card stack" style="gap:10px;background:var(--selected);border:none">
+const ctaHTML = () => `<div class="card stack" id="cta-card" style="gap:10px;background:var(--selected);border:none">
       <h2 style="font-size:20px">想要了解自己的動物本色嗎？</h2>
       <p class="small">測完後，換你邀請朋友，了解在另一個視角中你是哪一種動物。</p>
       <p class="small muted">46 題｜約 5–10 分鐘</p>
       <a class="btn primary block" href="./">換你測測看</a>
     </div>`;
+// 底部固定按鈕列（同主測驗結果頁的「儲存／分享結果圖片」）：一直顯示「換你測測看」；頁尾那張卡片出現在畫面上時先藏起來，同一件事不同時出現兩個按鈕
+function setupCtaDock() {
+  const dock = $('#cta-dock'), card = $('#cta-card');
+  if (!dock || !card) return;
+  if (window.IntersectionObserver) {
+    const io = new IntersectionObserver((es) => es.forEach((e) => dock.classList.toggle('away', e.isIntersecting)), { threshold: 0.25 });
+    io.observe(card);
+  }
+}
 function renderRaterResult(nick, rec, again) {
   const key = keyOf(rec.result), t = R.TEXT[key], nm = esc(nick);
   const main = mainColor(rec.result);
@@ -681,7 +699,9 @@ function renderRaterResult(nick, rec, again) {
     <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。${nm}自己的測驗結果和其他人的回覆，你都看不到。</p>
     <p class="note">回覆編號：${esc(rec.ref || '')}（想刪除這筆回覆時，請附上這個編號，詳見<a href="${PRIVACY}">隱私說明</a>）</p>
     ${ctaHTML()}
-  </div>`);
+  </div>
+  <div class="cta-dock" id="cta-dock"><a class="btn primary" href="./">換你測測看</a></div>`);
+  setupCtaDock();
   const fold = $('#fold'), fb = fold.querySelector('.fold-btn');
   fb.addEventListener('click', () => {
     const open = fb.getAttribute('aria-expanded') !== 'true';
