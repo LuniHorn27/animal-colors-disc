@@ -163,13 +163,13 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .type b{font-family:var(--font-round);font-weight:400;font-size:15px;line-height:1.2}
 .chips.rel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .chips.rel .chip{padding:0}
-/* 評的人結果（同 index.html 結果頁的標題、一句話、可展開的解析卡片） */
-.hero{display:flex;flex-direction:column;gap:6px}
+/* 結果標題（同 index.html 結果頁：組合型的類型代號放在上面那行，雙動物標題維持一行、字級跟著內容欄寬度縮放；一句話用粉圓字） */
+.hero{display:flex;flex-direction:column;gap:6px;container-type:inline-size}
 .hero .eyebrow{font-size:15px;color:var(--muted)}
-.hero h1{font-size:clamp(26px,7vw,40px)}
-.hero h1 .tl{display:inline-block;white-space:nowrap}
-.hero h1 .plus{margin:0 6px;color:var(--muted)}
-.hero .one{font-size:18px;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
+.hero h1{font-size:clamp(28px,8vw,44px)}
+.hero h1 .tl{display:block;white-space:nowrap}
+.hero h1.two-t{font-size:min(40px,5cqi)}
+.hero .one{font-family:var(--font-round);font-synthesis:none;font-size:clamp(18px,4.2cqi,21px);line-height:1.6;color:color-mix(in srgb,var(--main,var(--ink)) 80%,#000)}
 :root[data-theme="dark"] .hero .one{color:var(--main,var(--ink))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero .one{color:var(--main,var(--ink))}}
 .flower{width:100%;max-width:280px;display:block;margin:0 auto}
@@ -268,9 +268,12 @@ function typesOf(res) {
 const mainColor = (res) => { const ts = typesOf(res); return ts.length ? COLOR[ts[0]] : null; };
 function heroTitle(res) {
   const ts = typesOf(res);
-  if (!ts.length) return '<span class="tl">變色龍</span>';
-  return ts.map((t) => `<span class="tl" style="color:${COLOR[t]}">${t} ${ANIMAL[t]}（${TNAME[t]}型）</span>`).join('<span class="plus">＋</span>');
+  if (!ts.length) return '<span class="tl">變色龍（四型均衡）</span>';
+  return `<span class="tl">${ts.map((t) => `<span style="color:${COLOR[t]}">${t} ${ANIMAL[t]}（${TNAME[t]}型）</span>`).join(' ＋ ')}</span>`;
 }
+const heroH1 = (res) => `<h1${typesOf(res).length > 1 ? ' class="two-t"' : ''}>${heroTitle(res)}</h1>`;
+// 組合型、對角型的類型代號接在上面那行後面，例如「：DI 組合型」
+const heroCode = (res) => { const ts = typesOf(res); return ts.length > 1 ? `：${ts.join('')} ${res && res.kind === 'diag' ? '對角型' : '組合型'}` : ''; };
 const ak = (t) => `<span class="ak ak-${t}">${ANIMAL[t]}</span>`;
 // 本色花色圓：ts 是類型陣列（例如 ['S','C']）；空陣列＝變色龍（灰色）
 const badge = (ts) => `<div class="badge">${(ts.length ? ts : [null]).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="${t ? `url(#pat-${t})` : 'var(--x)'}"/></svg>`).join('')}</div>`;
@@ -659,8 +662,8 @@ function renderRaterResult(nick, rec, again) {
     ${again ? `<p class="muted small">你已經回覆過${nm}了，這是你上次的結果。</p>`
             : `<div><h2>謝謝你！</h2><p class="muted" style="margin-top:4px">你的回覆已經送出，<br>${nm}會在結果裡看到大家的回覆。</p></div>`}
     <div class="hero">
-      <p class="eyebrow">在你眼中，${nm}的動物本色是</p>
-      <h1>${heroTitle(rec.result)}</h1>
+      <p class="eyebrow">在你眼中，${nm}的動物本色${heroCode(rec.result)}</p>
+      ${heroH1(rec.result)}
       <p class="one">${R.fill(t.one, nick)}</p>
     </div>
     <div class="card stack" style="gap:8px">
