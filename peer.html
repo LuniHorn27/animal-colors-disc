@@ -713,10 +713,12 @@ async function renderOwner(code, token, my) {
     const inviteUrl = pageUrl('#r=' + code);
     let body;
     if (!total) {
-      body = `<div class="card stack" style="gap:10px;text-align:center">
+      // 還沒有人回覆：先放自己的花色和打問號的「大家眼中」，提醒自己的結果是什麼
+      body = `<div class="card stack" style="gap:10px;text-align:center" id="empty-box">
+        ${pairHTML(typesOf(res.self_result))}
         <p style="font-weight:700">還沒有人回覆</p>
         <p class="small muted">把邀請連結傳給朋友、家人或老師，有人回覆就會出現在這裡。</p>
-        <button class="btn primary" id="cp-inv2">複製邀請連結</button>
+        ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
       </div>`;
     } else {
       const selfN = B.normSelf(res.self_mean), peerN = B.normPeer(g.scores), span = spanOf(selfN, peerN);
@@ -780,8 +782,7 @@ async function renderOwner(code, token, my) {
       </div>
     </div>`, keep);
     app.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { group = b.dataset.g; draw(); }));
-    ['#more-box', '#few-box'].forEach((q) => { const el = $(q); if (el) bindShare(el, res.nickname || '', inviteUrl); });
-    const c2 = $('#cp-inv2'); if (c2) c2.addEventListener('click', () => copy(inviteUrl));
+    ['#more-box', '#few-box', '#empty-box'].forEach((q) => { const el = $(q); if (el) bindShare(el, res.nickname || '', inviteUrl); });
     $('#sw').addEventListener('click', async (e) => {
       const want = !res.is_open, b = e.currentTarget;
       b.disabled = true;
