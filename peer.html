@@ -523,7 +523,7 @@ async function renderRate(code, my) {
       <p style="font-weight:500" id="rel-l">你是${nm}的…</p>
       <div class="chips rel" role="group" aria-labelledby="rel-l">${B.RELATIONS.map((r) => `<button type="button" class="chip" aria-pressed="false" data-rel="${r}">${r}</button>`).join('')}</div>
     </div>
-    <p class="small muted">你的作答只會用來產生${nm}的結果，詳見<a href="${PRIVACY}">隱私說明</a>。</p>
+    <p class="small muted">你的選擇會用來產生${nm}的結果，也會用來改善題目（不使用名字），詳見<a href="${PRIVACY}">隱私說明</a>。</p>
     <div class="stack" style="gap:6px">
       <p class="q-hint" id="r-hint">先選你和${nm}的關係，就可以開始。</p>
       <button class="btn primary block" id="r-start" disabled aria-describedby="r-hint">開始</button>
