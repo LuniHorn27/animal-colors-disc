@@ -326,6 +326,19 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 .hist .confirm{margin-top:8px}
 /* 他評「換個角度看自己」：歷次結果每一筆下面的入口 */
 .hist-peer{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:var(--ink);text-underline-offset:3px}
+/* 他評入口卡片：左邊是自己測出來的花色（單一型一個圓、組合型兩個圓、變色龍灰色圓），右邊是還不知道的「大家眼中」 */
+.peer-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;max-width:360px;margin:4px 0 6px}
+.peer-pair .f{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.peer-pair .lb{font-size:13px;color:var(--muted)}
+.peer-pair .ty{font-family:var(--font-round);font-size:15px;line-height:1.35}
+.peer-pair .arrow{color:var(--faint);font-size:20px}
+.peer-badge{display:flex;align-items:center;justify-content:center;height:64px}
+.peer-badge svg,.peer-badge .ghost{width:56px;height:56px;border-radius:50%;display:block;flex:none}
+.peer-badge svg{box-shadow:0 0 0 3px var(--surface)}
+.peer-badge svg + svg{margin-left:-14px}
+.peer-badge .ghost{border:2.5px dashed var(--faint);background:var(--sunk);display:flex;align-items:center;justify-content:center;font-family:var(--font-round);font-size:28px;color:var(--muted)}
+/* 結果標題下的小字連結：捲到「換個角度看自己」卡片 */
+.peer-teaser{align-self:flex-start;font-size:15px;color:var(--ink);text-underline-offset:4px;text-decoration-color:var(--faint);min-height:32px;display:inline-flex;align-items:center}
 .view-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 @media (hover:none){.kbd-hint{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -1793,6 +1806,27 @@ function resultExtras(r){
   renderSaveCard();
   $('#save-card').insertAdjacentHTML('afterend', '<div class="card" id="peer-card"></div>');
   renderPeerCard();
+  const hero = el.querySelector('.hero');
+  if (hero){
+    hero.insertAdjacentHTML('beforeend', `<a class="peer-teaser" href="#peer-card">在大家眼中，你也是${esc(peerShort(r))}嗎？ ↓</a>`);
+    hero.querySelector('.peer-teaser').addEventListener('click', (e)=>{
+      e.preventDefault();
+      $('#peer-card').scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
+    });
+  }
+}
+/* 動物名稱（不含代號），例如「無尾熊＋貓頭鷹」 */
+const peerShort = r => titleParts(r).map(p=>p.t?ANIMAL[p.t]:p.text).join('');
+const peerTypes = r => r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [];
+function peerBadgeHTML(r){
+  const ts = peerTypes(r);
+  const circles = ts.length ? ts.map(t=>`<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('')
+    : '<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="var(--x)"/></svg>';
+  return `<div class="peer-pair" aria-hidden="true">
+    <div class="f"><div class="peer-badge">${circles}</div><span class="lb">你自評</span><span class="ty">${esc(peerShort(r))}</span></div>
+    <span class="arrow">⇄</span>
+    <div class="f"><div class="peer-badge"><div class="ghost">?</div></div><span class="lb">大家眼中</span><span class="ty" style="color:var(--muted)">等朋友回覆</span></div>
+  </div>`;
 }
 /* 他評「換個角度看自己」的入口：放在「想保留這次結果嗎？」下面，自己的結果處理好了再邀請別人評。
    要等作答送出、拿到這份作答的編號（disc-claims-v1）之後才能按 */
@@ -1800,7 +1834,7 @@ function renderPeerCard(){
   const box = $('#peer-card'); if (!box || !st) return;
   let rid = null;
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
-  box.innerHTML = `<h3 class="hl">換個角度看自己</h3>
+  box.innerHTML = `<h3 class="hl">換個角度看自己</h3>${peerBadgeHTML(score(st))}
     <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？請朋友、家人、老師花 2–3 分鐘選出最像你的詞，看看兩邊哪裡不同。</p>
     <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">問問朋友眼中的我</a>` : '<button class="btn primary" disabled>問問朋友眼中的我</button>'}</div>
     ${rid ? '' : '<p class="small muted">作答資料送出後就能邀請。</p>'}`;
