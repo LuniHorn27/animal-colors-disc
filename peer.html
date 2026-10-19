@@ -149,6 +149,7 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .named{display:flex;flex-direction:column;gap:8px}
 .named .row{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:34px}
 .tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 6px;background:var(--sunk);color:var(--muted);margin-left:6px}
+.back-link{align-self:center;display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:var(--ink);text-underline-offset:4px}
 .settings{padding:14px 16px;border-radius:14px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:6px}
 .switch{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .switch button{width:52px;height:32px;border-radius:16px;border:1px solid var(--line);background:var(--sunk);position:relative;flex:none}
@@ -355,6 +356,8 @@ function message(title, body, actions = '') {
 }
 const failView = () => message('連不上伺服器', '請檢查網路，稍後再試一次。', '<button class="btn primary" onclick="render()">再試一次</button>');
 
+// 回到主測驗看自己的完整結果（首頁有「查看我的結果」；登入的人也可以從「我的歷次結果」打開）
+const BACK_LINK = '<a class="back-link" href="./">看我的完整結果</a>';
 // 逐一比較的數字：和四型平均的差距 ×100，例如 −12、+38
 const fmtGap = (v) => { const n = Math.round(v * 100); return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'; };
 // 同一張圖或並排比較時要用同一個刻度：四型分數（-1~1）裡離 0 最遠的值，最小 0.3
@@ -719,7 +722,8 @@ async function renderOwner(code, token, my) {
         <p style="font-weight:700">還沒有人回覆</p>
         <p class="small muted">把邀請連結傳給朋友、家人或老師，有人回覆就會出現在這裡。</p>
         ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
-      </div>`;
+      </div>
+      ${BACK_LINK}`;
     } else {
       const selfN = B.normSelf(res.self_mean), peerN = B.normPeer(g.scores), span = spanOf(selfN, peerN);
       const selfKey = keyOf(res.self_result), peerRes = B.classify(g.scores), peerKey = peerRes.key;
@@ -755,7 +759,7 @@ async function renderOwner(code, token, my) {
           ${heroH1(peerRes)}
           <p class="one">${sentence}</p>
         </div>
-        <div class="card">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}</div>
+        <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${BACK_LINK}</div>
         <div class="gaps">${gapHTML}</div>
         ${few ? '' : `<div class="card stack" style="gap:10px" id="more-box">
           <div class="stat"><span style="font-weight:700">已有 ${total} 人回覆</span><b>${total}</b></div>
