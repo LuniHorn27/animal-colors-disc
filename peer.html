@@ -725,7 +725,7 @@ async function renderOwner(code, token, my) {
       </div>`;
     } else {
       const selfN = B.normSelf(res.self_mean), peerN = B.normPeer(g.scores), span = spanOf(selfN, peerN);
-      const selfKey = keyOf(res.self_result), peerKey = B.classify(g.scores).key;
+      const selfKey = keyOf(res.self_result), peerRes = B.classify(g.scores), peerKey = peerRes.key;
       const pos = (x) => (50 + (x / span) * 45).toFixed(1);
       const rows = TYPES.map((t) => {
         const a = pos(selfN[t]), b = pos(peerN[t]), lo = Math.min(a, b), w = Math.abs(a - b);
@@ -743,7 +743,19 @@ async function renderOwner(code, token, my) {
           ${res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><b>${typeName(keyOf(x.result))}</b></div>`).join('')}
           <p class="small muted">${res.n_anon ? `另有 ${res.n_anon} 位匿名，只算進上面的平均。` : '沒有匿名的回覆。'}</p>
         </div>` : `<p class="small muted">${res.n_anon} 位都是匿名，只算進上面的平均。</p>`;
+      // 最上面的結論：大家眼中的類型＋一句和自評的對照（用落差最大的那一型）
+      const up = lines.find((x) => x.dir === 'peer'), down = lines.find((x) => x.dir === 'self');
+      const selfA = animalsOf(typesOf(res.self_result));
+      const sentence = up ? `你自評是${selfA}。大家眼中的你，比你想的更${B.FEATURE[up.t]}。`
+        : down ? `你自評是${selfA}。你覺得自己${B.FEATURE[down.t]}，大家比較少感受到。`
+        : `你自評是${selfA}。大家眼中的你，和你自評的樣子很接近。`;
+      const who = group === '全部' ? `在 ${g.n} 個人眼中` : `在 ${g.n} 位${esc(group)}眼中`;
       body = `<div class="chips" role="group" aria-label="依關係篩選">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${x.relation}<span class="n">${x.n}</span></button>`).join('')}</div>
+        <div class="hero" style="--main:${mainColor(peerRes) || 'var(--ink)'}">
+          <p class="eyebrow">${who}，你的動物本色${heroCode(peerRes)}</p>
+          ${heroH1(peerRes)}
+          <p class="one">${sentence}</p>
+        </div>
         <div class="pair">
           <div class="card"><h3>你自評</h3>${chartSVG([{ v: selfN, peer: false }], span, { small: true })}<b>${typeName(selfKey)}</b></div>
           <div class="card"><h3>大家眼中</h3>${chartSVG([{ v: peerN, peer: false }], span, { small: true })}<b>${typeName(peerKey)}</b></div>
@@ -759,8 +771,7 @@ async function renderOwner(code, token, my) {
         <p class="note">題目少、尚未驗證，類型和落差僅供參考。</p>`;
     }
     view(`<div class="stack">
-      <h1>換個角度看自己</h1>
-      <h2 style="font-size:20px">你自評，和大家眼中的你</h2>
+      <h1 style="font-size:24px">換個角度看自己</h1>
       ${body}
       <div class="card stack" style="gap:12px">
         <div class="switch"><span id="sw-l">繼續開放回覆</span><button type="button" role="switch" aria-labelledby="sw-l" aria-checked="${res.is_open}" id="sw"></button></div>
