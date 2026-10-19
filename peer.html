@@ -175,7 +175,6 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .flower{width:100%;max-width:280px;display:block;margin:0 auto}
 .flower text{fill:var(--ink);font-weight:700}
 .flower .pt{stroke:var(--surface)}
-.mini-cta{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px;border-radius:14px;border:2px solid var(--main,var(--ink));background:var(--fold-bg)}
 :root[data-theme="dark"] .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
@@ -644,6 +643,13 @@ function runQuiz(code, nick, relation) {
   draw();
 }
 
+// 作答完的畫面：中間和頁尾放同一張「換你測測看」卡片（同一件事用同一個名字）
+const ctaHTML = () => `<div class="card stack" style="gap:10px;background:var(--selected);border:none">
+      <h2 style="font-size:20px">想要了解自己的動物本色嗎？</h2>
+      <p class="small">測完後，換你邀請朋友，了解在另一個視角中你是哪一種動物。</p>
+      <p class="small muted">46 題｜約 5–10 分鐘</p>
+      <a class="btn primary block" href="./">換你測測看</a>
+    </div>`;
 function renderRaterResult(nick, rec, again) {
   const key = keyOf(rec.result), t = R.TEXT[key], nm = esc(nick);
   const main = mainColor(rec.result);
@@ -661,10 +667,7 @@ function renderRaterResult(nick, rec, again) {
       ${flowerSVG(B.normPeer(rec.scores), `在你眼中，${nick}四種動物的明顯程度`)}
       <p class="note" style="text-align:center">花瓣越大，代表在你眼中越明顯；虛線是四種動物的平均。</p>
     </div>
-    <div class="card mini-cta">
-      <p style="font-weight:500">想知道自己是哪一種動物嗎？</p>
-      <a class="btn" href="./">換你測測看</a>
-    </div>
+    ${ctaHTML()}
     <div class="fold-card" id="fold">
       <p class="fold-h">${R.fill('{name}的完整解析', nick)}</p>
       <div class="fold-peek" aria-hidden="true"><ul>${peek.map((x) => `<li>${x}</li>`).join('')}</ul></div>
@@ -675,12 +678,7 @@ function renderRaterResult(nick, rec, again) {
     </div>
     <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。${nm}自己的測驗結果和其他人的回覆，你都看不到。</p>
     <p class="note">回覆編號：${esc(rec.ref || '')}（想刪除這筆回覆時，請附上這個編號，詳見<a href="${PRIVACY}">隱私說明</a>）</p>
-    <div class="card stack" style="gap:10px;background:var(--selected);border:none">
-      <h2 style="font-size:20px">想要了解自己的動物本色嗎？</h2>
-      <p class="small">每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。花幾分鐘，看看你的組合是什麼樣子。</p>
-      <p class="small muted">44 題｜約 5–10 分鐘</p>
-      <a class="btn primary block" href="./">開始我的測驗</a>
-    </div>
+    ${ctaHTML()}
   </div>`);
   const fold = $('#fold'), fb = fold.querySelector('.fold-btn');
   fb.addEventListener('click', () => {
