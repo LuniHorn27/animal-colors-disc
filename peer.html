@@ -149,6 +149,7 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .named{display:flex;flex-direction:column;gap:8px}
 .named .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 .tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 6px;background:var(--sunk);color:var(--muted);margin-left:6px}
+.settings{padding:14px 16px;border-radius:14px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:6px}
 .switch{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .switch button{width:52px;height:32px;border-radius:16px;border:1px solid var(--line);background:var(--sunk);position:relative;flex:none}
 .switch button::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s}
@@ -705,7 +706,8 @@ async function renderOwner(code, token, my) {
   }
   if (token && !P.user && (!own || own.code !== code || own.ownerToken !== token)) P.saveOwner({ code, ownerToken: token, nickname: res.nickname });
   let group = '全部';
-  const draw = () => {
+  // keep：重畫時不捲回最上面（切換頁尾的開關時用）
+  const draw = (keep = false) => {
     const g = res.groups.find((x) => x.relation === group) || res.groups[0];
     const total = res.groups[0].n;
     const inviteUrl = pageUrl('#r=' + code);
@@ -752,6 +754,11 @@ async function renderOwner(code, token, my) {
         </div>
         <div class="card">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}</div>
         <div class="gaps">${gapHTML}</div>
+        <div class="card stack" style="gap:10px" id="more-box">
+          <div class="stat"><span style="font-weight:700">已有 ${total} 人回覆</span><b>${total}</b></div>
+          <p class="small muted">再邀請幾位，結果會更完整。</p>
+          ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
+        </div>
         <div class="card db">
           <p style="font-weight:700">四種動物逐一比較</p>
           <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>大家眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
@@ -766,13 +773,13 @@ async function renderOwner(code, token, my) {
     view(`<div class="stack">
       <h1 style="font-size:24px">換個角度看自己</h1>
       ${body}
-      <div class="card stack" style="gap:12px">
-        <div class="switch"><span id="sw-l">繼續開放回覆</span><button type="button" role="switch" aria-labelledby="sw-l" aria-checked="${res.is_open}" id="sw"></button></div>
-        <button class="btn" id="cp-inv">複製邀請連結</button>
+      <div class="settings">
+        <div class="switch"><span id="sw-l">繼續開放回覆</span><button type="button" role="switch" aria-labelledby="sw-l" aria-describedby="sw-d" aria-checked="${res.is_open}" id="sw"></button></div>
+        <p class="note" id="sw-d">關掉後連結還在，但沒辦法再送出新的回覆。之後可以再打開。</p>
       </div>
-    </div>`);
+    </div>`, keep);
     app.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { group = b.dataset.g; draw(); }));
-    $('#cp-inv').addEventListener('click', () => copy(inviteUrl));
+    const mb = $('#more-box'); if (mb) bindShare(mb, res.nickname || '', inviteUrl);
     const c2 = $('#cp-inv2'); if (c2) c2.addEventListener('click', () => copy(inviteUrl));
     $('#sw').addEventListener('click', async (e) => {
       const want = !res.is_open, b = e.currentTarget;
@@ -782,7 +789,8 @@ async function renderOwner(code, token, my) {
         res.is_open = want;
         toast(want ? '已重新開放回覆' : '已停止開放回覆');
       } catch (err) { toast('設定失敗，請稍後再試'); }
-      draw();
+      draw(true);
+      $('#sw').focus({ preventScroll: true });
     });
   };
   draw();
