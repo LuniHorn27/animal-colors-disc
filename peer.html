@@ -446,9 +446,9 @@ function bindLogin() {
 const ICON_SHARE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const shareText = (nick) => `在你眼中，${nick}是哪一種動物？`;
 const lineUrl = (nick, url) => 'https://line.me/R/share?text=' + encodeURIComponent(shareText(nick) + '\n' + url);
-function shareBtnsHTML(nick, url, { copy = true } = {}) {
+function shareBtnsHTML(nick, url, { copy = true, line = true } = {}) {
   return (navigator.share ? `<button class="btn primary block" data-act="share">${ICON_SHARE}傳給朋友</button>` : '<button class="btn primary block" data-act="copy">複製邀請連結</button>')
-    + `<a class="btn block" href="${esc(lineUrl(nick, url))}" target="_blank" rel="noopener">用 LINE 傳送</a>`
+    + (line ? `<a class="btn block" href="${esc(lineUrl(nick, url))}" target="_blank" rel="noopener">用 LINE 傳送</a>` : '')
     + (copy && navigator.share ? '<button class="btn block" data-act="copy">複製邀請連結</button>' : '');
 }
 function bindShare(root, nick, url) {
@@ -709,7 +709,7 @@ async function renderOwner(code, token, my) {
   // keep：重畫時不捲回最上面（切換頁尾的開關時用）
   const draw = (keep = false) => {
     const g = res.groups.find((x) => x.relation === group) || res.groups[0];
-    const total = res.groups[0].n;
+    const total = res.groups[0].n, few = total > 0 && total < 3;  // 少於 3 人時提醒再邀請幾位
     const inviteUrl = pageUrl('#r=' + code);
     let body;
     if (!total) {
@@ -747,6 +747,7 @@ async function renderOwner(code, token, my) {
         : `你自評是${selfA}。大家眼中的你，和你自評的樣子很接近。`;
       const who = group === '全部' ? `在 ${g.n} 個人眼中` : `在 ${g.n} 位${esc(group)}眼中`;
       body = `<div class="chips" role="group" aria-label="依關係篩選">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${x.relation}<span class="n">${x.n}</span></button>`).join('')}</div>
+        ${few ? `<div class="warn stack" style="gap:10px" id="few-box"><p>目前只有 ${total} 個人回覆，再邀請幾位，結果會更穩定。</p>${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false, line: false })}</div>` : ''}
         <div class="hero" style="--main:${mainColor(peerRes) || 'var(--ink)'}">
           <p class="eyebrow">${who}，你的動物本色${heroCode(peerRes)}</p>
           ${heroH1(peerRes)}
@@ -754,11 +755,11 @@ async function renderOwner(code, token, my) {
         </div>
         <div class="card">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}</div>
         <div class="gaps">${gapHTML}</div>
-        <div class="card stack" style="gap:10px" id="more-box">
+        ${few ? '' : `<div class="card stack" style="gap:10px" id="more-box">
           <div class="stat"><span style="font-weight:700">已有 ${total} 人回覆</span><b>${total}</b></div>
           <p class="small muted">再邀請幾位，結果會更完整。</p>
           ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
-        </div>
+        </div>`}
         <div class="card db">
           <p style="font-weight:700">四種動物逐一比較</p>
           <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>大家眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
@@ -779,7 +780,7 @@ async function renderOwner(code, token, my) {
       </div>
     </div>`, keep);
     app.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { group = b.dataset.g; draw(); }));
-    const mb = $('#more-box'); if (mb) bindShare(mb, res.nickname || '', inviteUrl);
+    ['#more-box', '#few-box'].forEach((q) => { const el = $(q); if (el) bindShare(el, res.nickname || '', inviteUrl); });
     const c2 = $('#cp-inv2'); if (c2) c2.addEventListener('click', () => copy(inviteUrl));
     $('#sw').addEventListener('click', async (e) => {
       const want = !res.is_open, b = e.currentTarget;
