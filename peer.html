@@ -740,10 +740,15 @@ async function renderOwner(code, token, my) {
       const gapCard = (x) => { const g2 = R.GAP[x.dir === 'peer' ? 'up' : 'down'];
         return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">可以問問他們：${g2[x.t][1]}</p></div>`; };
       const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p>${R.GAP.same}</p></div>`;
-      const named = res.named.length ? `<div class="card named">
+      // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
+      // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
+      const anonList = Array.isArray(res.anon) ? res.anon : null;
+      const rowsNamed = res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><span>${akList(x.result)}</span></div>`).join('');
+      const rowsAnon = anonList ? anonList.map((x) => `<div class="row"><span class="muted">匿名</span><span>${akList(x.result)}</span></div>`).join('') : '';
+      const anonNote = anonList ? '' : res.n_anon ? `<p class="small muted">另有 ${res.n_anon} 位匿名，只算進上面的平均。</p>` : '';
+      const named = rowsNamed || rowsAnon ? `<div class="card named">
           <p style="font-weight:700">每個人眼中的你</p>
-          ${res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><span>${akList(x.result)}</span></div>`).join('')}
-          <p class="small muted">${res.n_anon ? `另有 ${res.n_anon} 位匿名，只算進上面的平均。` : '沒有匿名的回覆。'}</p>
+          ${rowsNamed}${rowsAnon}${anonNote}
         </div>` : `<p class="small muted">${res.n_anon} 位都是匿名，只算進上面的平均。</p>`;
       // 最上面的結論：大家眼中的類型＋一句和自評的對照（用落差最大的那一型）
       const up = lines.find((x) => x.dir === 'peer'), down = lines.find((x) => x.dir === 'self');
