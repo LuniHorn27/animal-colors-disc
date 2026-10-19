@@ -1801,8 +1801,8 @@ function renderPeerCard(){
   let rid = null;
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
   box.innerHTML = `<h3 class="hl">換個角度看自己</h3>
-    <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？邀請朋友、家人、老師花 2–3 分鐘評評你，看看兩邊哪裡不同。</p>
-    <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">邀請朋友評評我</a>` : '<button class="btn primary" disabled>邀請朋友評評我</button>'}</div>
+    <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？請朋友、家人、老師花 2–3 分鐘選出最像你的詞，看看兩邊哪裡不同。</p>
+    <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">問問朋友眼中的我</a>` : '<button class="btn primary" disabled>問問朋友眼中的我</button>'}</div>
     ${rid ? '' : '<p class="small muted">作答資料送出後就能邀請。</p>'}`;
 }
 function renderSaveCard(note){
@@ -1840,8 +1840,8 @@ let HIST = [], PEER_INV = [];
 /* 他評入口：這次結果已經有邀請就打開對照結果，還沒有就去產生邀請 */
 function histPeerHTML(row){
   const hit = PEER_INV.find(x=>x.response_id===row.id);
-  return hit ? `<a class="hist-peer" href="peer.html#k=${esc(hit.code)}">看朋友的評價（${+hit.n||0} 人評過）›</a>`
-             : `<a class="hist-peer" href="peer.html#from=${esc(row.id)}">邀請朋友評評我 ›</a>`;
+  return hit ? `<a class="hist-peer" href="peer.html#k=${esc(hit.code)}">看大家眼中的我（${+hit.n||0} 人回覆）›</a>`
+             : `<a class="hist-peer" href="peer.html#from=${esc(row.id)}">問問朋友眼中的我 ›</a>`;
 }
 async function openHistory(){
   if (st && st.viewOnly) st = load();

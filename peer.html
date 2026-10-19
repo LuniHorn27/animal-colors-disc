@@ -259,7 +259,7 @@ document.querySelector('.bar-brand').addEventListener('click', (e) => {
   if (document.querySelector('.leave')) return;
   const box = document.createElement('div');
   box.className = 'leave'; box.setAttribute('role', 'alertdialog'); box.setAttribute('aria-label', '要離開嗎？');
-  box.innerHTML = '<p><b>要離開嗎？</b>已經選的答案會消失，評價也不會送出。</p><div class="btns"><button class="btn primary" data-stay>繼續作答</button><button class="btn" data-go>離開</button></div>';
+  box.innerHTML = '<p><b>要離開嗎？</b>已經選的答案會消失，回覆也不會送出。</p><div class="btns"><button class="btn primary" data-stay>繼續作答</button><button class="btn" data-go>離開</button></div>';
   document.body.appendChild(box);
   box.querySelector('[data-stay]').focus();
   box.querySelector('[data-stay]').addEventListener('click', () => box.remove());
@@ -332,7 +332,7 @@ async function renderInvite(my, from = null) {
   }
   if (!from && !P.latestClaim() && !P.user) {
     return message('請先完成主測驗',
-      '「換個角度看自己」是拿你的自評和別人眼中的你對照，所以要先做完主測驗。做完後回到這一頁，就能產生邀請連結。',
+      '「換個角度看自己」是拿你的自評和大家眼中的你對照，所以要先做完主測驗。做完後回到這一頁，就能產生邀請連結。',
       `<a class="btn primary block" href="./">開始我的測驗</a>${P.user ? '' : '<button class="btn block" id="go-login">在其他裝置做過？登入帳號</button>'}`)
       || bindLogin();
   }
@@ -349,9 +349,9 @@ async function renderInvite(my, from = null) {
       <p class="note" id="nick-hint">題目將顯示：「以下哪個詞最像 小安？」</p>
     </form>
     <ul class="dots small muted">
-      <li>評的人可以匿名，也可以留名字</li>
+      <li>朋友可以匿名，也可以留名字</li>
       <li>連結不會過期，之後想再邀請別人，傳同一個連結就好</li>
-      <li>評的人看不到你自己的測驗結果</li>
+      <li>朋友看不到你自己的測驗結果</li>
     </ul>
     <p class="err" id="inv-err" hidden></p>
     <button class="btn primary block" id="inv-go" form="inv-form" disabled>產生邀請連結</button>
@@ -423,7 +423,7 @@ async function renderRate(code, my) {
   if (!inv) return message('找不到這個邀請', '連結可能不完整，請向邀請你的人再要一次。');
   const done = P.loadRated(code);
   if (done) return renderRaterResult(inv.nickname, done, true);
-  if (!inv.isOpen) return message('這個邀請目前沒有開放', '邀請你的人已經暫停接受新的評價。');
+  if (!inv.isOpen) return message('這個邀請目前沒有開放', '邀請你的人已經暫停開放回覆。');
   const nm = esc(inv.nickname);
   view(`<div class="stack">
     <h1>在你眼中，<br>${nm}是哪一種動物？</h1>
@@ -546,8 +546,8 @@ function renderRaterResult(nick, rec, again) {
   const secs = R.sections(key, nick);
   const peek = secs[0].items.slice(0, 3);
   view(`<div class="stack${key === 'CH' ? ' cham' : ''}" style="gap:20px${main ? ';--main:' + main : ''}">
-    ${again ? `<p class="muted small">你已經評過${nm}了，這是你上次的結果。</p>`
-            : `<div><h2>謝謝你！</h2><p class="muted" style="margin-top:4px">你的回答已經送出，<br>${nm}會在結果裡看到大家的評價。</p></div>`}
+    ${again ? `<p class="muted small">你已經回覆過${nm}了，這是你上次的結果。</p>`
+            : `<div><h2>謝謝你！</h2><p class="muted" style="margin-top:4px">你的回覆已經送出，<br>${nm}會在結果裡看到大家的回覆。</p></div>`}
     <div class="hero">
       <p class="eyebrow">在你眼中，${nm}的動物本色是</p>
       <h1>${heroTitle(rec.result)}</h1>
@@ -569,8 +569,8 @@ function renderRaterResult(nick, rec, again) {
         ${secs.map((x) => `<div class="card sec"><h3>${x.title}</h3><ul>${x.items.map((y) => `<li>${y}</li>`).join('')}</ul>${x.tip ? `<div class="tip"><b>${x.tip[0]}</b>${x.tip[1]}</div>` : ''}</div>`).join('')}
       </div>
     </div>
-    <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。${nm}自己的測驗結果和其他人的評價，你都看不到。</p>
-    <p class="note">評價編號：${esc(rec.ref || '')}（想刪除這筆評價時，請附上這個編號，詳見<a href="${PRIVACY}">隱私說明</a>）</p>
+    <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。${nm}自己的測驗結果和其他人的回覆，你都看不到。</p>
+    <p class="note">回覆編號：${esc(rec.ref || '')}（想刪除這筆回覆時，請附上這個編號，詳見<a href="${PRIVACY}">隱私說明</a>）</p>
     <div class="card stack" style="gap:10px;background:var(--selected);border:none">
       <h2 style="font-size:20px">想要了解自己的動物本色嗎？</h2>
       <p class="small">每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。花幾分鐘，看看你的組合是什麼樣子。</p>
@@ -611,8 +611,8 @@ async function renderOwner(code, token, my) {
     let body;
     if (!total) {
       body = `<div class="card stack" style="gap:10px;text-align:center">
-        <p style="font-weight:700">還沒有人評過</p>
-        <p class="small muted">把邀請連結傳給朋友、家人或老師，有人評完就會出現在這裡。</p>
+        <p style="font-weight:700">還沒有人回覆</p>
+        <p class="small muted">把邀請連結傳給朋友、家人或老師，有人回覆就會出現在這裡。</p>
         <button class="btn primary" id="cp-inv2">複製邀請連結</button>
       </div>`;
     } else {
@@ -629,33 +629,33 @@ async function renderOwner(code, token, my) {
       const gapHTML = lines.length ? lines.map((x) => x.dir === 'peer'
         ? `<li>別人覺得你比自己認為的更像${ak(x.t)}：${B.FEATURE[x.t]}。</li>`
         : `<li>你覺得自己很有${ak(x.t)}的一面，但別人比較少感受到。</li>`).join('')
-        : '<li>別人眼中的你，和你自評的樣子很接近。</li>';
+        : '<li>大家眼中的你，和你自評的樣子很接近。</li>';
       const named = res.named.length ? `<div class="card named">
           <p style="font-weight:700">有留名字的人</p>
           ${res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><b>${typeName(keyOf(x.result))}</b></div>`).join('')}
-          <p class="small muted">${res.n_anon ? `另有 ${res.n_anon} 位匿名，只算進上面的平均。` : '沒有匿名的評價。'}</p>
+          <p class="small muted">${res.n_anon ? `另有 ${res.n_anon} 位匿名，只算進上面的平均。` : '沒有匿名的回覆。'}</p>
         </div>` : `<p class="small muted">${res.n_anon} 位都是匿名，只算進上面的平均。</p>`;
       body = `<div class="chips" role="group" aria-label="依關係篩選">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${x.relation}<span class="n">${x.n}</span></button>`).join('')}</div>
         <div class="pair">
           <div class="card"><h3>你自評</h3>${chartSVG([{ v: selfN, peer: false }], span, { small: true })}<b>${typeName(selfKey)}</b></div>
-          <div class="card"><h3>別人眼中</h3>${chartSVG([{ v: peerN, peer: false }], span, { small: true })}<b>${typeName(peerKey)}</b></div>
+          <div class="card"><h3>大家眼中</h3>${chartSVG([{ v: peerN, peer: false }], span, { small: true })}<b>${typeName(peerKey)}</b></div>
         </div>
         <div class="card db">
           <p style="font-weight:700">四種動物逐一比較</p>
-          <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>別人眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
+          <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>大家眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
           ${rows}
           <div class="db-scale"><span></span><div><span>比較少展現</span><span>平均</span><span>比較常展現</span></div></div>
         </div>
         <ul class="dots">${gapHTML}</ul>
         ${named}
-        <p class="note">他評題目少、尚未驗證，類型和落差僅供參考。</p>`;
+        <p class="note">題目少、尚未驗證，類型和落差僅供參考。</p>`;
     }
     view(`<div class="stack">
       <h1>換個角度看自己</h1>
-      <h2 style="font-size:20px">你眼中的自己 vs 別人眼中的你</h2>
+      <h2 style="font-size:20px">你自評，和大家眼中的你</h2>
       ${body}
       <div class="card stack" style="gap:12px">
-        <div class="switch"><span id="sw-l">接受新的評價</span><button type="button" role="switch" aria-labelledby="sw-l" aria-checked="${res.is_open}" id="sw"></button></div>
+        <div class="switch"><span id="sw-l">繼續開放回覆</span><button type="button" role="switch" aria-labelledby="sw-l" aria-checked="${res.is_open}" id="sw"></button></div>
         <button class="btn" id="cp-inv">複製邀請連結</button>
       </div>
     </div>`);
@@ -668,7 +668,7 @@ async function renderOwner(code, token, my) {
       try {
         if (!(await P.setOpen(code, token, want))) throw new Error('rejected');
         res.is_open = want;
-        toast(want ? '已重新開放' : '已停止接受新的評價');
+        toast(want ? '已重新開放回覆' : '已停止開放回覆');
       } catch (err) { toast('設定失敗，請稍後再試'); }
       draw();
     });
