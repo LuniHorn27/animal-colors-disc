@@ -1843,7 +1843,7 @@ function renderPeerCard(){
   if (rid) rememberPeerSelf(rid, score(st));
   box.innerHTML = `<h3 class="hl">換個角度看自己</h3>${peerBadgeHTML(score(st))}
     <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？請朋友、家人、老師花 2–3 分鐘選出最像你的詞，看看兩邊哪裡不同。</p>
-    <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">問問朋友眼中的我</a>` : '<button class="btn primary" disabled>問問朋友眼中的我</button>'}</div>
+    <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">了解朋友眼中的我</a>` : '<button class="btn primary" disabled>了解朋友眼中的我</button>'}</div>
     ${rid ? '' : '<p class="small muted">作答資料送出後就能邀請。</p>'}`;
 }
 function renderSaveCard(note){
@@ -1882,7 +1882,7 @@ let HIST = [], PEER_INV = [];
 function histPeerHTML(row){
   const hit = PEER_INV.find(x=>x.response_id===row.id);
   return hit ? `<a class="hist-peer" href="peer.html#k=${esc(hit.code)}">看大家眼中的我（${+hit.n||0} 人回覆）›</a>`
-             : `<a class="hist-peer" href="peer.html#from=${esc(row.id)}">問問朋友眼中的我 ›</a>`;
+             : `<a class="hist-peer" href="peer.html#from=${esc(row.id)}">了解朋友眼中的我 ›</a>`;
 }
 async function openHistory(){
   if (st && st.viewOnly) st = load();
