@@ -147,7 +147,7 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .cham .tip{background:var(--sunk);border-color:transparent}
 .tip b{display:block;font-size:14px}
 .named{display:flex;flex-direction:column;gap:8px}
-.named .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.named .row{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:34px}
 .tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 6px;background:var(--sunk);color:var(--muted);margin-left:6px}
 .settings{padding:14px 16px;border-radius:14px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:6px}
 .switch{display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -281,6 +281,7 @@ const heroH1 = (res) => `<h1${typesOf(res).length > 1 ? ' class="two-t"' : ''}>$
 // 組合型、對角型的類型代號接在上面那行後面，例如「：DI 組合型」
 const heroCode = (res) => { const ts = typesOf(res); return ts.length > 1 ? `：${ts.join('')} ${res && res.kind === 'diag' ? '對角型' : '組合型'}` : ''; };
 const ak = (t) => `<span class="ak ak-${t}">${ANIMAL[t]}</span>`;
+const akList = (res) => { const ts = typesOf(res); return ts.length ? ts.map(ak).join('＋') : '變色龍'; };
 // 本色花色圓：ts 是類型陣列（例如 ['S','C']）；空陣列＝變色龍（灰色）
 const badge = (ts) => `<div class="badge">${(ts.length ? ts : [null]).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="${t ? `url(#pat-${t})` : 'var(--x)'}"/></svg>`).join('')}</div>`;
 const ghostBadge = () => '<div class="badge"><div class="ghost">?</div></div>';
@@ -340,7 +341,6 @@ class Stale extends Error {}
 const still = (my) => { if (my !== renderId) throw new Stale(); };
 const pageUrl = (hash) => location.origin + location.pathname + hash;
 const keyOf = (r) => (!r || !r.key || r.kind === 'none' || r.kind === 'chameleon') ? 'CH' : r.key;
-const typeName = (key) => R.TEXT[key].name + '型';
 
 function toast(msg) {
   const t = $('#toast'); t.textContent = msg; t.hidden = false;
@@ -737,8 +737,8 @@ async function renderOwner(code, token, my) {
         return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">可以問問他們：${g2[x.t][1]}</p></div>`; };
       const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p>${R.GAP.same}</p></div>`;
       const named = res.named.length ? `<div class="card named">
-          <p style="font-weight:700">有留名字的人</p>
-          ${res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><b>${typeName(keyOf(x.result))}</b></div>`).join('')}
+          <p style="font-weight:700">每個人眼中的你</p>
+          ${res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><span>${akList(x.result)}</span></div>`).join('')}
           <p class="small muted">${res.n_anon ? `另有 ${res.n_anon} 位匿名，只算進上面的平均。` : '沒有匿名的回覆。'}</p>
         </div>` : `<p class="small muted">${res.n_anon} 位都是匿名，只算進上面的平均。</p>`;
       // 最上面的結論：大家眼中的類型＋一句和自評的對照（用落差最大的那一型）
