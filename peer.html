@@ -114,6 +114,12 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .legend{display:flex;gap:16px;font-size:14px;align-items:center;flex-wrap:wrap}
 .dotc{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
 .dotc.self{background:var(--ink)} .dotc.peer{border:2px solid var(--ink)}
+/* 落差說明卡片：左邊粗線用那一型的動物色 */
+.gaps{display:flex;flex-direction:column;gap:12px}
+.gap{padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--gc,var(--line))}
+.gap p + p{margin-top:6px}
+.gap .gh{display:flex;align-items:center;gap:8px;font-weight:700}
+.gap .ask{font-size:14px;color:var(--muted)}
 .db{display:flex;flex-direction:column;gap:12px}
 .db-row,.db-head,.db-scale{display:grid;grid-template-columns:64px 1fr 34px 34px;column-gap:6px;align-items:center}
 .db-row{font-size:14px}
@@ -722,10 +728,10 @@ async function renderOwner(code, token, my) {
           <span class="v s">${fmtGap(selfN[t])}</span><span class="v">${fmtGap(peerN[t])}</span></div>`;
       }).join('');
       const lines = B.gapLines(selfN, peerN);
-      const gapHTML = lines.length ? lines.map((x) => x.dir === 'peer'
-        ? `<li>別人覺得你比自己認為的更像${ak(x.t)}：${B.FEATURE[x.t]}。</li>`
-        : `<li>你覺得自己很有${ak(x.t)}的一面，但別人比較少感受到。</li>`).join('')
-        : '<li>大家眼中的你，和你自評的樣子很接近。</li>';
+      // 落差說明：每一型一張卡片，開頭標動物和「你可能沒注意到的一面／大家比較少看見的一面」
+      const gapCard = (x) => { const g2 = R.GAP[x.dir === 'peer' ? 'up' : 'down'];
+        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">可以問問他們：${g2[x.t][1]}</p></div>`; };
+      const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p>${R.GAP.same}</p></div>`;
       const named = res.named.length ? `<div class="card named">
           <p style="font-weight:700">有留名字的人</p>
           ${res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><b>${typeName(keyOf(x.result))}</b></div>`).join('')}
@@ -745,6 +751,7 @@ async function renderOwner(code, token, my) {
           <p class="one">${sentence}</p>
         </div>
         <div class="card">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}</div>
+        <div class="gaps">${gapHTML}</div>
         <div class="card db">
           <p style="font-weight:700">四種動物逐一比較</p>
           <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>大家眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
@@ -753,7 +760,6 @@ async function renderOwner(code, token, my) {
           <div class="db-scale"><span></span><div><span>較少</span><span>平均</span><span>較常</span></div><span></span><span></span></div>
           <p class="note">數字是和平均的差距：0 是四種動物的平均，正數代表比平均更常展現，負數代表比較少展現。兩邊的題目不同，已換算成同一個尺度（暫定），適合比較高低，不適合和主測驗的分數直接比。</p>
         </div>
-        <ul class="dots">${gapHTML}</ul>
         ${named}
         <p class="note">題目少、尚未驗證，類型和落差僅供參考。</p>`;
     }
