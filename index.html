@@ -1815,6 +1815,10 @@ function resultExtras(r){
     });
   }
 }
+/* 邀請頁（peer.html）要顯示自評花色，但它不會計分：先把這份作答的本色記在瀏覽器裡（作答編號 → 例如 "SC"，變色龍是空字串） */
+function rememberPeerSelf(rid, r){
+  try { const m = JSON.parse(localStorage.getItem('disc-peer-self-v1')) || {}; m[rid] = peerTypes(r).join(''); localStorage.setItem('disc-peer-self-v1', JSON.stringify(m)); } catch(e){}
+}
 /* 動物名稱（不含代號），例如「無尾熊＋貓頭鷹」 */
 const peerShort = r => titleParts(r).map(p=>p.t?ANIMAL[p.t]:p.text).join('');
 const peerTypes = r => r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [];
@@ -1834,6 +1838,7 @@ function renderPeerCard(){
   const box = $('#peer-card'); if (!box || !st) return;
   let rid = null;
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
+  if (rid) rememberPeerSelf(rid, score(st));
   box.innerHTML = `<h3 class="hl">換個角度看自己</h3>${peerBadgeHTML(score(st))}
     <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？請朋友、家人、老師花 2–3 分鐘選出最像你的詞，看看兩邊哪裡不同。</p>
     <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">問問朋友眼中的我</a>` : '<button class="btn primary" disabled>問問朋友眼中的我</button>'}</div>
@@ -1892,6 +1897,7 @@ async function openHistory(){
 function renderHistList(){
   $('#hist-list').innerHTML = HIST.map((row,i)=>{
     const r = score({seq:row.seq, answers:row.answers, times:row.times||{}});
+    if (r.kind!=='none') rememberPeerSelf(row.id, r);
     return `<li><div class="hist-row"><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? '暫時無法判定' : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button><button class="btn link hist-del" data-del="${i}" aria-label="刪除 ${fmtDate(row.created_at)} 的結果">刪除</button></div>
       ${r.kind==='none' ? '' : histPeerHTML(row)}
       <div class="confirm" data-confirm="${i}" hidden role="alert"><p>確定要刪除 ${fmtDate(row.created_at)} 的這次結果嗎？刪除後無法復原。</p><button class="btn" data-keep="${i}">保留</button><button class="btn primary" data-delok="${i}">確定刪除</button></div></li>`;

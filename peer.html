@@ -44,6 +44,17 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:500}
 .warn .link-box{background:var(--surface);color:var(--ink)}
 .lead{font-size:17px;line-height:1.65}
 ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+/* 自評花色 ⇄ 大家眼中（邀請頁）：單一型一個圓、組合型兩個圓、變色龍灰色圓；還不知道的一邊是打問號的虛線圓 */
+.peer-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+.peer-pair .f{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.peer-pair .lb{font-size:13px;color:var(--muted)}
+.peer-pair .ty{font-family:var(--font-round);font-size:15px;line-height:1.35}
+.peer-pair .arrow{color:var(--faint);font-size:20px}
+.badge{display:flex;align-items:center;justify-content:center;height:64px}
+.badge svg,.badge .ghost{width:56px;height:56px;border-radius:50%;display:block;flex:none}
+.badge svg{box-shadow:0 0 0 3px var(--surface)}
+.badge svg + svg{margin-left:-14px}
+.badge .ghost{border:2.5px dashed var(--faint);background:var(--sunk);display:flex;align-items:center;justify-content:center;font-family:var(--font-round);font-size:28px;color:var(--muted)}
 /* 頁首（同 index.html） */
 .site-bar{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px);padding-top:env(safe-area-inset-top,0px)}
 .bar-in{max-width:800px;margin-inline:auto;min-height:60px;display:flex;align-items:center;gap:16px}
@@ -238,6 +249,21 @@ function heroTitle(res) {
   return ts.map((t) => `<span class="tl" style="color:${COLOR[t]}">${t} ${ANIMAL[t]}（${TNAME[t]}型）</span>`).join('<span class="plus">＋</span>');
 }
 const ak = (t) => `<span class="ak ak-${t}">${ANIMAL[t]}</span>`;
+// 本色花色圓：ts 是類型陣列（例如 ['S','C']）；空陣列＝變色龍（灰色）
+const badge = (ts) => `<div class="badge">${(ts.length ? ts : [null]).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="${t ? `url(#pat-${t})` : 'var(--x)'}"/></svg>`).join('')}</div>`;
+const ghostBadge = () => '<div class="badge"><div class="ghost">?</div></div>';
+const animalsOf = (ts) => ts.length ? ts.map((t) => ANIMAL[t]).join('＋') : '變色龍';
+// 主測驗（index.html）記下的「作答編號 → 本色」，例如 "SC"；找不到時回傳 null
+function selfTypesOf(rid) {
+  try { const m = JSON.parse(localStorage.getItem('disc-peer-self-v1')) || {}; return rid && typeof m[rid] === 'string' ? m[rid].split('') : null; } catch (e) { return null; }
+}
+function pairHTML(ts) {
+  return `<div class="peer-pair" aria-hidden="true">
+    <div class="f">${ts ? badge(ts) : '<div class="badge"><div class="ghost"></div></div>'}<span class="lb">你自評</span>${ts ? `<span class="ty">${animalsOf(ts)}</span>` : ''}</div>
+    <span class="arrow">⇄</span>
+    <div class="f">${ghostBadge()}<span class="lb">大家眼中</span><span class="ty muted">等朋友回覆</span></div>
+  </div>`;
+}
 
 /* ---------- 深色模式開關（同 index.html：沒選過時跟著系統，切換後記住） ---------- */
 const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
@@ -342,19 +368,24 @@ async function renderInvite(my, from = null) {
       <p class="lead">朋友、家人、老師眼中的你，<br>和你認為的自己，<br>可能一樣，也可能不同。</p>
       <p class="muted small">邀請他們花 2–3 分鐘，從幾組特質詞中，選出最像你和最不像你的詞。</p>
     </div>
+    <div class="card stack" style="gap:8px">
+      ${pairHTML(selfTypesOf(from || (P.latestClaim() || {}).id))}
+      <p class="small muted" style="text-align:center">朋友選完詞，你就會看到兩邊的對照。</p>
+    </div>
     <form class="card stack" id="inv-form" novalidate style="gap:10px">
       <label class="f">大家通常怎麼稱呼你？
         <input class="input" id="nick" maxlength="12" autocomplete="nickname" required>
       </label>
       <p class="note" id="nick-hint">題目將顯示：「以下哪個詞最像 小安？」</p>
     </form>
+    <p class="err" id="inv-err" hidden></p>
+    <button class="btn primary block" id="inv-go" form="inv-form" disabled>產生邀請連結</button>
     <ul class="dots small muted">
+      <li>邀請 3 位以上，平均起來比較不會被單一個人的印象左右</li>
       <li>朋友可以匿名，也可以留名字</li>
       <li>連結不會過期，之後想再邀請別人，傳同一個連結就好</li>
       <li>朋友看不到你自己的測驗結果</li>
     </ul>
-    <p class="err" id="inv-err" hidden></p>
-    <button class="btn primary block" id="inv-go" form="inv-form" disabled>產生邀請連結</button>
   </div>`);
   const nick = $('#nick'), go = $('#inv-go');
   nick.addEventListener('input', () => {
