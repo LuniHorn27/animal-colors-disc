@@ -40,6 +40,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .err{color:var(--err);font-size:14px}
 label.f{display:flex;flex-direction:column;gap:6px;font-weight:500}
 .input{min-height:48px;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface);font:inherit;color:var(--ink);width:100%}
+.input::placeholder{color:var(--faint)}
 .link-box{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--sunk);border-radius:10px;padding:10px 12px;word-break:break-all;user-select:all}
 .warn .link-box{background:var(--surface);color:var(--ink)}
 .lead{font-size:17px;line-height:1.65}
@@ -374,9 +375,9 @@ async function renderInvite(my, from = null) {
     </div>
     <form class="card stack" id="inv-form" novalidate style="gap:10px">
       <label class="f">大家通常怎麼稱呼你？
-        <input class="input" id="nick" maxlength="12" autocomplete="nickname" required>
+        <input class="input" id="nick" maxlength="12" autocomplete="nickname" placeholder="例如：小安、安安" required>
       </label>
-      <p class="note" id="nick-hint">題目將顯示：「以下哪個詞最像 小安？」</p>
+      <p class="note" id="nick-hint">朋友會在題目裡看到這個稱呼。</p>
     </form>
     <p class="err" id="inv-err" hidden></p>
     <button class="btn primary block" id="inv-go" form="inv-form" disabled>產生邀請連結</button>
@@ -391,7 +392,7 @@ async function renderInvite(my, from = null) {
   nick.addEventListener('input', () => {
     const v = nick.value.trim();
     go.disabled = !v;
-    $('#nick-hint').textContent = `題目將顯示：「以下哪個詞最像 ${v || '小安'}？」`;
+    $('#nick-hint').textContent = v ? `題目會顯示：「以下哪個詞最像 ${v}？」` : '朋友會在題目裡看到這個稱呼。';
   });
   $('#inv-form').addEventListener('submit', async (e) => {
     e.preventDefault();
