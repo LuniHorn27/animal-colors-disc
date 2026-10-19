@@ -154,11 +154,11 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
 .ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
 .ak-S{background:color-mix(in srgb,var(--s) 22%,transparent)} .ak-C{background:color-mix(in srgb,var(--c) 20%,transparent)}
-.types{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.type{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:12px;background:var(--sunk);text-align:center}
-.type .pat{width:34px;height:34px;border-radius:50% 50% 50% 6px;display:block}
-.type b{font-family:var(--font-round);font-weight:400;font-size:16px;line-height:1.3}
-.type small{font-size:12px;color:var(--muted)}
+/* 開頭頁的四種動物：只是插圖，不做成卡片，免得看起來像可以點的按鈕 */
+.types{display:flex;justify-content:space-between;padding:0 6px;max-width:360px}
+.type{display:flex;flex-direction:column;align-items:center;gap:4px;width:70px;text-align:center}
+.type .pat{width:44px;height:44px;border-radius:50%;display:block}
+.type b{font-family:var(--font-round);font-weight:400;font-size:15px;line-height:1.2}
 .chips.rel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .chips.rel .chip{padding:0}
 /* 評的人結果（同 index.html 結果頁的標題、一句話、可展開的解析卡片） */
@@ -514,7 +514,7 @@ async function renderRate(code, my) {
   const nm = esc(inv.nickname);
   view(`<div class="stack">
     <h1>在你眼中，<br>${nm}是哪一種動物？</h1>
-    <div class="types" aria-hidden="true">${TYPES.map((t) => `<div class="type">${swatch(t)}<b>${ANIMAL[t]}</b><small>${t} ${TNAME[t]}</small></div>`).join('')}</div>
+    <div class="types" aria-hidden="true">${TYPES.map((t) => `<div class="type">${swatch(t)}<b>${ANIMAL[t]}</b></div>`).join('')}</div>
     <div class="stack" style="gap:6px">
       <p class="lead">1955 年 Luft 和 Ingham 提出的「周哈里窗」提到：有些面向，別人看得見，自己卻有盲點。你的選擇，能幫${nm}從另一個視角當中更認識自己。</p>
       <p class="muted small">共 ${B.ITEM_COUNT} 題，每題選一個<b>最像</b>${nm}的、一個<b>最不像</b>的，約 2–3 分鐘。</p>
