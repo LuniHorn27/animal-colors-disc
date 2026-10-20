@@ -539,6 +539,11 @@ async function renderRate(code, my) {
       <p style="font-weight:500" id="rel-l">你是${nm}的…</p>
       <div class="chips rel" role="group" aria-labelledby="rel-l">${B.RELATIONS.map((r) => `<button type="button" class="chip" aria-pressed="false" data-rel="${r}">${r}</button>`).join('')}</div>
     </div>
+    <div class="card stack" style="gap:8px">
+      <label class="f">你的名字（選填）
+        <input class="input" id="rname" maxlength="20" autocomplete="name">
+      </label>
+    </div>
     <p class="small muted">你的選擇會用來產生${nm}的結果，也會用來改善題目（不使用名字），詳見<a href="${PRIVACY}">隱私說明</a>。</p>
     <div class="stack" style="gap:6px">
       <p class="q-hint" id="r-hint">先選你和${nm}的關係，就可以開始。</p>
@@ -555,14 +560,13 @@ async function renderRate(code, my) {
   $('#r-start').addEventListener('click', () => {
     if (!relation) return;
     P.prepareBot();
-    runQuiz(code, inv.nickname, relation);
+    runQuiz(code, inv.nickname, relation, $('#rname').value.trim());
   });
 }
 
-// 12 題之後多一步「留名字（選填）」：idx 等於 n 時就是這一步
-function runQuiz(code, nick, relation) {
+function runQuiz(code, nick, relation, name) {
   const seq = B.makeSeq(), picks = {}, times = {}, n = seq.length, sid = P.newSid();
-  let idx = 0, shownAt = Date.now(), advanceTimer = null, locked = false, name = '';
+  let idx = 0, shownAt = Date.now(), advanceTimer = null, locked = false;
   const nm = esc(nick);
 
   quizActive = true;
@@ -571,31 +575,10 @@ function runQuiz(code, nick, relation) {
     if (!p.most && !p.least) return '選一個最像、一個最不像。同一個詞不能兩個都選。';
     if (!p.least) return '再選一個最不像。';
     if (!p.most) return '再選一個最像。';
-    return last ? '都選好了，馬上進到最後一步。' : '都選好了，馬上跳到下一題。';
-  }
-  function drawName() {
-    view(`<div class="stack">
-      <div class="top"><span>最後一步</span><span>100%</span></div>
-      <div class="progress" aria-hidden="true"><i style="width:100%"></i></div>
-      <h2>都選好了</h2>
-      <div class="card stack" style="gap:8px">
-        <label class="f">你的名字（選填）
-          <input class="input" id="rname" maxlength="20" autocomplete="name" value="${esc(name)}"${locked ? ' disabled' : ''}>
-        </label>
-      </div>
-      <p class="err" id="q-err" hidden></p>
-      <div class="btns">
-        <button class="btn" id="q-prev" ${locked ? 'disabled' : ''}>上一題</button>
-        <button class="btn primary" id="q-send">送出</button>
-      </div>
-    </div>`);
-    $('#rname').addEventListener('input', (e) => { name = e.target.value; });
-    $('#q-prev').addEventListener('click', () => go(-1));
-    $('#q-send').addEventListener('click', send);
+    return last ? '都選好了，按「送出」。' : '都選好了，馬上跳到下一題。';
   }
   // focus：重畫後要把焦點放回去的按鈕 [詞, most|least]；同一題重畫時不捲動
   function draw(focus = null) {
-    if (idx === n) return drawName();
     const it = seq[idx], key = B.itemKey(it.i), p = picks[key] || {};
     const complete = p.most && p.least, last = idx === n - 1;
     view(`<div class="stack">
@@ -612,13 +595,15 @@ function runQuiz(code, nick, relation) {
       <p class="err" id="q-err" hidden></p>
       <div class="btns">
         <button class="btn" id="q-prev" ${idx === 0 || locked ? 'disabled' : ''}>上一題</button>
-        <button class="btn primary" id="q-next" ${complete ? '' : 'disabled'}>${last ? '下一步' : '下一題'}</button>
+        ${last ? `<button class="btn primary" id="q-send" ${complete ? '' : 'disabled'}>送出</button>`
+               : `<button class="btn primary" id="q-next" ${complete ? '' : 'disabled'}>下一題</button>`}
       </div>
     </div>`, !!focus);
     app.querySelectorAll('.pick').forEach((b) => b.addEventListener('click', () => choose(b.dataset.w, b.dataset.k)));
     if (focus) { const f = app.querySelector(`.pick[data-w="${focus[0]}"][data-k="${focus[1]}"]`); if (f) f.focus({ preventScroll: true }); }
     $('#q-prev').addEventListener('click', () => go(-1));
-    $('#q-next').addEventListener('click', () => go(1));
+    const nx = $('#q-next'); if (nx) nx.addEventListener('click', () => go(1));
+    const sd = $('#q-send'); if (sd) sd.addEventListener('click', send);
   }
   function choose(w, kind) {
     if (locked) return;
@@ -629,20 +614,19 @@ function runQuiz(code, nick, relation) {
     if (p.most && p.least) times[key] = (times[key] || 0) + (Date.now() - shownAt), shownAt = Date.now();
     draw([w, kind]);
     clearTimeout(advanceTimer);
-    if (p.most && p.least) advanceTimer = setTimeout(() => go(1), 350);
+    if (p.most && p.least && idx < n - 1) advanceTimer = setTimeout(() => go(1), 350);
   }
   function go(d) {
     if (locked) return;
     clearTimeout(advanceTimer);
-    idx = Math.max(0, Math.min(n, idx + d));
+    idx = Math.max(0, Math.min(n - 1, idx + d));
     shownAt = Date.now();
     draw();
   }
   async function send() {
     // 送出後答案就固定：之後重送（同一個號碼牌）送的一定是同一份答案
     locked = true;
-    name = $('#rname').value.trim();
-    $('#rname').disabled = true;
+    app.querySelectorAll('.pick').forEach((b) => { b.disabled = true; });
     const btn = $('#q-send');
     btn.disabled = true; btn.textContent = '送出中…';
     $('#q-prev').disabled = true;
