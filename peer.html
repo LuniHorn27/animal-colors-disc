@@ -577,7 +577,7 @@ function runQuiz(code, nick, relation, name) {
   quizActive = true;
   // 還差什麼才能往下：一個詞不能同時是最像和最不像
   function hint(p, last) {
-    if (!p.most && !p.least) return '選一個最像、一個最不像。同一個詞不能兩個都選。';
+    if (!p.most && !p.least) return '選一個最像、一個最不像。同一個敘述不能兩個都選。';
     if (!p.least) return '再選一個最不像。';
     if (!p.most) return '再選一個最像。';
     return last ? '都選好了，按「送出」。' : '都選好了，馬上跳到下一題。';
