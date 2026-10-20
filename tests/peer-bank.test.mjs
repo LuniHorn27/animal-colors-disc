@@ -51,10 +51,16 @@ test('normSelf：一型 5 分其他 1 分 → 該型 1', () => assert.equal(B.no
 test('normSelf：四型相同 → 全部 0', () => assert.deepEqual(B.normSelf({ D: 3, I: 3, S: 3, C: 3 }), { D: 0, I: 0, S: 0, C: 0 }));
 test('normPeer：12 → 1、-6 → -0.5', () => assert.deepEqual(B.normPeer({ D: 12, I: -6, S: 0, C: -6 }), { D: 1, I: -0.5, S: 0, C: -0.5 }));
 test('average', () => assert.deepEqual(B.average([{ D: 2, I: 0, S: -2, C: 0 }, { D: 4, I: 0, S: -4, C: 0 }]), { D: 3, I: 0, S: -3, C: 0 }));
-test('gapLines：孔雀他評高 0.3、老虎自評高 0.2、其他差 0.05 → 兩行，孔雀在前', () =>
-  assert.deepEqual(B.gapLines({ D: .4, I: .2, S: 0, C: -.6 }, { D: .2, I: .5, S: .05, C: -.65 }), [{ t: 'I', dir: 'peer' }, { t: 'D', dir: 'self' }]));
-test('gapLines：差距都小於 0.15 → 空陣列', () =>
-  assert.deepEqual(B.gapLines({ D: .1, I: 0, S: 0, C: -.1 }, { D: .05, I: .05, S: 0, C: -.1 }), []));
+test('profile：除以四型的均方根，平均 0、均方根 1', () => {
+  const z = B.profile({ D: 3, I: 1, S: -1, C: -3 });
+  assert.ok(Math.abs(z.D - 3 / Math.sqrt(5)) < 1e-9 && Math.abs(z.C + 3 / Math.sqrt(5)) < 1e-9);
+});
+test('profile：尺度不同但形狀一樣 → 結果一樣', () => assert.deepEqual(B.profile({ D: .1, I: 0, S: 0, C: -.1 }), B.profile({ D: .5, I: 0, S: 0, C: -.5 })));
+test('profile：四型相同 → 全部 0', () => assert.deepEqual(B.profile({ D: 2, I: 2, S: 2, C: 2 }), { D: 0, I: 0, S: 0, C: 0 }));
+test('gapLines：孔雀他評高 1.5、老虎自評高 1.3、其他差 0.2 → 兩行，孔雀在前', () =>
+  assert.deepEqual(B.gapLines({ D: 1.3, I: -.5, S: .2, C: -1 }, { D: 0, I: 1, S: 0, C: -1 }), [{ t: 'I', dir: 'peer' }, { t: 'D', dir: 'self' }]));
+test('gapLines：差距都小於 1.2 → 空陣列', () =>
+  assert.deepEqual(B.gapLines({ D: 1, I: .2, S: -.2, C: -1 }, { D: .1, I: .6, S: .3, C: -1 }), []));
 test('classify：全 0 → 變色龍', () => assert.equal(B.classify({ D: 0, I: 0, S: 0, C: 0 }).key, 'CH'));
 test('classify：平均後的小數分數也能判定', () => assert.equal(B.classify({ D: 7.5, I: 1, S: -3.5, C: -5 }).key, 'D'));
 test('FEATURE 四型都有', () => assert.deepEqual(Object.keys(B.FEATURE).sort(), ['C', 'D', 'I', 'S']));

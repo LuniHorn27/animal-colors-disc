@@ -120,7 +120,7 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .gap .gh{display:flex;align-items:center;gap:8px;font-weight:700}
 .gap .ask{font-size:14px;color:var(--muted)}
 .db{display:flex;flex-direction:column;gap:12px}
-.db-row,.db-head,.db-scale{display:grid;grid-template-columns:64px 1fr 34px 34px;column-gap:6px;align-items:center}
+.db-row,.db-head,.db-scale{display:grid;grid-template-columns:64px 1fr 30px 30px;column-gap:6px;align-items:center}
 .db-row{font-size:14px}
 .db-row > span:first-child{white-space:nowrap}
 .db-row .v{font-variant-numeric:tabular-nums;text-align:right}
@@ -390,10 +390,8 @@ const failView = () => message('連不上伺服器', '請檢查網路，稍後�
 
 // 回到主測驗看自己的完整結果（首頁有「查看我的結果」；登入的人也可以從「我的歷次結果」打開）
 const BACK_LINK = '<a class="back-link" href="./">看我的完整結果</a>';
-// 逐一比較的數字：和四型平均的差距 ×100，例如 −12、+38
-const fmtGap = (v) => { const n = Math.round(v * 100); return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'; };
-// 同一張圖或並排比較時要用同一個刻度：四型分數（-1~1）裡離 0 最遠的值，最小 0.3
-function spanOf(...vals) { return Math.max(0.3, ...vals.flatMap((v) => TYPES.map((t) => Math.abs(v[t])))); }
+// 逐一比較右邊的字：換算後（profile）和自己平均比的高低
+const lvOf = (z) => z >= 1 ? '高' : z >= 0.4 ? '偏高' : z > -0.4 ? '中' : z > -1 ? '偏低' : '低';
 
 /* =====================================================================
    一、邀請頁（邀請人）
@@ -791,15 +789,17 @@ async function renderOwner(code, token, my) {
       </div>
       ${BACK_LINK}`;
     } else {
-      const selfN = B.normSelf(res.self_mean), peerN = B.normPeer(g.scores), span = spanOf(selfN, peerN);
+      // 兩邊各自換算成「形狀」再比（見 peer-bank.js profile）：自評和他評的尺度不同，直接比他評會顯得比較極端
+      const selfN = B.profile(B.normSelf(res.self_mean)), peerN = B.profile(B.normPeer(g.scores));
       const selfKey = keyOf(res.self_result), peerRes = B.classify(g.scores), peerKey = peerRes.key;
-      const pos = (x) => (50 + (x / span) * 45).toFixed(1);
+      // 圖的兩端固定是 ±1.8（換算後的最大可能值約 ±1.73）
+      const pos = (x) => (50 + (Math.max(-1.8, Math.min(1.8, x)) / 1.8) * 45).toFixed(1);
       const rows = TYPES.map((t) => {
         const a = pos(selfN[t]), b = pos(peerN[t]), lo = Math.min(a, b), w = Math.abs(a - b);
         return `<div class="db-row"><span><span class="dotc" style="background:${COLOR[t]}"></span>${ANIMAL[t]}</span>
           <div class="db-track"><div class="axis"></div><div class="mid"></div><div class="seg" style="left:${lo}%;width:${w}%"></div>
           <div class="pt peer" style="left:${b}%"></div><div class="pt self" style="left:${a}%"></div></div>
-          <span class="v s">${fmtGap(selfN[t])}</span><span class="v">${fmtGap(peerN[t])}</span></div>`;
+          <span class="v s">${lvOf(selfN[t])}</span><span class="v">${lvOf(peerN[t])}</span></div>`;
       }).join('');
       const lines = B.gapLines(selfN, peerN);
       // 落差說明：每一型一張卡片，開頭標動物和「你可能沒注意到的一面／大家比較少看見的一面」
@@ -843,7 +843,7 @@ async function renderOwner(code, token, my) {
           <div class="db-head" aria-hidden="true"><span></span><span></span><span>你</span><span>大家</span></div>
           ${rows}
           <div class="db-scale"><span></span><div><span>較少</span><span>平均</span><span>較常</span></div><span></span><span></span></div>
-          <p class="note">數字是和平均的差距：0 是四種動物的平均，正數代表比平均更常展現，負數代表比較少展現。兩邊的題目不同，已換算成同一個尺度（暫定），適合比較高低，不適合和主測驗的分數直接比。</p>
+          <p class="note">中間是四種動物的平均。你的自評和大家的回覆題目不同，所以兩邊各自換算，只比較四種動物在你身上誰高誰低；右邊的「高、偏高、中、偏低、低」是和自己的平均比。</p>
         </div>
         ${named}
         <p class="note">以上測驗結果僅供參考</p>`;

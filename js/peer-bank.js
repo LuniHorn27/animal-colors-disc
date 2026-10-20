@@ -11,7 +11,9 @@
   const TYPES = ['D', 'I', 'S', 'C'];
   const RELATIONS = ['朋友', '家人', '老師', '同學', '同事'];
   const ITEM_COUNT = 12;
-  const GAP_MIN = 0.15;   // 落差文字的最小差距（暫定，規格 5-4）
+  // 落差文字的最小差距：用 profile() 換算後的單位（標準差）。暫定 1.2：模擬「朋友眼中和自評一樣」時，
+  // 3–5 人回覆約 17–42% 會誤寫出落差（舊的 0.15 約 83–94%），要等真實資料校正
+  const GAP_MIN = 1.2;
   // 類型判定門檻（暫定：分析工具/peer_threshold_sim.py，要等真實資料校正）。8 題版本的門檻還沒定。
   const GATES = { 12: { gate: 5.5, high: 11 } };
 
@@ -108,7 +110,18 @@
     return out;
   }
 
-  // 落差最大的兩型（差距 ≥ GAP_MIN）；dir = 'peer' 代表別人看到的比自評多
+  // 自評（1–5 分量表）和他評（最像／最不像）的分數尺度不同，他評天生比較分散。
+  // 比較前兩邊各自除以自己的分散程度（四型的均方根），只比「哪一型比較高、哪一型比較低」的形狀。
+  // 結果大約在 −1.7～+1.7；四型都一樣時全部是 0
+  function profile(v) {
+    const m = TYPES.reduce((s, t) => s + v[t], 0) / 4;
+    const sd = Math.sqrt(TYPES.reduce((s, t) => s + (v[t] - m) ** 2, 0) / 4);
+    const out = {};
+    TYPES.forEach((t) => { out[t] = sd < 1e-9 ? 0 : (v[t] - m) / sd; });
+    return out;
+  }
+
+  // 落差最大的兩型（差距 ≥ GAP_MIN，兩邊都要先用 profile() 換算）；dir = 'peer' 代表別人看到的比自評多
   function gapLines(selfN, peerN) {
     return TYPES
       .map((t) => ({ t, d: peerN[t] - selfN[t] }))
@@ -120,7 +133,7 @@
 
   const api = {
     BANK_VERSION, TYPES, RELATIONS, ITEM_COUNT, GAP_MIN, GATES, WORDS, FEATURE,
-    itemKey, itemWords, makeSeq, scorePicks, classify, average, normSelf, normPeer, gapLines,
+    itemKey, itemWords, makeSeq, scorePicks, classify, average, normSelf, normPeer, profile, gapLines,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.PeerBank = api;
