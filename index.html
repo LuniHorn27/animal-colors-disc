@@ -177,12 +177,6 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .hero .eyebrow{font-size:14px;color:var(--muted)}
 .confirm{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--warn-bg);color:var(--warn-ink)}
 .confirm p{flex:1 1 220px}
-.brow{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;align-items:center;gap:8px;margin:14px 0;font-size:15px}
-.brow>span:first-child{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
-.btrack{position:relative;height:18px;border-radius:9px;background:var(--sunk)}
-.bfill{height:100%;border-radius:9px}
-.bmean{position:absolute;top:-5px;bottom:-5px;width:0;border-left:2px dashed var(--faint)}
-.bval{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:8px}
 .sec{padding:24px}
 .sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
@@ -295,7 +289,6 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .pbar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .pbars .avgline{position:absolute;top:2px;bottom:20px;border-left:2px dashed var(--muted);pointer-events:none}
 .pbars .avglab{position:absolute;bottom:0;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
-.bwrap{position:relative}
 /* 和自己的平均比較：高於平均＝強項，低於平均＝比較少用 */
 .vs-avg{margin:10px 0 0;padding-left:20px;list-style:disc;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
 .vs-avg li{margin:0}
@@ -1251,12 +1244,6 @@ function donutNotes(r){
     : r.kind==='chameleon' ? '四種動物的占比都很接近，所以你是變色龍。' : '';
   return ['占比越大，代表這種動物在你身上越明顯。', top].filter(Boolean);
 }
-function barsHTML(r){
-  const m = pct(r.avg);
-  return `<div class="bwrap">` + TYPES.map(t=>`<div class="brow"><span><span class="dot" style="background:${TCOLOR[t]}"></span>${LBL(t)}</span>
-    <div class="btrack"><div class="bfill" style="width:${pct(r.mean[t])}%;background:${TCOLOR[t]}"></div><div class="bmean" style="left:${m}%"></div></div>
-    <span class="bval">${pct(r.mean[t])}</span></div>`).join('') + `</div>`;
-}
 /* 標題：依分數高低排列，每個動物用自己的顏色 */
 function titleParts(r){
   if (r.kind==='chameleon') return [{text:'變色龍', t:null}];
@@ -1454,7 +1441,7 @@ function renderResult(){
           <div class="legend">${vsAvgHTML(r)}</div></div>
         <div class="card chart-card only-data"><h3>DISC 四向圖</h3><div class="chart-side">${chartSVG(r)}
           <div class="legend"><ul class="vs-avg"><li>虛線圓是你的平均（${pct(r.avg)} 分）。</li><li>點在虛線外，代表此型較明顯。</li><li>點在虛線內，代表此型較隱晦。</li></ul></div></div></div>
-        <div class="card only-data"><h3>四型分數</h3>${barsHTML(r)}
+        <div class="card only-data"><h3>四型分數</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
       <div class="main">
