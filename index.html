@@ -1833,6 +1833,13 @@ function renderPeerCard(){
     <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，請朋友、家人、老師花 2–3 分鐘的時間快速測驗，幫助你換一個角度認識自己吧！</p>
     <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">了解他人眼中的我</a>` : '<button class="btn primary" disabled>了解他人眼中的我</button>'}</div>
     ${rid ? '' : '<p class="small muted">作答資料送出後就能邀請。</p>'}`;
+  if (!rid) return;
+  /* 已經替這份作答產生過邀請：多一個「查看結果對照」，直接到結果對照頁。
+     先看這個瀏覽器存的邀請（有專屬連結的鑰匙），沒有的話，登入的人從帳號裡找 */
+  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">查看結果對照</a>`); };
+  let own = null; try { own = JSON.parse(localStorage.getItem('disc-peer-v1')); } catch(e){}
+  if (own && own.code && own.ownerToken && own.responseId === rid) return addCmp(`peer.html#k=${own.code}.${own.ownerToken}`);
+  if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && box.isConnected) addCmp(`peer.html#k=${hit.code}`); }).catch(()=>{});
 }
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
