@@ -184,6 +184,29 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .cta-dock .btn{width:100%;max-width:480px}
 .cta-dock.away{opacity:0;transform:translateY(16px);pointer-events:none;visibility:hidden;transition:opacity .2s ease,transform .2s ease,visibility 0s .2s}
 #app:has(.cta-dock){padding-bottom:88px}
+/* 朋友作答完的本色組成：和主測驗結果頁一樣，左邊本色花色圓，右邊比例和頭冠（從 index.html 搬過來） */
+.donut-side{display:grid;grid-template-columns:minmax(130px,200px) minmax(150px,1fr);grid-template-areas:"pie legend" "pie notes";column-gap:clamp(16px,4vw,32px);row-gap:8px;align-items:start;margin-top:8px}
+.donut-side .donut{align-self:center}
+/* 手機寬度：灰色說明改成整行放在圓餅圖下面，卡片才不會太高 */
+@media (max-width:767.98px){.donut-side{grid-template-areas:"pie legend" "notes notes"}}
+/* 左邊不畫圓餅圖，只放本色的花色圓（單一型一個、組合型兩個疊在一起、變色龍用變色龍花色），下面寫「你的本色」和動物名稱 */
+.donut{grid-area:pie;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:0}
+.donut .cs{display:flex;justify-content:center;width:100%}
+.donut .cs svg{width:min(120px,80%);aspect-ratio:1;height:auto;border-radius:50%;display:block;flex:none;box-shadow:0 0 0 4px var(--surface)}
+/* 組合型兩個圓：各占欄寬約六成、疊一點，加起來不超出欄寬 */
+.donut .cs svg:first-child:nth-last-child(2),.donut .cs svg + svg{width:min(100px,58%)}
+.donut .cs svg + svg{margin-left:-14%}
+.donut .ty span{white-space:nowrap}
+.donut .lb{font-size:14px;color:var(--muted)}
+.donut .ty{font-family:var(--font-round);font-size:clamp(16px,4.6vw,20px);font-weight:700;line-height:1.3}
+.donut-legend{grid-area:legend;list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;font-weight:700;align-self:center}
+.donut-legend li{display:flex;align-items:center;gap:8px;margin:0;min-width:0;white-space:nowrap}
+.donut-legend svg.pat{width:18px;height:18px;border-radius:50%;flex:none}
+.crown{width:24px;height:21px;flex:none;margin-left:-1px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+@media (max-width:767.98px){.crown{width:18px;height:16px}}
+:root{--crown-gold-edge:#8A5A00;--crown-gold-gem:#C8372D;--crown-silver-edge:#5F6772;--crown-silver-gem:#3E6FB8}
+.donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
+.donut-side .notes{grid-area:notes;margin:0;padding-left:18px;font-size:14px;color:var(--muted);display:grid;gap:4px}
 .cta-flower{width:min(180px,50vw);margin:4px auto}
 .cta-flower .pt{stroke:var(--selected)}
 @media (min-width:768px){
@@ -257,25 +280,20 @@ function patSVG(t){
   const tf = p.rot ? ` patternTransform="rotate(${p.rot}) scale(${p.scale})"` : '';
   return `<pattern id="pat-${t}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse"${tf}><rect width="${p.w}" height="${p.h}" fill="${p.base}"/>${els}</pattern>`;
 }
+// 頭冠的漸層（本色組成的比例旁邊用）
+const CROWN_DEFS = `<linearGradient id="crown-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE897"/><stop offset=".55" stop-color="#F4B72E"/><stop offset="1" stop-color="#C98512"/></linearGradient>
+  <linearGradient id="crown-gold-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A21B"/><stop offset="1" stop-color="#A86A06"/></linearGradient>
+  <linearGradient id="crown-silver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#D2D7DE"/><stop offset="1" stop-color="#9DA5B0"/></linearGradient>
+  <linearGradient id="crown-silver-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C0CA"/><stop offset="1" stop-color="#7D8691"/></linearGradient>`;
 // 變色龍花色（品牌識別提案定案的四色鱗片）
-document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + '<pattern id="pat-X" width="24" height="21" patternUnits="userSpaceOnUse"><rect width="24" height="21" fill="#DADDE2"/><circle cx="6" cy="5" r="4.6" fill="#D66A14"/><circle cx="18" cy="5" r="4.6" fill="#11968A"/><circle cx="0" cy="15.5" r="4.6" fill="#5E9A47"/><circle cx="12" cy="15.5" r="4.6" fill="#6576DC"/><circle cx="24" cy="15.5" r="4.6" fill="#5E9A47"/></pattern>';
+document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + '<pattern id="pat-X" width="24" height="21" patternUnits="userSpaceOnUse"><rect width="24" height="21" fill="#DADDE2"/><circle cx="6" cy="5" r="4.6" fill="#D66A14"/><circle cx="18" cy="5" r="4.6" fill="#11968A"/><circle cx="0" cy="15.5" r="4.6" fill="#5E9A47"/><circle cx="12" cy="15.5" r="4.6" fill="#6576DC"/><circle cx="24" cy="15.5" r="4.6" fill="#5E9A47"/></pattern>' + CROWN_DEFS;
 const swatch = (t) => `<svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-${t})"/></svg>`;
-// 四瓣花：方向同四向圖；半徑用分數的平方根換算，面積才和分數成正比。v：-1~1，0 是四型平均（虛線圓）
+// 四瓣花的花瓣（頁尾卡片的示意圖用）：方向同四向圖
 const PETAL = { D: [180, 270], I: [270, 360], S: [0, 90], C: [90, 180] };
 function petalPath(cx, cy, r, a1, a2) {
   const p = (a) => [cx + r * Math.cos(a * Math.PI / 180), cy + r * Math.sin(a * Math.PI / 180)].map((x) => +x.toFixed(1));
   const [x1, y1] = p(a1), [x2, y2] = p(a2);
   return `M${cx} ${cy}L${x1} ${y1}A${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y2}Z`;
-}
-function flowerSVG(v, label) {
-  const cx = 120, cy = 120, R0 = 100, span = spanOf(v);
-  const val = (t) => Math.max(4, Math.min(100, 50 + 45 * v[t] / span));
-  const r = (x) => R0 * Math.sqrt(x / 100);
-  let g = TYPES.map((t) => `<path class="pt" d="${petalPath(cx, cy, r(val(t)), ...PETAL[t])}" fill="url(#pat-${t})" stroke-width="4"/>`).join('');
-  g += `<circle cx="${cx}" cy="${cy}" r="${r(50).toFixed(1)}" fill="none" stroke="var(--surface)" stroke-width="4" opacity=".7"/><circle cx="${cx}" cy="${cy}" r="${r(50).toFixed(1)}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="5 4"/>`;
-  const L = { D: [4, 14, 'start'], I: [236, 14, 'end'], S: [236, 234, 'end'], C: [4, 234, 'start'] };
-  g += TYPES.map((t) => `<text x="${L[t][0]}" y="${L[t][1]}" text-anchor="${L[t][2]}" font-size="13">${t} ${ANIMAL[t]}</text>`).join('');
-  return `<svg class="flower" viewBox="0 0 240 240" role="img" aria-label="${esc(label)}">${g}</svg>`;
 }
 
 /* ---------- 結果標題：和 index.html 一樣寫成「I 孔雀（影響型）」，組合型依分數高低排 ---------- */
@@ -647,6 +665,39 @@ function runQuiz(code, nick, relation, name) {
   draw();
 }
 
+/* ---------- 朋友作答完的本色組成（同主測驗結果頁）：左邊本色花色圓＋「在你眼中」＋動物名稱，右邊四種動物的比例；本色的型旁邊放頭冠 ---------- */
+const CROWN = c => `<svg class="crown" viewBox="0 0 28 24" aria-hidden="true">
+    <path d="M4.2 17.2 2.8 7.9 9.2 12.4 14 4.2l4.8 8.2 6.4-4.5-1.4 9.3Z" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width="1" stroke-linejoin="round"/>
+    <path d="M6.6 15.3h14.8" stroke="#fff" stroke-opacity=".55" stroke-width="1.1" stroke-linecap="round"/>
+    <rect x="3.8" y="17" width="20.4" height="4.6" rx="1.6" fill="url(#crown-${c}-band)" stroke="var(--crown-${c}-edge)" stroke-width="1"/>
+    <circle cx="9" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/><circle cx="14" cy="19.3" r="1.3" fill="var(--crown-${c}-gem)"/><circle cx="19" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/>
+    <circle cx="2.8" cy="6.8" r="1.9" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/><circle cx="14" cy="3.1" r="2.1" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/><circle cx="25.2" cy="6.8" r="1.9" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/>
+  </svg>`;
+// 比例：每題「最像」+1、「最不像」−1，換成 0–100 的明顯程度（50＋50×分數÷題數），四型加起來是 200，再換成加總 100 的比例（最大餘數法取整數）
+function compPct(scores) {
+  const raw = TYPES.map((t) => ({ t, v: (50 + 50 * scores[t] / B.ITEM_COUNT) / 2 })), out = {};
+  raw.forEach((o) => { out[o.t] = Math.floor(o.v); });
+  let left = 100 - raw.reduce((a, o) => a + Math.floor(o.v), 0);
+  raw.slice().sort((a, b) => (b.v - Math.floor(b.v)) - (a.v - Math.floor(a.v))).forEach((o) => { if (left > 0) { out[o.t]++; left--; } });
+  return out;
+}
+function compHTML(rec, nick) {
+  const ts = typesOf(rec.result), pr = compPct(rec.scores), sc = rec.scores, nm = `「${esc(nick)}」`;
+  const ranked = ts.slice().sort((a, b) => sc[b] - sc[a]);
+  const crownOf = (t) => !ts.includes(t) ? '' : CROWN(t === ranked[0] || sc[t] === sc[ranked[0]] ? 'gold' : 'silver');
+  const circles = (ts.length ? ts : ['X']).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('');
+  const name = ts.length ? ts.map((t) => `<span>${t} ${ANIMAL[t]}</span>`).join('＋') : '<span>變色龍</span>';
+  const top = ts.length === 1 ? `占比最大的 ${ak(ts[0])}，就是在你眼中${nm}的本色。`
+    : ts.length === 2 ? `${ak(ts[0])} 和 ${ak(ts[1])} 的占比最大又很接近，所以兩種都是${nm}的本色。`
+    : `四種動物的占比都很接近，所以在你眼中${nm}是變色龍。`;
+  return `<div class="donut-side">
+      <div class="donut" role="img" aria-label="在你眼中${esc(nick)}的本色：${ts.length ? ts.map((t) => ANIMAL[t]).join('＋') : '變色龍'}。本色組成：${TYPES.map((t) => ANIMAL[t] + ' ' + pr[t] + '%').join('、')}"><div class="cs">${circles}</div><span class="lb">在你眼中</span><span class="ty">${name}</span></div>
+      <ul class="donut-legend" aria-hidden="true">${TYPES.map((t) => `<li>${swatchSm(t)}${t} ${ANIMAL[t]}${crownOf(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>
+      <ul class="notes"><li>占比越大，代表在你眼中這種動物越明顯。</li><li>${top}</li></ul>
+    </div>`;
+}
+const swatchSm = (t) => `<svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>`;
+
 // 作答完的畫面：頁尾的「測出自己的動物本色」卡片（也用在找不到邀請的畫面）。中間放主測驗首頁的四瓣花示意圖
 const CTA_FLOWER = { D: 82, I: 64, S: 44, C: 56 };
 const ctaFlower = () => `<svg class="flower cta-flower" viewBox="0 0 240 240" aria-hidden="true">${TYPES.map((t) => `<path class="pt" d="${petalPath(120, 120, 104 * Math.sqrt(CTA_FLOWER[t] / 100), ...PETAL[t])}" fill="url(#pat-${t})" stroke-width="4"/>`).join('')}</svg>`;
@@ -681,8 +732,8 @@ function renderRaterResult(nick, rec, again) {
       <p class="one">${R.fill(t.one, nick)}</p>
     </div>
     <div class="card stack" style="gap:8px">
-      ${flowerSVG(B.normPeer(rec.scores), `在你眼中，${nick}四種動物的明顯程度`)}
-      <p class="note" style="text-align:center">花瓣越大，代表在你眼中越明顯；虛線是四種動物的平均。</p>
+      <h3 style="font-size:18px">本色組成</h3>
+      ${compHTML(rec, nick)}
     </div>
     <div class="fold-card" id="fold">
       <p class="fold-h">${R.fill('{name}的完整解析', nick)}</p>
