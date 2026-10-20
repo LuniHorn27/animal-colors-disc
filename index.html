@@ -1431,7 +1431,7 @@ function renderResult(){
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
           </div>
         </div>
-        <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button><button class="btn" id="go-home">回到首頁</button></div>
+        <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友測DISC</button><button class="btn" id="go-home">回到首頁</button></div>
         ${confirmHTML}
         <p class="small muted" id="invite-msg" role="status"></p>
         ${footMeta('')}
@@ -1697,7 +1697,7 @@ function inAppNoteHTML(where){
     : `你正在 ${IN_APP} 的內建瀏覽器裡，可能無法下載圖片或分享。可以直接截圖保存結果；改用瀏覽器開啟的話，需要重新作答。`;
   return `<div class="warn inapp"><p>${why}</p>${how}</div>`;
 }
-/* 分享測驗連結（不含個人結果）。頁首的「分享測驗」和結果頁的「邀請朋友來測驗」共用 */
+/* 分享測驗連結（不含個人結果）。頁首的「分享測驗」和結果頁的「邀請朋友測DISC」共用 */
 const testURL = () => SITE_URL ? `https://${SITE_URL}/` : location.origin + location.pathname;
 let toastTimer = 0;
 function toast(t, long){ const el=$('#toast'); el.textContent=t; clearTimeout(toastTimer); if (t) toastTimer=setTimeout(()=>el.textContent='', long ? 12000 : 4000); }
