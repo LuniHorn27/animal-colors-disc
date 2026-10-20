@@ -389,16 +389,19 @@ async function renderInvite(my, from = null) {
     if (hit) { location.hash = '#k=' + hit.code; return; }
     if (!from && mine.length && !P.latestClaim()) { location.hash = '#k=' + mine[0].code; return; }
   }
-  if (from && !P.user && !P.resultClaim(from).token) {
-    return message('請先登入帳號',
-      '這次的結果不是在這個瀏覽器做的。登入帳號後，就能替這次結果邀請朋友。',
-      '<button class="btn primary block" id="go-login">登入帳號</button><a class="btn block" href="./">回到首頁</a>') || bindLogin();
-  }
-  if (!from && !P.latestClaim() && !P.user) {
-    return message('請先完成主測驗',
-      '「換個角度看自己」是拿你的自評和大家眼中的你對照，所以要先做完主測驗。做完後回到這一頁，就能產生邀請連結。',
-      `<a class="btn primary block" href="./">開始我的測驗</a>${P.user ? '' : '<button class="btn block" id="go-login">在其他裝置做過？登入帳號</button>'}`)
-      || bindLogin();
+  // 這個瀏覽器沒有這份（或任何一份）主測驗結果，也沒登入：同一個提示頁，可以去做測驗或登入帳號
+  if (!P.user && (from ? !P.resultClaim(from).token : !P.latestClaim())) {
+    view(`<div class="stack">
+      <h2>請先完成主測驗 DISC</h2>
+      <p class="muted">「換個角度看自己」是拿你的自評和大家眼中的你做對照，所以要先做完主測驗。做完後回到這一頁，就能產生邀請連結。如果之前已登入帳號並保存測驗結果，請先登入。</p>
+      <a class="btn primary block" href="./#agree">開始DISC測驗</a>
+      <div class="card stack" style="gap:10px">
+        <p style="font-weight:500">在別的手機或電腦做過？</p>
+        <button class="btn block" id="go-login">登入帳號</button>
+      </div>
+      <a class="btn block" href="./">回到首頁</a>
+    </div>`);
+    return bindLogin();
   }
   view(`<div class="stack">
     <h1>換個角度看自己</h1>
