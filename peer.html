@@ -404,7 +404,7 @@ async function renderInvite(my, from = null) {
     <h1>換個角度看自己</h1>
     <div class="stack" style="gap:6px">
       <p class="lead">1955年心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，請朋友、家人、老師花 2–3 分鐘的時間完成測驗，幫助你換一個角度認識自己吧！</p>
-      <p class="muted small">邀請他們花 2–3 分鐘，從幾組特質詞中，選出最像你和最不像你的詞。</p>
+      <p class="muted small">邀請他們花 2–3 分鐘，從幾組描述中，選出最像你和最不像你的敘述。</p>
     </div>
     <div class="card stack" style="gap:8px">
       ${pairHTML(selfTypesOf(from || (P.latestClaim() || {}).id))}
