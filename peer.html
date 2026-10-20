@@ -793,7 +793,7 @@ async function renderOwner(code, token, my) {
       <h1 style="font-size:24px">換個角度看自己</h1>
       ${body}
       <div class="settings">
-        <div class="switch"><span id="sw-l">繼續開放回覆</span><button type="button" role="switch" aria-labelledby="sw-l" aria-describedby="sw-d" aria-checked="${res.is_open}" id="sw"></button></div>
+        <div class="switch"><span id="sw-l">接受新回覆</span><button type="button" role="switch" aria-labelledby="sw-l" aria-describedby="sw-d" aria-checked="${res.is_open}" id="sw"></button></div>
         <p class="note" id="sw-d">關掉後連結還在，但沒辦法再送出新的回覆。之後可以再打開。</p>
       </div>
     </div>`, keep);
@@ -805,7 +805,7 @@ async function renderOwner(code, token, my) {
       try {
         if (!(await P.setOpen(code, token, want))) throw new Error('rejected');
         res.is_open = want;
-        toast(want ? '已重新開放回覆' : '已停止開放回覆');
+        toast(want ? '已開始接受新回覆' : '已停止接受新回覆');
       } catch (err) { toast('設定失敗，請稍後再試'); }
       draw(true);
       $('#sw').focus({ preventScroll: true });
