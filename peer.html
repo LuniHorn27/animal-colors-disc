@@ -96,7 +96,6 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .progress{height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
 .progress i{display:block;height:100%;background:var(--btn);transition:width .2s}
 .qt{font-family:var(--font-round);font-size:21px;line-height:1.5}
-.qt em{font-style:normal;border-bottom:2px solid var(--ink)}
 .words{display:flex;flex-direction:column;gap:10px}
 .pick-head,.word{display:grid;grid-template-columns:minmax(0,1fr) 60px 60px;gap:6px;align-items:center}
 .pick-head{padding:0 6px 0 14px;font-size:14px;font-weight:700;text-align:center;margin-bottom:-4px}
@@ -583,7 +582,7 @@ function runQuiz(code, nick, relation, name) {
     view(`<div class="stack">
       <div class="top"><span>第 ${idx + 1} / ${n} 題</span><span>${Math.round(idx / n * 100)}%</span></div>
       <div class="progress" aria-hidden="true"><i style="width:${idx / n * 100}%"></i></div>
-      <p class="qt">以下哪個詞最像 <em>${nm}</em>？<br>哪個最不像？</p>
+      <p class="qt">以下哪個詞最像「${nm}」？<br>哪個最不像？</p>
       <div class="pick-head" aria-hidden="true"><span></span><span>最像</span><span>最不像</span></div>
       <div class="words">${it.w.map((w) => `<div class="word${p.most === w ? ' is-most' : p.least === w ? ' is-least' : ''}">
         <span>${esc(B.WORDS[w])}</span>
@@ -663,10 +662,10 @@ function renderRaterResult(nick, rec, again) {
   const secs = R.sections(key, nick);
   const peek = secs[0].items.slice(0, 3);
   view(`<div class="stack${key === 'CH' ? ' cham' : ''}" style="gap:20px${main ? ';--main:' + main : ''}">
-    ${again ? `<p class="muted small">你已經回覆過${nm}了，這是你上次的結果。</p>`
-            : `<div class="sent" role="status"><span class="ok" aria-hidden="true">✓</span>已送給${nm}，謝謝你！</div>`}
+    ${again ? `<p class="muted small">你已經回覆過「${nm}」了，這是你上次的結果。</p>`
+            : `<div class="sent" role="status"><span class="ok" aria-hidden="true">✓</span>已送給「${nm}」，謝謝你！</div>`}
     <div class="hero">
-      <p class="eyebrow">在你眼中，${nm}的動物本色${heroCode(rec.result)}</p>
+      <p class="eyebrow">在你眼中，「${nm}」的動物本色${heroCode(rec.result)}</p>
       ${heroH1(rec.result)}
       <p class="one">${R.fill(t.one, nick)}</p>
     </div>
@@ -682,7 +681,7 @@ function renderRaterResult(nick, rec, again) {
         ${secs.map((x) => `<div class="card sec"><h3>${x.title}</h3><ul>${x.items.map((y) => `<li>${y}</li>`).join('')}</ul>${x.tip ? `<div class="tip"><b>${x.tip[0]}</b>${x.tip[1]}</div>` : ''}</div>`).join('')}
       </div>
     </div>
-    <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。${nm}自己的測驗結果和其他人的回覆，你都看不到。</p>
+    <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。「${nm}」自己的測驗結果和其他人的回覆，你都看不到。</p>
     <p class="note">回覆編號：${esc(rec.ref || '')}（想刪除這筆回覆時，請附上這個編號，詳見<a href="${PRIVACY}">隱私說明</a>）</p>
     ${ctaHTML()}
   </div>
