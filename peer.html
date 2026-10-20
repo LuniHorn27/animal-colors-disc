@@ -428,7 +428,7 @@ async function renderInvite(my, from = null) {
   nick.addEventListener('input', () => {
     const v = nick.value.trim();
     go.disabled = !v;
-    $('#nick-hint').textContent = v ? `題目會顯示：「以下哪個詞最像 ${v}？」` : '朋友會在題目裡看到這個稱呼。';
+    $('#nick-hint').textContent = v ? `題目會顯示：「以下哪個敘述最像 ${v}？」` : '朋友會在題目裡看到這個稱呼。';
   });
   $('#inv-form').addEventListener('submit', async (e) => {
     e.preventDefault();
