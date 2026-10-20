@@ -585,7 +585,7 @@ function runQuiz(code, nick, relation, name) {
     view(`<div class="stack">
       <div class="top"><span>第 ${idx + 1} / ${n} 題</span><span>${Math.round(idx / n * 100)}%</span></div>
       <div class="progress" aria-hidden="true"><i style="width:${idx / n * 100}%"></i></div>
-      <p class="qt">以下哪個詞最像「${nm}」？<br>哪個最不像？</p>
+      <p class="qt">以下哪個敘述最像「${nm}」？<br>哪個最不像？</p>
       <div class="pick-head" aria-hidden="true"><span></span><span>最像</span><span>最不像</span></div>
       <div class="words">${it.w.map((w) => `<div class="word${p.most === w ? ' is-most' : p.least === w ? ' is-least' : ''}">
         <span>${esc(B.WORDS[w])}</span>
