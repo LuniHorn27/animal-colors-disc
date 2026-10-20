@@ -25,7 +25,12 @@ test('選了不屬於該題的詞 → 拒絕', () => { const b = good(); b.picks
 test('只有 11 題 → 拒絕', () => { const b = good(); delete b.picks.P12; assert.equal(S.validate(b).ok, false); });
 test('seq 的詞和題目組成不符 → 拒絕', () => { const b = good(); b.seq[0].w = ['D1b', 'I2a', 'S3a', 'C4a']; assert.equal(S.validate(b).ok, false); });
 test('seq 題號重複 → 拒絕', () => { const b = good(); b.seq[1] = { ...b.seq[0] }; assert.equal(S.validate(b).ok, false); });
-test('關係不在五個選項 → 拒絕', () => { const b = good(); b.relation = '鄰居'; assert.equal(S.validate(b).ok, false); });
+test('關係不在六個選項 → 拒絕', () => { const b = good(); b.relation = '鄰居'; assert.equal(S.validate(b).ok, false); });
+test('關係「其他」＋自填文字 → 通過，文字去掉前後空白', () => { const b = good(); b.relation = '其他'; b.relationNote = ' 社團學長 '; const v = S.validate(b); assert.equal(v.ok, true); assert.equal(v.data.relationNote, '社團學長'); });
+test('關係「其他」沒填文字 → 拒絕', () => { const b = good(); b.relation = '其他'; b.relationNote = '  '; assert.equal(S.validate(b).ok, false); });
+test('關係「其他」文字超過 10 字 → 拒絕', () => { const b = good(); b.relation = '其他'; b.relationNote = '一二三四五六七八九十一'; assert.equal(S.validate(b).ok, false); });
+test('關係「朋友」卻帶自填文字 → 拒絕', () => { const b = good(); b.relationNote = '同事'; assert.equal(S.validate(b).ok, false); });
+test('關係「朋友」→ relationNote 是 null', () => assert.equal(S.validate(good()).data.relationNote, null));
 test('名字 21 字 → 拒絕', () => { const b = good(); b.name = '一'.repeat(21); assert.equal(S.validate(b).ok, false); });
 test('名字前後空白會去掉，空字串視為匿名', () => { const b = good(); b.name = '  '; assert.equal(S.validate(b).data.name, null); });
 test('名字去掉前後空白後保留', () => { const b = good(); b.name = ' 小明 '; assert.equal(S.validate(b).data.name, '小明'); });

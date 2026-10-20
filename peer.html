@@ -559,6 +559,9 @@ async function renderRate(code, my) {
     <div class="card stack" style="gap:10px">
       <p style="font-weight:500" id="rel-l">你是${nm}的…</p>
       <div class="chips rel" role="group" aria-labelledby="rel-l">${B.RELATIONS.map((r) => `<button type="button" class="chip" aria-pressed="false" data-rel="${r}">${r}</button>`).join('')}</div>
+      <label class="f" id="rel-other" hidden>你們是什麼關係？
+        <input class="input" id="rnote" maxlength="10" placeholder="例如：社團學長、鄰居">
+      </label>
     </div>
     <div class="card stack" style="gap:8px">
       <label class="f">你的名字（選填）
@@ -572,20 +575,30 @@ async function renderRate(code, my) {
     </div>
   </div>`);
   let relation = null;
+  // 選「其他」時跳出文字欄，要填了才能開始
+  const note = () => $('#rnote').value.trim();
+  const ready = () => !!relation && (relation !== '其他' || !!note());
+  const sync = () => {
+    $('#r-start').disabled = !ready();
+    $('#r-hint').hidden = !!relation;
+  };
   app.querySelectorAll('[data-rel]').forEach((b) => b.addEventListener('click', () => {
     relation = b.dataset.rel;
     app.querySelectorAll('[data-rel]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-    $('#r-start').disabled = false;
-    $('#r-hint').hidden = true;
+    const other = relation === '其他';
+    $('#rel-other').hidden = !other;
+    if (other) $('#rnote').focus();
+    sync();
   }));
+  $('#rnote').addEventListener('input', sync);
   $('#r-start').addEventListener('click', () => {
-    if (!relation) return;
+    if (!ready()) return;
     P.prepareBot();
-    runQuiz(code, inv.nickname, relation, $('#rname').value.trim());
+    runQuiz(code, inv.nickname, relation, $('#rname').value.trim(), relation === '其他' ? note() : null);
   });
 }
 
-function runQuiz(code, nick, relation, name) {
+function runQuiz(code, nick, relation, name, relationNote) {
   const seq = B.makeSeq(), picks = {}, times = {}, n = seq.length, sid = P.newSid();
   let idx = 0, shownAt = Date.now(), advanceTimer = null, locked = false;
   const nm = esc(nick);
@@ -652,7 +665,7 @@ function runQuiz(code, nick, relation, name) {
     btn.disabled = true; btn.textContent = '送出中…';
     $('#q-prev').disabled = true;
     seq.forEach((it) => { const k = B.itemKey(it.i); times[k] = Math.min(600000, Math.round(times[k] || 0)); });
-    const out = await P.submitRating({ sid, code, relation, name, seq, picks, times });
+    const out = await P.submitRating({ sid, code, relation, relationNote, name, seq, picks, times });
     if (out.ok) { quizActive = false; return renderRaterResult(nick, out, false); }
     const msg = { closed: '這個邀請目前沒有開放，無法送出。', not_found: '找不到這個邀請，無法送出。',
       network: '網路不穩，請稍後再按一次送出。', invalid: '送出失敗，請重新整理頁面再作答一次。' }[out.error];
@@ -809,7 +822,7 @@ async function renderOwner(code, token, my) {
       // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
       // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
       const anonList = Array.isArray(res.anon) ? res.anon : null;
-      const rowsNamed = res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation)}</span></span><span>${akList(x.result)}</span></div>`).join('');
+      const rowsNamed = res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation === '其他' && x.relation_note ? x.relation_note : x.relation)}</span></span><span>${akList(x.result)}</span></div>`).join('');
       const rowsAnon = anonList ? anonList.map((x) => `<div class="row"><span class="muted">匿名</span><span>${akList(x.result)}</span></div>`).join('') : '';
       const anonNote = anonList ? '' : res.n_anon ? `<p class="small muted">另有 ${res.n_anon} 位匿名，只算進上面的平均。</p>` : '';
       const named = rowsNamed || rowsAnon ? `<div class="card named">
