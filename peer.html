@@ -497,11 +497,11 @@ function renderLinks(own) {
       ${shareBtnsHTML(nick, inviteUrl, { line: false })}
       <p class="url">${esc(inviteUrl.replace(/^https?:\/\//, ''))}</p>
     </div>
-    ${saveHTML}
     <div class="card stack" style="gap:10px">
       <div class="stat"><span id="n-line">目前 0 人回覆</span><b id="n-num">0</b></div>
       <a class="btn block" id="go-owner" href="#k=${own.code}.${own.ownerToken}">看對照結果</a>
     </div>
+    ${saveHTML}
   </div>`);
   bindShare($('#send-box'), nick, inviteUrl);
   const ss = $('#self-save');
