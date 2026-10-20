@@ -743,7 +743,7 @@ function renderRaterResult(nick, rec, again) {
         ${secs.map((x) => `<div class="card sec"><h3>${x.title}</h3><ul>${x.items.map((y) => `<li>${y}</li>`).join('')}</ul>${x.tip ? `<div class="tip"><b>${x.tip[0]}</b>${x.tip[1]}</div>` : ''}</div>`).join('')}
       </div>
     </div>
-    <p class="note">只根據你一個人的 ${B.ITEM_COUNT} 題作答，題目少、尚未驗證，僅供參考。「${nm}」自己的測驗結果和其他人的回覆，你都看不到。</p>
+    <p class="note">以上測驗及解析結果僅供參考</p>
     <p class="note">回覆編號：${esc(rec.ref || '')}（想刪除這筆回覆時，請附上這個編號，詳見<a href="${PRIVACY}">隱私說明</a>）</p>
     ${ctaHTML()}
   </div>
