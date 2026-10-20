@@ -545,6 +545,15 @@ function canvasPattern(ctx, t, f, ox, oy){
   if (pat.setTransform) pat.setTransform(new DOMMatrix().translateSelf(ox,oy).rotateSelf(p.rot||0).scaleSelf(f*(p.scale||1)/k));
   return pat;
 }
+/* canvas 版變色龍花紋（和 CHAM_PAT 相同：24×21 一格，灰底＋四色圓點） */
+function chamPattern(ctx, f, ox, oy){
+  const k = 4, c = document.createElement('canvas'); c.width = 24*k; c.height = 21*k;
+  const g = c.getContext('2d'); g.scale(k,k); g.fillStyle = '#DADDE2'; g.fillRect(0,0,24,21);
+  [[6,5,'#D66A14'],[18,5,'#11968A'],[0,15.5,'#5E9A47'],[12,15.5,'#6576DC'],[24,15.5,'#5E9A47']].forEach(([cx,cy,col])=>{ g.fillStyle=col; g.beginPath(); g.arc(cx,cy,4.6,0,Math.PI*2); g.fill(); });
+  const pat = ctx.createPattern(c,'repeat');
+  if (pat.setTransform) pat.setTransform(new DOMMatrix().translateSelf(ox,oy).scaleSelf(f/k));
+  return pat;
+}
 /* 四瓣花：方向和四向圖相同（老虎左上、孔雀右上、無尾熊右下、貓頭鷹左下）。
    半徑用分數的平方根換算，花瓣面積才會和分數成正比；分數很低時保留一點點，避免花瓣完全消失。 */
 const PETAL = {D:[180,270], I:[270,360], S:[0,90], C:[90,180]};
@@ -1623,21 +1632,23 @@ async function buildShareImage(r, reveal){
 
   } else {
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
-    // 本色組成圈
+    // 本色組成：左邊本色的花色圓＋「你的本色」＋動物名稱，右邊四種動物的比例（和網頁一樣）
     y += 90; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText('你的本色組成', PAD, y);
-    const segs=donutGeom(vals), pr=pctRound(segs), Ro=220, Ri=132, cx=W/2, cy=y+80+Ro;
-    segs.forEach(sg=>{ if (sg.p<=0) return; const a0=sg.a0*Math.PI/180, a1=Math.min(sg.a1, sg.a0+359.9)*Math.PI/180;
-      x.beginPath(); x.arc(cx,cy,Ro,a0,a1); x.arc(cx,cy,Ri,a1,a0,true); x.closePath();
-      x.fillStyle=canvasPattern(x,sg.t,2.2,0,0); x.fill(); x.lineWidth=7; x.lineJoin='round'; x.strokeStyle=P.card; x.stroke(); });
-    x.font=`700 30px ${SANS}`; x.fillStyle=P.ink;
-    donutLabels(segs, cx, cy, Ro+34, 42).forEach(l=>{ x.textAlign=l.anchor==='end'?'right':l.anchor==='start'?'left':'center'; x.fillText(`${LBL(l.t)} ${pr[l.t]}%`, l.x, l.y+10); });
-    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText('你的本色', cx, animalLine(r).includes('＋') ? cy-48 : cy-18);
-    { const c=animalLine(r), parts=c.split('＋');
-      if (parts.length>1){ x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(parts[0], cx, cy+20); x.fillText('＋', cx, cy+62); x.fillText(parts[1], cx, cy+104); }
-      else { let size=40; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>Ri*2-36 && size>24){ size-=2; x.font=`700 ${size}px ${SANS}`; }
-        x.fillStyle=P.ink; x.fillText(c, cx, cy+30); } }
+    const pr=pctRound(donutGeom(vals)), ts=r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : ['X'];
+    const Rc = ts.length>1 ? 120 : 150, colX = PAD+200, cy = y+60+150;
+    ts.forEach((t,i)=>{ const cx = ts.length>1 ? colX+(i?1:-1)*95 : colX;
+      x.beginPath(); x.arc(cx,cy,Rc,0,Math.PI*2); x.closePath();
+      x.fillStyle = t==='X' ? chamPattern(x, Rc*2/56, cx-Rc, cy-Rc) : canvasPattern(x,t,Rc*2/56,cx-Rc,cy-Rc); x.fill();
+      x.lineWidth=8; x.strokeStyle=P.card; x.stroke(); });
+    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText('你的本色', colX, cy+150+56);
+    { const c=animalLine(r); let size=34; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>390 && size>22){ size-=2; x.font=`700 ${size}px ${SANS}`; }
+      x.fillStyle=P.ink; x.fillText(c, colX, cy+150+104); }
     x.textAlign='left';
-    y = cy+Ro+84; donutNotes(r).forEach((t,i)=>{ if (i) y+=40; y = drawRich(units('・'+t), PAD, y, maxW, 24, 36, P.muted); });
+    { const lx=PAD+450, rx=PAD+maxW; TYPES.forEach((t,i)=>{ const ry=cy-105+i*70;
+        x.beginPath(); x.arc(lx+16,ry,16,0,Math.PI*2); x.fillStyle=canvasPattern(x,t,32/56,lx,ry-16); x.fill();
+        x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), lx+46, ry+11);
+        x.textAlign='right'; x.fillText(`${pr[t]}%`, rx, ry+11); x.textAlign='left'; }); }
+    y = cy+150+104+70; donutNotes(r).forEach((t,i)=>{ if (i) y+=40; y = drawRich(units('・'+t), PAD, y, maxW, 24, 36, P.muted); });
     // 花紋長條（由高到低）
     y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText('四種動物的分數', PAD, y);
     const order=TYPES, barX=PAD+200, barW=maxW-200-80, ax=barX+barW*pct(r.avg)/100;
