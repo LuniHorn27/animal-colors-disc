@@ -463,10 +463,10 @@ function bindLogin() {
 const ICON_SHARE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const shareText = (nick) => `在你眼中，${nick}是哪一種動物？`;
 const lineUrl = (nick, url) => 'https://line.me/R/share?text=' + encodeURIComponent(shareText(nick) + '\n' + url);
-function shareBtnsHTML(nick, url, { copy = true, line = true } = {}) {
-  return (navigator.share ? `<button class="btn primary block" data-act="share">${ICON_SHARE}傳給朋友</button>` : '<button class="btn primary block" data-act="copy">複製邀請連結</button>')
+function shareBtnsHTML(nick, url, { copy = true, line = true, copyLabel = '複製邀請連結' } = {}) {
+  return (navigator.share ? `<button class="btn primary block" data-act="share">${ICON_SHARE}傳給朋友</button>` : `<button class="btn primary block" data-act="copy">${copyLabel}</button>`)
     + (line ? `<a class="btn block" href="${esc(lineUrl(nick, url))}" target="_blank" rel="noopener">用 LINE 傳送</a>` : '')
-    + (copy && navigator.share ? '<button class="btn block" data-act="copy">複製邀請連結</button>' : '');
+    + (copy && navigator.share ? `<button class="btn block" data-act="copy">${copyLabel}</button>` : '');
 }
 function bindShare(root, nick, url) {
   root.querySelectorAll('[data-act="share"]').forEach((b) => b.addEventListener('click', () =>
@@ -728,7 +728,7 @@ async function renderOwner(code, token, my) {
         ${pairHTML(typesOf(res.self_result))}
         <p style="font-weight:700">還沒有人回覆</p>
         <p class="small muted">把邀請連結傳給朋友、家人或老師，有人回覆就會出現在這裡。</p>
-        ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
+        ${shareBtnsHTML(res.nickname || '', inviteUrl, { line: false, copyLabel: '複製連結' })}
       </div>
       ${BACK_LINK}`;
     } else {
