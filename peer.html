@@ -489,7 +489,7 @@ function renderLinks(own) {
     <div class="card stack" style="gap:10px" id="send-box">
       <div class="ready"><span class="ok">✓</span><p style="font-weight:500">邀請連結準備好了</p></div>
       <p class="small muted">傳給朋友、家人、老師，請他們花 2–3 分鐘選出最像你的詞。題目會稱呼你「${esc(nick)}」。</p>
-      ${shareBtnsHTML(nick, inviteUrl)}
+      ${shareBtnsHTML(nick, inviteUrl, { line: false })}
       <p class="url">${esc(inviteUrl.replace(/^https?:\/\//, ''))}</p>
     </div>
     ${saveHTML}
