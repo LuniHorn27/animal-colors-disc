@@ -546,8 +546,9 @@ async function renderRate(code, my) {
     </div>
     <div class="card stack" style="gap:8px">
       <label class="f">你的名字（選填）
-        <input class="input" id="rname" maxlength="20" autocomplete="name">
+        <input class="input" id="rname" maxlength="20" autocomplete="name" aria-describedby="rname-n">
       </label>
+      <p class="note" id="rname-n">如未填寫，會顯示為匿名</p>
     </div>
     <div class="stack" style="gap:6px">
       <p class="q-hint" id="r-hint">先選你和${nm}的關係，就可以開始。</p>
