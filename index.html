@@ -168,8 +168,11 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
 .ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
 .ak-S{background:color-mix(in srgb,var(--s) 22%,transparent)} .ak-C{background:color-mix(in srgb,var(--c) 20%,transparent)}
-/* 四向圖縮到和「你的本色組成」的花色圓差不多大，兩種模式的第一張卡片一樣高 */
-.chart-svg{width:100%;max-width:300px;display:block;margin:4px auto 0}
+/* 四向圖：電腦版圖在左、三行說明在右；手機版說明排到圖下面 */
+.chart-side{display:grid;grid-template-columns:minmax(0,460px) minmax(180px,1fr);column-gap:clamp(16px,3vw,32px);align-items:center;margin-top:4px}
+.chart-side .legend{margin-top:0}
+@media (max-width:767.98px){.chart-side{grid-template-columns:minmax(0,1fr);row-gap:8px}}
+.chart-svg{width:100%;max-width:480px;display:block;margin:4px auto 0}
 @media (max-width:767.98px){.chart-card{padding-inline:6px}.chart-card>h3,.chart-card>.legend{padding-inline:14px}}
 .hero .eyebrow{font-size:14px;color:var(--muted)}
 .confirm{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--warn-bg);color:var(--warn-ink)}
@@ -281,8 +284,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 :root{--crown-gold-edge:#8A5A00;--crown-gold-gem:#C8372D;--crown-silver-edge:#5F6772;--crown-silver-gem:#3E6FB8}
 .donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
 .donut-side .legend{grid-area:notes;margin-top:0}
-/* 四向圖畫得比較小，圖裡的字放大，實際顯示約 13–15px */
-.chart-svg .ax{font-size:22px}.chart-svg .vl{font-size:22px}.chart-svg .an{font-size:24px}
+@media (max-width:767.98px){.chart-svg .ax,.chart-svg .vl,.chart-svg .an{font-size:20px}}
 .pbars{display:flex;flex-direction:column;gap:14px;position:relative;padding-top:8px;padding-bottom:26px;margin-top:4px}
 .pbar{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:15px}
 .pbar .nm{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
@@ -1450,8 +1452,8 @@ function renderResult(){
           <div class="legend"><ul class="vs-avg">${donutNotes(r).map(t=>`<li>${akHTML(t)}</li>`).join('')}</ul></div></div></div>
         <div class="card only-brand"><h3>四種動物的分數</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
-        <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
-          <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。</span></div></div>
+        <div class="card chart-card only-data"><h3>DISC 四向圖</h3><div class="chart-side">${chartSVG(r)}
+          <div class="legend"><ul class="vs-avg"><li>虛線圓是你的平均（${pct(r.avg)} 分）。</li><li>點在虛線外，代表此型較明顯。</li><li>點在虛線內，代表此型較隱晦。</li></ul></div></div></div>
         <div class="card only-data"><h3>四型分數</h3>${barsHTML(r)}
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
