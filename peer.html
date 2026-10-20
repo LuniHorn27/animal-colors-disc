@@ -725,7 +725,7 @@ function renderRaterResult(nick, rec, again) {
   const peek = secs[0].items.slice(0, 3);
   view(`<div class="stack${key === 'CH' ? ' cham' : ''}" style="gap:20px${main ? ';--main:' + main : ''}">
     ${again ? `<p class="muted small">你已經回覆過「${nm}」了，這是你上次的結果。</p>`
-            : `<div class="sent" role="status"><span class="ok" aria-hidden="true">✓</span>已送給「${nm}」，謝謝你！</div>`}
+            : `<div class="sent" role="status"><span class="ok" aria-hidden="true">✓</span>已將測驗結果傳送給「${nm}」，謝謝你！</div>`}
     <div class="hero">
       <p class="eyebrow">在你眼中，「${nm}」的動物本色${heroCode(rec.result)}</p>
       ${heroH1(rec.result)}
