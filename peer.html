@@ -63,7 +63,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-weight:500}
 .btn.text{border:none;background:none;min-height:44px;color:inherit;text-decoration:underline;text-underline-offset:3px;font-weight:500}
 .btn svg{width:20px;height:20px;flex:none}
 ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
-/* 自評花色 ⇄ 大家眼中（邀請頁）：單一型一個圓、組合型兩個圓、變色龍灰色圓；還不知道的一邊是打問號的虛線圓 */
+/* 自評花色 ⇄ 大家眼中（邀請頁）：單一型一個圓、組合型兩個圓、變色龍四色鱗片；還不知道的一邊是打問號的虛線圓 */
 .peer-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;width:100%;max-width:420px;margin-inline:auto}
 .peer-pair .f{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
 .peer-pair .lb{font-size:13px;color:var(--muted)}
@@ -253,7 +253,8 @@ function patSVG(t){
   const tf = p.rot ? ` patternTransform="rotate(${p.rot}) scale(${p.scale})"` : '';
   return `<pattern id="pat-${t}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse"${tf}><rect width="${p.w}" height="${p.h}" fill="${p.base}"/>${els}</pattern>`;
 }
-document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('');
+// 變色龍花色（品牌識別提案定案的四色鱗片）
+document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + '<pattern id="pat-X" width="24" height="21" patternUnits="userSpaceOnUse"><rect width="24" height="21" fill="#DADDE2"/><circle cx="6" cy="5" r="4.6" fill="#D66A14"/><circle cx="18" cy="5" r="4.6" fill="#11968A"/><circle cx="0" cy="15.5" r="4.6" fill="#5E9A47"/><circle cx="12" cy="15.5" r="4.6" fill="#6576DC"/><circle cx="24" cy="15.5" r="4.6" fill="#5E9A47"/></pattern>';
 const swatch = (t) => `<svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-${t})"/></svg>`;
 // 四瓣花：方向同四向圖；半徑用分數的平方根換算，面積才和分數成正比。v：-1~1，0 是四型平均（虛線圓）
 const PETAL = { D: [180, 270], I: [270, 360], S: [0, 90], C: [90, 180] };
@@ -292,8 +293,8 @@ const heroH1 = (res) => `<h1${typesOf(res).length > 1 ? ' class="two-t"' : ''}>$
 const heroCode = (res) => { const ts = typesOf(res); return ts.length > 1 ? `：${ts.join('')} ${res && res.kind === 'diag' ? '對角型' : '組合型'}` : ''; };
 const ak = (t) => `<span class="ak ak-${t}">${ANIMAL[t]}</span>`;
 const akList = (res) => { const ts = typesOf(res); return ts.length ? ts.map(ak).join('＋') : '變色龍'; };
-// 本色花色圓：ts 是類型陣列（例如 ['S','C']）；空陣列＝變色龍（灰色）
-const badge = (ts) => `<div class="badge">${(ts.length ? ts : [null]).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="${t ? `url(#pat-${t})` : 'var(--x)'}"/></svg>`).join('')}</div>`;
+// 本色花色圓：ts 是類型陣列（例如 ['S','C']）；空陣列＝變色龍（四色鱗片）
+const badge = (ts) => `<div class="badge">${(ts.length ? ts : [null]).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t || 'X'})"/></svg>`).join('')}</div>`;
 const ghostBadge = () => '<div class="badge"><div class="ghost">?</div></div>';
 const animalsOf = (ts) => ts.length ? ts.map((t) => ANIMAL[t]).join('＋') : '變色龍';
 // 主測驗（index.html）記下的「作答編號 → 本色」，例如 "SC"；找不到時回傳 null

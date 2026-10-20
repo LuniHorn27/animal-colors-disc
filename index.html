@@ -326,7 +326,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 .hist .confirm{margin-top:8px}
 /* 他評「換個角度看自己」：歷次結果每一筆下面的入口 */
 .hist-peer{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:var(--ink);text-underline-offset:3px}
-/* 他評入口卡片：左邊是自己測出來的花色（單一型一個圓、組合型兩個圓、變色龍灰色圓），右邊是還不知道的「大家眼中」 */
+/* 他評入口卡片：左邊是自己測出來的花色（單一型一個圓、組合型兩個圓、變色龍四色鱗片），右邊是還不知道的「大家眼中」 */
 .peer-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;max-width:360px;margin:4px 0 6px}
 .peer-pair .f{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
 .peer-pair .lb{font-size:13px;color:var(--muted)}
@@ -525,7 +525,9 @@ const CROWN_DEFS = `<linearGradient id="crown-gold" x1="0" y1="0" x2="0" y2="1">
   <linearGradient id="crown-gold-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A21B"/><stop offset="1" stop-color="#A86A06"/></linearGradient>
   <linearGradient id="crown-silver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#D2D7DE"/><stop offset="1" stop-color="#9DA5B0"/></linearGradient>
   <linearGradient id="crown-silver-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C0CA"/><stop offset="1" stop-color="#7D8691"/></linearGradient>`;
-document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + CROWN_DEFS;
+/* 變色龍花色（品牌識別提案定案的四色鱗片）：目前只用在「換個角度看自己」的花色圓 */
+const CHAM_PAT = '<pattern id="pat-X" width="24" height="21" patternUnits="userSpaceOnUse"><rect width="24" height="21" fill="#DADDE2"/><circle cx="6" cy="5" r="4.6" fill="#D66A14"/><circle cx="18" cy="5" r="4.6" fill="#11968A"/><circle cx="0" cy="15.5" r="4.6" fill="#5E9A47"/><circle cx="12" cy="15.5" r="4.6" fill="#6576DC"/><circle cx="24" cy="15.5" r="4.6" fill="#5E9A47"/></pattern>';
+document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + CHAM_PAT + CROWN_DEFS;
 /* canvas 版花紋：f = 花的 SVG 單位換算成 canvas 像素的倍率，(ox,oy) = SVG 原點在 canvas 上的位置 */
 function canvasPattern(ctx, t, f, ox, oy){
   const p = PAT[t], k = 4, c = document.createElement('canvas');
@@ -1827,7 +1829,7 @@ const peerTypes = r => r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.ki
 function peerBadgeHTML(r){
   const ts = peerTypes(r);
   const circles = ts.length ? ts.map(t=>`<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('')
-    : '<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="var(--x)"/></svg>';
+    : '<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-X)"/></svg>';
   return `<div class="peer-pair" aria-hidden="true">
     <div class="f"><div class="peer-badge">${circles}</div><span class="lb">你自評</span><span class="ty">${esc(peerShort(r))}</span></div>
     <span class="arrow">⇄</span>
