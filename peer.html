@@ -532,7 +532,7 @@ async function renderRate(code, my) {
     <h1>在你眼中，<br>${nm}是哪一種動物？</h1>
     <div class="types" aria-hidden="true">${TYPES.map((t) => `<div class="type">${swatch(t)}<span class="tx"><b>${ANIMAL[t]}</b><small>${t} ${TNAME[t]}</small></span></div>`).join('')}</div>
     <div class="stack" style="gap:6px">
-      <p class="lead">1955 年 Luft 和 Ingham 提出的「周哈里窗」提到：有些面向，別人看得見，自己卻有盲點。你的選擇，能幫${nm}從另一個視角當中更認識自己。</p>
+      <p class="lead">這是一份 DISC 行為風格測驗，用四種動物代表做事和相處的習慣。周哈里窗提到，有些面向別人看得見，自己卻有盲點；你的選擇，能幫${nm}從另一個視角更認識自己。</p>
       <p class="muted small">共 ${B.ITEM_COUNT} 題，每題選一個<b>最像</b>${nm}的、一個<b>最不像</b>的，約 2–3 分鐘。</p>
     </div>
     <div class="card stack" style="gap:10px">
