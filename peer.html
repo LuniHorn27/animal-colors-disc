@@ -527,10 +527,11 @@ function renderLinks(own) {
 async function renderRate(code, my) {
   await P.init();
   const inv = await P.getInvite(code); still(my);
-  if (!inv) return message('找不到這個邀請', '連結可能不完整，請向邀請你的人再要一次。');
+  // 找不到邀請、邀請暫停：下面放「測出自己的動物本色」卡片，留住點進來的人
+  if (!inv) return message('找不到這個邀請', '連結可能不完整，請向邀請你的人再要一次。', ctaHTML());
   const done = P.loadRated(code);
   if (done) return renderRaterResult(inv.nickname, done, true);
-  if (!inv.isOpen) return message('這個邀請目前沒有開放', '邀請你的人已經暫停開放回覆。');
+  if (!inv.isOpen) return message('這個邀請目前沒有開放', '邀請你的人已經暫停開放回覆。', ctaHTML());
   const nm = `「${esc(inv.nickname)}」`;  // 開頭頁提到被邀請的人時一律用「」框起來
   view(`<div class="stack">
     <h1>在你眼中，<br>${nm}是哪一種動物？</h1>
