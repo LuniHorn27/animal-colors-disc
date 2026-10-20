@@ -255,27 +255,13 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .flower{display:block}
 .flower .pt{stroke:var(--surface);stroke-linejoin:round}
 .home-hero .flower .pt{stroke:var(--bg)}
-/* 你的本色組成：圓餅圖在左、比例在右（手機上說明文字排到下面整行；電腦版說明放在比例下面） */
-/* 圓餅圖盡量維持 200px，畫面變窄時先縮右邊的比例和說明（比例至少留 150px），真的不夠才把圓餅圖縮到 130px；
-   灰色說明一律放在比例下面 */
-.donut-side{display:grid;grid-template-columns:minmax(130px,200px) minmax(150px,1fr);grid-template-areas:"pie legend" "pie notes";column-gap:clamp(16px,4vw,32px);row-gap:8px;align-items:start;margin-top:8px}
-.donut-side .donut{align-self:center}
-/* 手機寬度：灰色說明改成整行放在圓餅圖下面，卡片才不會太高 */
-@media (max-width:767.98px){.donut-side{grid-template-areas:"pie legend" "notes notes"}}
-.donut{grid-area:pie;width:100%;display:block}
-.donut text{font-family:var(--font-sans);font-weight:700;fill:var(--ink)}
-.donut .c1{font-size:19px;font-weight:400;fill:var(--muted)}
-.donut .c2{font-size:28px}
-.donut .cm .c1{font-size:15px}
-.donut .c2.two{font-size:18px}
-.donut-legend{grid-area:legend;list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;font-weight:700;align-self:center}
-.donut-legend li{display:flex;align-items:center;gap:8px;margin:0;min-width:0;white-space:nowrap}
-.donut-legend svg.pat{width:18px;height:18px;border-radius:50%;flex:none}
-.crown{width:24px;height:21px;flex:none;margin-left:-1px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
-@media (max-width:767.98px){.crown{width:18px;height:16px}}
-:root{--crown-gold-edge:#8A5A00;--crown-gold-gem:#C8372D;--crown-silver-edge:#5F6772;--crown-silver-gem:#3E6FB8}
-.donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
-.donut-side .legend{grid-area:notes;margin-top:0}
+/* 你的本色組成：只放本色的花色圓（單一型一個、組合型兩個疊在一起、變色龍用變色龍花色），下面寫「你的本色」和動物名稱。比例數字放在「精確數據」 */
+.self-badge{display:flex;flex-direction:column;align-items:center;gap:12px;margin:8px 0 4px;text-align:center}
+.self-badge .cs{display:flex;justify-content:center}
+.self-badge svg{width:clamp(96px,30vw,128px);height:clamp(96px,30vw,128px);border-radius:50%;display:block;flex:none;box-shadow:0 0 0 4px var(--surface)}
+.self-badge svg + svg{margin-left:clamp(-28px,-6vw,-20px)}
+.self-badge .lb{font-size:15px;color:var(--muted)}
+.self-badge .ty{font-family:var(--font-round);font-size:clamp(20px,5.5vw,24px);font-weight:700;line-height:1.3}
 @media (max-width:767.98px){.chart-svg .ax,.chart-svg .vl,.chart-svg .an{font-size:20px}}
 .pbars{display:flex;flex-direction:column;gap:14px;position:relative;padding-top:8px;padding-bottom:26px;margin-top:4px}
 .pbar{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:15px}
@@ -523,13 +509,9 @@ function patSVG(t){
   return `<pattern id="pat-${t}" width="${p.w}" height="${p.h}" patternUnits="userSpaceOnUse"${tf}><rect width="${p.w}" height="${p.h}" fill="${p.base}"/>${els}</pattern>`;
 }
 /* 頭冠的漸層（金、銀），放在共用的 <defs> 裡 */
-const CROWN_DEFS = `<linearGradient id="crown-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE897"/><stop offset=".55" stop-color="#F4B72E"/><stop offset="1" stop-color="#C98512"/></linearGradient>
-  <linearGradient id="crown-gold-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A21B"/><stop offset="1" stop-color="#A86A06"/></linearGradient>
-  <linearGradient id="crown-silver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#D2D7DE"/><stop offset="1" stop-color="#9DA5B0"/></linearGradient>
-  <linearGradient id="crown-silver-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C0CA"/><stop offset="1" stop-color="#7D8691"/></linearGradient>`;
 /* 變色龍花色（品牌識別提案定案的四色鱗片）：目前只用在「換個角度看自己」的花色圓 */
 const CHAM_PAT = '<pattern id="pat-X" width="24" height="21" patternUnits="userSpaceOnUse"><rect width="24" height="21" fill="#DADDE2"/><circle cx="6" cy="5" r="4.6" fill="#D66A14"/><circle cx="18" cy="5" r="4.6" fill="#11968A"/><circle cx="0" cy="15.5" r="4.6" fill="#5E9A47"/><circle cx="12" cy="15.5" r="4.6" fill="#6576DC"/><circle cx="24" cy="15.5" r="4.6" fill="#5E9A47"/></pattern>';
-document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + CHAM_PAT + CROWN_DEFS;
+document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + CHAM_PAT;
 /* canvas 版花紋：f = 花的 SVG 單位換算成 canvas 像素的倍率，(ox,oy) = SVG 原點在 canvas 上的位置 */
 function canvasPattern(ctx, t, f, ox, oy){
   const p = PAT[t], k = 4, c = document.createElement('canvas');
@@ -1301,36 +1283,11 @@ function donutLabels(segs, cx, cy, r, gap){
     return {t:g.t, x:cx+r*c, y:cy+r*Math.sin(a), side:c<0?'L':'R', anchor:c<-.2?'end':c>.2?'start':'middle'}; });
   spreadLabels(labs, gap); return labs;
 }
-/* 冠軍頭冠圖示（本色組成的比例旁邊） */
-const CROWN = c => `<svg class="crown" viewBox="0 0 28 24" aria-hidden="true">
-    <path d="M4.2 17.2 2.8 7.9 9.2 12.4 14 4.2l4.8 8.2 6.4-4.5-1.4 9.3Z" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width="1" stroke-linejoin="round"/>
-    <path d="M6.6 15.3h14.8" stroke="#fff" stroke-opacity=".55" stroke-width="1.1" stroke-linecap="round"/>
-    <rect x="3.8" y="17" width="20.4" height="4.6" rx="1.6" fill="url(#crown-${c}-band)" stroke="var(--crown-${c}-edge)" stroke-width="1"/>
-    <circle cx="9" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/><circle cx="14" cy="19.3" r="1.3" fill="var(--crown-${c}-gem)"/><circle cx="19" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/>
-    <circle cx="2.8" cy="6.8" r="1.9" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/><circle cx="14" cy="3.1" r="2.1" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/><circle cx="25.2" cy="6.8" r="1.9" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/>
-  </svg>`;
-function donutSVG(vals, center, tops=[]){
-  const cx=160, cy=160, Ro=112, Ri=66, segs=donutGeom(vals), pr=pctRound(segs);
-  const P = (r,a)=>[cx+r*Math.cos(a*Math.PI/180), cy+r*Math.sin(a*Math.PI/180)].map(v=>+v.toFixed(1));
-  let g = '';
-  segs.forEach(s=>{ if (s.p<=0) return;
-    const a1 = Math.min(s.a1, s.a0+359.9), big = (a1-s.a0)>180?1:0;
-    const [x1,y1]=P(Ro,s.a0), [x2,y2]=P(Ro,a1), [x3,y3]=P(Ri,a1), [x4,y4]=P(Ri,s.a0);
-    g += `<path class="pt" d="M${x1} ${y1}A${Ro} ${Ro} 0 ${big} 1 ${x2} ${y2}L${x3} ${y3}A${Ri} ${Ri} 0 ${big} 0 ${x4} ${y4}Z" fill="url(#pat-${s.t})" stroke-width="3"/>`; });
-  /* 組合型（例如 D 老虎＋I 孔雀）分兩行，才放得進圓圈中間 */
-  const parts = center.split('＋');
-  /* 每一行用 dominant-baseline="central" 以行的中心定位，整組文字的上下中心對齊圓心 */
-  const line = (y, cls, t) => `<text x="${cx}" y="${cy+y}" text-anchor="middle" dominant-baseline="central" class="${cls}">${t}</text>`;
-  g += parts.length>1
-    ? `<g class="cm">${line(-36,'c1','你的本色')}${line(-11,'c2 two',parts[0])}${line(11,'c2 two','＋')}${line(33,'c2 two',parts[1])}</g>`
-    : line(-19,'c1','你的本色') + line(12,'c2',center);
-  /* 右邊的比例：固定 D、I、S、C 的順序和大小；本色的型旁邊放冠軍頭冠。
-     比例最高的是金色；組合型的第二型是銀色，但兩型分數完全一樣時兩個都是金色 */
-  /* 用原始分數比較（百分比四捨五入後，一樣的分數也可能顯示成 34%、33%） */
-  const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
-  const crownOf = t => !tops.includes(t) ? '' : CROWN(t===ranked[0] || vals[t]===vals[ranked[0]] ? 'gold' : 'silver');
-  const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}${crownOf(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
-  return `<svg class="flower donut" viewBox="40 40 240 240" role="img" aria-label="本色組成：${TYPES.map(t=>LBL(t)+' '+pr[t]+'%').join('、')}">${g}</svg>${legend}`;
+/* 你的本色組成：本色的花色圓＋「你的本色」＋動物名稱 */
+function selfBadgeHTML(r){
+  const ts = r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : ['X'];
+  return `<div class="self-badge"><div class="cs" aria-hidden="true">${ts.map(t=>`<svg viewBox="0 0 56 56"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('')}</div>
+    <span class="lb">你的本色</span><span class="ty">${esc(animalLine(r))}</span></div>`;
 }
 function patBarsHTML(vals, avg){
   const order = TYPES;
@@ -1451,8 +1408,7 @@ function renderResult(){
     html += `<div class="report">
       <aside class="side">
         <div class="seg" role="group" aria-label="結果呈現方式"><button type="button" data-view="brand" aria-pressed="${VIEW==='brand'}">動物本色</button><button type="button" data-view="data" aria-pressed="${VIEW==='data'}">精確數據</button></div>
-        <div class="card only-brand"><h3>你的本色組成</h3><div class="donut-side">${donutSVG(vals, animalLine(r), r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [])}
-          <div class="legend"><ul class="vs-avg">${donutNotes(r).map(t=>`<li>${akHTML(t)}</li>`).join('')}</ul></div></div></div>
+        <div class="card only-brand"><h3>你的本色組成</h3>${selfBadgeHTML(r)}</div>
         <div class="card only-brand"><h3>四種動物的分數</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
         <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
