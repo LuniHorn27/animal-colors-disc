@@ -122,7 +122,7 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .gap .gh{display:flex;align-items:center;gap:8px;font-weight:700}
 .gap .ask{font-size:15px;color:var(--muted)}
 .db{display:flex;flex-direction:column;gap:12px}
-.db-row,.db-head,.db-scale{display:grid;grid-template-columns:64px 1fr 30px 30px;column-gap:6px;align-items:center}
+.db-row,.db-head,.db-scale{display:grid;grid-template-columns:84px 1fr 30px 30px;column-gap:6px;align-items:center}
 .db-row{font-size:15px}
 .db-row > span:first-child{white-space:nowrap}
 .db-row .v{font-variant-numeric:tabular-nums;text-align:right}
@@ -149,6 +149,7 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .tip b{display:block;font-size:15px}
 .named{display:flex;flex-direction:column;gap:8px}
 .named .row{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:34px}
+.nw{white-space:nowrap}
 .tag{display:inline-block;font-size:13px;border-radius:6px;padding:0 6px;background:var(--sunk);color:var(--muted);margin-left:6px}
 .back-link{align-self:center;display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:var(--ink);text-underline-offset:4px}
 .settings{padding:16px 18px;border-radius:14px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:6px}
@@ -335,12 +336,15 @@ function heroTitle(res) {
 const heroH1 = (res) => `<h1${typesOf(res).length > 1 ? ' class="two-t"' : ''}>${heroTitle(res)}</h1>`;
 // 組合型、對角型的類型代號接在上面那行後面，例如「：DI 組合型」
 const heroCode = (res) => { const ts = typesOf(res); return ts.length > 1 ? T(res && res.kind === 'diag' ? 'code.diag' : 'code.blend', { ab: ts.join('') }) : ''; };
-const ak = (t) => `<span class="ak ak-${t}">${ANIMAL[t]}</span>`;
-const akList = (res) => { const ts = typesOf(res); return ts.length ? ts.map(ak).join(T('join.names')) : T('cham'); };
+// 對照結果頁提到動物時一律寫成「代號-動物」，例如 S-無尾熊（code 為 true 時）
+const codeName = (t) => `${t}-${ANIMAL[t]}`;
+const ak = (t, code = false) => `<span class="ak ak-${t}">${code ? codeName(t) : ANIMAL[t]}</span>`;
+const akList = (res) => { const ts = typesOf(res); return ts.length ? ts.map((t) => ak(t, true)).join(T('join.names')) : T('cham'); };
 // 本色花色圓：ts 是類型陣列（例如 ['S','C']）；空陣列＝變色龍（四色鱗片）
 const badge = (ts) => `<div class="badge">${(ts.length ? ts : [null]).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t || 'X'})"/></svg>`).join('')}</div>`;
 const ghostBadge = () => '<div class="badge"><div class="ghost">?</div></div>';
-const animalsOf = (ts) => ts.length ? ts.map((t) => ANIMAL[t]).join(T('join.names')) : T('cham');
+// code 為 true 時每個「代號-動物」不從中間斷行，要換行只在「＋」的地方換
+const animalsOf = (ts, code = false) => ts.length ? ts.map((t) => code ? `<span class="nw">${codeName(t)}</span>` : ANIMAL[t]).join(T('join.names')) : T('cham');
 // 主測驗（index.html）記下的「作答編號 → 本色」，例如 "SC"；找不到時回傳 null
 function selfTypesOf(rid) {
   try { const m = JSON.parse(localStorage.getItem('disc-peer-self-v1')) || {}; return rid && typeof m[rid] === 'string' ? m[rid].split('') : null; } catch (e) { return null; }
@@ -348,14 +352,14 @@ function selfTypesOf(rid) {
 // 對照結果頁：兩邊都知道了，各放自己的花色和類型（小字一律用墨色，動物色只用在圖形和大字）
 function duoHTML(selfTs, peerTs) {
   return `<div class="peer-pair">
-    <div class="f">${badge(selfTs)}<span class="lb">${T('pair.self')}</span><span class="ty">${animalsOf(selfTs)}</span></div>
+    <div class="f">${badge(selfTs)}<span class="lb">${T('pair.self')}</span><span class="ty">${animalsOf(selfTs, true)}</span></div>
     <span class="arrow" aria-hidden="true">⇄</span>
-    <div class="f">${badge(peerTs)}<span class="lb">${T('pair.peer')}</span><span class="ty">${animalsOf(peerTs)}</span></div>
+    <div class="f">${badge(peerTs)}<span class="lb">${T('pair.peer')}</span><span class="ty">${animalsOf(peerTs, true)}</span></div>
   </div>`;
 }
-function pairHTML(ts) {
+function pairHTML(ts, code = false) {
   return `<div class="peer-pair" aria-hidden="true">
-    <div class="f">${ts ? badge(ts) : '<div class="badge"><div class="ghost"></div></div>'}<span class="lb">${T('pair.self')}</span>${ts ? `<span class="ty">${animalsOf(ts)}</span>` : ''}</div>
+    <div class="f">${ts ? badge(ts) : '<div class="badge"><div class="ghost"></div></div>'}<span class="lb">${T('pair.self')}</span>${ts ? `<span class="ty">${animalsOf(ts, code)}</span>` : ''}</div>
     <span class="arrow">⇄</span>
     <div class="f">${ghostBadge()}<span class="lb">${T('pair.peer')}</span><span class="ty muted">${T('pair.wait')}</span></div>
   </div>`;
@@ -845,7 +849,7 @@ async function renderOwner(code, token, my) {
     if (!total) {
       // 還沒有人回覆：先放自己的花色和打問號的「大家眼中」，提醒自己的結果是什麼
       body = `<div class="card stack" style="gap:10px;text-align:center" id="empty-box">
-        ${pairHTML(typesOf(res.self_result))}
+        ${pairHTML(typesOf(res.self_result), true)}
         <p style="font-weight:700">${T('ow.empty.t')}</p>
         <p class="small muted">${T('ow.empty.b')}</p>
         ${shareBtnsHTML(res.nickname || '', inviteUrl, { line: false, copyLabel: T('lk.copy') })}
@@ -859,7 +863,7 @@ async function renderOwner(code, token, my) {
       const pos = (x) => (50 + (Math.max(-1.8, Math.min(1.8, x)) / 1.8) * 45).toFixed(1);
       const rows = TYPES.map((t) => {
         const a = pos(selfN[t]), b = pos(peerN[t]), lo = Math.min(a, b), w = Math.abs(a - b);
-        return `<div class="db-row"><span><span class="dotc" style="background:${COLOR[t]}"></span>${ANIMAL[t]}</span>
+        return `<div class="db-row"><span><span class="dotc" style="background:${COLOR[t]}"></span>${codeName(t)}</span>
           <div class="db-track"><div class="axis"></div><div class="mid"></div><div class="seg" style="left:${lo}%;width:${w}%"></div>
           <div class="pt peer" style="left:${b}%"></div><div class="pt self" style="left:${a}%"></div></div>
           <span class="v s">${lvOf(selfN[t])}</span><span class="v">${lvOf(peerN[t])}</span></div>`;
@@ -867,7 +871,7 @@ async function renderOwner(code, token, my) {
       const lines = B.gapLines(selfN, peerN);
       // 落差說明：每一型一張卡片，開頭標動物和「你可能沒注意到的一面／大家比較少看見的一面」
       const gapCard = (x) => { const g2 = R.GAP[x.dir === 'peer' ? 'up' : 'down'];
-        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">${T('ow.ask', { q: g2[x.t][1] })}</p></div>`; };
+        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t, true)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">${T('ow.ask', { q: g2[x.t][1] })}</p></div>`; };
       const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p>${R.GAP.same}</p></div>`;
       // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
       // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
@@ -881,7 +885,8 @@ async function renderOwner(code, token, my) {
         </div>` : `<p class="small muted">${T('ow.anonAll', { n: res.n_anon })}</p>`;
       // 最上面的結論：大家眼中的類型＋一句和自評的對照（用落差最大的那一型）
       const up = lines.find((x) => x.dir === 'peer'), down = lines.find((x) => x.dir === 'self');
-      const selfA = animalsOf(typesOf(res.self_result));
+      // 中文句子裡「是」後面接英文代號時空一格（你自評是 S-無尾熊）；變色龍沒有代號就不空
+      const selfTs = typesOf(res.self_result), selfA = (selfTs.length && X.lang !== 'en' ? ' ' : '') + animalsOf(selfTs, true);
       const sentence = up ? T('ow.s.up', { a: selfA, f: featureOf(up.t) })
         : down ? T('ow.s.down', { a: selfA, f: featureOf(down.t) })
         : T('ow.s.same', { a: selfA });
