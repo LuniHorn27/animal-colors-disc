@@ -27,6 +27,7 @@ window.PEER_LANG_EN = {
   "cham": "Chameleon",
   "cham.full": "Chameleon (Balanced)",
   "title.one": "{t} {animal} ({type})",
+  "title.code": "{t}-{animal} ({type})",
   "join.title": " + ",
   "join.names": " + ",
   "code.blend": ": {ab} Blend",

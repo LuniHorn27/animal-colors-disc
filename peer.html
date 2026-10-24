@@ -326,12 +326,13 @@ function typesOf(res) {
   return ts.sort((a, b) => order.indexOf(a) - order.indexOf(b));
 }
 const mainColor = (res) => { const ts = typesOf(res); return ts.length ? COLOR[ts[0]] : null; };
-function heroTitle(res) {
+// code 為 true 時（對照結果頁）寫成「I-孔雀（影響型）」，被邀請人看到的結果維持「I 孔雀（影響型）」
+function heroTitle(res, code = false) {
   const ts = typesOf(res);
   if (!ts.length) return `<span class="tl">${T('cham.full')}</span>`;
-  return `<span class="tl">${ts.map((c) => `<span style="color:${COLOR[c]}">${T('title.one', { t: c, animal: ANIMAL[c], type: TNAME[c] })}</span>`).join(T('join.title'))}</span>`;
+  return `<span class="tl">${ts.map((c) => `<span style="color:${COLOR[c]}">${T(code ? 'title.code' : 'title.one', { t: c, animal: ANIMAL[c], type: TNAME[c] })}</span>`).join(T('join.title'))}</span>`;
 }
-const heroH1 = (res) => `<h1${typesOf(res).length > 1 ? ' class="two-t"' : ''}>${heroTitle(res)}</h1>`;
+const heroH1 = (res, code = false) => `<h1${typesOf(res).length > 1 ? ' class="two-t"' : ''}>${heroTitle(res, code)}</h1>`;
 // 組合型、對角型的類型代號接在上面那行後面，例如「：DI 組合型」
 const heroCode = (res) => { const ts = typesOf(res); return ts.length > 1 ? T(res && res.kind === 'diag' ? 'code.diag' : 'code.blend', { ab: ts.join('') }) : ''; };
 // 對照結果頁提到動物時一律寫成「代號-動物」，例如 S-無尾熊（code 為 true 時）
@@ -893,7 +894,7 @@ async function renderOwner(code, token, my) {
         ${few ? `<div class="warn stack" style="gap:10px" id="few-box"><p>${T('ow.few', { n: total })}</p>${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false, line: false })}</div>` : ''}
         <div class="hero" style="--main:${mainColor(peerRes) || 'var(--ink)'}">
           <p class="eyebrow">${T('ow.eyebrow', { who, code: heroCode(peerRes) })}</p>
-          ${heroH1(peerRes)}
+          ${heroH1(peerRes, true)}
           <p class="one">${sentence}</p>
         </div>
         <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${backLink()}</div>

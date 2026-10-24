@@ -33,6 +33,7 @@
     'cham': '變色龍',
     'cham.full': '變色龍（四型均衡）',
     'title.one': '{t} {animal}（{type}型）',
+    'title.code': '{t}-{animal}（{type}型）',
     'join.title': ' ＋ ',
     'join.names': '＋',
     'code.blend': '：{ab} 組合型',

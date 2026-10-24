@@ -24,6 +24,7 @@
  "ui.cham": "變色龍",
  "ui.cham.full": "變色龍（四型均衡）",
  "ui.title.one": "{t} {animal}（{type}型）",
+ "ui.title.code": "{t}-{animal}（{type}型）",
  "ui.join.title": " ＋ ",
  "ui.join.names": "＋",
  "ui.code.blend": "：{ab} 組合型",
