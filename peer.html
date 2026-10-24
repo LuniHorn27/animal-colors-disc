@@ -172,6 +172,9 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .type .tx small{font-size:13px;color:var(--muted);font-weight:400}
 /* 頁尾「測出自己的動物本色」卡片的底色和 --sunk 幾乎一樣（深色模式完全一樣），卡片裡的小卡改用 --surface 才分得出格子 */
 #cta-card .type{background:var(--surface)}
+/* 英文的類型名稱比較長（Conscientiousness）：同 index.html，窄螢幕時一欄一個、長字可以換行 */
+:lang(en) .type small{font-size:12px;overflow-wrap:anywhere}
+@media (max-width:520px){:lang(en) .types{grid-template-columns:1fr}}
 .chips.rel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .chips.rel .chip{padding:0}
 /* 結果標題（同 index.html 結果頁：組合型的類型代號放在上面那行，雙動物標題維持一行、字級跟著內容欄寬度縮放；一句話用粉圓字） */
