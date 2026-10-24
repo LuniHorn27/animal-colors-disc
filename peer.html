@@ -182,6 +182,8 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .hero h1{font-size:clamp(28px,8vw,44px)}
 .hero h1 .tl{display:block;white-space:nowrap}
 .hero h1.two-t{font-size:min(40px,5cqi)}
+/* 英文的兩個類型名稱比較長，縮小一點才放得進同一行 */
+:lang(en) .hero h1.two-t{font-size:min(36px,4.6cqi)}
 .hero .one{font-family:var(--font-round);font-synthesis:none;font-size:clamp(18px,4.2cqi,21px);line-height:1.6;color:var(--main,var(--ink))}
 /* 朋友作答完：底部固定「測出自己的動物本色」（同 index.html 的 .share-dock） */
 .cta-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;transition:opacity .2s ease,transform .2s ease}
