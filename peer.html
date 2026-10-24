@@ -895,11 +895,6 @@ async function renderOwner(code, token, my) {
         </div>
         <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${backLink()}</div>
         <div class="gaps">${gapHTML}</div>
-        ${few ? '' : `<div class="card stack" style="gap:10px" id="more-box">
-          <div class="stat"><span style="font-weight:700">${T('ow.more.n', { n: total })}</span><b>${total}</b></div>
-          <p class="small muted">${T('ow.more.b')}</p>
-          ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
-        </div>`}
         <div class="card db">
           <p style="font-weight:700">${T('ow.cmpT')}</p>
           <div class="legend"><span><span class="dotc self"></span>${T('ow.legSelf')}</span><span><span class="dotc peer"></span>${T('ow.legPeer', { n: g.n })}</span></div>
@@ -909,7 +904,12 @@ async function renderOwner(code, token, my) {
           <p class="note">${T('ow.cmpNote')}</p>
         </div>
         ${named}
-        <p class="note">${T('ow.ref')}</p>`;
+        <p class="note">${T('ow.ref')}</p>
+        ${few ? '' : `<div class="card stack" style="gap:10px" id="more-box">
+          <div class="stat"><span style="font-weight:700">${T('ow.more.n', { n: total })}</span><b>${total}</b></div>
+          <p class="small muted">${T('ow.more.b')}</p>
+          ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
+        </div>`}`;
     }
     view(`<div class="stack">
       <h1 style="font-size:24px">${T('title')}</h1>
