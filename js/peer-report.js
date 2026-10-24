@@ -62,7 +62,7 @@ CH:{"name":"變色龍","code":"四型均衡","one":"{name}能依情境切換不�
   let cur = ZH_PACK;
   function use(pack) { cur = pack || ZH_PACK; }
 
-  const api = { get TEXT() { return cur.TEXT; }, get GAP() { return cur.GAP; }, esc, fill, sections, use };
+  const api = { get TEXT() { return cur.TEXT; }, get GAP() { return cur.GAP; }, ZH_PACK, esc, fill, sections, use };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else window.PeerReport = api;
 })();

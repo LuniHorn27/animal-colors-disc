@@ -362,7 +362,7 @@ window.PEER_LANG_EN = {
     ],
     "good": [
      "Precise: {name} notices mistakes and gaps that others miss, so the result can stand up to checking.",
-     "Strong analysis: {name} judges with logic and facts and is not easily swayed by emotion or by how something is said.",
+     "Strong analysis: {name} decides with logic and facts and is not easily swayed by emotion or by how something is said.",
      "Organized: {name} works step by step and stays consistent, so people feel safe handing things to {name}.",
      "Aware of risks: Before acting, {name} thinks about what could go wrong and prevents losses early."
     ],
@@ -573,7 +573,7 @@ window.PEER_LANG_EN = {
      "{name} adjusts how they speak to the person: getting to the point with direct people, chatting casually with enthusiastic people, slowing down with people who need time, and discussing information with people who value evidence.",
      "{name} can communicate with most people and is often the one others come to for advice."
     ],
-    "commTip": "To find out what {name} really thinks, ask directly: \"If it were up to you, what would you do?\" Don't judge only by how {name} goes along with others.",
+    "commTip": "To find out what {name} really thinks, ask directly: \"If it were up to you, what would you do?\" Don't guess only from how {name} goes along with others.",
     "stress": [
      "Under pressure, {name} may be unsure how to respond and go back and forth between several approaches.",
      "{name} may also go along too much with what others expect and forget their own needs.",
