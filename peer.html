@@ -6,12 +6,12 @@
 <link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
 <!-- 測試階段：還沒從主測驗加入口，先不讓搜尋引擎收錄 -->
 <meta name="robots" content="noindex">
-<meta name="description" content="在你眼中，我是哪一種動物？花 2–3 分鐘，從幾組詞裡選出最像我、最不像我的。">
+<meta name="description" content="在你眼中，我是哪一種動物？花 2–3 分鐘，從幾組敘述裡選出最像我、最不像我的。">
 <!-- 連結預覽（LINE、Facebook 等）：收到這個網址的多半是被邀請的朋友，所以文字寫給朋友看。換網域時 og:url、og:image 要一起改 -->
 <meta property="og:url" content="https://animal-colors-disc.pages.dev/peer.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="在你眼中，我是哪一種動物？">
-<meta property="og:description" content="花 2–3 分鐘，從幾組詞裡選出最像我、最不像我的。">
+<meta property="og:description" content="花 2–3 分鐘，從幾組敘述裡選出最像我、最不像我的。">
 <meta property="og:image" content="https://animal-colors-disc.pages.dev/brand/og-peer.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -604,7 +604,7 @@ function runQuiz(code, nick, relation, name, relationNote) {
   const nm = esc(nick);
 
   quizActive = true;
-  // 還差什麼才能往下：一個詞不能同時是最像和最不像
+  // 還差什麼才能往下：一個敘述不能同時是最像和最不像
   function hint(p, last) {
     if (!p.most && !p.least) return '選一個最像、一個最不像。同一個敘述不能兩個都選。';
     if (!p.least) return '再選一個最不像。';
