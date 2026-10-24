@@ -14,7 +14,7 @@
     /* ---- 共用 ---- */
     'title': '換個角度看自己',
     'doc.title': '換個角度看自己｜動物本色',
-    'brand': '測出你的動物本色',
+    'brand': '測出你的\u200b動物本色',
     'theme': '深色模式',
     'theme.light': '淺色模式',
     'bar.lang.short': 'EN',

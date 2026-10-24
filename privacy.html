@@ -16,6 +16,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans)
 .bar-in{max-width:720px;margin-inline:auto;min-height:60px;display:flex;align-items:center}
 .bar-brand{display:flex;align-items:center;gap:10px;min-height:44px;font-family:var(--font-round);font-size:18px;color:var(--ink);text-decoration:none}
 .bar-brand img{width:28px;height:28px}
+/* 品牌字太窄要換行時，只在「測出你的｜動物本色」中間斷（字串裡有零寬空格，其他地方不斷） */
+.bar-brand span{word-break:keep-all}
 main{max-width:720px;margin-inline:auto;padding:32px clamp(16px,4vw,48px) 72px}
 h1,h2{font-family:var(--font-round);font-weight:400;line-height:1.35;margin:0}
 h1{font-size:clamp(28px,6vw,38px);margin-bottom:8px}
@@ -33,7 +35,7 @@ a{color:inherit;text-underline-offset:3px}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
-<header class="site-bar"><div class="bar-in"><a class="bar-brand" href="./"><img src="brand/logo-mark.svg" alt=""><span id="brand-t">測出你的動物本色</span></a></div></header>
+<header class="site-bar"><div class="bar-in"><a class="bar-brand" href="./"><img src="brand/logo-mark.svg" alt=""><span id="brand-t">測出你的​動物本色</span></a></div></header>
 <main>
 <p class="lang-sw"><a href="?lang=en" data-lang-to="en" lang="en">English</a></p>
 <div data-lang="zh">
@@ -185,7 +187,7 @@ a{color:inherit;text-underline-offset:3px}
     document.querySelector('[data-lang="en"]').hidden = !en;
     document.documentElement.lang = en ? 'en' : 'zh-Hant-TW';
     document.title = en ? "Privacy Policy | What's Your Inner Animal? | DISC Behavioral Style Test" : '隱私說明｜測出你的動物本色｜DISC 行為風格測驗';
-    document.getElementById('brand-t').textContent = en ? "What's Your Inner Animal?" : '測出你的動物本色';
+    document.getElementById('brand-t').textContent = en ? "What's Your Inner Animal?" : '測出你的\u200b動物本色';
     var a = document.querySelector('[data-lang-to]');
     a.dataset.langTo = en ? 'zh' : 'en'; a.textContent = en ? '中文' : 'English'; a.lang = en ? 'zh-Hant-TW' : 'en';
     a.href = '?lang=' + a.dataset.langTo;
