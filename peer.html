@@ -615,7 +615,7 @@ async function renderRate(code, my) {
       <p style="font-weight:500" id="rel-l">${T('rs.relQ', { nm })}</p>
       <div class="chips rel" role="group" aria-labelledby="rel-l">${B.RELATIONS.map((r) => `<button type="button" class="chip" aria-pressed="false" data-rel="${r}">${esc(X.rel(r))}</button>`).join('')}</div>
       <label class="f" id="rel-other" hidden>${T('rs.relOtherQ')}
-        <input class="input" id="rnote" maxlength="10" placeholder="${T('rs.relOtherPh')}">
+        <input class="input" id="rnote" maxlength="${X.lang === 'en' ? 20 : 10}" placeholder="${T('rs.relOtherPh')}">
       </label>
     </div>
     <div class="card stack" style="gap:8px">
@@ -656,10 +656,11 @@ async function renderRate(code, my) {
 function runQuiz(code, nick, relation, name, relationNote) {
   const seq = B.makeSeq(), picks = {}, times = {}, n = seq.length, sid = P.newSid();
   let idx = 0, shownAt = Date.now(), advanceTimer = null, locked = false;
+  const langs = new Set([X.lang]);  // 作答期間用過的語言，送出時記到資料庫（切換過就是 mixed）
   const nm = esc(nick);
 
   quizActive = true;
-  relang = () => draw();  // 換語言：留在同一題、答案不動
+  relang = () => { langs.add(X.lang); draw(); };  // 換語言：留在同一題、答案不動
   // 還差什麼才能往下：一個敘述不能同時是最像和最不像
   function hint(p, last) {
     if (!p.most && !p.least) return T('q.h0');
@@ -721,7 +722,7 @@ function runQuiz(code, nick, relation, name, relationNote) {
     btn.disabled = true; btn.textContent = T('q.sending');
     $('#q-prev').disabled = true;
     seq.forEach((it) => { const k = B.itemKey(it.i); times[k] = Math.min(600000, Math.round(times[k] || 0)); });
-    const out = await P.submitRating({ sid, code, relation, relationNote, name, seq, picks, times });
+    const out = await P.submitRating({ sid, code, relation, relationNote, name, seq, picks, times, lang: langs.size > 1 ? 'mixed' : X.lang === 'en' ? 'en' : 'zh-TW' });
     if (out.ok) { quizActive = false; return renderRaterResult(nick, out, false); }
     const msg = T('q.e.' + (['closed', 'not_found', 'network'].includes(out.error) ? out.error : 'invalid'));
     const e = $('#q-err'); e.textContent = msg; e.hidden = false;

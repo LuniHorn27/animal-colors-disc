@@ -28,7 +28,10 @@ test('seq 題號重複 → 拒絕', () => { const b = good(); b.seq[1] = { ...b.
 test('關係不在六個選項 → 拒絕', () => { const b = good(); b.relation = '鄰居'; assert.equal(S.validate(b).ok, false); });
 test('關係「其他」＋自填文字 → 通過，文字去掉前後空白', () => { const b = good(); b.relation = '其他'; b.relationNote = ' 社團學長 '; const v = S.validate(b); assert.equal(v.ok, true); assert.equal(v.data.relationNote, '社團學長'); });
 test('關係「其他」沒填文字 → 拒絕', () => { const b = good(); b.relation = '其他'; b.relationNote = '  '; assert.equal(S.validate(b).ok, false); });
-test('關係「其他」文字超過 10 字 → 拒絕', () => { const b = good(); b.relation = '其他'; b.relationNote = '一二三四五六七八九十一'; assert.equal(S.validate(b).ok, false); });
+test('關係「其他」文字 20 字 → 通過（v14 放寬）', () => { const b = good(); b.relation = '其他'; b.relationNote = 'a'.repeat(20); assert.equal(S.validate(b).ok, true); });
+test('關係「其他」文字超過 20 字 → 拒絕', () => { const b = good(); b.relation = '其他'; b.relationNote = 'a'.repeat(21); assert.equal(S.validate(b).ok, false); });
+test('lang：zh-TW／en／mixed 通過並帶出，沒帶是 null', () => { for (const l of ['zh-TW', 'en', 'mixed']) { const b = good(); b.lang = l; assert.equal(S.validate(b).data.lang, l); } assert.equal(S.validate(good()).data.lang, null); });
+test('lang：不認得的值 → 拒絕', () => { const b = good(); b.lang = 'fr'; assert.equal(S.validate(b).ok, false); });
 test('關係「朋友」卻帶自填文字 → 拒絕', () => { const b = good(); b.relationNote = '同事'; assert.equal(S.validate(b).ok, false); });
 test('關係「朋友」→ relationNote 是 null', () => assert.equal(S.validate(good()).data.relationNote, null));
 test('名字 21 字 → 拒絕', () => { const b = good(); b.name = '一'.repeat(21); assert.equal(S.validate(b).ok, false); });

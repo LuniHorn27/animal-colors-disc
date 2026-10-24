@@ -10,7 +10,7 @@
      await PeerBackend.createInvite('小安', 作答id)  // {code, ownerToken} 或 null；作答 id 可省略（最近一次）
      await PeerBackend.getInvite(code)              // {nickname, isOpen} 或 null
      PeerBackend.prepareBot()                       // 作答時在背景準備機器人驗證
-     await PeerBackend.submitRating({sid, code, relation, name, seq, picks, times})
+     await PeerBackend.submitRating({sid, code, relation, name, seq, picks, times, lang})  // lang：zh-TW／en／mixed，可省略
      await PeerBackend.getResults(code, ownerToken) // 對照結果或 null
      await PeerBackend.setOpen(code, ownerToken, true|false)
      await PeerBackend.getMyInvites()               // 登入者自己的邀請
@@ -219,7 +219,7 @@
   // ---------- 送出評價 ----------
   // 同一次作答的重試共用同一個號碼牌，伺服器會辨認重送，不會存兩筆。
   // 畫面要在作答開始時產生 sid 傳進來：自動重試都失敗後使用者再按送出，也還是同一個號碼牌
-  async function submitRating({ sid, code, relation, relationNote = null, name, seq, picks, times }) {
+  async function submitRating({ sid, code, relation, relationNote = null, name, seq, picks, times, lang = null }) {
     if (!enabled) return { ok: false, error: 'network' };
     sid = sid || newSid();
     const delays = retryDelays();
@@ -231,7 +231,7 @@
           const res = await fetch(CFG.supabaseUrl + '/functions/v1/peer-submit', {
             method: 'POST',
             headers: { apikey: CFG.supabaseAnonKey, Authorization: 'Bearer ' + CFG.supabaseAnonKey, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, sid, relation, relationNote, name, seq, picks, times, turnstile_token: token }),
+            body: JSON.stringify({ code, sid, relation, relationNote, name, seq, picks, times, lang, turnstile_token: token }),
           });
           status = res.status;
           body = await res.json().catch(() => null);
