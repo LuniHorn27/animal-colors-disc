@@ -39,7 +39,7 @@ window.PEER_LANG_EN = {
   "need.other": "Took it on another phone or computer?",
   "need.login": "Sign in",
   "need.home": "Back to home",
-  "inv.lead": "The \"Johari Window,\" a psychology theory from 1955, says that feedback from other people helps us know ourselves more fully. Ask friends, family, or teachers to take 2–3 minutes to do this short test, and see yourself from a different angle.",
+  "inv.lead": "The \"Johari Window,\" a psychology theory from 1955, says that feedback from other people helps us know ourselves more fully. Invite friends, family, teachers, or anyone else you trust to spend 2–3 minutes on a quick test, and see yourself \"from a different angle.\"",
   "inv.sub": "Invite them to spend 2–3 minutes picking the statements that are most like you and least like you from a few sets.",
   "inv.pairNote": "After they finish, you will see the two views side by side",
   "inv.nickQ": "What do people usually call you?",
