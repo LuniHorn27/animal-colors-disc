@@ -170,6 +170,8 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .type .tx{display:flex;flex-direction:column;line-height:1.35}
 .type b{font-size:16px}
 .type .tx small{font-size:13px;color:var(--muted);font-weight:400}
+/* 頁尾「測出自己的動物本色」卡片的底色和 --sunk 幾乎一樣（深色模式完全一樣），卡片裡的小卡改用 --surface 才分得出格子 */
+#cta-card .type{background:var(--surface)}
 .chips.rel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 .chips.rel .chip{padding:0}
 /* 結果標題（同 index.html 結果頁：組合型的類型代號放在上面那行，雙動物標題維持一行、字級跟著內容欄寬度縮放；一句話用粉圓字） */
@@ -207,8 +209,6 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 :root{--crown-gold-edge:#8A5A00;--crown-gold-gem:#C8372D;--crown-silver-edge:#5F6772;--crown-silver-gem:#3E6FB8}
 .donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
 .donut-side .notes{grid-area:notes;margin:0;padding-left:18px;font-size:14px;color:var(--muted);display:grid;gap:4px}
-.cta-flower{width:min(180px,50vw);margin:4px auto}
-.cta-flower .pt{stroke:var(--selected)}
 @media (min-width:768px){
   .cta-dock{left:auto;right:max(clamp(16px,4vw,48px), calc((100vw - 800px) / 2));bottom:24px;padding:0;background:none;border:0}
   .cta-dock .btn{width:auto;border-radius:999px;padding:0 22px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
@@ -312,13 +312,8 @@ const CROWN_DEFS = `<linearGradient id="crown-gold" x1="0" y1="0" x2="0" y2="1">
 // 變色龍花色（品牌識別提案定案的四色鱗片）
 document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + '<pattern id="pat-X" width="24" height="21" patternUnits="userSpaceOnUse"><rect width="24" height="21" fill="#DADDE2"/><circle cx="6" cy="5" r="4.6" fill="#D66A14"/><circle cx="18" cy="5" r="4.6" fill="#11968A"/><circle cx="0" cy="15.5" r="4.6" fill="#5E9A47"/><circle cx="12" cy="15.5" r="4.6" fill="#6576DC"/><circle cx="24" cy="15.5" r="4.6" fill="#5E9A47"/></pattern>' + CROWN_DEFS;
 const swatch = (t) => `<svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-${t})"/></svg>`;
-// 四瓣花的花瓣（頁尾卡片的示意圖用）：方向同四向圖
-const PETAL = { D: [180, 270], I: [270, 360], S: [0, 90], C: [90, 180] };
-function petalPath(cx, cy, r, a1, a2) {
-  const p = (a) => [cx + r * Math.cos(a * Math.PI / 180), cy + r * Math.sin(a * Math.PI / 180)].map((x) => +x.toFixed(1));
-  const [x1, y1] = p(a1), [x2, y2] = p(a2);
-  return `M${cx} ${cy}L${x1} ${y1}A${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x2} ${y2}Z`;
-}
+// 四種動物小卡（同主測驗首頁）：開頭頁和頁尾「測出自己的動物本色」卡片都用
+const typesHTML = () => `<div class="types" aria-hidden="true">${TYPES.map((t) => `<div class="type">${swatch(t)}<span class="tx"><b>${ANIMAL[t]}</b><small>${t} ${TNAME[t]}</small></span></div>`).join('')}</div>`;
 
 /* ---------- 結果標題：和 index.html 一樣寫成「I 孔雀（影響型）」，組合型依分數高低排 ---------- */
 function typesOf(res) {
@@ -606,7 +601,7 @@ async function renderRate(code, my) {
   const nm = esc(inv.nickname);  // 開頭頁提到被邀請的人時，引號放在字典句子裡
   view(`<div class="stack">
     <h1>${T('rs.h1', { nm })}</h1>
-    <div class="types" aria-hidden="true">${TYPES.map((t) => `<div class="type">${swatch(t)}<span class="tx"><b>${ANIMAL[t]}</b><small>${t} ${TNAME[t]}</small></span></div>`).join('')}</div>
+    ${typesHTML()}
     <div class="stack" style="gap:6px">
       <p class="lead">${T('rs.lead', { nm })}</p>
       <p class="muted small">${T('rs.count', { n: B.ITEM_COUNT, nm })}</p>
@@ -765,13 +760,11 @@ function compHTML(rec, nick) {
 }
 const swatchSm = (t) => `<svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>`;
 
-// 作答完的畫面：頁尾的「測出自己的動物本色」卡片（也用在找不到邀請的畫面）。中間放主測驗首頁的四瓣花示意圖
-const CTA_FLOWER = { D: 82, I: 64, S: 44, C: 56 };
-const ctaFlower = () => `<svg class="flower cta-flower" viewBox="0 0 240 240" aria-hidden="true">${TYPES.map((t) => `<path class="pt" d="${petalPath(120, 120, 104 * Math.sqrt(CTA_FLOWER[t] / 100), ...PETAL[t])}" fill="url(#pat-${t})" stroke-width="4"/>`).join('')}</svg>`;
+// 作答完的畫面：頁尾的「測出自己的動物本色」卡片（也用在找不到邀請的畫面）。中間放主測驗首頁的四種動物小卡
 const ctaHTML = () => `<div class="card stack" id="cta-card" style="gap:10px;background:var(--selected);border:none">
       <h2 style="font-size:20px">${T('cta.t')}</h2>
       <p class="small">${T('cta.b1')}</p>
-      ${ctaFlower()}
+      ${typesHTML()}
       <p class="small">${T('cta.b2')}</p>
       <p class="small muted">${T('cta.meta', { n: PeerI18n.MAIN_ITEM_COUNT })}</p>
       <a class="btn primary block" href="./">${T('cta.btn')}</a>
