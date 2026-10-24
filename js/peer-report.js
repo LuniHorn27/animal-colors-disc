@@ -27,14 +27,17 @@ CH:{"name":"變色龍","code":"四型均衡","one":"{name}能依情境切換不�
   // 文字本身先跳脫，再代入跳脫後的名字
   function fill(text, name) { return esc(text).split("{name}").join(esc(name)); }
 
+  // 段落標題（中文原文；英文由 use() 換掉）
+  const SECT_ZH = { core: "{name}的核心特質", good: "{name}的優勢", comm: "{name}的溝通方式", commTipTitle: "和{name}溝通的小提醒", stress: "壓力下的{name}" };
+
   // 結果頁的段落（已代入名字、已跳脫）
   function sections(key, name) {
-    const t = TEXT[key], f = (s) => fill(s, name), all = (a) => a.map(f);
+    const t = cur.TEXT[key], f = (s) => fill(s, name), all = (a) => a.map(f), S = cur.SECT;
     return [
-      { title: f("{name}的核心特質"), items: all(t.core) },
-      { title: f("{name}的優勢"), items: all(t.good) },
-      { title: f("{name}的溝通方式"), items: all(t.comm), tip: [f("和{name}溝通的小提醒"), f(t.commTip)] },
-      { title: f("壓力下的{name}"), items: all(t.stress) },
+      { title: f(S.core), items: all(t.core) },
+      { title: f(S.good), items: all(t.good) },
+      { title: f(S.comm), items: all(t.comm), tip: [f(S.commTipTitle), f(t.commTip)] },
+      { title: f(S.stress), items: all(t.stress) },
     ];
   }
 
@@ -54,7 +57,12 @@ CH:{"name":"變色龍","code":"四型均衡","one":"{name}能依情境切換不�
     same: "大家眼中的你，和你自評的樣子很接近。你怎麼看自己，別人大致也是這樣看你。",
   };
 
-  const api = { TEXT, GAP, esc, fill, sections };
+  // 目前用的語言包：預設中文；use(pack) 換成英文（pack = { TEXT, GAP, SECT }），use(null) 換回中文
+  const ZH_PACK = { TEXT, GAP, SECT: SECT_ZH };
+  let cur = ZH_PACK;
+  function use(pack) { cur = pack || ZH_PACK; }
+
+  const api = { get TEXT() { return cur.TEXT; }, get GAP() { return cur.GAP; }, esc, fill, sections, use };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else window.PeerReport = api;
 })();

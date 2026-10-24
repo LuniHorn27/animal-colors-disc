@@ -234,15 +234,19 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 /* 作答中要離開時的確認（同 index.html 的「要回到首頁嗎？」） */
 .leave{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(560px,calc(100% - 32px));z-index:70;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;background:var(--warn-bg);color:var(--warn-ink);box-shadow:0 10px 30px rgba(0,0,0,.25)}
 svg text{font-family:var(--font-sans)}
+.bar-btn .lang-k{font-size:14px;font-weight:700;letter-spacing:.02em;line-height:1}
+.lang-loading .site-bar,.lang-loading #app{visibility:hidden}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>/* 語言：選英文時先把畫面藏起來，等英文載入後再顯示，避免先閃一下中文（最多 3 秒） */(function(){var q=(new URLSearchParams(location.search).get('lang')||'').toLowerCase(),s=null;try{s=localStorage.getItem('disc-lang');}catch(e){}if(q==='en'||(q!=='zh'&&s==='en')){var h=document.documentElement;h.classList.add('lang-loading');setTimeout(function(){h.classList.remove('lang-loading');},3000);}})();</script>
 
 <header class="site-bar">
   <div class="bar-in">
-    <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span>測出你的動物本色</span></a>
+    <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span data-i18n="brand">測出你的動物本色</span></a>
     <div class="bar-actions">
-      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl">深色模式</span></button>
+      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl" data-i18n="theme">深色模式</span></button>
+      <button type="button" class="bar-btn" id="bar-lang"><span class="lang-k" aria-hidden="true" data-i18n="bar.lang.short">EN</span><span class="lbl" data-i18n="bar.lang">切換成英文 English</span></button>
     </div>
   </div>
 </header>
@@ -251,16 +255,36 @@ svg text{font-family:var(--font-sans)}
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="js/config.js"></script>
+<script src="js/peer-i18n.js"></script>
 <script src="js/peer-bank.js"></script>
 <script src="js/peer-report.js"></script>
+<script>/* 選英文時同步載入英文字典（要在下面的主程式前載完） */(function(){var s=null;try{s=localStorage.getItem('disc-lang');}catch(e){}if(PeerI18n.pickLang(location.search,s)==='en')document.write('<script src="js/peer-lang-en.js"><\/script>');})();</script>
 <script src="js/peer-backend.js"></script>
 <script>
 'use strict';
 const B = PeerBank, R = PeerReport, P = PeerBackend, esc = R.esc, $ = (s) => document.querySelector(s);
 const TYPES = B.TYPES;
-const ANIMAL = { D: '老虎', I: '孔雀', S: '無尾熊', C: '貓頭鷹' };
 const COLOR = { D: 'var(--d)', I: 'var(--i)', S: 'var(--s)', C: 'var(--c)' };
-const TNAME = { D: '支配', I: '影響', S: '穩定', C: '分析' };
+
+/* ---------- 語言：網址 ?lang= → 上次選的（disc-lang，和主測驗共用）→ 中文 ---------- */
+const storedLang = () => { try { return localStorage.getItem('disc-lang'); } catch (e) { return null; } };
+let X = PeerI18n.makeT(PeerI18n.pickLang(location.search, storedLang()), window.PEER_LANG_EN);
+const T = (key, vars) => X.t(key, vars);
+let ANIMAL, TNAME;
+function useLang() {
+  R.use(X.lang === 'en' ? window.PEER_LANG_EN.report : null);
+  ANIMAL = Object.fromEntries(TYPES.map((c) => [c, X.animal(c)]));
+  TNAME = Object.fromEntries(TYPES.map((c) => [c, X.tname(c)]));
+}
+useLang();
+const wordOf = (w) => X.word(w, B.WORDS);
+const featureOf = (c) => X.lang === 'en' ? window.PEER_LANG_EN.report.FEATURE[c] : B.FEATURE[c];
+// 靜態文字（標題列）：換語言時一起換
+function applyStatic() {
+  document.documentElement.lang = X.lang === 'en' ? 'en' : 'zh-Hant-TW';
+  document.title = T('doc.title');
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = T(el.dataset.i18n); });
+}
 const ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
 const ICON_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -307,18 +331,18 @@ function typesOf(res) {
 const mainColor = (res) => { const ts = typesOf(res); return ts.length ? COLOR[ts[0]] : null; };
 function heroTitle(res) {
   const ts = typesOf(res);
-  if (!ts.length) return '<span class="tl">變色龍（四型均衡）</span>';
-  return `<span class="tl">${ts.map((t) => `<span style="color:${COLOR[t]}">${t} ${ANIMAL[t]}（${TNAME[t]}型）</span>`).join(' ＋ ')}</span>`;
+  if (!ts.length) return `<span class="tl">${T('cham.full')}</span>`;
+  return `<span class="tl">${ts.map((c) => `<span style="color:${COLOR[c]}">${T('title.one', { t: c, animal: ANIMAL[c], type: TNAME[c] })}</span>`).join(T('join.title'))}</span>`;
 }
 const heroH1 = (res) => `<h1${typesOf(res).length > 1 ? ' class="two-t"' : ''}>${heroTitle(res)}</h1>`;
 // 組合型、對角型的類型代號接在上面那行後面，例如「：DI 組合型」
-const heroCode = (res) => { const ts = typesOf(res); return ts.length > 1 ? `：${ts.join('')} ${res && res.kind === 'diag' ? '對角型' : '組合型'}` : ''; };
+const heroCode = (res) => { const ts = typesOf(res); return ts.length > 1 ? T(res && res.kind === 'diag' ? 'code.diag' : 'code.blend', { ab: ts.join('') }) : ''; };
 const ak = (t) => `<span class="ak ak-${t}">${ANIMAL[t]}</span>`;
-const akList = (res) => { const ts = typesOf(res); return ts.length ? ts.map(ak).join('＋') : '變色龍'; };
+const akList = (res) => { const ts = typesOf(res); return ts.length ? ts.map(ak).join(T('join.names')) : T('cham'); };
 // 本色花色圓：ts 是類型陣列（例如 ['S','C']）；空陣列＝變色龍（四色鱗片）
 const badge = (ts) => `<div class="badge">${(ts.length ? ts : [null]).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t || 'X'})"/></svg>`).join('')}</div>`;
 const ghostBadge = () => '<div class="badge"><div class="ghost">?</div></div>';
-const animalsOf = (ts) => ts.length ? ts.map((t) => ANIMAL[t]).join('＋') : '變色龍';
+const animalsOf = (ts) => ts.length ? ts.map((t) => ANIMAL[t]).join(T('join.names')) : T('cham');
 // 主測驗（index.html）記下的「作答編號 → 本色」，例如 "SC"；找不到時回傳 null
 function selfTypesOf(rid) {
   try { const m = JSON.parse(localStorage.getItem('disc-peer-self-v1')) || {}; return rid && typeof m[rid] === 'string' ? m[rid].split('') : null; } catch (e) { return null; }
@@ -326,16 +350,16 @@ function selfTypesOf(rid) {
 // 對照結果頁：兩邊都知道了，各放自己的花色和類型（小字一律用墨色，動物色只用在圖形和大字）
 function duoHTML(selfTs, peerTs) {
   return `<div class="peer-pair">
-    <div class="f">${badge(selfTs)}<span class="lb">你自評</span><span class="ty">${animalsOf(selfTs)}</span></div>
+    <div class="f">${badge(selfTs)}<span class="lb">${T('pair.self')}</span><span class="ty">${animalsOf(selfTs)}</span></div>
     <span class="arrow" aria-hidden="true">⇄</span>
-    <div class="f">${badge(peerTs)}<span class="lb">大家眼中</span><span class="ty">${animalsOf(peerTs)}</span></div>
+    <div class="f">${badge(peerTs)}<span class="lb">${T('pair.peer')}</span><span class="ty">${animalsOf(peerTs)}</span></div>
   </div>`;
 }
 function pairHTML(ts) {
   return `<div class="peer-pair" aria-hidden="true">
-    <div class="f">${ts ? badge(ts) : '<div class="badge"><div class="ghost"></div></div>'}<span class="lb">你自評</span>${ts ? `<span class="ty">${animalsOf(ts)}</span>` : ''}</div>
+    <div class="f">${ts ? badge(ts) : '<div class="badge"><div class="ghost"></div></div>'}<span class="lb">${T('pair.self')}</span>${ts ? `<span class="ty">${animalsOf(ts)}</span>` : ''}</div>
     <span class="arrow">⇄</span>
-    <div class="f">${ghostBadge()}<span class="lb">大家眼中</span><span class="ty muted">等被邀請人回覆</span></div>
+    <div class="f">${ghostBadge()}<span class="lb">${T('pair.peer')}</span><span class="ty muted">${T('pair.wait')}</span></div>
   </div>`;
 }
 
@@ -351,15 +375,45 @@ $('#bar-theme').addEventListener('click', () => {
 if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', syncTheme);
 syncTheme();
 
+/* ---------- 語言切換（同主測驗：disc-lang 共用，?lang= 優先） ---------- */
+const loadEN = () => window.PEER_LANG_EN ? Promise.resolve(window.PEER_LANG_EN) : new Promise((res, rej) => {
+  const sc = document.createElement('script'), tm = setTimeout(() => rej(new Error('timeout')), 8000);
+  sc.src = 'js/peer-lang-en.js';
+  sc.onload = () => { clearTimeout(tm); window.PEER_LANG_EN ? res(window.PEER_LANG_EN) : rej(new Error('empty')); };
+  sc.onerror = () => { clearTimeout(tm); rej(new Error('load')); };
+  document.head.appendChild(sc);
+});
+function syncLangBtn() {
+  const b = $('#bar-lang'); b.querySelector('.lang-k').textContent = T('bar.lang.short'); b.querySelector('.lbl').textContent = T('bar.lang');
+}
+async function setLang(code, { save = true } = {}) {
+  let ok = true, pack = null;
+  if (code === 'en') { try { pack = await loadEN(); } catch (e) { ok = false; code = 'zh'; } }
+  X = PeerI18n.makeT(code, pack);
+  useLang();
+  if (save && ok) { try { localStorage.setItem('disc-lang', code); } catch (e) {} }
+  // 網址上的 ?lang= 跟著改（重新整理、複製網址都維持同一語言）
+  try { const u = new URL(location.href); if (u.searchParams.has('lang')) { u.searchParams.set('lang', code); history.replaceState(null, '', u); } } catch (e) {}
+  applyStatic(); syncLangBtn();
+  document.documentElement.classList.remove('lang-loading');
+  $('#toast').textContent = '';
+  if (quizActive && relang) relang(); else render();
+  if (!ok) toast(PeerI18n.ZH.ui['lang.fail']);
+}
+$('#bar-lang').addEventListener('click', () => setLang(X.lang === 'en' ? 'zh' : 'en'));
+if (X.lang === 'en') { const q = (new URLSearchParams(location.search).get('lang') || '').toLowerCase(); applyStatic(); syncLangBtn(); if (q === 'en') { try { localStorage.setItem('disc-lang', 'en'); } catch (e) {} } document.documentElement.classList.remove('lang-loading'); }
+else { if ((new URLSearchParams(location.search).get('lang') || '').toLowerCase() === 'zh') { try { localStorage.setItem('disc-lang', 'zh'); } catch (e) {} } document.documentElement.classList.remove('lang-loading'); }
+
 /* ---------- 作答中要離開時先確認（C2） ---------- */
 let quizActive = false;
+let relang = null;  // 作答中換語言時，重畫目前這一題用
 document.querySelector('.bar-brand').addEventListener('click', (e) => {
   if (!quizActive) return;
   e.preventDefault();
   if (document.querySelector('.leave')) return;
   const box = document.createElement('div');
-  box.className = 'leave'; box.setAttribute('role', 'alertdialog'); box.setAttribute('aria-label', '要離開嗎？');
-  box.innerHTML = '<p><b>要離開嗎？</b>已經選的答案會消失，回覆也不會送出。</p><div class="btns"><button class="btn primary" data-stay>繼續作答</button><button class="btn" data-go>離開</button></div>';
+  box.className = 'leave'; box.setAttribute('role', 'alertdialog'); box.setAttribute('aria-label', T('lv.t'));
+  box.innerHTML = `<p><b>${T('lv.t')}</b>${T('lv.b')}</p><div class="btns"><button class="btn primary" data-stay>${T('lv.stay')}</button><button class="btn" data-go>${T('lv.go')}</button></div>`;
   document.body.appendChild(box);
   box.querySelector('[data-stay]').focus();
   box.querySelector('[data-stay]').addEventListener('click', () => box.remove());
@@ -372,7 +426,8 @@ const view = (html, keepScroll = false) => { app.innerHTML = html; if (!keepScro
 let renderId = 0;
 class Stale extends Error {}
 const still = (my) => { if (my !== renderId) throw new Stale(); };
-const pageUrl = (hash) => location.origin + location.pathname + hash;
+// 英文畫面產生的連結帶 ?lang=en，朋友打開就是英文
+const pageUrl = (hash) => location.origin + location.pathname + (X.lang === 'en' ? '?lang=en' : '') + hash;
 const keyOf = (r) => (!r || !r.key || r.kind === 'none' || r.kind === 'chameleon') ? 'CH' : r.key;
 
 function toast(msg) {
@@ -380,18 +435,18 @@ function toast(msg) {
   clearTimeout(toast.timer); toast.timer = setTimeout(() => { t.hidden = true; }, 2200);
 }
 async function copy(text) {
-  try { await navigator.clipboard.writeText(text); toast('已複製'); }
-  catch (e) { toast('無法自動複製，請長按連結自行複製'); }
+  try { await navigator.clipboard.writeText(text); toast(T('copied')); }
+  catch (e) { toast(T('copyFail')); }
 }
 function message(title, body, actions = '') {
   view(`<div class="stack"><h2>${title}</h2><p class="muted">${body}</p>${actions}</div>`);
 }
-const failView = () => message('連不上伺服器', '請檢查網路，稍後再試一次。', '<button class="btn primary" onclick="render()">再試一次</button>');
+const failView = () => message(T('fail.t'), T('fail.b'), `<button class="btn primary" onclick="render()">${T('retry')}</button>`);
 
 // 回到主測驗看自己的完整結果（首頁有「查看我的結果」；登入的人也可以從「我的歷次結果」打開）
-const BACK_LINK = '<a class="back-link" href="./">看我的完整結果</a>';
+const backLink = () => `<a class="back-link" href="./">${T('back.full')}</a>`;
 // 逐一比較右邊的字：換算後（profile）和自己平均比的高低
-const lvOf = (z) => z >= 1 ? '高' : z >= 0.4 ? '偏高' : z > -0.4 ? '中' : z > -1 ? '偏低' : '低';
+const lvOf = (z) => T(z >= 1 ? 'lv.hi' : z >= 0.4 ? 'lv.mh' : z > -0.4 ? 'lv.mid' : z > -1 ? 'lv.ml' : 'lv.lo');
 
 /* =====================================================================
    一、邀請頁（邀請人）
@@ -410,114 +465,114 @@ async function renderInvite(my, from = null) {
   // 這個瀏覽器沒有這份（或任何一份）主測驗結果，也沒登入：同一個提示頁，可以去做測驗或登入帳號
   if (!P.user && (from ? !P.resultClaim(from).token : !P.latestClaim())) {
     view(`<div class="stack">
-      <h2>請先完成主測驗 DISC</h2>
-      <p class="muted">「換個角度看自己」是拿你的自評和大家眼中的你做對照，所以要先做完主測驗。做完後回到這一頁，就能產生邀請連結。如果之前已登入帳號並保存測驗結果，請先登入。</p>
-      <a class="btn primary block" href="./#agree">開始DISC測驗</a>
+      <h2>${T('need.t')}</h2>
+      <p class="muted">${T('need.b')}</p>
+      <a class="btn primary block" href="./#agree">${T('need.start')}</a>
       <div class="card stack" style="gap:10px">
-        <p style="font-weight:500">在別的手機或電腦做過？</p>
-        <button class="btn block" id="go-login">登入帳號</button>
+        <p style="font-weight:500">${T('need.other')}</p>
+        <button class="btn block" id="go-login">${T('need.login')}</button>
       </div>
-      <a class="btn block" href="./">回到首頁</a>
+      <a class="btn block" href="./">${T('need.home')}</a>
     </div>`);
     return bindLogin();
   }
   view(`<div class="stack">
-    <h1>換個角度看自己</h1>
+    <h1>${T('title')}</h1>
     <div class="stack" style="gap:6px">
-      <p class="lead">1955年心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，請朋友、家人、老師花 2–3 分鐘的時間完成測驗，幫助你換一個角度認識自己吧！</p>
-      <p class="muted small">邀請他們花 2–3 分鐘，從幾組描述中，選出最像你和最不像你的敘述。</p>
+      <p class="lead">${T('inv.lead')}</p>
+      <p class="muted small">${T('inv.sub')}</p>
     </div>
     <div class="card stack" style="gap:8px">
       ${pairHTML(selfTypesOf(from || (P.latestClaim() || {}).id))}
-      <p class="small muted" style="text-align:center">被邀請人完成測驗後，你將看到兩邊的對照</p>
+      <p class="small muted" style="text-align:center">${T('inv.pairNote')}</p>
     </div>
     <form class="card stack" id="inv-form" novalidate style="gap:10px">
-      <label class="f">大家通常怎麼稱呼你？
-        <input class="input" id="nick" maxlength="12" autocomplete="nickname" placeholder="例如：小安、安安" required>
+      <label class="f">${T('inv.nickQ')}
+        <input class="input" id="nick" maxlength="12" autocomplete="nickname" placeholder="${T('inv.nickPh')}" required>
       </label>
-      <p class="note" id="nick-hint">朋友會在題目裡看到這個稱呼。</p>
+      <p class="note" id="nick-hint">${T('inv.nickHint')}</p>
     </form>
     <p class="err" id="inv-err" hidden></p>
-    <button class="btn primary block" id="inv-go" form="inv-form" disabled>產生邀請連結</button>
+    <button class="btn primary block" id="inv-go" form="inv-form" disabled>${T('inv.go')}</button>
     <ul class="dots small muted">
-      <li>建議邀請三位以上，測驗結果會更有參考性，較不會被單一人的既定印象影響</li>
-      <li>被邀請人可以匿名，也可以留名字</li>
-      <li>連結不會過期，之後想再邀請別人，傳同一個連結就好</li>
+      <li>${T('inv.tip1')}</li>
+      <li>${T('inv.tip2')}</li>
+      <li>${T('inv.tip3')}</li>
     </ul>
   </div>`);
   const nick = $('#nick'), go = $('#inv-go');
   nick.addEventListener('input', () => {
     const v = nick.value.trim();
     go.disabled = !v;
-    $('#nick-hint').textContent = v ? `題目會顯示：「以下哪個敘述最像 ${v}？」` : '朋友會在題目裡看到這個稱呼。';
+    $('#nick-hint').textContent = v ? T('inv.nickHint2', { v }) : T('inv.nickHint');
   });
   $('#inv-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const v = nick.value.trim();
     if (!v) return;
-    go.disabled = true; go.textContent = '產生中…';
+    go.disabled = true; go.textContent = T('inv.going');
     try {
       const out = await P.createInvite(v, from);
       if (!out) {
-        $('#inv-err').innerHTML = '找不到你的測驗結果，請先<a href="./">完成主測驗</a>。';
+        $('#inv-err').innerHTML = T('inv.errNoResult');
         $('#inv-err').hidden = false;
-        go.disabled = false; go.textContent = '產生邀請連結';
+        go.disabled = false; go.textContent = T('inv.go');
         return;
       }
       renderLinks(P.loadOwner());
     } catch (err) {
-      $('#inv-err').textContent = '產生失敗，請稍後再試一次。';
+      $('#inv-err').textContent = T('inv.errFail');
       $('#inv-err').hidden = false;
-      go.disabled = false; go.textContent = '產生邀請連結';
+      go.disabled = false; go.textContent = T('inv.go');
     }
   });
 }
 function bindLogin() {
   const b = $('#go-login');
-  if (b) b.addEventListener('click', () => P.signInWithGoogle().catch(() => toast('無法開始登入')));
+  if (b) b.addEventListener('click', () => P.signInWithGoogle().catch(() => toast(T('loginFail'))));
 }
 
 /* ---------- 傳出邀請連結：手機用系統分享選單，另外放「用 LINE 傳送」；不支援分享的瀏覽器，主按鈕改成複製 ---------- */
 const ICON_SHARE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const shareText = (nick) => `在你眼中，${nick}是哪一種動物？`;
+const shareText = (nick) => T('lk.shareText', { nick });
 const lineUrl = (nick, url) => 'https://line.me/R/share?text=' + encodeURIComponent(shareText(nick) + '\n' + url);
-function shareBtnsHTML(nick, url, { copy = true, line = true, copyLabel = '複製邀請連結' } = {}) {
-  return (navigator.share ? `<button class="btn primary block" data-act="share">${ICON_SHARE}傳給朋友</button>` : `<button class="btn primary block" data-act="copy">${copyLabel}</button>`)
-    + (line ? `<a class="btn block" href="${esc(lineUrl(nick, url))}" target="_blank" rel="noopener">用 LINE 傳送</a>` : '')
+function shareBtnsHTML(nick, url, { copy = true, line = true, copyLabel = T('lk.copyInvite') } = {}) {
+  return (navigator.share ? `<button class="btn primary block" data-act="share">${ICON_SHARE}${T('lk.share')}</button>` : `<button class="btn primary block" data-act="copy">${copyLabel}</button>`)
+    + (line ? `<a class="btn block" href="${esc(lineUrl(nick, url))}" target="_blank" rel="noopener">${T('lk.line')}</a>` : '')
     + (copy && navigator.share ? `<button class="btn block" data-act="copy">${copyLabel}</button>` : '');
 }
 function bindShare(root, nick, url) {
   root.querySelectorAll('[data-act="share"]').forEach((b) => b.addEventListener('click', () =>
-    navigator.share({ title: '換個角度看自己', text: shareText(nick), url }).catch(() => {})));
+    navigator.share({ title: T('title'), text: shareText(nick), url }).catch(() => {})));
   root.querySelectorAll('[data-act="copy"]').forEach((b) => b.addEventListener('click', () => copy(url)));
 }
 
 function renderLinks(own) {
   const inviteUrl = pageUrl('#r=' + own.code), ownerUrl = pageUrl(`#k=${own.code}.${own.ownerToken}`), nick = own.nickname || '';
   const saveHTML = P.user
-    ? `<div class="card"><div class="saved"><span class="ok">✓</span><div><p style="font-weight:500">已存到你的帳號</p><p class="small muted">之後在「我的歷次結果」就能回來看。</p></div></div></div>`
+    ? `<div class="card"><div class="saved"><span class="ok">✓</span><div><p style="font-weight:500">${T('lk.saved')}</p><p class="small muted">${T('lk.savedB')}</p></div></div></div>`
     : `<div class="warn stack" style="gap:10px" id="save-box">
-        <h3 style="font-size:18px;color:var(--ink)">保存你的結果連結</h3>
-        <p class="small">之後要靠它回來看大家眼中的你。登入後會存在帳號裡，換手機也看得到。</p>
-        <button class="btn primary block" id="go-login">用 Google 帳號登入保存</button>
-        <button class="btn text" id="self-save">不登入，改成自己保存連結</button>
+        <h3 style="font-size:18px;color:var(--ink)">${T('lk.saveT')}</h3>
+        <p class="small">${T('lk.saveB')}</p>
+        <button class="btn primary block" id="go-login">${T('lk.google')}</button>
+        <button class="btn text" id="self-save">${T('lk.self')}</button>
         <div class="stack" id="self-box" style="gap:8px" hidden>
-          <p class="small">請存在只有你看得到的地方（例如傳給自己、加入書籤）。<b>不要</b>傳給別人，拿到這個連結的人都能看到結果。</p>
+          <p class="small">${T('lk.selfB')}</p>
           <div class="link-box">${esc(ownerUrl)}</div>
-          <button class="btn block" id="cp-own">複製結果連結</button>
+          <button class="btn block" id="cp-own">${T('lk.copyOwn')}</button>
         </div>
       </div>`;
   view(`<div class="stack">
-    <h1>換個角度看自己</h1>
+    <h1>${T('title')}</h1>
     <div class="card stack" style="gap:10px" id="send-box">
-      <div class="ready"><span class="ok">✓</span><p style="font-weight:500">邀請連結準備好了</p></div>
-      <p class="small muted">傳給朋友、家人、老師，請他們花 2–3 分鐘選出最像你的敘述。題目會稱呼你「${esc(nick)}」。</p>
+      <div class="ready"><span class="ok">✓</span><p style="font-weight:500">${T('lk.ready')}</p></div>
+      <p class="small muted">${T('lk.send', { nick: esc(nick) })}</p>
       ${shareBtnsHTML(nick, inviteUrl, { line: false })}
       <p class="url">${esc(inviteUrl.replace(/^https?:\/\//, ''))}</p>
     </div>
     <div class="card stack" style="gap:10px">
-      <div class="stat"><span id="n-line">目前 0 人回覆</span><b id="n-num">0</b></div>
-      <a class="btn block" id="go-owner" href="#k=${own.code}.${own.ownerToken}">看對照結果</a>
+      <div class="stat"><span id="n-line">${T('lk.n0')}</span><b id="n-num">0</b></div>
+      <a class="btn block" id="go-owner" href="#k=${own.code}.${own.ownerToken}">${T('lk.seeCmp')}</a>
     </div>
     ${saveHTML}
   </div>`);
@@ -531,7 +586,7 @@ function renderLinks(own) {
   P.getResults(own.code, own.ownerToken).then((res) => {
     if (my !== renderId || !res || !res.groups || !res.groups[0]) return;
     const n = +res.groups[0].n || 0;
-    $('#n-line').textContent = n ? `已有 ${n} 人回覆` : '目前 0 人回覆';
+    $('#n-line').textContent = n ? T('lk.n', { n }) : T('lk.n0');
     $('#n-num').textContent = n;
     if (n) $('#go-owner').classList.add('primary');
   }).catch(() => {});
@@ -544,34 +599,34 @@ async function renderRate(code, my) {
   await P.init();
   const inv = await P.getInvite(code); still(my);
   // 找不到邀請、邀請暫停：下面放「測出自己的動物本色」卡片，留住點進來的人
-  if (!inv) return message('找不到這個邀請', '連結可能不完整，請向邀請你的人再要一次。', ctaHTML());
+  if (!inv) return message(T('nf.t'), T('nf.b'), ctaHTML());
   const done = P.loadRated(code);
   if (done) return renderRaterResult(inv.nickname, done, true);
-  if (!inv.isOpen) return message('這個邀請目前沒有開放', '邀請你的人已經暫停開放回覆。', ctaHTML());
-  const nm = `「${esc(inv.nickname)}」`;  // 開頭頁提到被邀請的人時一律用「」框起來
+  if (!inv.isOpen) return message(T('cl.t'), T('cl.b'), ctaHTML());
+  const nm = esc(inv.nickname);  // 開頭頁提到被邀請的人時，引號放在字典句子裡
   view(`<div class="stack">
-    <h1>在你眼中，<br>${nm}是哪一種動物？</h1>
+    <h1>${T('rs.h1', { nm })}</h1>
     <div class="types" aria-hidden="true">${TYPES.map((t) => `<div class="type">${swatch(t)}<span class="tx"><b>${ANIMAL[t]}</b><small>${t} ${TNAME[t]}</small></span></div>`).join('')}</div>
     <div class="stack" style="gap:6px">
-      <p class="lead">這是一份 DISC 行為風格測驗，用四種動物代表做事和相處的習慣。周哈里窗提到，有些面向別人看得見，自己卻有盲點；你的選擇，能幫${nm}從另一個視角更認識自己。</p>
-      <p class="muted small">共 ${B.ITEM_COUNT} 題，每題敘述選一個<b>最像</b>${nm}的、一個<b>最不像</b>的，約 2–3 分鐘。</p>
+      <p class="lead">${T('rs.lead', { nm })}</p>
+      <p class="muted small">${T('rs.count', { n: B.ITEM_COUNT, nm })}</p>
     </div>
     <div class="card stack" style="gap:10px">
-      <p style="font-weight:500" id="rel-l">你是${nm}的…</p>
-      <div class="chips rel" role="group" aria-labelledby="rel-l">${B.RELATIONS.map((r) => `<button type="button" class="chip" aria-pressed="false" data-rel="${r}">${r}</button>`).join('')}</div>
-      <label class="f" id="rel-other" hidden>你們是什麼關係？
-        <input class="input" id="rnote" maxlength="10" placeholder="例如：社團學長、鄰居">
+      <p style="font-weight:500" id="rel-l">${T('rs.relQ', { nm })}</p>
+      <div class="chips rel" role="group" aria-labelledby="rel-l">${B.RELATIONS.map((r) => `<button type="button" class="chip" aria-pressed="false" data-rel="${r}">${esc(X.rel(r))}</button>`).join('')}</div>
+      <label class="f" id="rel-other" hidden>${T('rs.relOtherQ')}
+        <input class="input" id="rnote" maxlength="10" placeholder="${T('rs.relOtherPh')}">
       </label>
     </div>
     <div class="card stack" style="gap:8px">
-      <label class="f">你的名字（選填）
+      <label class="f">${T('rs.nameQ')}
         <input class="input" id="rname" maxlength="20" autocomplete="name" aria-describedby="rname-n">
       </label>
-      <p class="note" id="rname-n">如未填寫，會顯示為匿名</p>
+      <p class="note" id="rname-n">${T('rs.nameNote')}</p>
     </div>
     <div class="stack" style="gap:6px">
-      <p class="q-hint" id="r-hint">先選你和${nm}的關係，就可以開始。</p>
-      <button class="btn primary block" id="r-start" disabled aria-describedby="r-hint">開始</button>
+      <p class="q-hint" id="r-hint">${T('rs.hint', { nm })}</p>
+      <button class="btn primary block" id="r-start" disabled aria-describedby="r-hint">${T('rs.start')}</button>
     </div>
   </div>`);
   let relation = null;
@@ -604,33 +659,34 @@ function runQuiz(code, nick, relation, name, relationNote) {
   const nm = esc(nick);
 
   quizActive = true;
+  relang = () => draw();  // 換語言：留在同一題、答案不動
   // 還差什麼才能往下：一個敘述不能同時是最像和最不像
   function hint(p, last) {
-    if (!p.most && !p.least) return '選一個最像、一個最不像。同一個敘述不能兩個都選。';
-    if (!p.least) return '再選一個最不像。';
-    if (!p.most) return '再選一個最像。';
-    return last ? '都選好了，按「送出」。' : '都選好了，馬上跳到下一題。';
+    if (!p.most && !p.least) return T('q.h0');
+    if (!p.least) return T('q.h1');
+    if (!p.most) return T('q.h2');
+    return T(last ? 'q.h3last' : 'q.h3');
   }
-  // focus：重畫後要把焦點放回去的按鈕 [詞, most|least]；同一題重畫時不捲動
+  // focus：重畫後要把焦點放回去的按鈕 [敘述, most|least]；同一題重畫時不捲動
   function draw(focus = null) {
     const it = seq[idx], key = B.itemKey(it.i), p = picks[key] || {};
     const complete = p.most && p.least, last = idx === n - 1;
     view(`<div class="stack">
-      <div class="top"><span>第 ${idx + 1} / ${n} 題</span><span>${Math.round(idx / n * 100)}%</span></div>
+      <div class="top"><span>${T('q.progress', { i: idx + 1, n })}</span><span>${Math.round(idx / n * 100)}%</span></div>
       <div class="progress" aria-hidden="true"><i style="width:${idx / n * 100}%"></i></div>
-      <p class="qt">以下哪個敘述最像「${nm}」？<br>哪個最不像？</p>
-      <div class="pick-head" aria-hidden="true"><span></span><span>最像</span><span>最不像</span></div>
+      <p class="qt">${T('q.title', { nm })}</p>
+      <div class="pick-head" aria-hidden="true"><span></span><span>${T('q.most')}</span><span>${T('q.least')}</span></div>
       <div class="words">${it.w.map((w) => `<div class="word${p.most === w ? ' is-most' : p.least === w ? ' is-least' : ''}">
-        <span>${esc(B.WORDS[w])}</span>
-        <button type="button" class="pick most" aria-pressed="${p.most === w}" data-w="${w}" data-k="most" aria-label="${esc(B.WORDS[w])}：最像"${locked ? ' disabled' : ''}>${ICON_CHECK}</button>
-        <button type="button" class="pick least" aria-pressed="${p.least === w}" data-w="${w}" data-k="least" aria-label="${esc(B.WORDS[w])}：最不像"${locked ? ' disabled' : ''}>${ICON_X}</button>
+        <span>${esc(wordOf(w))}</span>
+        <button type="button" class="pick most" aria-pressed="${p.most === w}" data-w="${w}" data-k="most" aria-label="${esc(T('q.aMost', { w: wordOf(w) }))}"${locked ? ' disabled' : ''}>${ICON_CHECK}</button>
+        <button type="button" class="pick least" aria-pressed="${p.least === w}" data-w="${w}" data-k="least" aria-label="${esc(T('q.aLeast', { w: wordOf(w) }))}"${locked ? ' disabled' : ''}>${ICON_X}</button>
       </div>`).join('')}</div>
       <p class="q-hint">${hint(p, last)}</p>
       <p class="err" id="q-err" hidden></p>
       <div class="btns">
-        <button class="btn" id="q-prev" ${idx === 0 || locked ? 'disabled' : ''}>上一題</button>
-        ${last ? `<button class="btn primary" id="q-send" ${complete ? '' : 'disabled'}>送出</button>`
-               : `<button class="btn primary" id="q-next" ${complete ? '' : 'disabled'}>下一題</button>`}
+        <button class="btn" id="q-prev" ${idx === 0 || locked ? 'disabled' : ''}>${T('q.prev')}</button>
+        ${last ? `<button class="btn primary" id="q-send" ${complete ? '' : 'disabled'}>${T('q.send')}</button>`
+               : `<button class="btn primary" id="q-next" ${complete ? '' : 'disabled'}>${T('q.next')}</button>`}
       </div>
     </div>`, !!focus);
     app.querySelectorAll('.pick').forEach((b) => b.addEventListener('click', () => choose(b.dataset.w, b.dataset.k)));
@@ -662,16 +718,15 @@ function runQuiz(code, nick, relation, name, relationNote) {
     locked = true;
     app.querySelectorAll('.pick').forEach((b) => { b.disabled = true; });
     const btn = $('#q-send');
-    btn.disabled = true; btn.textContent = '送出中…';
+    btn.disabled = true; btn.textContent = T('q.sending');
     $('#q-prev').disabled = true;
     seq.forEach((it) => { const k = B.itemKey(it.i); times[k] = Math.min(600000, Math.round(times[k] || 0)); });
     const out = await P.submitRating({ sid, code, relation, relationNote, name, seq, picks, times });
     if (out.ok) { quizActive = false; return renderRaterResult(nick, out, false); }
-    const msg = { closed: '這個邀請目前沒有開放，無法送出。', not_found: '找不到這個邀請，無法送出。',
-      network: '網路不穩，請稍後再按一次送出。', invalid: '送出失敗，請重新整理頁面再作答一次。' }[out.error];
+    const msg = T('q.e.' + (['closed', 'not_found', 'network'].includes(out.error) ? out.error : 'invalid'));
     const e = $('#q-err'); e.textContent = msg; e.hidden = false;
-    if (out.error === 'network') { btn.disabled = false; btn.textContent = '再送一次'; }
-    else btn.textContent = '無法送出';
+    if (out.error === 'network') { btn.disabled = false; btn.textContent = T('q.again'); }
+    else btn.textContent = T('q.cant');
   }
   draw();
 }
@@ -693,18 +748,18 @@ function compPct(scores) {
   return out;
 }
 function compHTML(rec, nick) {
-  const ts = typesOf(rec.result), pr = compPct(rec.scores), sc = rec.scores, nm = `「${esc(nick)}」`;
+  const ts = typesOf(rec.result), pr = compPct(rec.scores), sc = rec.scores, nm = esc(nick);
   const ranked = ts.slice().sort((a, b) => sc[b] - sc[a]);
   const crownOf = (t) => !ts.includes(t) ? '' : CROWN(t === ranked[0] || sc[t] === sc[ranked[0]] ? 'gold' : 'silver');
   const circles = (ts.length ? ts : ['X']).map((t) => `<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('');
-  const name = ts.length ? ts.map((t) => `<span>${t} ${ANIMAL[t]}</span>`).join('＋') : '<span>變色龍</span>';
-  const top = ts.length === 1 ? `占比最大的 ${ak(ts[0])}，就是在你眼中${nm}的本色。`
-    : ts.length === 2 ? `${ak(ts[0])} 和 ${ak(ts[1])} 的占比最大又很接近，所以兩種都是${nm}的本色。`
-    : `四種動物的占比都很接近，所以在你眼中${nm}是變色龍。`;
+  const name = ts.length ? ts.map((t) => `<span>${t} ${ANIMAL[t]}</span>`).join(T('join.names')) : `<span>${T('cham')}</span>`;
+  const top = ts.length === 1 ? T('rr.top1', { a: ak(ts[0]), nm })
+    : ts.length === 2 ? T('rr.top2', { a: ak(ts[0]), b: ak(ts[1]), nm })
+    : T('rr.top3', { nm });
   return `<div class="donut-side">
-      <div class="donut" role="img" aria-label="在你眼中${esc(nick)}的本色：${ts.length ? ts.map((t) => ANIMAL[t]).join('＋') : '變色龍'}。本色組成：${TYPES.map((t) => ANIMAL[t] + ' ' + pr[t] + '%').join('、')}"><div class="cs">${circles}</div><span class="lb">在你眼中</span><span class="ty">${name}</span></div>
+      <div class="donut" role="img" aria-label="${T('rr.aria', { nick: esc(nick), names: ts.length ? ts.map((t) => ANIMAL[t]).join(T('join.names')) : T('cham'), mix: TYPES.map((t) => ANIMAL[t] + ' ' + pr[t] + '%').join(T('rr.sep')) })}"><div class="cs">${circles}</div><span class="lb">${T('rr.inEyes')}</span><span class="ty">${name}</span></div>
       <ul class="donut-legend" aria-hidden="true">${TYPES.map((t) => `<li>${swatchSm(t)}${t} ${ANIMAL[t]}${crownOf(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>
-      <ul class="notes"><li>占比越大，代表在你眼中這種動物越明顯。</li><li>${top}</li></ul>
+      <ul class="notes"><li>${T('rr.n1')}</li><li>${top}</li></ul>
     </div>`;
 }
 const swatchSm = (t) => `<svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>`;
@@ -713,12 +768,12 @@ const swatchSm = (t) => `<svg class="pat" viewBox="0 0 18 18"><rect width="18" h
 const CTA_FLOWER = { D: 82, I: 64, S: 44, C: 56 };
 const ctaFlower = () => `<svg class="flower cta-flower" viewBox="0 0 240 240" aria-hidden="true">${TYPES.map((t) => `<path class="pt" d="${petalPath(120, 120, 104 * Math.sqrt(CTA_FLOWER[t] / 100), ...PETAL[t])}" fill="url(#pat-${t})" stroke-width="4"/>`).join('')}</svg>`;
 const ctaHTML = () => `<div class="card stack" id="cta-card" style="gap:10px;background:var(--selected);border:none">
-      <h2 style="font-size:20px">想要了解自己的動物本色嗎？</h2>
-      <p class="small">根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。</p>
+      <h2 style="font-size:20px">${T('cta.t')}</h2>
+      <p class="small">${T('cta.b1')}</p>
       ${ctaFlower()}
-      <p class="small">每個人身上都有這四種動物，只是比例不同；沒有哪一型比較好，每一型都有各自的優點和盲點。</p>
-      <p class="small muted">46 題｜約 5–10 分鐘｜免費獲得個人報告書</p>
-      <a class="btn primary block" href="./">測出自己的動物本色</a>
+      <p class="small">${T('cta.b2')}</p>
+      <p class="small muted">${T('cta.meta', { n: PeerI18n.MAIN_ITEM_COUNT })}</p>
+      <a class="btn primary block" href="./">${T('cta.btn')}</a>
     </div>`;
 // 底部固定按鈕列（同主測驗結果頁的「儲存／分享結果圖片」）：一直顯示「測出自己的動物本色」；頁尾那張卡片出現在畫面上時先藏起來，同一件事不同時出現兩個按鈕
 function setupCtaDock() {
@@ -735,36 +790,36 @@ function renderRaterResult(nick, rec, again) {
   const secs = R.sections(key, nick);
   const peek = secs[0].items.slice(0, 3);
   view(`<div class="stack${key === 'CH' ? ' cham' : ''}" style="gap:20px${main ? ';--main:' + main : ''}">
-    ${again ? `<p class="muted small">你已經回覆過「${nm}」了，這是你上次的結果。</p>`
-            : `<div class="sent" role="status"><span class="ok" aria-hidden="true">✓</span>已將測驗結果傳送給「${nm}」，謝謝你！</div>`}
+    ${again ? `<p class="muted small">${T('rr.again', { nm })}</p>`
+            : `<div class="sent" role="status"><span class="ok" aria-hidden="true">✓</span>${T('rr.sent', { nm })}</div>`}
     <div class="hero">
-      <p class="eyebrow">在你眼中，「${nm}」的動物本色${heroCode(rec.result)}</p>
+      <p class="eyebrow">${T('rr.eyebrow', { nm, code: heroCode(rec.result) })}</p>
       ${heroH1(rec.result)}
       <p class="one">${R.fill(t.one, nick)}</p>
     </div>
     <div class="card stack" style="gap:8px">
-      <h3 style="font-size:18px">本色組成</h3>
+      <h3 style="font-size:18px">${T('rr.mix')}</h3>
       ${compHTML(rec, nick)}
     </div>
     <div class="fold-card" id="fold">
-      <p class="fold-h">${R.fill('{name}的完整解析', nick)}</p>
+      <p class="fold-h">${R.fill(T('rr.full'), nick)}</p>
       <div class="fold-peek" aria-hidden="true"><ul>${peek.map((x) => `<li>${x}</li>`).join('')}</ul></div>
-      <button type="button" class="fold-btn" aria-expanded="false" aria-controls="fold-body">看完整解析${ICON_DOWN}</button>
+      <button type="button" class="fold-btn" aria-expanded="false" aria-controls="fold-body">${T('rr.seeFull')}${ICON_DOWN}</button>
       <div class="fold-body" id="fold-body" hidden>
         ${secs.map((x) => `<div class="card sec"><h3>${x.title}</h3><ul>${x.items.map((y) => `<li>${y}</li>`).join('')}</ul>${x.tip ? `<div class="tip"><b>${x.tip[0]}</b>${x.tip[1]}</div>` : ''}</div>`).join('')}
       </div>
     </div>
-    <p class="note">以上測驗及解析結果僅供參考</p>
-    <p class="note">想刪除這筆回覆，請見<a href="${PRIVACY}">隱私說明</a>。</p>
+    <p class="note">${T('rr.ref')}</p>
+    <p class="note">${T('rr.del', { href: PRIVACY })}</p>
     ${ctaHTML()}
   </div>
-  <div class="cta-dock" id="cta-dock"><a class="btn primary" href="./">測出自己的動物本色</a></div>`);
+  <div class="cta-dock" id="cta-dock"><a class="btn primary" href="./">${T('cta.btn')}</a></div>`);
   setupCtaDock();
   const fold = $('#fold'), fb = fold.querySelector('.fold-btn');
   fb.addEventListener('click', () => {
     const open = fb.getAttribute('aria-expanded') !== 'true';
     fb.setAttribute('aria-expanded', String(open));
-    fb.firstChild.textContent = open ? '收起解析' : '看完整解析';
+    fb.firstChild.textContent = open ? T('rr.hide') : T('rr.seeFull');
     fold.classList.toggle('open', open);
     $('#fold-body').hidden = !open;
   });
@@ -780,9 +835,8 @@ async function renderOwner(code, token, my) {
   const res = await P.getResults(code, token); still(my);
   if (!res) {
     if (own && own.code === code) P.saveOwner(null);
-    return message('這個連結已經失效',
-      '可能已經在其他裝置重新產生過連結，舊的專屬結果連結就不能再用了。請用最新的連結，或登入帳號後再打開。',
-      `${P.user ? '' : '<button class="btn primary block" id="go-login">登入帳號</button>'}<a class="btn block" href="#">回到邀請頁</a>`) || bindLogin();
+    return message(T('ow.bad.t'), T('ow.bad.b'),
+      `${P.user ? '' : `<button class="btn primary block" id="go-login">${T('need.login')}</button>`}<a class="btn block" href="#">${T('ow.bad.back')}</a>`) || bindLogin();
   }
   if (token && !P.user && (!own || own.code !== code || own.ownerToken !== token)) P.saveOwner({ code, ownerToken: token, nickname: res.nickname });
   let group = '全部';
@@ -796,11 +850,11 @@ async function renderOwner(code, token, my) {
       // 還沒有人回覆：先放自己的花色和打問號的「大家眼中」，提醒自己的結果是什麼
       body = `<div class="card stack" style="gap:10px;text-align:center" id="empty-box">
         ${pairHTML(typesOf(res.self_result))}
-        <p style="font-weight:700">還沒有人回覆</p>
-        <p class="small muted">把邀請連結傳給朋友、家人或老師，有人回覆就會出現在這裡。</p>
-        ${shareBtnsHTML(res.nickname || '', inviteUrl, { line: false, copyLabel: '複製連結' })}
+        <p style="font-weight:700">${T('ow.empty.t')}</p>
+        <p class="small muted">${T('ow.empty.b')}</p>
+        ${shareBtnsHTML(res.nickname || '', inviteUrl, { line: false, copyLabel: T('lk.copy') })}
       </div>
-      ${BACK_LINK}`;
+      ${backLink()}`;
     } else {
       // 兩邊各自換算成「形狀」再比（見 peer-bank.js profile）：自評和他評的尺度不同，直接比他評會顯得比較極端
       const selfN = B.profile(B.normSelf(res.self_mean)), peerN = B.profile(B.normPeer(g.scores));
@@ -817,56 +871,56 @@ async function renderOwner(code, token, my) {
       const lines = B.gapLines(selfN, peerN);
       // 落差說明：每一型一張卡片，開頭標動物和「你可能沒注意到的一面／大家比較少看見的一面」
       const gapCard = (x) => { const g2 = R.GAP[x.dir === 'peer' ? 'up' : 'down'];
-        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">可以問問他們：${g2[x.t][1]}</p></div>`; };
+        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">${T('ow.ask', { q: g2[x.t][1] })}</p></div>`; };
       const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p>${R.GAP.same}</p></div>`;
       // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
       // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
       const anonList = Array.isArray(res.anon) ? res.anon : null;
-      const rowsNamed = res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation === '其他' && x.relation_note ? x.relation_note : x.relation)}</span></span><span>${akList(x.result)}</span></div>`).join('');
-      const rowsAnon = anonList ? anonList.map((x) => `<div class="row"><span class="muted">匿名</span><span>${akList(x.result)}</span></div>`).join('') : '';
-      const anonNote = anonList ? '' : res.n_anon ? `<p class="small muted">另有 ${res.n_anon} 位匿名，只算進上面的平均。</p>` : '';
+      const rowsNamed = res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation === '其他' && x.relation_note ? x.relation_note : X.rel(x.relation))}</span></span><span>${akList(x.result)}</span></div>`).join('');
+      const rowsAnon = anonList ? anonList.map((x) => `<div class="row"><span class="muted">${T('ow.anon')}</span><span>${akList(x.result)}</span></div>`).join('') : '';
+      const anonNote = anonList ? '' : res.n_anon ? `<p class="small muted">${T('ow.anonMore', { n: res.n_anon })}</p>` : '';
       const named = rowsNamed || rowsAnon ? `<div class="card named">
-          <p style="font-weight:700">每個人眼中的你</p>
+          <p style="font-weight:700">${T('ow.eachT')}</p>
           ${rowsNamed}${rowsAnon}${anonNote}
-        </div>` : `<p class="small muted">${res.n_anon} 位都是匿名，只算進上面的平均。</p>`;
+        </div>` : `<p class="small muted">${T('ow.anonAll', { n: res.n_anon })}</p>`;
       // 最上面的結論：大家眼中的類型＋一句和自評的對照（用落差最大的那一型）
       const up = lines.find((x) => x.dir === 'peer'), down = lines.find((x) => x.dir === 'self');
       const selfA = animalsOf(typesOf(res.self_result));
-      const sentence = up ? `你自評是${selfA}。大家眼中的你，比你想的更${B.FEATURE[up.t]}。`
-        : down ? `你自評是${selfA}。你覺得自己${B.FEATURE[down.t]}，大家比較少感受到。`
-        : `你自評是${selfA}。大家眼中的你，和你自評的樣子很接近。`;
-      const who = group === '全部' ? `在 ${g.n} 個人眼中` : `在 ${g.n} 位${esc(group)}眼中`;
-      body = `<div class="chips" role="group" aria-label="依關係篩選">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${x.relation}<span class="n">${x.n}</span></button>`).join('')}</div>
-        ${few ? `<div class="warn stack" style="gap:10px" id="few-box"><p>目前只有 ${total} 個人回覆，再邀請幾位，結果會更穩定。</p>${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false, line: false })}</div>` : ''}
+      const sentence = up ? T('ow.s.up', { a: selfA, f: featureOf(up.t) })
+        : down ? T('ow.s.down', { a: selfA, f: featureOf(down.t) })
+        : T('ow.s.same', { a: selfA });
+      const who = group === '全部' ? T('ow.who.all', { n: g.n }) : T('ow.who.rel', { n: g.n, rel: esc(g.n === 1 ? X.relLo(group) : X.relPl(group)) });
+      body = `<div class="chips" role="group" aria-label="${T('ow.filter')}">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${esc(x.relation === '全部' ? T('ow.all') : X.rel(x.relation))}<span class="n">${x.n}</span></button>`).join('')}</div>
+        ${few ? `<div class="warn stack" style="gap:10px" id="few-box"><p>${T('ow.few', { n: total })}</p>${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false, line: false })}</div>` : ''}
         <div class="hero" style="--main:${mainColor(peerRes) || 'var(--ink)'}">
-          <p class="eyebrow">${who}，你的動物本色${heroCode(peerRes)}</p>
+          <p class="eyebrow">${T('ow.eyebrow', { who, code: heroCode(peerRes) })}</p>
           ${heroH1(peerRes)}
           <p class="one">${sentence}</p>
         </div>
-        <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${BACK_LINK}</div>
+        <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${backLink()}</div>
         <div class="gaps">${gapHTML}</div>
         ${few ? '' : `<div class="card stack" style="gap:10px" id="more-box">
-          <div class="stat"><span style="font-weight:700">已有 ${total} 人回覆</span><b>${total}</b></div>
-          <p class="small muted">再邀請幾位，結果會更完整。</p>
+          <div class="stat"><span style="font-weight:700">${T('ow.more.n', { n: total })}</span><b>${total}</b></div>
+          <p class="small muted">${T('ow.more.b')}</p>
           ${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false })}
         </div>`}
         <div class="card db">
-          <p style="font-weight:700">四種動物逐一比較</p>
-          <div class="legend"><span><span class="dotc self"></span>你自評</span><span><span class="dotc peer"></span>大家眼中（${g.n} 人${g.n > 1 ? '平均' : ''}）</span></div>
-          <div class="db-head" aria-hidden="true"><span></span><span></span><span>你</span><span>大家</span></div>
+          <p style="font-weight:700">${T('ow.cmpT')}</p>
+          <div class="legend"><span><span class="dotc self"></span>${T('ow.legSelf')}</span><span><span class="dotc peer"></span>${T('ow.legPeer', { n: g.n })}</span></div>
+          <div class="db-head" aria-hidden="true"><span></span><span></span><span>${T('ow.you')}</span><span>${T('ow.others')}</span></div>
           ${rows}
-          <div class="db-scale"><span></span><div><span>較少</span><span>平均</span><span>較常</span></div><span></span><span></span></div>
-          <p class="note">中間是四種動物的平均。你的自評和大家的回覆題目不同，所以兩邊各自換算，只比較四種動物在你身上誰高誰低；右邊的「高、偏高、中、偏低、低」是和自己的平均比。</p>
+          <div class="db-scale"><span></span><div><span>${T('ow.less')}</span><span>${T('ow.avg')}</span><span>${T('ow.moreS')}</span></div><span></span><span></span></div>
+          <p class="note">${T('ow.cmpNote')}</p>
         </div>
         ${named}
-        <p class="note">以上測驗結果僅供參考</p>`;
+        <p class="note">${T('ow.ref')}</p>`;
     }
     view(`<div class="stack">
-      <h1 style="font-size:24px">換個角度看自己</h1>
+      <h1 style="font-size:24px">${T('title')}</h1>
       ${body}
       <div class="settings">
-        <div class="switch"><span id="sw-l">接受新回覆</span><button type="button" role="switch" aria-labelledby="sw-l" aria-describedby="sw-d" aria-checked="${res.is_open}" id="sw"></button></div>
-        <p class="note" id="sw-d">關掉後連結還在，但沒辦法再送出新的回覆。之後可以再打開。</p>
+        <div class="switch"><span id="sw-l">${T('ow.swL')}</span><button type="button" role="switch" aria-labelledby="sw-l" aria-describedby="sw-d" aria-checked="${res.is_open}" id="sw"></button></div>
+        <p class="note" id="sw-d">${T('ow.swD')}</p>
       </div>
     </div>`, keep);
     app.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { group = b.dataset.g; draw(); }));
@@ -877,8 +931,8 @@ async function renderOwner(code, token, my) {
       try {
         if (!(await P.setOpen(code, token, want))) throw new Error('rejected');
         res.is_open = want;
-        toast(want ? '已開始接受新回覆' : '已停止接受新回覆');
-      } catch (err) { toast('設定失敗，請稍後再試'); }
+        toast(T(want ? 'ow.swOn' : 'ow.swOff'));
+      } catch (err) { toast(T('ow.swFail')); }
       draw(true);
       $('#sw').focus({ preventScroll: true });
     });
@@ -888,7 +942,7 @@ async function renderOwner(code, token, my) {
 
 /* ---------- 路由 ---------- */
 async function render() {
-  if (!P.enabled) return message('目前無法使用', '網站還沒有設定好後端，請稍後再試。');
+  if (!P.enabled) return message(T('nobackend.t'), T('nobackend.b'));
   const h = P.parseHash(location.hash);
   const my = ++renderId;
   try {
