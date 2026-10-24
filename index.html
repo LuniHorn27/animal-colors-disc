@@ -631,6 +631,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'bar.brand':'測出你的動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.share':'分享測驗',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
+  'peer.title':'換個角度看自己', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.p':'你自評是 {ak}。朋友眼中的你也一樣嗎？心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，請朋友、家人、老師花 2–3 分鐘的時間快速測驗，幫助你換一個角度認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
   'home.h1':'測出你的動物本色',
   'home.intro':'此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。',
   'home.tcode.D':'D 支配', 'home.tcode.I':'I 影響', 'home.tcode.S':'S 穩定', 'home.tcode.C':'C 分析',
@@ -1978,13 +1979,11 @@ function resultExtras(r){
   if (!anchor) return;
   anchor.insertAdjacentHTML('afterend', '<div class="card account" id="save-card"></div>');
   renderSaveCard();
-  /* 「換個角度看自己」目前只有中文版：英文畫面不顯示入口 */
-  if (L.code!=='zh') return;
   $('#save-card').insertAdjacentHTML('afterend', '<div class="card" id="peer-card"></div>');
   renderPeerCard();
   const hero = el.querySelector('.hero');
   if (hero){
-    hero.insertAdjacentHTML('beforeend', `<a class="peer-teaser" href="#peer-card">在大家眼中，你也是${esc(peerShort(r))}嗎？ ↓</a>`);
+    hero.insertAdjacentHTML('beforeend', `<a class="peer-teaser" href="#peer-card">${t('peer.teaser', {a:esc(peerShort(r))})}</a>`);
     hero.querySelector('.peer-teaser').addEventListener('click', (e)=>{
       e.preventDefault();
       $('#peer-card').scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
@@ -2003,30 +2002,31 @@ function peerBadgeHTML(r){
   const circles = ts.length ? ts.map(t=>`<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('')
     : '<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-X)"/></svg>';
   return `<div class="peer-pair" aria-hidden="true">
-    <div class="f"><div class="peer-badge">${circles}</div><span class="lb">你自評</span><span class="ty">${esc(peerShort(r))}</span></div>
+    <div class="f"><div class="peer-badge">${circles}</div><span class="lb">${t('peer.self')}</span><span class="ty">${esc(peerShort(r))}</span></div>
     <span class="arrow">⇄</span>
-    <div class="f"><div class="peer-badge"><div class="ghost">?</div></div><span class="lb">大家眼中</span><span class="ty" style="color:var(--muted)">等被邀請人回覆</span></div>
+    <div class="f"><div class="peer-badge"><div class="ghost">?</div></div><span class="lb">${t('peer.others')}</span><span class="ty" style="color:var(--muted)">${t('peer.wait')}</span></div>
   </div>`;
 }
 /* 他評「換個角度看自己」的入口：放在「想保留這次結果嗎？」下面，自己的結果處理好了再邀請別人評。
    要等作答送出、拿到這份作答的編號（disc-claims-v1）之後才能按 */
+/* 他評頁的連結：英文畫面帶 ?lang=en，朋友打開就是英文 */
+const peerHref = hash => 'peer.html' + (L.code==='en' ? '?lang=en' : '') + hash;
 function renderPeerCard(){
   const box = $('#peer-card'); if (!box || !st) return;
-  if (L.code!=='zh'){ box.remove(); return; }
   let rid = null;
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
   if (rid) rememberPeerSelf(rid, score(st));
-  box.innerHTML = `<h3 class="hl">換個角度看自己</h3>${peerBadgeHTML(score(st))}
-    <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，請朋友、家人、老師花 2–3 分鐘的時間快速測驗，幫助你換一個角度認識自己吧！</p>
-    <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">了解他人眼中的我</a>` : '<button class="btn primary" disabled>了解他人眼中的我</button>'}</div>
-    ${rid ? '' : '<p class="small muted">作答資料送出後就能邀請。</p>'}`;
+  box.innerHTML = `<h3 class="hl">${t('peer.title')}</h3>${peerBadgeHTML(score(st))}
+    <p>${t('peer.p', {ak:akHTML(animalLine(score(st)))})}</p>
+    <div class="actions">${rid ? `<a class="btn primary" href="${peerHref('#from='+esc(rid))}">${t('peer.btn')}</a>` : `<button class="btn primary" disabled>${t('peer.btn')}</button>`}</div>
+    ${rid ? '' : `<p class="small muted">${t('peer.hint')}</p>`}`;
   if (!rid) return;
   /* 已經替這份作答產生過邀請：多一個「查看結果對照」，直接到結果對照頁。
      先看這個瀏覽器存的邀請（有專屬連結的鑰匙），沒有的話，登入的人從帳號裡找 */
-  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">查看結果對照</a>`); };
+  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">${t('peer.cmp')}</a>`); };
   let own = null; try { own = JSON.parse(localStorage.getItem('disc-peer-v1')); } catch(e){}
-  if (own && own.code && own.ownerToken && own.responseId === rid) return addCmp(`peer.html#k=${own.code}.${own.ownerToken}`);
-  if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && box.isConnected) addCmp(`peer.html#k=${hit.code}`); }).catch(()=>{});
+  if (own && own.code && own.ownerToken && own.responseId === rid) return addCmp(peerHref(`#k=${own.code}.${own.ownerToken}`));
+  if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && box.isConnected) addCmp(peerHref(`#k=${hit.code}`)); }).catch(()=>{});
 }
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
@@ -2062,10 +2062,9 @@ function authUI(){
 let HIST = [], PEER_INV = [];
 /* 他評入口：這次結果已經有邀請就打開對照結果，還沒有就去產生邀請 */
 function histPeerHTML(row){
-  if (L.code!=='zh') return '';
   const hit = PEER_INV.find(x=>x.response_id===row.id);
-  return hit ? `<a class="hist-peer" href="peer.html#k=${esc(hit.code)}">看大家眼中的我（${+hit.n||0} 人回覆）›</a>`
-             : `<a class="hist-peer" href="peer.html#from=${esc(row.id)}">了解他人眼中的我 ›</a>`;
+  return hit ? `<a class="hist-peer" href="${peerHref('#k='+esc(hit.code))}">${t('peer.hist.see', {n:+hit.n||0})}</a>`
+             : `<a class="hist-peer" href="${peerHref('#from='+esc(row.id))}">${t('peer.hist.go')}</a>`;
 }
 async function openHistory(){
   if (st && st.viewOnly) st = load();
