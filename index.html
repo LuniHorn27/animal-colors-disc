@@ -348,8 +348,12 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 .peer-badge svg{box-shadow:0 0 0 3px var(--surface)}
 .peer-badge svg + svg{margin-left:-14px}
 .peer-badge .ghost{border:2.5px dashed var(--faint);background:var(--sunk);display:flex;align-items:center;justify-content:center;font-family:var(--font-round);font-size:28px;color:var(--muted)}
-#peer-card .actions{margin-top:16px}
-#peer-card .actions + .small{margin-top:8px}
+/* 問句獨立成一個色塊（同解析裡的 .tip），圖與按鈕置中，段落之間留空 */
+#peer-card .peer-pair{margin:8px auto 18px}
+#peer-card .tip{margin:0 0 12px;font-size:16px}
+#peer-card .tip + p{line-height:1.85}
+#peer-card .actions{margin-top:24px;justify-content:center}
+#peer-card .actions + .small{margin-top:10px;text-align:center}
 /* 結果標題下的小字連結：捲到「換個角度看自己」卡片 */
 .peer-teaser{align-self:flex-start;font-size:15px;color:var(--ink);text-underline-offset:4px;text-decoration-color:var(--faint);min-height:32px;display:inline-flex;align-items:center}
 .view-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
@@ -629,7 +633,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'bar.brand':'測出你的動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.theme.light':'淺色模式', 'bar.share':'分享測驗',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
-  'peer.title':'換個角度看自己', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.p':'你自評是 {ak}。朋友眼中的你也一樣嗎？心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
+  'peer.title':'換個角度看自己', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
   'home.h1':'測出你的動物本色',
   'home.intro':'此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。',
   'home.tcode.D':'D 支配', 'home.tcode.I':'I 影響', 'home.tcode.S':'S 穩定', 'home.tcode.C':'C 分析',
@@ -2016,7 +2020,8 @@ function renderPeerCard(){
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
   if (rid) rememberPeerSelf(rid, score(st));
   box.innerHTML = `<h3 class="hl">${t('peer.title')}</h3>${peerBadgeHTML(score(st))}
-    <p>${t('peer.p', {ak:akHTML(animalLine(score(st)))})}</p>
+    <p class="tip">${t('peer.q', {ak:akHTML(animalLine(score(st)))})}</p>
+    <p>${t('peer.p')}</p>
     <div class="actions">${rid ? `<a class="btn primary" href="${peerHref('#from='+esc(rid))}">${t('peer.btn')}</a>` : `<button class="btn primary" disabled>${t('peer.btn')}</button>`}</div>
     ${rid ? '' : `<p class="small muted">${t('peer.hint')}</p>`}`;
   if (!rid) return;
