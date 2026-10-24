@@ -419,7 +419,7 @@ document.querySelector('.bar-brand').addEventListener('click', (e) => {
   box.querySelector('[data-stay]').addEventListener('click', () => box.remove());
   box.querySelector('[data-go]').addEventListener('click', () => { quizActive = false; location.href = './'; });
 });
-const PRIVACY = 'privacy.html#peer';
+const privacyHref = () => X.lang === 'en' ? 'privacy.html?lang=en#peer-en' : 'privacy.html#peer';
 const app = $('#app');
 const view = (html, keepScroll = false) => { app.innerHTML = html; if (!keepScroll) window.scrollTo(0, 0); };
 // 網址很快換來換去時，較早、還在等伺服器的畫面不能蓋掉新的：每次 render 拿一個編號，等完伺服器先確認自己還是最新的
@@ -810,7 +810,7 @@ function renderRaterResult(nick, rec, again) {
       </div>
     </div>
     <p class="note">${T('rr.ref')}</p>
-    <p class="note">${T('rr.del', { href: PRIVACY })}</p>
+    <p class="note">${T('rr.del', { href: privacyHref() })}</p>
     ${ctaHTML()}
   </div>
   <div class="cta-dock" id="cta-dock"><a class="btn primary" href="./">${T('cta.btn')}</a></div>`);
