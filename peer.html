@@ -426,8 +426,8 @@ const view = (html, keepScroll = false) => { app.innerHTML = html; if (!keepScro
 let renderId = 0;
 class Stale extends Error {}
 const still = (my) => { if (my !== renderId) throw new Stale(); };
-// 英文畫面產生的連結帶 ?lang=en，朋友打開就是英文
-const pageUrl = (hash) => location.origin + location.pathname + (X.lang === 'en' ? '?lang=en' : '') + hash;
+// 英文畫面產生的連結走 peer-en.html（英文的連結預覽），它會把人轉到 peer.html?lang=en，朋友打開就是英文
+const pageUrl = (hash) => X.lang === 'en' ? new URL('peer-en.html', location.href).href.split(/[?#]/)[0] + hash : location.origin + location.pathname + hash;
 const keyOf = (r) => (!r || !r.key || r.kind === 'none' || r.kind === 'chameleon') ? 'CH' : r.key;
 
 function toast(msg) {
