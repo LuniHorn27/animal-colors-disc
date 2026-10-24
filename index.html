@@ -1995,7 +1995,7 @@ function rememberPeerSelf(rid, r){
   try { const m = JSON.parse(localStorage.getItem('disc-peer-self-v1')) || {}; m[rid] = peerTypes(r).join(''); localStorage.setItem('disc-peer-self-v1', JSON.stringify(m)); } catch(e){}
 }
 /* 動物名稱（不含代號），例如「無尾熊＋貓頭鷹」 */
-const peerShort = r => titleParts(r).map(p=>p.t?ANIMAL[p.t]:p.text).join('');
+const peerShort = r => titleParts(r).map(p=>p.t?(L.code==='zh'?ANIMAL[p.t]:LBL(p.t)):p.text).join('');
 const peerTypes = r => r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [];
 function peerBadgeHTML(r){
   const ts = peerTypes(r);
