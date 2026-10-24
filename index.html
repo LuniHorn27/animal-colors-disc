@@ -66,8 +66,18 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 .q{font-family:var(--font-round);font-size:clamp(22px,2.6vw,32px);font-weight:400;font-synthesis:none;line-height:1.5;min-height:3em;margin-bottom:24px;text-wrap:pretty}
 .opts{display:flex;flex-direction:column;gap:10px}
 .opt{display:flex;align-items:center;gap:14px;min-height:54px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);text-align:left;transition:border-color .15s,background .15s}
-/* 手機寬度的一題一頁：選項由上往下是「非常符合」到「非常不符合」（電腦版維持由左到右 1→5） */
-@media (max-width:767.98px){#opts{flex-direction:column-reverse}}
+/* 手機寬度的一題一頁：跟「全部列出」的五格一樣，由左到右 1→5，字在格子下面（電腦版是字在格子裡） */
+#opts .opt .l{display:none}
+@media (max-width:767.98px){
+  #opts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+  #opts .opt,#opts .opt[aria-pressed="true"]{flex-direction:column;gap:6px;min-height:0;min-width:0;padding:0;border:0;background:none;text-align:center}
+  #opts .opt .t{display:none}
+  #opts .opt .k{width:100%;height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:17px;font-weight:500}
+  #opts .opt[aria-pressed="true"] .k{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
+  #opts .opt .l{display:block;font-size:12px;line-height:1.35;color:var(--muted)}
+  #opts .opt .l span{display:block}
+  #opts .opt[aria-pressed="true"] .l{color:var(--ink);font-weight:500}
+}
 @media (min-width:768px){
   .opts{flex-direction:row}
   .opts .opt{flex:1 1 0;min-width:0;flex-direction:column;justify-content:center;text-align:center;min-height:104px;gap:10px;padding:12px 8px}
@@ -1156,7 +1166,7 @@ function renderQ(){
   const had = optsFocused($('#opts'));
   quizProgress();
   $('#qtext').textContent = qText(id);
-  $('#opts').innerHTML = scaleT().map((sv,i)=>`<button class="opt" data-v="${i+1}" aria-pressed="${st.answers[id]===i+1}"><span class="k">${i+1}</span>${sv}</button>`).join('');
+  $('#opts').innerHTML = scaleT().map((sv,i)=>`<button class="opt" data-v="${i+1}" aria-pressed="${st.answers[id]===i+1}" aria-label="${i+1} ${sv}"><span class="k" aria-hidden="true">${i+1}</span><span class="t" aria-hidden="true">${sv}</span><span class="l" aria-hidden="true">${(L.scaleL||SCALE_L)[i].map(x=>`<span>${x}</span>`).join('')}</span></button>`).join('');
   refocusOpts($('#opts'), had);
   $('#prev').disabled = st.idx===0;
   lastAt = performance.now(); busy=false; tick();
