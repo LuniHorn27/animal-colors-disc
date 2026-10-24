@@ -86,6 +86,7 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .qhint{background:rgba(243,194,79,.2)}}
 .bar-top{align-items:flex-start}
 .qhint,.bar-top .meta>span{white-space:nowrap}
+:lang(en) .qhint{white-space:normal;letter-spacing:0}
 #qpage,#qall{margin-top:20px}
 .quiz-head{padding-bottom:12px;border-bottom:1px solid var(--line)}
 .qlist{list-style:none;margin:8px 0 0;padding:0}
@@ -222,6 +223,8 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .bar-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:500}
 .bar-btn:hover{background:var(--sunk)}
 .bar-btn svg{width:20px;height:20px;flex:none}
+.bar-btn .lang-k{font-size:14px;font-weight:700;letter-spacing:.02em;line-height:1}
+.lang-loading .site-bar,.lang-loading #app{visibility:hidden}
 .bar-btn[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .bar-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* 滑鼠移到按鈕上（或用鍵盤移到按鈕上）時，按鈕下方浮出名稱；最右邊的按鈕靠右對齊，避免超出畫面 */
@@ -248,6 +251,11 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .home-hero .flower{width:min(220px,62vw);justify-self:start;order:-1}
 @media (min-width:768px){.home-hero{grid-template-columns:minmax(0,1fr) 230px;gap:24px}.home-hero .flower{width:100%;order:0;justify-self:end}}
 .type .pat{width:34px;height:34px;flex:none;border-radius:50% 50% 50% 6px;display:block}
+/* 英文的類型名稱比較長（Conscientiousness）：窄螢幕時動物方塊一欄一個，長字可以換行；頂端列的站名字小一點 */
+:lang(en) .type small{font-size:12px;overflow-wrap:anywhere}
+@media (max-width:520px){:lang(en) .types{grid-template-columns:1fr}}
+:lang(en) .bar-brand{font-size:16px;line-height:1.2}
+@media (max-width:400px){:lang(en) .bar-brand{font-size:14px}}
 .type .tx{display:flex;flex-direction:column;line-height:1.35}
 .type .tx small{font-size:13px;color:var(--muted);font-weight:400}
 .flower{display:block}
@@ -266,6 +274,8 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .donut .c2{font-size:28px}
 .donut .cm .c1{font-size:15px}
 .donut .c2.two{font-size:18px}
+/* 英文比較長：圓環中間的字縮小，才放得進圓圈 */
+:lang(en) .donut .c1{font-size:14px} :lang(en) .donut .c2{font-size:23px} :lang(en) .donut .cm .c1{font-size:12px} :lang(en) .donut .c2.two{font-size:17px}
 .donut-legend{grid-area:legend;list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;font-weight:700;align-self:center}
 .donut-legend li{display:flex;align-items:center;gap:8px;margin:0;min-width:0;white-space:nowrap}
 .donut-legend svg.pat{width:18px;height:18px;border-radius:50%;flex:none}
@@ -274,6 +284,8 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 :root{--crown-gold-edge:#8A5A00;--crown-gold-gem:#C8372D;--crown-silver-edge:#5F6772;--crown-silver-gem:#3E6FB8}
 .donut-legend b{margin-left:auto;font-variant-numeric:tabular-nums}
 .donut-side .legend{grid-area:notes;margin-top:0}
+/* 英文的動物名比較長（I-Peacock）：窄螢幕時圓環和比例的欄寬放寬、字小一點 */
+@media (max-width:400px){:lang(en) .donut-side{grid-template-columns:minmax(100px,1fr) minmax(140px,1fr);column-gap:12px} :lang(en) .donut-legend{font-size:14px;gap:6px} :lang(en) .donut-legend li{gap:6px}}
 @media (max-width:767.98px){.chart-svg .ax,.chart-svg .vl,.chart-svg .an{font-size:20px}}
 .pbars{display:flex;flex-direction:column;gap:14px;position:relative;padding-top:8px;padding-bottom:26px;margin-top:4px}
 .pbar{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:15px}
@@ -330,16 +342,18 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 </style>
 <script>/* 舊網址（GitHub Pages）自動轉到正式網址，保留 ?c= 等參數 */if(location.hostname==='lunihorn27.github.io')location.replace('https://animal-colors-disc.pages.dev/'+location.search+location.hash);</script>
 <script>/* 深色模式：套用使用者上次的選擇，避免畫面先閃一下別的顏色 */try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>/* 語言：選英文時先把畫面藏起來，等英文載入後再顯示，避免先閃一下中文（最多 3 秒） */(function(){var q=(new URLSearchParams(location.search).get('lang')||'').toLowerCase(),s=null;try{s=localStorage.getItem('disc-lang');}catch(e){}if(q==='en'||(q!=='zh'&&s==='en')){var h=document.documentElement;h.classList.add('lang-loading');setTimeout(function(){h.classList.remove('lang-loading');},3000);}})();</script>
 
 <svg id="pat-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
 <header class="site-bar">
   <div class="bar-in">
-    <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span>測出你的動物本色</span></a>
-    <nav class="bar-nav" aria-label="網站導覽"></nav>
+    <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span data-i18n="bar.brand">測出你的動物本色</span></a>
+    <nav class="bar-nav" aria-label="網站導覽" data-i18n-attr="aria-label:bar.nav"></nav>
     <div class="bar-actions">
-      <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl">全部列出</span></button>
-      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl">深色模式</span></button>
-      <button type="button" class="bar-btn" id="bar-share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">分享測驗</span></button>
+      <button type="button" class="bar-btn" id="bar-lang"><span class="lang-k" aria-hidden="true" data-i18n="bar.lang.short">EN</span><span class="lbl" data-i18n="bar.lang">切換成英文 English</span></button>
+      <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.qmode">全部列出</span></button>
+      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.theme">深色模式</span></button>
+      <button type="button" class="bar-btn" id="bar-share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl" data-i18n="bar.share">分享測驗</span></button>
     </div>
   </div>
 </header>
@@ -350,29 +364,29 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <div class="home-col">
     <div class="home-hero">
       <div class="stack" style="gap:12px">
-        <h1>測出你的動物本色</h1>
-        <p>此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。</p>
+        <h1 data-i18n="home.h1">測出你的動物本色</h1>
+        <p data-i18n="home.intro">此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。</p>
       </div>
       <svg class="flower" id="home-flower" viewBox="0 0 240 240" aria-hidden="true"></svg>
     </div>
     <div class="types">
-      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-D)"/></svg><span class="tx"><b>老虎</b><small>D 支配</small></span></div>
-      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-I)"/></svg><span class="tx"><b>孔雀</b><small>I 影響</small></span></div>
-      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-S)"/></svg><span class="tx"><b>無尾熊</b><small>S 穩定</small></span></div>
-      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-C)"/></svg><span class="tx"><b>貓頭鷹</b><small>C 分析</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-D)"/></svg><span class="tx"><b data-i18n-animal="D">老虎</b><small data-i18n="home.tcode.D">D 支配</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-I)"/></svg><span class="tx"><b data-i18n-animal="I">孔雀</b><small data-i18n="home.tcode.I">I 影響</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-S)"/></svg><span class="tx"><b data-i18n-animal="S">無尾熊</b><small data-i18n="home.tcode.S">S 穩定</small></span></div>
+      <div class="type"><svg class="pat" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" fill="url(#pat-C)"/></svg><span class="tx"><b data-i18n-animal="C">貓頭鷹</b><small data-i18n="home.tcode.C">C 分析</small></span></div>
     </div>
-    <p>每個人身上都有這四種動物，只是比例不同；沒有哪一型比較好，每一型都有各自的優點和盲點。</p>
-    <p>共 46 題，約 5–10 分鐘。請依直覺選擇最符合的模樣，而非希望成為的樣子。</p>
-    <p>完成後可以免費獲得一份個人報告書，包括：你的動物本色、四種傾向的分布圖，以及溝通和職涯的參考建議。</p>
-    <p class="small muted"><span id="home-note">小提醒：測驗結果僅供參考，非能力評分。你的作答會保存下來，以利優化測驗及系統，將不會挪作其他用途，</span>詳見<a href="privacy.html" style="color:inherit">隱私說明</a>。</p>
+    <p data-i18n="home.p1">每個人身上都有這四種動物，只是比例不同；沒有哪一型比較好，每一型都有各自的優點和盲點。</p>
+    <p data-i18n="home.p2">共 46 題，約 5–10 分鐘。請依直覺選擇最符合的模樣，而非希望成為的樣子。</p>
+    <p data-i18n="home.p3">完成後可以免費獲得一份個人報告書，包括：你的動物本色、四種傾向的分布圖，以及溝通和職涯的參考建議。</p>
+    <p class="small muted"><span id="home-note" data-i18n="home.note">小提醒：測驗結果僅供參考，非能力評分。你的作答會保存下來，以利優化測驗及系統，將不會挪作其他用途，</span><span data-i18n="home.see">詳見</span><a href="privacy.html" style="color:inherit" data-i18n="home.privacy">隱私說明</a><span data-i18n="home.end">。</span></p>
     <div class="start-card">
     <p id="class-note" hidden></p>
-    <label class="consent" for="agree"><input type="checkbox" id="agree"><span>我了解結果僅供參考，也同意保存我的作答。</span></label>
+    <label class="consent" for="agree"><input type="checkbox" id="agree"><span data-i18n="home.consent">我了解結果僅供參考，也同意保存我的作答。</span></label>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <button class="btn primary" id="resume" hidden>繼續上次的作答</button>
-      <button class="btn primary" id="view-result" hidden>查看我的結果</button>
+      <button class="btn primary" id="resume" hidden data-i18n="home.resume">繼續上次的作答</button>
+      <button class="btn primary" id="view-result" hidden data-i18n="home.viewResult">查看我的結果</button>
       <button class="btn primary" id="start" disabled>開始作答</button>
-      <button class="btn" id="my-results" hidden>我的歷次結果</button>
+      <button class="btn" id="my-results" hidden data-i18n="home.myResults">我的歷次結果</button>
     </div>
     </div>
     </div>
@@ -380,53 +394,53 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 
   <section id="s-quiz" hidden>
     <div class="quiz-head">
-      <div class="bar-top"><span class="qcount-wrap"><span id="qcount">第 1 題，共 46 題</span><span class="qhint">請依直覺選出最符合的模樣</span></span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
+      <div class="bar-top"><span class="qcount-wrap"><span id="qcount">第 1 題，共 46 題</span><span class="qhint" data-i18n="quiz.hint">請依直覺選出最符合的模樣</span></span><span class="meta"><span id="qpct">已完成 0%</span><span id="qtime">作答時間 00:00</span></span></div>
       <div class="progress" aria-hidden="true"><i id="qbar" style="width:0"></i></div>
     </div>
     <div id="qpage">
       <p class="q" id="qtext" aria-live="polite"></p>
-      <div class="opts" id="opts" role="group" aria-label="符合程度"></div>
+      <div class="opts" id="opts" role="group" aria-label="符合程度" data-i18n-attr="aria-label:quiz.optsAria"></div>
       <div class="nav">
-        <button class="btn" id="prev">上一題</button>
-        <span class="small muted kbd-hint">可用數字鍵 1–5 作答</span>
+        <button class="btn" id="prev" data-i18n="quiz.prev">上一題</button>
+        <span class="small muted kbd-hint" data-i18n="quiz.kbd">可用數字鍵 1–5 作答</span>
       </div>
     </div>
     <div id="qall" hidden>
       <ol class="qlist" id="qlist"></ol>
       <div class="quiz-end">
         <p class="field-err" id="quiz-err" role="alert"></p>
-        <button class="btn primary" id="quiz-done">下一步</button>
+        <button class="btn primary" id="quiz-done" data-i18n="quiz.next">下一步</button>
       </div>
     </div>
-    <p style="margin-top:32px" id="demo-row" hidden><button class="btn link" id="demo">示範：自動填完（測試用）</button></p>
+    <p style="margin-top:32px" id="demo-row" hidden><button class="btn link" id="demo" data-i18n="quiz.demo">示範：自動填完（測試用）</button></p>
   </section>
 
   <section id="s-info" class="stack" hidden>
-    <h2 id="info-h">個人資料</h2>
+    <h2 id="info-h" data-i18n="info.h">個人資料</h2>
     <div class="info-grid stack">
     <div class="form-row"><label for="uname" id="uname-label">名字</label>
       <input type="text" id="uname" autocomplete="name" maxlength="40" aria-describedby="uname-err">
       <span class="field-err" id="uname-err" role="alert"></span></div>
     <div class="form-row"><label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="email-hint email-err">
-      <span class="small muted" id="email-hint" hidden>填了之後，結果會寄到這個信箱。</span>
+      <span class="small muted" id="email-hint" hidden data-i18n="info.emailHint">填了之後，結果會寄到這個信箱。</span>
       <span class="field-err" id="email-err" role="alert"></span></div>
-    <div class="form-row"><label for="age">年齡層</label>
-      <select id="age"><option value="">請選擇</option><option>14 歲以下</option><option>15–19 歲</option><option>20–24 歲</option><option>25–29 歲</option><option>30–34 歲</option><option>35–39 歲</option><option>40–44 歲</option><option>45–49 歲</option><option>50–54 歲</option><option>55–59 歲</option><option>60–64 歲</option><option>65 歲以上</option></select></div>
-    <div class="form-row"><label for="gender">性別</label>
-      <select id="gender"><option value="">請選擇</option><option>生理男</option><option>生理女</option></select></div>
-    <div class="form-row" id="row-edu"><label for="edu">學歷</label>
-      <select id="edu"><option value="">請選擇</option><option>國中以下</option><option>高中職</option><option>專科</option><option>大學</option><option>碩士</option><option>博士</option></select></div>
-    <div class="form-row" id="row-job"><label for="job">職業類別</label>
-      <select id="job"><option value="">請選擇</option><option>學生</option><option>上班族</option><option>自由工作者</option><option>自營或創業</option><option>家管</option><option>待業中</option><option>退休</option><option>其他</option></select></div>
+    <div class="form-row"><label for="age" data-i18n="info.age">年齡層</label>
+      <select id="age"><option value="">請選擇</option><option value="14 歲以下">14 歲以下</option><option value="15–19 歲">15–19 歲</option><option value="20–24 歲">20–24 歲</option><option value="25–29 歲">25–29 歲</option><option value="30–34 歲">30–34 歲</option><option value="35–39 歲">35–39 歲</option><option value="40–44 歲">40–44 歲</option><option value="45–49 歲">45–49 歲</option><option value="50–54 歲">50–54 歲</option><option value="55–59 歲">55–59 歲</option><option value="60–64 歲">60–64 歲</option><option value="65 歲以上">65 歲以上</option></select></div>
+    <div class="form-row"><label for="gender" data-i18n="info.gender">性別</label>
+      <select id="gender"><option value="">請選擇</option><option value="生理男">生理男</option><option value="生理女">生理女</option></select></div>
+    <div class="form-row" id="row-edu"><label for="edu" data-i18n="info.edu">學歷</label>
+      <select id="edu"><option value="">請選擇</option><option value="國中以下">國中以下</option><option value="高中職">高中職</option><option value="專科">專科</option><option value="大學">大學</option><option value="碩士">碩士</option><option value="博士">博士</option></select></div>
+    <div class="form-row" id="row-job"><label for="job" data-i18n="info.job">職業類別</label>
+      <select id="job"><option value="">請選擇</option><option value="學生">學生</option><option value="上班族">上班族</option><option value="自由工作者">自由工作者</option><option value="自營或創業">自營或創業</option><option value="家管">家管</option><option value="待業中">待業中</option><option value="退休">退休</option><option value="其他">其他</option></select></div>
     </div>
     <fieldset class="followup" id="followup">
-      <legend>想要更深入了解自己嗎？</legend>
-      <label class="check" for="fu-want"><input type="checkbox" id="fu-want" aria-controls="fu-more" aria-expanded="false"><span>我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果</span></label>
+      <legend data-i18n="fu.legend">想要更深入了解自己嗎？</legend>
+      <label class="check" for="fu-want"><input type="checkbox" id="fu-want" aria-controls="fu-more" aria-expanded="false"><span data-i18n="fu.want">我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果</span></label>
       <div class="fu-more" id="fu-more" hidden>
-        <p class="small muted">如有意願，請留下你的聯絡資訊</p>
+        <p class="small muted" data-i18n="fu.more">如有意願，請留下你的聯絡資訊</p>
         <div class="fu-grid">
-          <div class="form-row"><label for="fu-phone">電話</label>
+          <div class="form-row"><label for="fu-phone" data-i18n="fu.phone">電話</label>
             <input type="tel" id="fu-phone" autocomplete="tel" inputmode="tel" maxlength="20" aria-describedby="fu-phone-err">
             <span class="field-err" id="fu-phone-err" role="alert"></span></div>
           <div class="form-row"><label for="fu-line">LINE ID</label>
@@ -435,7 +449,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
         </div>
       </div>
     </fieldset>
-    <div class="stack" style="gap:8px;align-items:flex-start"><button class="btn primary" id="info-next">查看我的結果</button>
+    <div class="stack" style="gap:8px;align-items:flex-start"><button class="btn primary" id="info-next" data-i18n="info.next">查看我的結果</button>
       <p class="small muted" id="info-wait" role="status"></p></div>
   </section>
 
@@ -444,24 +458,24 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <div class="bar-top"><span id="blind-step">第 45 題，共 46 題</span><span id="blind-pct">已完成 96%</span></div>
       <div class="progress" aria-hidden="true"><i id="bbar" style="width:0"></i></div>
     </div>
-    <h2 id="blind-h">憑直覺，選一段最像的描述</h2>
+    <h2 id="blind-h" data-i18n="blind.h">憑直覺，選一段最像的描述</h2>
     <div class="blind" id="blind-opts" role="group" aria-labelledby="blind-h"></div>
-    <div class="actions"><button class="btn" id="blind-prev">上一題</button></div>
+    <div class="actions"><button class="btn" id="blind-prev" data-i18n="quiz.prev">上一題</button></div>
   </section>
 
   <section id="s-result" class="stack" hidden></section>
 
   <section id="s-history" class="stack hist-page" hidden>
-    <h2>我的歷次結果</h2>
+    <h2 data-i18n="hist.h">我的歷次結果</h2>
     <p class="small muted" id="hist-who"></p>
     <p class="muted" id="hist-msg" role="status"></p>
     <ul class="hist" id="hist-list"></ul>
-    <div class="actions"><button class="btn" id="hist-home">回到首頁</button><button class="btn link" id="hist-out">登出</button></div>
+    <div class="actions"><button class="btn" id="hist-home" data-i18n="nav.home">回到首頁</button><button class="btn link" id="hist-out" data-i18n="signout">登出</button></div>
     <div class="card stack" id="del-all-card" style="gap:12px;margin-top:16px" hidden>
-      <h3>刪除我的資料</h3>
-      <p class="small muted">刪除這個帳號保存的所有結果，包含作答時填的名字和 Email。刪除後無法復原。</p>
-      <div><button class="btn" id="del-open">刪除我的資料</button></div>
-      <div class="confirm" id="del-confirm" hidden role="alert"><p>確定要刪除所有保存的結果嗎？刪除後無法復原。</p><button class="btn" id="del-cancel">保留資料</button><button class="btn primary" id="del-ok">確定刪除</button></div>
+      <h3 data-i18n="delall.h">刪除我的資料</h3>
+      <p class="small muted" data-i18n="delall.p">刪除這個帳號保存的所有結果，包含作答時填的名字和 Email。刪除後無法復原。</p>
+      <div><button class="btn" id="del-open" data-i18n="delall.h">刪除我的資料</button></div>
+      <div class="confirm" id="del-confirm" hidden role="alert"><p data-i18n="delall.ask">確定要刪除所有保存的結果嗎？刪除後無法復原。</p><button class="btn" id="del-cancel" data-i18n="delall.keep">保留資料</button><button class="btn primary" id="del-ok" data-i18n="hist.delOk">確定刪除</button></div>
       <p class="small muted" id="del-msg" role="status"></p>
     </div>
   </section>
@@ -469,14 +483,14 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 
 <p class="toast" id="toast" role="status" aria-live="polite"></p>
 <dialog id="home-dialog" aria-labelledby="hd-title" aria-describedby="hd-desc">
-  <h2 id="hd-title">要回到首頁嗎？</h2>
+  <h2 id="hd-title" data-i18n="hd.title">要回到首頁嗎？</h2>
   <p id="hd-desc" class="muted">你的作答進度會保存在這個瀏覽器裡，之後可以在首頁按「繼續上次的作答」接著做。</p>
-  <div class="actions"><button class="btn" id="hd-stay" autofocus>繼續作答</button><button class="btn primary" id="hd-go">回到首頁</button></div>
+  <div class="actions"><button class="btn" id="hd-stay" autofocus>繼續作答</button><button class="btn primary" id="hd-go" data-i18n="nav.home">回到首頁</button></div>
 </dialog>
 <dialog id="restart-dialog" aria-labelledby="rd-title" aria-describedby="rd-desc">
-  <h2 id="rd-title">要重新作答嗎？</h2>
+  <h2 id="rd-title" data-i18n="rd.title">要重新作答嗎？</h2>
   <p id="rd-desc" class="muted"></p>
-  <div class="actions"><button class="btn" id="rd-keep" autofocus></button><button class="btn primary" id="rd-ok">清除並重新作答</button></div>
+  <div class="actions"><button class="btn" id="rd-keep" autofocus></button><button class="btn primary" id="rd-ok" data-i18n="again.ok">清除並重新作答</button></div>
 </dialog>
 
 <script src="js/config.js"></script>
@@ -568,15 +582,168 @@ const PAIRS = [
 const BYID = Object.fromEntries([...ITEMS,...ATTN,...PAIRS].map(x=>[x.id,x]));
 const SCALE = ['非常不符合','有點不符合','普通','有點符合','非常符合'];
 const CODE_OF = {'老虎':'D','孔雀':'I','無尾熊':'S','貓頭鷹':'C'};
-const LBL = t => t+' '+ANIMAL[t];
 const sumTimes = st => Object.values(st.times||{}).reduce((a,b)=>a+b,0);
 const fmtClock = ms => { const s=Math.floor(ms/1000); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
-const fmtDur = ms => { const s=Math.round(ms/1000), m=Math.floor(s/60); return m ? `${m} 分 ${s%60} 秒` : `${s} 秒`; };
+const fmtDur = ms => { const s=Math.round(ms/1000), m=Math.floor(s/60); return m ? t('dur.ms', {m, s:s%60}) : t('dur.s', {s}); };
 const BLIND = {
   D:'我做事重視結果和效率，遇到困難會想辦法突破。我習慣自己做決定，說話直接，喜歡有挑戰性的任務。',
   I:'我喜歡和人互動，很容易和不熟的人聊開。我樂觀、說話生動，常常是帶動氣氛、鼓勵大家的那個人。',
   S:'我重視和諧與穩定，喜歡用自己的步調把事情做好。我善於傾聽、願意配合別人，是朋友眼中可靠的人。',
   C:'我重視正確和品質，做決定前會先蒐集資料。我做事有條理、注意細節，喜歡有明確標準的環境。'};
+
+/* I18N-BEGIN：畫面文字字典與語言共用函式（不碰畫面，測試程式會直接載入這一段）
+   ZH 是中文；英文在 js/lang-en.js（window.DISC_LANG_EN），結構相同，選英文時才載入。
+   t(鍵, 變數) 取目前語言的文字，英文缺少的鍵會改用中文；{n} 這類大括號換成變數 */
+const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'numeric', month:'2-digit', day:'2-digit'},
+  lblSep:' ', labelSep:'：', labelMax:12, colon:'：', colonGap:'', listSep:'、', metaSep:'　',
+  animal:ANIMAL, tname:TNAME, ui:{
+  'site.title':'測出你的動物本色｜DISC 行為風格測驗',
+  'site.desc':'每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。46 題，約 5–10 分鐘，測出你的動物本色。',
+  'bar.brand':'測出你的動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.share':'分享測驗',
+  'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
+  'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
+  'home.h1':'測出你的動物本色',
+  'home.intro':'此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。',
+  'home.tcode.D':'D 支配', 'home.tcode.I':'I 影響', 'home.tcode.S':'S 穩定', 'home.tcode.C':'C 分析',
+  'home.p1':'每個人身上都有這四種動物，只是比例不同；沒有哪一型比較好，每一型都有各自的優點和盲點。',
+  'home.p2':'共 46 題，約 5–10 分鐘。請依直覺選擇最符合的模樣，而非希望成為的樣子。',
+  'home.p3':'完成後可以免費獲得一份個人報告書，包括：你的動物本色、四種傾向的分布圖，以及溝通和職涯的參考建議。',
+  'home.note':'小提醒：測驗結果僅供參考，非能力評分。你的作答會保存下來，以利優化測驗及系統，將不會挪作其他用途，',
+  'home.see':'詳見', 'home.privacy':'隱私說明', 'home.end':'。',
+  'home.consent':'我了解結果僅供參考，也同意保存我的作答。',
+  'home.start':'開始作答', 'home.resume':'繼續上次的作答', 'home.viewResult':'查看我的結果', 'home.myResults':'我的歷次結果',
+  'class.ok':'班級：{name}', 'class.notOpen':'這個活動還沒開始，請等老師通知再作答。',
+  'class.closed':'這個活動已經結束。如果還需要作答，請向老師確認。', 'class.bad':'活動連結有誤，請向老師確認。',
+  'rd.title':'要重新作答嗎？', 'rd.progress':'你上次已經答了 {n} 題。重新作答會清除這些作答，從第 1 題開始，清除後無法復原。',
+  'rd.result':'重新作答會清除這個瀏覽器裡保存的結果，清除後無法復原。如果想留著，可以先到「查看我的結果」儲存結果圖片。',
+  'quiz.count':'第 {n} 題，共 {total} 題', 'quiz.countList':'已答 {n} 題，共 {total} 題', 'quiz.hint':'請依直覺選出最符合的模樣',
+  'quiz.pct':'已完成 {p}%', 'quiz.time':'作答時間 {t}', 'quiz.optsAria':'符合程度', 'quiz.prev':'上一題',
+  'quiz.kbd':'可用數字鍵 1–5 作答', 'quiz.next':'下一步', 'quiz.demo':'示範：自動填完（測試用）',
+  'quiz.missToast':'第 {n} 題還沒有回答。', 'quiz.qn':'第 {n} 題', 'quiz.miss':'尚未回答',
+  'quiz.err':'還有 {n} 題沒有回答，已經幫你移到第 {q} 題。',
+  'blind.h':'憑直覺，選一段最像的描述',
+  'info.h':'個人資料', 'info.name':'名字', 'info.nameReq':'名字（必填）', 'info.emailHint':'填了之後，結果會寄到這個信箱。',
+  'info.age':'年齡層', 'info.gender':'性別', 'info.edu':'學歷', 'info.job':'職業類別', 'info.choose':'請選擇',
+  'fu.legend':'想要更深入了解自己嗎？', 'fu.want':'我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果',
+  'fu.more':'如有意願，請留下你的聯絡資訊', 'fu.phone':'電話',
+  'err.email':'Email 格式好像不完整，例如 name@example.com。不想留也可以空白。',
+  'err.name':'請填寫名字，老師才能把結果對應到你。',
+  'err.phone':'電話號碼好像不完整，例如 0912-345-678。不想留也可以空白。',
+  'err.line':'LINE ID 是 4–20 個英文、數字或 . _ -，可以在 LINE 的「個人檔案」裡找到。不想留也可以空白。',
+  'info.next':'查看我的結果', 'info.sending':'正在送出作答…', 'info.wait':'通常幾秒內就會完成，請不要關閉這個頁面。',
+  'hd.title':'要回到首頁嗎？', 'hd.progress':'你的作答進度會保存在這個瀏覽器裡，之後可以在首頁按「繼續上次的作答」接著做。',
+  'hd.progressStay':'繼續作答',
+  'hd.result':'你的結果會保存在這個瀏覽器裡，之後可以在首頁按「查看我的結果」再打開。如果重新作答，這次的結果會被新的結果取代。',
+  'hd.resultStay':'留在結果頁', 'nav.home':'回到首頁',
+  'chart.up':'主動', 'chart.down':'配合', 'chart.left':'重事', 'chart.right':'重人',
+  'chart.aria':'DISC 四向圖：{list}，你的平均 {avg} 分', 'score.item':'{lbl} {n} 分',
+  'vs.cham':'你的四種分數都很接近，沒有特別突出或特別少展現的一型，能依情境切換不同的風格。',
+  'vs.dash':'虛線是四種動物的平均（{avg} 分），用來比較高和低。',
+  'vs.habit':'平均分數的高和低，不代表能力或好壞，和個人作答時的習慣有關（例如：比較多選「非常符合」，平均分數就會偏高）。',
+  'vs.above':'<b>高於平均</b>：{list}。比較貼近你的行為風格，自然而然就會表現出來。',
+  'vs.equal':'<b>剛好在平均</b>：{list}。偶爾會表現出來，但不是你最主要的風格。',
+  'vs.below':'<b>低於平均</b>：{list}。是比較少展現的行為風格。不是做不到，只是需要多花力氣。',
+  'donut.n2':'占比越大，代表這種動物在你身上越明顯。', 'donut.single':'占比最大的 {lbl}，就是你的本色。',
+  'donut.two':'{a} 和 {b} 的占比最大又很接近，所以兩種都是你的本色。', 'donut.cham':'四種動物的占比都很接近，所以你是變色龍。',
+  'res.chamShort':'變色龍', 'res.plusShort':'＋', 'res.plusMark':'＋', 'res.plusTitle':' ＋ ', 'res.cham':'變色龍（四型均衡）',
+  'res.tfull':'{lbl}（{tname}型）', 'sub.combo':'{ab} 組合型', 'sub.diag':'{ab} 對角型',
+  'prom.high':'你的本色裡，{a} 最明顯，明顯高過其他動物。', 'prom.mid':'你的本色裡，{a} 最明顯，{b} 也有一定影響。',
+  'prom.low':'你的本色裡，{a} 只比 {b} 多一點點，兩種動物都很明顯。',
+  'donut.center':'你的本色', 'donut.aria':'本色組成：{list}', 'pct.item':'{lbl} {n}%',
+  'bars.aria':'{list}，滿分 100，你的平均 {avg} 分', 'avg.short':'你的平均 {avg}',
+  'fold.more':'等 {n} 個主題', 'fold.title':'詳細測驗解析', 'fold.open':'點開看完整解析', 'fold.close':'收起解析',
+  'sec.core':'核心特質', 'sec.good':'你的優勢', 'sec.blind':'可能的盲點', 'sec.tension':'兩種特質的拉扯',
+  'sec.comm':'你的溝通方式', 'sec.commTip':'給身邊的人', 'sec.stress':'壓力下的你', 'sec.stressTip':'小建議',
+  'sec.env':'適合的工作環境與方向', 'sec.jobs':'可能適合的方向（僅供參考）', 'sec.tips':'和其他動物相處的小提醒', 'sec.note':'關於這個結果',
+  'disclaimer':'以上內容僅供自我了解參考，非能力評分。',
+  'meta.n':'本次作答 {n} 題', 'meta.time':'作答時間 {d}', 'meta.date':'完成日期 {date}', 'dur.ms':'{m} 分 {s} 秒', 'dur.s':'{s} 秒',
+  'sync.sending':'正在送出作答資料…', 'sync.sent':'作答資料已送出，謝謝你的參與。',
+  'sync.pending':'作答資料還沒送出（網路可能不穩定）。結果不受影響；重新整理或下次打開這個網頁時會自動補送。',
+  'sync.rejected':'作答資料無法送出，但結果不受影響。',
+  'sync.banner':'作答資料還沒送出，網頁會自動再試。請先不要關閉這個頁面。', 'sync.bannerSent':'作答資料已送出，謝謝你。',
+  'sync.retry':'再送一次', 'sync.retrying':'正在送出…',
+  'warn.mid':'你大部分的題目都選了「普通」，這份結果的參考性較低。如果想得到更準確的結果，可以重新作答，盡量選擇「有點符合」或「有點不符合」。',
+  'warn.fast':'這次作答速度較快，或連續選了很多相同的答案，結果可能不夠準確。',
+  'again':'重新作答', 'again.confirm':'重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。',
+  'again.keep':'保留結果', 'again.ok':'清除並重新作答',
+  'share.btn':'分享圖片', 'rate.1':'完全不像', 'rate.2':'不太像', 'rate.3':'普通', 'rate.4':'有點像', 'rate.5':'非常像',
+  'rate.h':'這個測驗解析像你嗎？', 'rate.p':'點一下，讓測驗更準確。', 'rate.thanks':'謝謝你的回饋！',
+  'res.eyebrow':'你的動物本色', 'res.none':'暫時無法判定',
+  'res.noneOne':'你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。',
+  'res.tentative':'（暫定）', 'res.secondary':'副型：{lbl}。{sub}',
+  'seg.aria':'結果呈現方式', 'seg.brand':'動物本色', 'seg.data':'精確數據',
+  'card.donut':'你的本色組成', 'card.patbars':'四種動物的分數', 'card.chart':'DISC 四向圖', 'card.bars':'四型分數',
+  'chart.legend':'虛線圓是你的平均（{avg} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。',
+  'share.h':'分享你的結果', 'share.p':'產生一張包含完整分析的結果圖片，可以下載或分享給朋友。', 'share.make':'產生結果圖片',
+  'share.alt':'我的動物本色結果圖片', 'share.download':'下載圖片', 'share.fileDefault':'動物本色-結果.png',
+  'share.hold':'手機可以長按圖片儲存', 'invite':'邀請朋友來測驗', 'share.dock':'儲存／分享結果圖片',
+  'img.brand':'測出你的動物本色', 'img.brandSub':'DISC 行為風格測驗', 'img.dash':'虛線是四種動物的平均（{avg} 分）。',
+  'img.above':'高於平均（貼近你的風格）：', 'img.equal':'剛好在平均：', 'img.below':'低於平均（比較少展現）：',
+  'img.legend':'虛線圓：你的平均（{avg} 分）　點在虛線外代表此型較明顯', 'img.bullet':'・',
+  'img.ask1':'你的動物本色是什麼？', 'img.ask2':'也來測測看', 'img.scan':'掃描 QR Code，或打開網址：',
+  'img.askOne':'你的動物本色是什麼？也來測測看', 'img.file':'動物本色-{code}.png',
+  'inapp.open':'改用瀏覽器開啟', 'inapp.how':'請點右上角的「⋯」，選擇「在瀏覽器中開啟」。',
+  'inapp.home':'你正在 {app} 的內建瀏覽器裡，作答完可能無法下載圖片或分享。建議先改用手機的瀏覽器（例如 Chrome、Safari）開啟再作答。',
+  'inapp.result':'你正在 {app} 的內建瀏覽器裡，可能無法下載圖片或分享。可以直接截圖保存結果；改用瀏覽器開啟的話，需要重新作答。',
+  'test.shareText':'動物本色：DISC 行為風格測驗，大約 5–10 分鐘，測出你的本色是哪幾種動物！',
+  'test.inviteText':'我剛測出我的動物本色，大約 5–10 分鐘，你也來測測看你的本色是哪幾種動物！',
+  'test.shareTitle':'動物本色｜DISC 行為風格測驗', 'test.copied':'測驗連結已複製，可以直接貼給朋友。', 'test.copyThis':'請複製這個連結傳給朋友：{url}',
+  'share.making':'正在產生圖片…', 'share.link':'\n你也來測測看：{url}', 'share.title':'我的動物本色',
+  'share.text':'我測出我的動物本色是「{label}」，你的是什麼？', 'share.copied':'結果圖片已複製，可以直接貼到 LINE、Messenger 等聊天室傳給朋友。',
+  'share.unsupported':'這個瀏覽器不支援直接分享，請先下載圖片，再傳給朋友。',
+  'view.past':'這是你在 {date} 的結果。', 'view.back':'回到我的歷次結果',
+  'save.done':'已保存到你的帳號', 'save.who':'登入帳號：{email}', 'save.goHistory':'查看我的歷次結果', 'signout':'登出',
+  'save.blocked':'Google 不允許在 {app} 的內建瀏覽器裡登入。請改用手機的瀏覽器（例如 Chrome、Safari）打開這個網頁再登入。',
+  'save.h':'想保留這次結果嗎？', 'save.p':'用 Google 帳號登入後，這次的結果會存在你的帳號裡，換手機或過一陣子回來都看得到。',
+  'save.signin':'用 Google 帳號登入', 'save.going':'正在前往 Google 登入…', 'save.fail':'無法連線到登入服務。請確認網路後再按一次。',
+  'save.cancelled':'登入沒有完成。需要的話，可以再按一次「用 Google 帳號登入」。',
+  'hist.h':'我的歷次結果', 'hist.loading':'正在讀取…', 'hist.fail':'無法讀取結果。請確認網路後，回到首頁再按一次「我的歷次結果」。',
+  'hist.empty':'這個帳號還沒有保存的結果。做完測驗後，在結果頁按「用 Google 帳號登入」，結果就會保存到這裡。',
+  'hist.count':'共 {n} 次結果，點一下可以打開。', 'hist.del':'刪除', 'hist.delAria':'刪除 {date} 的結果',
+  'hist.delAsk':'確定要刪除 {date} 的這次結果嗎？刪除後無法復原。', 'hist.keep':'保留', 'hist.delOk':'確定刪除',
+  'hist.deleting':'正在刪除…', 'hist.deleted':'已刪除這次結果。還有 {n} 次結果，點一下可以打開。',
+  'hist.deletedNone':'已刪除這次結果。這個帳號目前沒有保存的結果。', 'hist.delFail':'刪除沒有完成。請確認網路後再按一次「確定刪除」。',
+  'delall.h':'刪除我的資料', 'delall.p':'刪除這個帳號保存的所有結果，包含作答時填的名字和 Email。刪除後無法復原。',
+  'delall.ask':'確定要刪除所有保存的結果嗎？刪除後無法復原。', 'delall.keep':'保留資料',
+  'delall.done':'已刪除 {n} 筆結果。如果也要刪除登入帳號本身，請寄信到 {email}。', 'delall.fail':'刪除沒有完成。請確認網路後再試一次。'
+}};
+let L = ZH;
+const useDict = d => { L = d || ZH; };
+function t(key, vars){
+  vars = vars || {};
+  let s = vars.n === 1 && L.ui[key+'.one'] != null ? L.ui[key+'.one'] : L.ui[key];
+  if (s == null) s = ZH.ui[key];
+  if (s == null){ if (typeof console !== 'undefined') console.warn('沒有這個文字：', key); return key; }
+  return s.replace(/\{(\w+)\}/g, (m, k) => k in vars ? vars[k] : m);
+}
+const LBL = c => c + L.lblSep + L.animal[c];
+/* 題目、作答選項、直覺題、解說：英文字典有就用英文，否則用中文原本的資料 */
+const qText = id => (L.items && L.items[id]) || (L.pairs && L.pairs[id]) || (L.attn && L.attn[id]) || BYID[id].text;
+const scaleT = () => L.scale || SCALE;
+/* 內文中的動物關鍵字：統一成「代號＋動物」，前後留一個空格，畫面上加底色。英文只認單數的動物名（例如 Tiger） */
+const A_OPEN='\u0001', A_CLOSE='\u0002';
+function markAnimals(raw){
+  const names = TYPES.map(c=>L.animal[c]).join('|'), code = Object.fromEntries(TYPES.map(c=>[L.animal[c], c]));
+  if (L.code==='zh'){
+    let s = String(raw).replace(new RegExp(`([DISC]) (${names})`,'g'), '$2');
+    s = s.replace(new RegExp(`(${names})`,'g'), m=>A_OPEN+code[m]+A_CLOSE);
+    return s.replace(/([一-鿿A-Za-z0-9])\u0001/g, '$1 \u0001').replace(/\u0002([一-鿿A-Za-z0-9])/g, '\u0002 $1');
+  }
+  const s = String(raw).replace(new RegExp(`\\b([DISC])[- ](${names})\\b`,'g'), '$2');
+  return s.replace(new RegExp(`\\b(${names})\\b`,'g'), m=>A_OPEN+code[m]+A_CLOSE);
+}
+/* 作答時用過的語言：上線前就開始作答的人沒有這個紀錄，已經有作答的部分當作中文 */
+function addLang(st, lang){
+  if (!st.langs) st.langs = Object.keys(st.answers||{}).length ? ['zh'] : [];
+  if (!st.langs.includes(lang)) st.langs.push(lang);
+}
+/* 決定語言：網址的 ?lang=（zh 或 en，不分大小寫）→ 上次選的 → 中文 */
+function pickLang(search, stored){
+  const q = (new URLSearchParams(search).get('lang') || '').toLowerCase();
+  if (q==='zh' || q==='en') return q;
+  return stored==='en' ? 'en' : 'zh';
+}
+/* I18N-END */
 
 /* ===== 2. 解說內容（解說文字草稿 v0.1） ===== */
 /* 改寫前的解說文字（v1，網頁原本的版本），保留以便隨時換回 */
@@ -714,8 +881,11 @@ const SUB_V3 = {"DI": "你的果斷中帶有熱情。推動事情時，你會用
 /* 使用哪一版解說：預設 v3；網址加上 ?text=v1 可看改寫前的版本。要整個換回舊版，把 TEXT_DEFAULT 改成 'v1' */
 const TEXT_DEFAULT = 'v3';
 const TEXT_VER = new URLSearchParams(location.search).get('text') || TEXT_DEFAULT;
-const R = TEXT_VER==='v1' ? R_V1 : R_V3;
-const SUB = TEXT_VER==='v1' ? SUB_V1 : SUB_V3;
+const R_ZH = TEXT_VER==='v1' ? R_V1 : R_V3;
+const SUB_ZH = TEXT_VER==='v1' ? SUB_V1 : SUB_V3;
+/* 目前語言的解說：英文字典有 R、SUB 就用英文（英文只有 v3） */
+const REP = () => L.R || R_ZH;
+const SUBT = () => L.SUB || SUB_ZH;
 
 /* ===== 3. 抽題與計分（不碰畫面） ===== */
 const GATE = 0.40;
@@ -779,6 +949,17 @@ function score(st){
 
 /* ===== 4. 畫面 ===== */
 const $ = s => document.querySelector(s);
+let LANG = 'zh';
+/* 把目前語言套用到 HTML 裡的固定文字（data-i18n＝文字、data-i18n-attr＝屬性、選項＝顯示文字；送出的值不變） */
+function applyStatic(){
+  document.documentElement.lang = L.htmlLang;
+  document.title = t('site.title');
+  const md = document.querySelector('meta[name="description"]'); if (md) md.content = t('site.desc');
+  document.querySelectorAll('[data-i18n]').forEach(e=>{ e.textContent = t(e.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-animal]').forEach(e=>{ e.textContent = L.animal[e.dataset.i18nAnimal]; });
+  document.querySelectorAll('[data-i18n-attr]').forEach(e=>e.dataset.i18nAttr.split(';').forEach(p=>{ const [a,k]=p.split(':'); e.setAttribute(a, t(k)); }));
+  document.querySelectorAll('select option').forEach(o=>{ o.textContent = o.value==='' ? t('info.choose') : ((L.opts||{})[o.value] ?? o.value); });
+}
 const STORE='disc-proto-v1';
 let st = null;
 const save = () => { if (st && st.viewOnly) return; try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} };
@@ -813,26 +994,28 @@ if (saved && saved.seq && !saved.done) $('#resume').hidden=false;
 const homeState = () => { const s = (st && st.seq && !st.viewOnly) ? st : load(); return !(s && s.seq) ? null : s.done ? 'result' : 'progress'; };
 function syncHomeButtons(){
   const has = homeState();
-  $('#start').textContent = has ? '重新作答' : '開始作答';
+  $('#start').textContent = has ? t('again') : t('home.start');
   $('#start').classList.toggle('primary', !has);
 }
 syncHomeButtons();
 /* 班級連結：開始作答前確認班級代碼是管理者建好的班級，而且在開放時間內。
    連不上伺服器時不擋，送出時伺服器還會再檢查一次班級是否存在 */
-let classBlocked = false;
+let classBlocked = false, classInfo = null;
 const syncStart = () => { $('#start').disabled = !$('#agree').checked || classBlocked; };
+/* 班級提示：切換語言時也會重新顯示 */
+function renderClassNote(){
+  const note = $('#class-note'), r = classInfo;
+  if (r && r.ok){ note.className='small muted'; note.textContent=t('class.ok', {name:r.name}); note.hidden=false; }
+  else if (r && r.reason){
+    note.className = 'warn';
+    note.textContent = r.reason==='not_open' ? t('class.notOpen') : r.reason==='closed' ? t('class.closed') : t('class.bad');
+    note.hidden = false;
+  }
+}
 if (COHORT && BK.enabled && BK.checkClass){
   BK.checkClass(COHORT).then(r=>{
-    const note = $('#class-note');
-    if (r && r.ok){ note.className='small muted'; note.textContent='班級：'+r.name; note.hidden=false; }
-    else if (r && r.reason){
-      classBlocked = true;
-      note.className = 'warn';
-      note.textContent = r.reason==='not_open' ? '這個活動還沒開始，請等老師通知再作答。'
-        : r.reason==='closed' ? '這個活動已經結束。如果還需要作答，請向老師確認。'
-        : '活動連結有誤，請向老師確認。';
-      note.hidden = false; $('#agree').disabled = true; syncStart();
-    }
+    classInfo = r; renderClassNote();
+    if (r && !r.ok && r.reason){ classBlocked = true; $('#agree').disabled = true; syncStart(); }
   }).catch(()=>{});
 }
 $('#agree').addEventListener('change', syncStart);
@@ -846,11 +1029,11 @@ $('#start').addEventListener('click', ()=>{
   if (!has){ beginQuiz(); return; }
   if (has==='progress'){
     const s = (st && st.seq && !st.done) ? st : load(), n = s.seq.filter(id=>s.answers[id]).length;
-    $('#rd-desc').textContent = `你上次已經答了 ${n} 題。重新作答會清除這些作答，從第 1 題開始，清除後無法復原。`;
-    $('#rd-keep').textContent = '繼續上次的作答';
+    $('#rd-desc').textContent = t('rd.progress', {n});
+    $('#rd-keep').textContent = t('home.resume');
   } else {
-    $('#rd-desc').textContent = '重新作答會清除這個瀏覽器裡保存的結果，清除後無法復原。如果想留著，可以先到「查看我的結果」儲存結果圖片。';
-    $('#rd-keep').textContent = '保留結果';
+    $('#rd-desc').textContent = t('rd.result');
+    $('#rd-keep').textContent = t('again.keep');
   }
   if (restartDialog.showModal) restartDialog.showModal();
   else if (window.confirm($('#rd-desc').textContent)){ clear(); beginQuiz(); }
@@ -905,14 +1088,15 @@ function quizProgress(){
   const n = answeredN(), total = totalQ();
   $('#qbar').style.width = Math.round((QMODE==='page' ? st.idx : n)/total*100)+'%';
   if (QMODE==='page'){
-    $('#qcount').textContent = `第 ${st.idx+1} 題，共 ${total} 題`;
-    $('#qpct').textContent = `已完成 ${Math.round(st.idx/total*100)}%`;
-  } else $('#qcount').textContent = `已答 ${n} 題，共 ${total} 題`;
+    $('#qcount').textContent = t('quiz.count', {n:st.idx+1, total});
+    $('#qpct').textContent = t('quiz.pct', {p:Math.round(st.idx/total*100)});
+  } else $('#qcount').textContent = t('quiz.countList', {n, total});
 }
-function tick(){ if (st && !$('#s-quiz').hidden) $('#qtime').textContent = '作答時間 '+fmtClock(sumTimes(st)+(performance.now()-lastAt)); }
+function tick(){ if (st && !$('#s-quiz').hidden) $('#qtime').textContent = t('quiz.time', {t:fmtClock(sumTimes(st)+(performance.now()-lastAt))}); }
 setInterval(tick, 1000);
 function record(id, v){
   const now = performance.now();
+  addLang(st, LANG);
   st.answers[id]=v; st.times[id]=(st.times[id]||0)+Math.round(now-lastAt); lastAt = now;
 }
 /* 流程：題目 → 直覺題（兩頁）→ 最後幾個問題 → 結果。直覺題放在基本資料前面，
@@ -937,8 +1121,8 @@ function renderQ(){
   const id = st.seq[st.idx], it = BYID[id];
   const had = optsFocused($('#opts'));
   quizProgress();
-  $('#qtext').textContent = it.text;
-  $('#opts').innerHTML = SCALE.map((sv,i)=>`<button class="opt" data-v="${i+1}" aria-pressed="${st.answers[id]===i+1}"><span class="k">${i+1}</span>${sv}</button>`).join('');
+  $('#qtext').textContent = qText(id);
+  $('#opts').innerHTML = scaleT().map((sv,i)=>`<button class="opt" data-v="${i+1}" aria-pressed="${st.answers[id]===i+1}"><span class="k">${i+1}</span>${sv}</button>`).join('');
   refocusOpts($('#opts'), had);
   $('#prev').disabled = st.idx===0;
   lastAt = performance.now(); busy=false; tick();
@@ -954,7 +1138,7 @@ function answerPage(v){
     const next = st.seq.slice(st.idx+1).find(x=>!st.answers[x]);
     if (next){ st.idx = st.seq.indexOf(next); save(); renderQ(); return; }
     const f = firstOpen();
-    if (f){ st.idx = st.seq.indexOf(f); save(); renderQ(); toast(`第 ${st.idx+1} 題還沒有回答。`); return; }
+    if (f){ st.idx = st.seq.indexOf(f); save(); renderQ(); toast(t('quiz.missToast', {n:st.idx+1})); return; }
     quizDone();
   }, 220);
 }
@@ -964,9 +1148,9 @@ $('#prev').addEventListener('click', ()=>{ if(st.idx>0){ st.idx--; save(); rende
 /* 全部列出 */
 function renderList(){
   $('#qlist').innerHTML = st.seq.map((id,i)=>`<li class="qi" id="q-${id}" data-id="${id}">
-    <p class="qn">第 ${i+1} 題<span class="miss">尚未回答</span></p>
-    <p class="qt" id="qt-${id}">${esc(BYID[id].text)}</p>
-    <div class="scale" role="group" aria-labelledby="qt-${id}">${SCALE.map((sv,k)=>`<button type="button" class="sc" data-v="${k+1}" aria-pressed="${st.answers[id]===k+1}" aria-label="${k+1} ${sv}"><span class="n" aria-hidden="true">${k+1}</span><span class="l" aria-hidden="true">${SCALE_L[k].map(x=>`<span>${x}</span>`).join('')}</span></button>`).join('')}</div>
+    <p class="qn">${t('quiz.qn', {n:i+1})}<span class="miss">${t('quiz.miss')}</span></p>
+    <p class="qt" id="qt-${id}">${esc(qText(id))}</p>
+    <div class="scale" role="group" aria-labelledby="qt-${id}">${scaleT().map((sv,k)=>`<button type="button" class="sc" data-v="${k+1}" aria-pressed="${st.answers[id]===k+1}" aria-label="${k+1} ${sv}"><span class="n" aria-hidden="true">${k+1}</span><span class="l" aria-hidden="true">${(L.scaleL||SCALE_L)[k].map(x=>`<span>${x}</span>`).join('')}</span></button>`).join('')}</div>
   </li>`).join('');
   $('#quiz-err').textContent = '';
   lastAt = performance.now(); quizProgress(); tick();
@@ -988,7 +1172,7 @@ $('#quiz-done').addEventListener('click', ()=>{
   const left = st.seq.filter(id=>!st.answers[id]);
   if (!left.length){ quizDone(); return; }
   left.forEach(id=>$('#q-'+id).classList.add('missing'));
-  $('#quiz-err').textContent = `還有 ${left.length} 題沒有回答，已經幫你移到第 ${st.seq.indexOf(left[0])+1} 題。`;
+  $('#quiz-err').textContent = t('quiz.err', {n:left.length, q:st.seq.indexOf(left[0])+1});
   const li = $('#q-'+left[0]);
   li.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
   li.querySelector('.sc').focus({preventScroll:true});
@@ -1028,7 +1212,7 @@ $('#demo').addEventListener('click', ()=>{
 const emailOK = () => { const el=$('#email'); return !el.value.trim() || el.checkValidity(); };
 function showEmailErr(on){
   $('#email').setAttribute('aria-invalid', String(on));
-  $('#email-err').textContent = on ? 'Email 格式好像不完整，例如 name@example.com。不想留也可以空白。' : '';
+  $('#email-err').textContent = on ? t('err.email') : '';
 }
 $('#email').addEventListener('blur', ()=>showEmailErr(!emailOK()));
 $('#email').addEventListener('input', ()=>{ if ($('#email').getAttribute('aria-invalid')==='true' && emailOK()) showEmailErr(false); });
@@ -1036,24 +1220,24 @@ const classMode = () => !!(st && st.cohort);
 function infoMode(){
   const cm = classMode();
   /* 說明文字：班級連結和一般連結用同一段（使用者決定，2026-10-16） */
-  $('#uname-label').textContent = cm ? '名字（必填）' : '名字';
+  $('#uname-label').textContent = cm ? t('info.nameReq') : t('info.name');
   $('#uname').required = cm;
   $('#email-hint').hidden = !cm;
   $('#row-edu').hidden = cm; $('#row-job').hidden = cm;
 }
 function showNameErr(on){
   $('#uname').setAttribute('aria-invalid', String(on));
-  $('#uname-err').textContent = on ? '請填寫名字，老師才能把結果對應到你。' : '';
+  $('#uname-err').textContent = on ? t('err.name') : '';
 }
 $('#uname').addEventListener('input', ()=>{ if ($('#uname').value.trim()) showNameErr(false); });
 /* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
 const FU = {
   phone:{el:'#fu-phone', err:'#fu-phone-err', ok:v=>/^[0-9+() -]{8,20}$/.test(v) && v.replace(/\D/g,'').length>=8,
-    msg:'電話號碼好像不完整，例如 0912-345-678。不想留也可以空白。'},
+    msg:'err.phone'},
   line:{el:'#fu-line', err:'#fu-line-err', ok:v=>/^@?[A-Za-z0-9._-]{4,20}$/.test(v),
-    msg:'LINE ID 是 4–20 個英文、數字或 . _ -，可以在 LINE 的「個人檔案」裡找到。不想留也可以空白。'}};
+    msg:'err.line'}};
 const fuOK = k => { const v=$(FU[k].el).value.trim(); return !v || FU[k].ok(v); };
-function showFuErr(k, on){ $(FU[k].el).setAttribute('aria-invalid', String(on)); $(FU[k].err).textContent = on ? FU[k].msg : ''; }
+function showFuErr(k, on){ $(FU[k].el).setAttribute('aria-invalid', String(on)); $(FU[k].err).textContent = on ? t(FU[k].msg) : ''; }
 Object.keys(FU).forEach(k=>{
   $(FU[k].el).addEventListener('blur', ()=>showFuErr(k, !fuOK(k)));
   $(FU[k].el).addEventListener('input', ()=>{ if ($(FU[k].el).getAttribute('aria-invalid')==='true' && fuOK(k)) showFuErr(k, false); });
@@ -1075,15 +1259,15 @@ $('#info-next').addEventListener('click', ()=>{
   /* 先送出作答，確認送到了再顯示結果；最多等 15 秒，還沒送到就先顯示結果，
      結果頁最上方會提示「還沒送出」並提供「再送一次」（背景也會自動再試） */
   st.sync='sending'; save();
-  const btn = $('#info-next'); btn.disabled = true; btn.textContent = '正在送出作答…';
-  $('#info-wait').textContent = '通常幾秒內就會完成，請不要關閉這個頁面。';
+  const btn = $('#info-next'); btn.disabled = true; btn.textContent = t('info.sending');
+  $('#info-wait').textContent = t('info.wait');
   BK.queue(st);
   const sid = st.sid, t0 = Date.now();
   const wait = setInterval(()=>{
     const fin = !st || st.sid!==sid || st.sync==='sent' || st.sync==='rejected';
     if (!fin && Date.now()-t0 < 15000) return;
     clearInterval(wait);
-    btn.disabled = false; btn.textContent = '查看我的結果'; $('#info-wait').textContent = '';
+    btn.disabled = false; btn.textContent = t('info.next'); $('#info-wait').textContent = '';
     if (st && st.sid===sid && !$('#s-info').hidden){ renderResult(); show('s-result'); }
   }, 200);
 });
@@ -1094,10 +1278,10 @@ function renderBlind(page, hadFocus){
   const pick = page===0 ? st.blind : st.blind2;
   const had = hadFocus ?? optsFocused($('#blind-opts'));
   const no = st.seq.length + page, total = totalQ();
-  $('#blind-step').textContent = `第 ${no+1} 題，共 ${total} 題`;
-  $('#blind-pct').textContent = `已完成 ${Math.round(no/total*100)}%`;
+  $('#blind-step').textContent = t('quiz.count', {n:no+1, total});
+  $('#blind-pct').textContent = t('quiz.pct', {p:Math.round(no/total*100)});
   $('#bbar').style.width = Math.round(no/total*100)+'%';
-  $('#blind-opts').innerHTML = st.blindOrders[page].map(t=>`<button class="opt" data-t="${t}" aria-pressed="${pick===t}">${BLIND_PARTS[t][page]}</button>`).join('');
+  $('#blind-opts').innerHTML = st.blindOrders[page].map(t=>`<button class="opt" data-t="${t}" aria-pressed="${pick===t}">${(L.blind||BLIND_PARTS)[t][page]}</button>`).join('');
   blindBusy = false;
   refocusOpts($('#blind-opts'), had);
 }
@@ -1106,6 +1290,7 @@ let blindBusy = false;
 $('#blind-opts').addEventListener('click', e=>{
   const b=e.target.closest('.opt'); if(!b || blindBusy) return;
   blindBusy = true;
+  addLang(st, LANG);
   if (blindPage===0) st.blind=b.dataset.t; else st.blind2=b.dataset.t;
   save();
   document.querySelectorAll('#blind-opts .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
@@ -1126,13 +1311,11 @@ $('#blind-prev').addEventListener('click', ()=>{
 const inProgress = () => ['s-quiz','s-info','s-blind'].some(id=>!$('#'+id).hidden);
 const onResult = () => !$('#s-result').hidden;
 const homeDialog = $('#home-dialog');
-const HOME_ASK = {
-  progress:{desc:'你的作答進度會保存在這個瀏覽器裡，之後可以在首頁按「繼續上次的作答」接著做。', stay:'繼續作答'},
-  result:{desc:'你的結果會保存在這個瀏覽器裡，之後可以在首頁按「查看我的結果」再打開。如果重新作答，這次的結果會被新的結果取代。', stay:'留在結果頁'}};
+const HOME_ASK = {progress:{desc:'hd.progress', stay:'hd.progressStay'}, result:{desc:'hd.result', stay:'hd.resultStay'}};
 function askGoHome(){
   const m = onResult() ? HOME_ASK.result : HOME_ASK.progress;
-  $('#hd-desc').textContent = m.desc; $('#hd-stay').textContent = m.stay;
-  if (homeDialog.showModal) homeDialog.showModal(); else if (window.confirm('要回到首頁嗎？'+m.desc)) goHome();
+  $('#hd-desc').textContent = t(m.desc); $('#hd-stay').textContent = t(m.stay);
+  if (homeDialog.showModal) homeDialog.showModal(); else if (window.confirm(t('hd.title')+t(m.desc))) goHome();
 }
 function goHome(){
   if (homeDialog.open) homeDialog.close();
@@ -1185,7 +1368,7 @@ function chartSVG(r){
   g+=`<line x1="${cx}" y1="${cy-R-8}" x2="${cx}" y2="${cy+R+8}" stroke="var(--faint)" stroke-width="1"/>`;
   g+=`<line x1="${cx-R-8}" y1="${cy}" x2="${cx+R+8}" y2="${cy}" stroke="var(--faint)" stroke-width="1"/>`;
   const lab=(x,y,t,a='middle')=>`<text class="ax" x="${x}" y="${y}" text-anchor="${a}" font-size="14" fill="var(--muted)">${t}</text>`;
-  g+=lab(cx,cy-R-26,'主動')+lab(cx,cy+R+40,'配合')+lab(cx-R-22,cy+5,'重事','end')+lab(cx+R+22,cy+5,'重人','start');
+  g+=lab(cx,cy-R-26,t('chart.up'))+lab(cx,cy+R+40,t('chart.down'))+lab(cx-R-22,cy+5,t('chart.left'),'end')+lab(cx+R+22,cy+5,t('chart.right'),'start');
   TYPES.forEach(t=>{const d=DIRS[t]; g+=`<text class="an" x="${cx+d[0]*k*(R+46)}" y="${cy+d[1]*k*(R+46)+5}" text-anchor="middle" font-size="17" font-weight="700" fill="var(--ink)"><tspan fill="${TCOLOR[t]}">●</tspan> ${LBL(t)}</text>`;});
   g+=`<circle cx="${cx}" cy="${cy}" r="${R*G.mean}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
   const pts = TYPES.map(t=>{const d=DIRS[t], rr=R*G.frac(t); return [cx+d[0]*k*rr, cy+d[1]*k*rr];});
@@ -1193,7 +1376,7 @@ function chartSVG(r){
   TYPES.forEach((t,i)=>{const [x,y]=pts[i], d=DIRS[t];
     g+=`<circle cx="${x}" cy="${y}" r="5" fill="${TCOLOR[t]}" stroke="var(--surface)" stroke-width="2"/>`;
     g+=`<text x="${x+d[0]*10}" y="${y+5}" class="vl" text-anchor="${d[0]<0?'end':'start'}" font-size="16" font-weight="700" fill="var(--ink)" stroke="var(--surface)" stroke-width="4" paint-order="stroke">${pct(r.mean[t])}</text>`;});
-  return `<svg class="chart-svg" viewBox="0 0 480 324" role="img" aria-label="DISC 四向圖：${TYPES.map(t=>LBL(t)+' '+pct(r.mean[t])+' 分').join('、')}，你的平均 ${pct(r.avg)} 分">${g}</svg>`;
+  return `<svg class="chart-svg" viewBox="0 0 480 324" role="img" aria-label="${t('chart.aria', {list:TYPES.map(c=>t('score.item', {lbl:LBL(c), n:pct(r.mean[c])})).join(L.listSep), avg:pct(r.avg)})}">${g}</svg>`;
 }
 /* 高於／低於自己平均的動物（和自己比，不是和別人比） */
 function avgGroups(r){
@@ -1201,26 +1384,25 @@ function avgGroups(r){
   TYPES.slice().sort((x,y)=>pct(r.mean[y])-pct(r.mean[x])).forEach(t=>{ const v=pct(r.mean[t]); (v>a?g.above:v<a?g.below:g.equal).push(t); });
   return g;
 }
-const CHAM_BARS = '你的四種分數都很接近，沒有特別突出或特別少展現的一型，能依情境切換不同的風格。';
 function vsAvgHTML(r){
-  const g = avgGroups(r), ls = ts => ts.map(t=>akHTML(LBL(t))).join('、');
-  let h = `<ul class="vs-avg"><li>虛線是四種動物的平均（${pct(r.avg)} 分），用來比較高和低。</li>`;
-  h += `<li>平均分數的高和低，不代表能力或好壞，和個人作答時的習慣有關（例如：比較多選「非常符合」，平均分數就會偏高）。</li>`;
-  if (r.kind==='chameleon') h += `<li>${CHAM_BARS}</li>`;
+  const g = avgGroups(r), ls = ts => ts.map(c=>akHTML(LBL(c))).join(L.listSep);
+  let h = `<ul class="vs-avg"><li>${t('vs.dash', {avg:pct(r.avg)})}</li>`;
+  h += `<li>${t('vs.habit')}</li>`;
+  if (r.kind==='chameleon') h += `<li>${t('vs.cham')}</li>`;
   else {
-  if (g.above.length) h += `<li><b>高於平均</b>：${ls(g.above)}。比較貼近你的行為風格，自然而然就會表現出來。</li>`;
-  if (g.equal.length) h += `<li><b>剛好在平均</b>：${ls(g.equal)}。偶爾會表現出來，但不是你最主要的風格。</li>`;
-  if (g.below.length) h += `<li><b>低於平均</b>：${ls(g.below)}。是比較少展現的行為風格。不是做不到，只是需要多花力氣。</li>`;
+  if (g.above.length) h += `<li>${t('vs.above', {list:ls(g.above)})}</li>`;
+  if (g.equal.length) h += `<li>${t('vs.equal', {list:ls(g.equal)})}</li>`;
+  if (g.below.length) h += `<li>${t('vs.below', {list:ls(g.below)})}</li>`;
   }
   h += `</ul>`;
   return `<div>${h}</div>`;
 }
 /* 本色組成圈的說明：依結果類型給不同的第二點 */
 function donutNotes(r){
-  const top = r.kind==='single' ? `占比最大的 ${LBL(r.primary)}，就是你的本色。`
-    : (r.kind==='combo'||r.kind==='diag') ? `${LBL(r.order[0])} 和 ${LBL(r.order[1])} 的占比最大又很接近，所以兩種都是你的本色。`
-    : r.kind==='chameleon' ? '四種動物的占比都很接近，所以你是變色龍。' : '';
-  return ['占比越大，代表這種動物在你身上越明顯。', top].filter(Boolean);
+  const top = r.kind==='single' ? t('donut.single', {lbl:LBL(r.primary)})
+    : (r.kind==='combo'||r.kind==='diag') ? t('donut.two', {a:LBL(r.order[0]), b:LBL(r.order[1])})
+    : r.kind==='chameleon' ? t('donut.cham') : '';
+  return [t('donut.n2'), top].filter(Boolean);
 }
 function barsHTML(r){
   const m = pct(r.avg);
@@ -1230,31 +1412,31 @@ function barsHTML(r){
 }
 /* 標題：依分數高低排列，每個動物用自己的顏色 */
 function titleParts(r){
-  if (r.kind==='chameleon') return [{text:'變色龍', t:null}];
+  if (r.kind==='chameleon') return [{text:t('res.chamShort'), t:null}];
   if (r.kind==='single') return [{text:LBL(r.primary), t:r.primary}];
-  return [{text:LBL(r.order[0]), t:r.order[0]}, {text:'＋', t:null}, {text:LBL(r.order[1]), t:r.order[1]}];
+  return [{text:LBL(r.order[0]), t:r.order[0]}, {text:t('res.plusShort'), t:null}, {text:LBL(r.order[1]), t:r.order[1]}];
 }
 function codeLine(r, rep){
-  if (r.kind==='combo') return `${r.order[0]}${r.order[1]} 組合型`;
-  if (r.kind==='diag') return `${r.order[0]}${r.order[1]} 對角型`;
+  if (r.kind==='combo') return t('sub.combo', {ab:r.order[0]+r.order[1]});
+  if (r.kind==='diag') return t('sub.diag', {ab:r.order[0]+r.order[1]});
   return rep.code;
 }
 /* 結果標題（兩種模式相同）：「D 老虎（支配型）」，文字用該動物的顏色；組合型、對角型分兩行 */
-const TFULL = t => `${LBL(t)}（${TNAME[t]}型）`;
+const TFULL = c => t('res.tfull', {lbl:LBL(c), tname:(L.tname||TNAME)[c]});
 function titleLines(r){
-  if (r.kind==='chameleon') return [[{text:'變色龍（四型均衡）', t:null}]];
+  if (r.kind==='chameleon') return [[{text:t('res.cham'), t:null}]];
   if (r.kind==='single') return [[{text:TFULL(r.primary), t:r.primary}]];
-  return [[{text:TFULL(r.order[0]), t:r.order[0]}, {text:' ＋ ', t:null}, {text:TFULL(r.order[1]), t:r.order[1]}]];
+  return [[{text:TFULL(r.order[0]), t:r.order[0]}, {text:t('res.plusTitle'), t:null}, {text:TFULL(r.order[1]), t:r.order[1]}]];
 }
 function titleHTML(r){ return titleLines(r).map(l=>`<span class="tl">${l.map(p=>p.t?`<span class="tp" style="color:${TCOLOR[p.t]}">${p.text}</span>`:p.text).join('')}</span>`).join(''); }
 /* 標題下的小字：只有組合型、對角型需要（例如 DI 組合型） */
-const subLine = r => (r.kind==='combo'||r.kind==='diag') ? `${r.order[0]}${r.order[1]} ${r.kind==='combo'?'組合型':'對角型'}` : '';
+const subLine = r => (r.kind==='combo'||r.kind==='diag') ? t(r.kind==='combo'?'sub.combo':'sub.diag', {ab:r.order[0]+r.order[1]}) : '';
 const animalLine = r => titleParts(r).map(p=>p.t?LBL(p.t):p.text).join('');
 function promText(r){
   const a=LBL(r.primary), b=LBL(r.secondary);
-  if (r.level==='high') return `你的本色裡，${a} 最明顯，明顯高過其他動物。`;
-  if (r.level==='mid') return `你的本色裡，${a} 最明顯，${b} 也有一定影響。`;
-  return `你的本色裡，${a} 只比 ${b} 多一點點，兩種動物都很明顯。`;
+  if (r.level==='high') return t('prom.high', {a});
+  if (r.level==='mid') return t('prom.mid', {a, b});
+  return t('prom.low', {a, b});
 }
 /* ===== 動物本色模式的兩張圖：本色組成圈（比例）＋花紋長條（分數）。網頁與分享圖片共用計算 ===== */
 function donutGeom(vals){
@@ -1297,24 +1479,24 @@ function donutSVG(vals, center, tops=[]){
     const [x1,y1]=P(Ro,s.a0), [x2,y2]=P(Ro,a1), [x3,y3]=P(Ri,a1), [x4,y4]=P(Ri,s.a0);
     g += `<path class="pt" d="M${x1} ${y1}A${Ro} ${Ro} 0 ${big} 1 ${x2} ${y2}L${x3} ${y3}A${Ri} ${Ri} 0 ${big} 0 ${x4} ${y4}Z" fill="url(#pat-${s.t})" stroke-width="3"/>`; });
   /* 組合型（例如 D 老虎＋I 孔雀）分兩行，才放得進圓圈中間 */
-  const parts = center.split('＋');
+  const parts = center.split(t('res.plusShort'));
   /* 每一行用 dominant-baseline="central" 以行的中心定位，整組文字的上下中心對齊圓心 */
   const line = (y, cls, t) => `<text x="${cx}" y="${cy+y}" text-anchor="middle" dominant-baseline="central" class="${cls}">${t}</text>`;
   g += parts.length>1
-    ? `<g class="cm">${line(-36,'c1','你的本色')}${line(-11,'c2 two',parts[0])}${line(11,'c2 two','＋')}${line(33,'c2 two',parts[1])}</g>`
-    : line(-19,'c1','你的本色') + line(12,'c2',center);
+    ? `<g class="cm">${line(-36,'c1',t('donut.center'))}${line(-11,'c2 two',parts[0])}${line(11,'c2 two',t('res.plusMark'))}${line(33,'c2 two',parts[1])}</g>`
+    : line(-19,'c1',t('donut.center')) + line(12,'c2',center);
   /* 右邊的比例：固定 D、I、S、C 的順序和大小；本色的型旁邊放冠軍頭冠。
      比例最高的是金色；組合型的第二型是銀色，但兩型分數完全一樣時兩個都是金色 */
   /* 用原始分數比較（百分比四捨五入後，一樣的分數也可能顯示成 34%、33%） */
   const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
   const crownOf = t => !tops.includes(t) ? '' : CROWN(t===ranked[0] || vals[t]===vals[ranked[0]] ? 'gold' : 'silver');
   const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}${crownOf(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
-  return `<svg class="flower donut" viewBox="40 40 240 240" role="img" aria-label="本色組成：${TYPES.map(t=>LBL(t)+' '+pr[t]+'%').join('、')}">${g}</svg>${legend}`;
+  return `<svg class="flower donut" viewBox="40 40 240 240" role="img" aria-label="${t('donut.aria', {list:TYPES.map(c=>t('pct.item', {lbl:LBL(c), n:pr[c]})).join(L.listSep)})}">${g}</svg>${legend}`;
 }
 function patBarsHTML(vals, avg){
   const order = TYPES;
   const at = `calc(108px + (100% - 150px) * ${avg/100})`;
-  return `<div class="pbars" role="img" aria-label="${order.map(t=>LBL(t)+' '+vals[t]+' 分').join('、')}，滿分 100，你的平均 ${avg} 分">${order.map(t=>`<div class="pbar"><span class="nm"><svg viewBox="0 0 18 18" aria-hidden="true"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}</span><span class="tr"><span class="fl" style="width:${Math.max(1.5,vals[t])}%"><svg preserveAspectRatio="none" aria-hidden="true"><rect width="100%" height="100%" fill="url(#pat-${t})"/></svg></span></span><span class="v">${vals[t]}</span></div>`).join('')}<span class="avgline" style="left:${at}"></span><span class="avglab" style="left:${at}">你的平均 ${avg}</span></div>`;
+  return `<div class="pbars" role="img" aria-label="${t('bars.aria', {list:order.map(c=>t('score.item', {lbl:LBL(c), n:vals[c]})).join(L.listSep), avg})}">${order.map(t=>`<div class="pbar"><span class="nm"><svg viewBox="0 0 18 18" aria-hidden="true"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}</span><span class="tr"><span class="fl" style="width:${Math.max(1.5,vals[t])}%"><svg preserveAspectRatio="none" aria-hidden="true"><rect width="100%" height="100%" fill="url(#pat-${t})"/></svg></span></span><span class="v">${vals[t]}</span></div>`).join('')}<span class="avgline" style="left:${at}"></span><span class="avglab" style="left:${at}">${t('avg.short', {avg})}</span></div>`;
 }
 /* 結果呈現方式：brand＝動物本色（組成圈＋花紋長條），data＝精確數據（四向圖＋長條圖）。記住使用者的選擇 */
 let VIEW = (()=>{ try{ return localStorage.getItem('disc-view')==='data' ? 'data' : 'brand'; }catch(e){ return 'brand'; } })();
@@ -1326,17 +1508,10 @@ function setView(v){
 }
 
 /* 內文中的動物關鍵字：統一成「代號＋動物」，前後留一個空格，畫面上加底色 */
-const A_OPEN='\u0001', A_CLOSE='\u0002';
-function markAnimals(raw){
-  let t = String(raw).replace(/([DISC]) (老虎|孔雀|無尾熊|貓頭鷹)/g, '$2');
-  t = t.replace(/(老虎|孔雀|無尾熊|貓頭鷹)/g, m=>A_OPEN+CODE_OF[m]+A_CLOSE);
-  t = t.replace(/([一-鿿A-Za-z0-9])\u0001/g, '$1 \u0001').replace(/\u0002([一-鿿A-Za-z0-9])/g, '\u0002 $1');
-  return t;
-}
-const akHTML = raw => esc(markAnimals(raw)).replace(/\u0001([DISC])\u0002/g, (m,c)=>`<span class="ak ak-${c}">${c} ${ANIMAL[c]}</span>`);
-const akPlain = raw => markAnimals(raw).replace(/\u0001([DISC])\u0002/g, (m,c)=>`${c} ${ANIMAL[c]}`);
-function splitLabel(x){ const i=x.indexOf('：'); return i>0&&i<12 ? [x.slice(0,i), x.slice(i+1)] : [null, x]; }
-function list(arr){ return `<ul>${arr.map(x=>{const [l,b]=splitLabel(x); return l?`<li><b>${akHTML(l)}</b>：${akHTML(b)}</li>`:`<li>${akHTML(b)}</li>`;}).join('')}</ul>`; }
+const akHTML = raw => esc(markAnimals(raw)).replace(/\u0001([DISC])\u0002/g, (m,c)=>`<span class="ak ak-${c}">${LBL(c)}</span>`);
+const akPlain = raw => markAnimals(raw).replace(/\u0001([DISC])\u0002/g, (m,c)=>LBL(c));
+function splitLabel(x){ const i=x.indexOf(L.labelSep); return i>0&&i<L.labelMax ? [x.slice(0,i), x.slice(i+L.labelSep.length)] : [null, x]; }
+function list(arr){ return `<ul>${arr.map(x=>{const [l,b]=splitLabel(x); return l?`<li><b>${akHTML(l)}</b>${L.colon}${L.colonGap}${akHTML(b)}</li>`:`<li>${akHTML(b)}</li>`;}).join('')}</ul>`; }
 
 /* 解說的段落結構（網頁與分享圖片共用） */
 /* 較長的段落（核心特質、溝通方式、壓力、關於這個結果）：v3 是陣列，顯示成條列；v1 是一段文字 */
@@ -1344,55 +1519,54 @@ const textOrList = v => Array.isArray(v) ? {bullets:v} : {paras:[v]};
 /* 詳細解析收進「詳細測驗解析」：預設收起來，讓結果頁一開始不會太長 */
 function foldHTML(secs){
   const names = secs.map(x=>x.title);
-  const hint = names.slice(0,3).join('、') + (names.length>3 ? `等 ${names.length} 個主題` : '');
+  const hint = names.slice(0,3).join(L.listSep) + (names.length>3 ? t('fold.more', {n:names.length}) : '');
   return `<div class="fold"><div class="fold-card" id="fold-card">
-      <span class="fold-h">詳細測驗解析</span><span class="small fold-hint">${akHTML(hint)}</span>
+      <span class="fold-h">${t('fold.title')}</span><span class="small fold-hint">${akHTML(hint)}</span>
       <div class="fold-peek" id="fold-peek" aria-hidden="true">${sectionBody(secs[0])}</div>
-      <button type="button" class="fold-btn" id="fold-btn" aria-expanded="false" aria-controls="fold-body"><span id="fold-lbl">點開看完整解析</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="fold-btn" id="fold-btn" aria-expanded="false" aria-controls="fold-body"><span id="fold-lbl">${t('fold.open')}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
     <div class="fold-body" id="fold-body" hidden>${secs.map(sectionHTML).join('')}</div></div>`;
 }
 function reportSections(rep){
   const out = [
-    {title:'核心特質', ...textOrList(rep.core)},
-    {title:'你的優勢', items:rep.good},
-    {title:rep.blindTitle||'可能的盲點', items:rep.blind},
-    ...(rep.tension ? [{title:'兩種特質的拉扯', items:rep.tension}] : []),
-    {title:'你的溝通方式', ...textOrList(rep.comm), tip:rep.commTip?['給身邊的人',rep.commTip]:null},
-    {title:'壓力下的你', ...textOrList(rep.stress), tip:['小建議',rep.stressTip]},
-    {title:'適合的工作環境與方向', items:rep.env, tip:['可能適合的方向（僅供參考）',rep.jobs]},
+    {title:t('sec.core'), ...textOrList(rep.core)},
+    {title:t('sec.good'), items:rep.good},
+    {title:rep.blindTitle||t('sec.blind'), items:rep.blind},
+    ...(rep.tension ? [{title:t('sec.tension'), items:rep.tension}] : []),
+    {title:t('sec.comm'), ...textOrList(rep.comm), tip:rep.commTip?[t('sec.commTip'),rep.commTip]:null},
+    {title:t('sec.stress'), ...textOrList(rep.stress), tip:[t('sec.stressTip'),rep.stressTip]},
+    {title:t('sec.env'), items:rep.env, tip:[t('sec.jobs'),rep.jobs]},
   ];
-  if (rep.tips.length) out.push({title:'和其他動物相處的小提醒', items:rep.tips});
-  if (rep.note) out.push({title:'關於這個結果', ...textOrList(rep.note)});
+  if (rep.tips.length) out.push({title:t('sec.tips'), items:rep.tips});
+  if (rep.note) out.push({title:t('sec.note'), ...textOrList(rep.note)});
   return out;
 }
 function sectionBody(sec){
   let b = (sec.paras||[]).map(p=>`<p>${akHTML(p)}</p>`).join('');
   if (sec.bullets) b += `<ul>${sec.bullets.map(x=>`<li>${akHTML(x)}</li>`).join('')}</ul>`;
   if (sec.items) b += list(sec.items);
-  if (sec.tip) b += `<p class="tip"><b>${sec.tip[0]}：</b>${akHTML(sec.tip[1])}</p>`;
+  if (sec.tip) b += `<p class="tip"><b>${sec.tip[0]}${L.colon}</b>${L.colonGap}${akHTML(sec.tip[1])}</p>`;
   return b;
 }
 function sectionHTML(sec){ return `<div class="card sec"><h3>${akHTML(sec.title)}</h3>${sectionBody(sec)}</div>`; }
-const DISCLAIMER = '以上內容僅供自我了解參考，非能力評分。';
-function metaText(){ return [`本次作答 ${st.seq.length + BLIND_N} 題`, `作答時間 ${fmtDur(sumTimes(st))}`, `完成日期 ${new Date(st.finishedAt||Date.now()).toLocaleDateString('zh-TW')}`]; }
+/* 完成日期：中文照原本的寫法（例如 2026/10/17），英文寫成 17 Oct 2026 */
+const fmtDay = d => L.code==='zh' ? new Date(d).toLocaleDateString('zh-TW') : new Date(d).toLocaleDateString(L.locale, L.dateOpts);
+function metaText(){ return [t('meta.n', {n:st.seq.length + BLIND_N}), t('meta.time', {d:fmtDur(sumTimes(st))}), t('meta.date', {date:fmtDay(st.finishedAt||Date.now())})]; }
 function footMeta(note){
   return `<div class="foot-meta">${note?`<p class="small muted">${note}</p>`:''}<p class="small muted" id="sync-note" role="status">${syncText()}</p><div class="meta">${metaText().map(m=>`<span>${m}</span>`).join('')}</div></div>`;
 }
 /* 作答資料送出狀態（顯示在結果頁最下方） */
-const SYNC_TEXT = {sending:'正在送出作答資料…', sent:'作答資料已送出，謝謝你的參與。',
-  pending:'作答資料還沒送出（網路可能不穩定）。結果不受影響；重新整理或下次打開這個網頁時會自動補送。',
-  rejected:'作答資料無法送出，但結果不受影響。'};
-const syncText = () => (BK.enabled && st && st.sid && SYNC_TEXT[st.sync]) || '';
+const SYNC_STATES = ['sending', 'sent', 'pending', 'rejected'];
+const syncText = () => (BK.enabled && st && st.sid && SYNC_STATES.includes(st.sync) && t('sync.'+st.sync)) || '';
 /* 結果頁最上方的提示：作答資料還沒送出時才出現，送出後改成「已送出」 */
 const syncBannerHTML = () => (BK.enabled && st && st.sid && !st.viewOnly && st.sync && st.sync!=='sent' && st.sync!=='rejected')
-  ? `<div class="warn sync-banner" id="sync-banner" role="status"><p id="sync-banner-t">作答資料還沒送出，網頁會自動再試。請先不要關閉這個頁面。</p><button type="button" class="btn" id="sync-retry">再送一次</button></div>` : '';
+  ? `<div class="warn sync-banner" id="sync-banner" role="status"><p id="sync-banner-t">${t('sync.banner')}</p><button type="button" class="btn" id="sync-retry">${t('sync.retry')}</button></div>` : '';
 function syncBanner(){
   const b = $('#sync-banner'); if (!b || !st) return;
-  if (st.sync==='sent'){ b.classList.add('ok'); $('#sync-banner-t').textContent = '作答資料已送出，謝謝你。'; $('#sync-retry').hidden = true; return; }
+  if (st.sync==='sent'){ b.classList.add('ok'); $('#sync-banner-t').textContent = t('sync.bannerSent'); $('#sync-retry').hidden = true; return; }
   if (st.sync==='rejected'){ b.hidden = true; return; }
   const sending = st.sync==='sending';
-  $('#sync-retry').disabled = sending; $('#sync-retry').textContent = sending ? '正在送出…' : '再送一次';
+  $('#sync-retry').disabled = sending; $('#sync-retry').textContent = sending ? t('sync.retrying') : t('sync.retry');
 }
 if (BK.onSync) BK.onSync((sid, state)=>{
   if (!st || st.sid!==sid) return;
@@ -1404,60 +1578,60 @@ if (BK.onSync) BK.onSync((sid, state)=>{
 function renderResult(){
   const r = score(st), f = r.flags, el = $('#s-result');
   const warns = [];
-  if (f.mostlyMid && r.kind!=='none') warns.push('你大部分的題目都選了「普通」，這份結果的參考性較低。如果想得到更準確的結果，可以重新作答，盡量選擇「有點符合」或「有點不符合」。');
-  if (f.fast || f.longRun) warns.push('這次作答速度較快，或連續選了很多相同的答案，結果可能不夠準確。');
+  if (f.mostlyMid && r.kind!=='none') warns.push(t('warn.mid'));
+  if (f.fast || f.longRun) warns.push(t('warn.fast'));
   let html = syncBannerHTML();
   html += warns.map(w=>`<div class="warn">${w}</div>`).join('');
-  const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>重新作答會清除這次的結果，而且無法復原。建議先產生結果圖片保存。</p><button class="btn" id="again-cancel">保留結果</button><button class="btn primary" id="again-ok">清除並重新作答</button></div>`;
-  const shareBtns = (id) => `<button class="btn" data-share="${id}">分享圖片</button>`;
-  const RATE_L = ['完全不像','不太像','普通','有點像','非常像'];
-  const rating = `<div class="card rate-card"><div class="rate-head"><h3 class="hl">這個測驗解析像你嗎？</h3><span class="small muted">點一下，讓測驗更準確。</span></div><div class="rate" id="rate" role="group" aria-label="這個測驗解析像你嗎？">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">完全不像</span><span id="rate-msg" role="status">${st.rating?'謝謝你的回饋！':''}</span><span aria-hidden="true">非常像</span></div></div>`;
+  const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>${t('again.confirm')}</p><button class="btn" id="again-cancel">${t('again.keep')}</button><button class="btn primary" id="again-ok">${t('again.ok')}</button></div>`;
+  const shareBtns = (id) => `<button class="btn" data-share="${id}">${t('share.btn')}</button>`;
+  const RATE_L = [1,2,3,4,5].map(v=>t('rate.'+v));
+  const rating = `<div class="card rate-card"><div class="rate-head"><h3 class="hl">${t('rate.h')}</h3><span class="small muted">${t('rate.p')}</span></div><div class="rate" id="rate" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${RATE_L[0]}</span><span id="rate-msg" role="status">${st.rating?t('rate.thanks'):''}</span><span aria-hidden="true">${RATE_L[4]}</span></div></div>`;
   if (r.kind==='none'){
-    html += `<div class="hero"><span class="eyebrow">你的動物本色</span><h1>暫時無法判定</h1>
-      <p class="one">你的四種傾向分數完全相同，目前無法比較出哪一型比較突出。建議重新作答，盡量依照平常實際的樣子選擇。</p></div>
+    html += `<div class="hero"><span class="eyebrow">${t('res.eyebrow')}</span><h1>${t('res.none')}</h1>
+      <p class="one">${t('res.noneOne')}</p></div>
       <div class="report"><aside class="side"><div class="card">${chartSVG(r)}</div></aside>
-      <div class="main">${rating}<div class="actions"><button class="btn primary" id="again">重新作答</button><button class="btn" id="go-home">回到首頁</button></div>${confirmHTML}${footMeta('')}</div></div>`;
+      <div class="main">${rating}<div class="actions"><button class="btn primary" id="again">${t('again')}</button><button class="btn" id="go-home">${t('nav.home')}</button></div>${confirmHTML}${footMeta('')}</div></div>`;
   } else {
-    const rep = R[r.key];
+    const rep = REP()[r.key];
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
-    const tentative = f.mostlyMid ? '（暫定）' : '';
+    const tentative = f.mostlyMid ? t('res.tentative') : '';
     /* 組合型、對角型：類型代號放在「你的動物本色」後面，例如「你的動物本色：DC 組合型」 */
-    html += `<div class="hero"><span class="eyebrow">你的動物本色${subLine(r)?`：${subLine(r)}`:''}</span>
+    html += `<div class="hero"><span class="eyebrow">${t('res.eyebrow')}${subLine(r)?`${L.code==='zh'?'：':': '}${subLine(r)}`:''}</span>
       <h1${titleLines(r)[0].length>1?' class="two-t"':''}>${titleHTML(r)}${tentative}</h1><p class="one">${akHTML(rep.one)}</p>`;
-    if (r.kind==='single') html += `<p class="prom">${akHTML(promText(r))}<br>副型：${akHTML(LBL(r.secondary))}。${SUB[r.primary+r.secondary]}</p>`;
+    if (r.kind==='single') html += `<p class="prom">${akHTML(promText(r))}<br>${akHTML(t('res.secondary', {lbl:LBL(r.secondary), sub:SUBT()[r.primary+r.secondary]}))}</p>`;
     html += `</div>`;
     html += `<div class="report">
       <aside class="side">
-        <div class="seg" role="group" aria-label="結果呈現方式"><button type="button" data-view="brand" aria-pressed="${VIEW==='brand'}">動物本色</button><button type="button" data-view="data" aria-pressed="${VIEW==='data'}">精確數據</button></div>
-        <div class="card only-brand"><h3>你的本色組成</h3><div class="donut-side">${donutSVG(vals, animalLine(r), r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [])}
+        <div class="seg" role="group" aria-label="${t('seg.aria')}"><button type="button" data-view="brand" aria-pressed="${VIEW==='brand'}">${t('seg.brand')}</button><button type="button" data-view="data" aria-pressed="${VIEW==='data'}">${t('seg.data')}</button></div>
+        <div class="card only-brand"><h3>${t('card.donut')}</h3><div class="donut-side">${donutSVG(vals, animalLine(r), r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [])}
           <div class="legend"><ul class="vs-avg">${donutNotes(r).map(t=>`<li>${akHTML(t)}</li>`).join('')}</ul></div></div></div>
-        <div class="card only-brand"><h3>四種動物的分數</h3>${patBarsHTML(vals, pct(r.avg))}
+        <div class="card only-brand"><h3>${t('card.patbars')}</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
-        <div class="card chart-card only-data"><h3>DISC 四向圖</h3>${chartSVG(r)}
-          <div class="legend"><span>虛線圓是你的平均（${pct(r.avg)} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。</span></div></div>
-        <div class="card only-data"><h3>四型分數</h3>${barsHTML(r)}
+        <div class="card chart-card only-data"><h3>${t('card.chart')}</h3>${chartSVG(r)}
+          <div class="legend"><span>${t('chart.legend', {avg:pct(r.avg)})}</span></div></div>
+        <div class="card only-data"><h3>${t('card.bars')}</h3>${barsHTML(r)}
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
       <div class="main">
         ${foldHTML(reportSections(rep))}
-        <p class="small muted" id="disclaimer">${DISCLAIMER}</p>
+        <p class="small muted" id="disclaimer">${t('disclaimer')}</p>
         ${rating}
         <div class="pair">
-          <div class="card" id="share-card"><h3 class="hl">分享你的結果</h3>${inAppNoteHTML('result')}
-            <p class="small muted">產生一張包含完整分析的結果圖片，可以下載或分享給朋友。</p>
-            <div class="actions" style="margin-top:12px"><button class="btn primary" id="make-img">產生結果圖片</button></div>
-            <div id="share-out" hidden><img class="share-img" id="share-img" alt="我的動物本色結果圖片">
-              <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn" id="dl-img" download="動物本色-結果.png">下載圖片</a>${shareBtns('card')}</div>
-              <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">手機可以長按圖片儲存</p></div>
+          <div class="card" id="share-card"><h3 class="hl">${t('share.h')}</h3>${inAppNoteHTML('result')}
+            <p class="small muted">${t('share.p')}</p>
+            <div class="actions" style="margin-top:12px"><button class="btn primary" id="make-img">${t('share.make')}</button></div>
+            <div id="share-out" hidden><img class="share-img" id="share-img" alt="${t('share.alt')}">
+              <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn" id="dl-img" download="${t('share.fileDefault')}">${t('share.download')}</a>${shareBtns('card')}</div>
+              <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">${t('share.hold')}</p></div>
           </div>
         </div>
-        <div class="actions"><button class="btn" id="again">重新作答</button><button class="btn" id="invite">邀請朋友來測驗</button><button class="btn" id="go-home">回到首頁</button></div>
+        <div class="actions"><button class="btn" id="again">${t('again')}</button><button class="btn" id="invite">${t('invite')}</button><button class="btn" id="go-home">${t('nav.home')}</button></div>
         ${confirmHTML}
         <p class="small muted" id="invite-msg" role="status"></p>
         ${footMeta('')}
       </div>
     </div>
-    <div class="share-dock" id="share-dock"><button type="button" class="btn primary" id="dock-share">儲存／分享結果圖片</button></div>`;
+    <div class="share-dock" id="share-dock"><button type="button" class="btn primary" id="dock-share">${t('share.dock')}</button></div>`;
   }
   el.innerHTML = html;
   /* 主色：單一型用主型，組合型用分數較高的那一型，變色龍不設定（用墨色） */
@@ -1471,7 +1645,7 @@ function renderResult(){
   if (fb){
     fb.addEventListener('click', ()=>{ const on = fb.getAttribute('aria-expanded')!=='true';
       fb.setAttribute('aria-expanded', String(on)); $('#fold-body').hidden = !on; fc.classList.toggle('open', on);
-      $('#fold-lbl').textContent = on ? '收起解析' : '點開看完整解析'; });
+      $('#fold-lbl').textContent = on ? t('fold.close') : t('fold.open'); });
     $('#fold-peek').addEventListener('click', ()=>fb.click());
   }
   if (fb && window.IntersectionObserver){
@@ -1485,7 +1659,7 @@ function renderResult(){
   }
   $('#rate').addEventListener('click', e=>{const b=e.target.closest('.opt'); if(!b) return; st.rating=+b.dataset.v; save();
     if (BK.enabled && st.sid) BK.rate(st.sid, st.rating).catch(()=>{});
-    document.querySelectorAll('#rate .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#rate-msg').textContent='謝謝你的回饋！';});
+    document.querySelectorAll('#rate .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); $('#rate-msg').textContent=t('rate.thanks');});
   if (r.kind!=='none'){
     $('#make-img').addEventListener('click', ()=>buildShareImage(r, true));
     setupShareDock();
@@ -1530,13 +1704,16 @@ async function buildShareImage(r, reveal){
   const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',accent:'#1F2329',sunk:'#E3E5E8',
     D:'#D66A14',I:'#11968A',S:'#5E9A47',C:'#6576DC',Dt:'#F7E1D0',It:'#CFEAE8',St:'#DFEBDA',Ct:'#E0E4F8'};
   const SANS='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif', ROUND='"Huninn","Noto Sans TC",sans-serif';
-  const rep=R[r.key];
+  const rep=REP()[r.key];
   const cv=document.createElement('canvas'); cv.width=W; cv.height=9000;
   const x=cv.getContext('2d'); x.textBaseline='alphabetic';
 
   // rich text: chips (D 老虎…) are atomic units with a tinted background; other text wraps per character
-  const units = (raw, bold=false) => { const out=[]; const t=markAnimals(raw); let i=0;
-    while(i<t.length){ if(t[i]===A_OPEN){ const c=t[i+1]; out.push({s:`${c} ${ANIMAL[c]}`, chip:c, bold:true}); i+=3; } else { out.push({s:t[i], bold}); i++; } }
+  // （英文以「單字加上後面的空格」為一個單位，避免單字被切成兩半）
+  const units = (raw, bold=false) => { const out=[]; const s=markAnimals(raw); let i=0;
+    while(i<s.length){ if(s[i]===A_OPEN){ const c=s[i+1]; out.push({s:LBL(c), chip:c, bold:true}); i+=3; }
+      else if (L.code!=='zh'){ let j=i; while(j<s.length && s[j]!==A_OPEN && s[j]!==' ') j++; while(j<s.length && s[j]===' ') j++; out.push({s:s.slice(i, Math.max(j, i+1)), bold}); i=Math.max(j, i+1); }
+      else { out.push({s:s[i], bold}); i++; } }
     return out; };
   const fontOf = (u,size) => `${u.bold?700:400} ${size}px ${SANS}`;
   const uw = (u,size) => { x.font=fontOf(u,size); return x.measureText(u.s).width + (u.chip?18:0); };
@@ -1553,12 +1730,12 @@ async function buildShareImage(r, reveal){
   }
   const rr=(X,Y,w,h,rad)=>{x.beginPath();x.moveTo(X+rad,Y);x.arcTo(X+w,Y,X+w,Y+h,rad);x.arcTo(X+w,Y+h,X,Y+h,rad);x.arcTo(X,Y+h,X,Y,rad);x.arcTo(X,Y,X+w,Y,rad);x.closePath();};
   // 和自己的平均比較：高於平均＝強項，低於平均＝比較少用
-  const drawVsAvg = (yy) => { const g=avgGroups(r), ls=ts=>ts.map(t=>LBL(t)).join('、');
-    yy = drawRich(units(`虛線是四種動物的平均（${pct(r.avg)} 分）。`), PAD, yy, maxW, 26, 40, P.muted);
-    if (r.kind==='chameleon'){ yy+=44; return drawRich(units(CHAM_BARS), PAD, yy, maxW, 26, 40, P.ink)+24; }
-    if (g.above.length){ yy+=44; yy = drawRich([...units('高於平均（貼近你的風格）：',true), ...units(ls(g.above))], PAD, yy, maxW, 26, 40, P.ink); }
-    if (g.equal.length){ yy+=44; yy = drawRich([...units('剛好在平均：',true), ...units(ls(g.equal))], PAD, yy, maxW, 26, 40, P.ink); }
-    if (g.below.length){ yy+=44; yy = drawRich([...units('低於平均（比較少展現）：',true), ...units(ls(g.below))], PAD, yy, maxW, 26, 40, P.ink); }
+  const drawVsAvg = (yy) => { const g=avgGroups(r), ls=ts=>ts.map(c=>LBL(c)).join(L.listSep);
+    yy = drawRich(units(t('img.dash', {avg:pct(r.avg)})), PAD, yy, maxW, 26, 40, P.muted);
+    if (r.kind==='chameleon'){ yy+=44; return drawRich(units(t('vs.cham')), PAD, yy, maxW, 26, 40, P.ink)+24; }
+    if (g.above.length){ yy+=44; yy = drawRich([...units(t('img.above'),true), ...units(ls(g.above))], PAD, yy, maxW, 26, 40, P.ink); }
+    if (g.equal.length){ yy+=44; yy = drawRich([...units(t('img.equal'),true), ...units(ls(g.equal))], PAD, yy, maxW, 26, 40, P.ink); }
+    if (g.below.length){ yy+=44; yy = drawRich([...units(t('img.below'),true), ...units(ls(g.below))], PAD, yy, maxW, 26, 40, P.ink); }
     return yy+24; };
 
   x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
@@ -1566,8 +1743,8 @@ async function buildShareImage(r, reveal){
   { // brand row: logo mark + name
     const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
     x.save(); x.translate(PAD, y-38); x.scale(.48,.48); M.forEach(([d,t])=>{ x.fillStyle=P[t]; x.fill(new Path2D(d)); }); x.restore();
-    x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText('測出你的動物本色', PAD+62, y);
-    const bw=x.measureText('測出你的動物本色').width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText('DISC 行為風格測驗', PAD+62+bw+20, y); }
+    x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText(t('img.brand'), PAD+62, y);
+    const bw=x.measureText(t('img.brand')).width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText(t('img.brandSub'), PAD+62+bw+20, y); }
   { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0); let size=92; x.font=`400 ${size}px ${ROUND}`;
     while (Math.max(...lines.map(lw))>maxW && size>32){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
     lines.forEach(l=>{ y+=size+20; let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }); }
@@ -1576,7 +1753,7 @@ async function buildShareImage(r, reveal){
   if (r.kind==='single'){
     y+=72;
     const top=y-40; y=drawRich(units(promText(r)), PAD+28, y, maxW-28, 32, 50, P.ink);
-    y+=48; y=drawRich(units(`副型：${LBL(r.secondary)}。${SUB[r.primary+r.secondary]}`), PAD+28, y, maxW-28, 28, 44, P.muted);
+    y+=48; y=drawRich(units(t('res.secondary', {lbl:LBL(r.secondary), sub:SUBT()[r.primary+r.secondary]})), PAD+28, y, maxW-28, 28, 44, P.muted);
     x.fillStyle=P.accent; x.fillRect(PAD, top, 6, y-top+12);
   }
 
@@ -1586,8 +1763,8 @@ async function buildShareImage(r, reveal){
   x.strokeStyle=P.line; x.lineWidth=2; [1,...Gm.rings].forEach(f=>{x.beginPath();x.arc(cx,cy,Rr*f,0,Math.PI*2);x.stroke();});
   x.strokeStyle='#B9C0BB'; x.beginPath(); x.moveTo(cx,cy-Rr-14); x.lineTo(cx,cy+Rr+14); x.moveTo(cx-Rr-14,cy); x.lineTo(cx+Rr+14,cy); x.stroke();
   x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.textAlign='center';
-  x.fillText('主動',cx,cy-Rr-26); x.fillText('配合',cx,cy+Rr+50);
-  x.textAlign='right'; x.fillText('重事',cx-Rr-22,cy-10); x.textAlign='left'; x.fillText('重人',cx+Rr+22,cy-10);
+  x.fillText(t('chart.up'),cx,cy-Rr-26); x.fillText(t('chart.down'),cx,cy+Rr+50);
+  x.textAlign='right'; x.fillText(t('chart.left'),cx-Rr-22,cy-10); x.textAlign='left'; x.fillText(t('chart.right'),cx+Rr+22,cy-10);
   x.setLineDash([12,10]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.arc(cx,cy,Rr*Gm.mean,0,Math.PI*2); x.stroke(); x.setLineDash([]);
   const pts=TYPES.map(t=>{const d=DIRS[t],q=Rr*Gm.frac(t);return [cx+d[0]*k*q, cy+d[1]*k*q];});
   x.beginPath(); pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.closePath();
@@ -1601,7 +1778,7 @@ async function buildShareImage(r, reveal){
     x.textAlign='center'; x.fillStyle=P.ink; x.fillText(LBL(t), lx+12, ly);});
   x.textAlign='left';
   y = cy+Rr+110;
-  x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(`虛線圓：你的平均（${pct(r.avg)} 分）　點在虛線外代表此型較明顯`, PAD, y);
+  x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(t('img.legend', {avg:pct(r.avg)}), PAD, y);
 
   // score bars
   y+=30; const barX=PAD+200, barW=maxW-200-80, mx=barX+barW*pct(r.avg)/100, top=y+8;
@@ -1612,28 +1789,28 @@ async function buildShareImage(r, reveal){
     x.fillStyle=P[t]; rr(barX,y-30,Math.max(26,barW*pct(r.mean[t])/100),26,13); x.fill();
     x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(pct(r.mean[t])), W-PAD, y); x.textAlign='left'; });
   x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(mx,top); x.lineTo(mx,y+14); x.stroke(); x.setLineDash([]);
-  y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(`你的平均 ${pct(r.avg)}`, mx, y); x.textAlign='left';
+  y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), mx, y); x.textAlign='left';
   y = drawVsAvg(y+60);
 
   } else {
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
     // 本色組成圈
-    y += 90; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText('你的本色組成', PAD, y);
+    y += 90; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.donut'), PAD, y);
     const segs=donutGeom(vals), pr=pctRound(segs), Ro=220, Ri=132, cx=W/2, cy=y+80+Ro;
     segs.forEach(sg=>{ if (sg.p<=0) return; const a0=sg.a0*Math.PI/180, a1=Math.min(sg.a1, sg.a0+359.9)*Math.PI/180;
       x.beginPath(); x.arc(cx,cy,Ro,a0,a1); x.arc(cx,cy,Ri,a1,a0,true); x.closePath();
       x.fillStyle=canvasPattern(x,sg.t,2.2,0,0); x.fill(); x.lineWidth=7; x.lineJoin='round'; x.strokeStyle=P.card; x.stroke(); });
     x.font=`700 30px ${SANS}`; x.fillStyle=P.ink;
     donutLabels(segs, cx, cy, Ro+34, 42).forEach(l=>{ x.textAlign=l.anchor==='end'?'right':l.anchor==='start'?'left':'center'; x.fillText(`${LBL(l.t)} ${pr[l.t]}%`, l.x, l.y+10); });
-    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText('你的本色', cx, animalLine(r).includes('＋') ? cy-48 : cy-18);
-    { const c=animalLine(r), parts=c.split('＋');
-      if (parts.length>1){ x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(parts[0], cx, cy+20); x.fillText('＋', cx, cy+62); x.fillText(parts[1], cx, cy+104); }
+    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(t('donut.center'), cx, animalLine(r).includes(t('res.plusShort')) ? cy-48 : cy-18);
+    { const c=animalLine(r), parts=c.split(t('res.plusShort'));
+      if (parts.length>1){ x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(parts[0], cx, cy+20); x.fillText(t('res.plusMark'), cx, cy+62); x.fillText(parts[1], cx, cy+104); }
       else { let size=40; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>Ri*2-36 && size>24){ size-=2; x.font=`700 ${size}px ${SANS}`; }
         x.fillStyle=P.ink; x.fillText(c, cx, cy+30); } }
     x.textAlign='left';
-    y = cy+Ro+84; donutNotes(r).forEach((t,i)=>{ if (i) y+=40; y = drawRich(units('・'+t), PAD, y, maxW, 24, 36, P.muted); });
+    y = cy+Ro+84; donutNotes(r).forEach((s,i)=>{ if (i) y+=40; y = drawRich(units(t('img.bullet')+s), PAD, y, maxW, 24, 36, P.muted); });
     // 花紋長條（由高到低）
-    y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText('四種動物的分數', PAD, y);
+    y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.patbars'), PAD, y);
     const order=TYPES, barX=PAD+200, barW=maxW-200-80, ax=barX+barW*pct(r.avg)/100;
     y += 30;
     const top=y+8;
@@ -1644,7 +1821,7 @@ async function buildShareImage(r, reveal){
       x.fillStyle=canvasPattern(x,t,1.4,0,0); rr(barX,y-30,Math.max(26,barW*vals[t]/100),26,13); x.fill();
       x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(vals[t]), W-PAD, y); x.textAlign='left'; });
     x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(ax,top); x.lineTo(ax,y+14); x.stroke(); x.setLineDash([]);
-    y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(`你的平均 ${pct(r.avg)}`, ax, y); x.textAlign='left';
+    y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), ax, y); x.textAlign='left';
     y = drawVsAvg(y+60);
   }
 
@@ -1660,9 +1837,9 @@ async function buildShareImage(r, reveal){
       y=drawRich(units(it), PAD+32, y, maxW-32, 30, 46, P.ink); });
     (sec.items||[]).forEach(it=>{ const [l,b]=splitLabel(it); y+=56;
       x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
-      const us = l ? [...units(l,true), {s:'：',bold:true}, ...units(b)] : units(b);
+      const us = l ? [...units(l,true), {s:L.colon,bold:true}, ...units(L.colonGap+b)] : units(b);
       y=drawRich(us, PAD+32, y, maxW-32, 30, 46, P.ink); });
-    if (sec.tip){ y+=34; const top=y; const us=[...units(sec.tip[0]+'：',true), ...units(sec.tip[1])];
+    if (sec.tip){ y+=34; const top=y; const us=[...units(sec.tip[0]+L.colon,true), ...units(L.colonGap+sec.tip[1])];
       // measure by drawing off-canvas first
       const endY = drawRich(us, -99999, y+48, maxW-48, 28, 44, P.ink);
       if (mainT){ x.fillStyle=mainTint; rr(PAD, top, maxW, endY-top+30, 16); x.fill(); }
@@ -1672,8 +1849,8 @@ async function buildShareImage(r, reveal){
 
   // footer
   y+=90; x.fillStyle=P.line; x.fillRect(PAD, y-50, maxW, 2);
-  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(metaText().join('　'), PAD, y);
-  y+=44; y=drawRich(units(DISCLAIMER), PAD, y, maxW, 26, 40, P.muted);
+  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(metaText().join(L.metaSep), PAD, y);
+  y+=44; y=drawRich(units(t('disclaimer')), PAD, y, maxW, 26, 40, P.muted);
   y+=90;
   // invitation band: lets friends who see the picture find the test
   const host = siteHost();
@@ -1681,11 +1858,11 @@ async function buildShareImage(r, reveal){
   { const tile = 210, bandH = qr ? 320 : (host ? 200 : 150); x.fillStyle=P.accent; x.fillRect(0, y, W, bandH);
     x.fillStyle='#FFFFFF'; x.font=`400 44px ${ROUND}`;
     if (qr){
-      x.fillText('你的動物本色是什麼？', PAD, y+100); x.fillText('也來測測看', PAD, y+158);
-      x.fillStyle='rgba(255,255,255,.78)'; x.font=`500 26px ${SANS}`; x.fillText('掃描 QR Code，或打開網址：', PAD, y+222);
+      x.fillText(t('img.ask1'), PAD, y+100); x.fillText(t('img.ask2'), PAD, y+158);
+      x.fillStyle='rgba(255,255,255,.78)'; x.font=`500 26px ${SANS}`; x.fillText(t('img.scan'), PAD, y+222);
       x.fillStyle='#FFFFFF'; x.fillText(host, PAD, y+262);
     } else {
-      x.fillText('你的動物本色是什麼？也來測測看', PAD, y+86);
+      x.fillText(t('img.askOne'), PAD, y+86);
       if (host){ x.font=`500 34px ${SANS}`; x.fillText(host, PAD, y+146); }
     }
     if (qr){ const qx=W-PAD-tile+20, qy=y+(bandH-tile)/2;
@@ -1700,7 +1877,7 @@ async function buildShareImage(r, reveal){
   const blob = await new Promise(res=>out.toBlob(res,'image/png'));
   if (lastImage && lastImage.url) URL.revokeObjectURL(lastImage.url);
   const url = URL.createObjectURL(blob);
-  lastImage = {url, blob, name:`動物本色-${codeLine(r,rep).split(' ')[0]}.png`};
+  lastImage = {url, blob, name:t('img.file', {code:codeLine(r,rep).split(' ')[0]})};
   if (reveal){ $('#share-img').src=url; $('#dl-img').href=url; $('#dl-img').download=lastImage.name; $('#share-out').hidden=false; }
   return lastImage;
 }
@@ -1711,10 +1888,8 @@ const IN_APP = /\bLine\//i.test(UA) ? 'LINE' : /FBAN|FBAV|FB_IAB|FBIOS/i.test(UA
 function externalURL(){ const u=new URL(location.href); if (IN_APP==='LINE') u.searchParams.set('openExternalBrowser','1'); return u.toString(); }
 function inAppNoteHTML(where){
   if (!IN_APP) return '';
-  const how = IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">改用瀏覽器開啟</a>` : `<span>請點右上角的「⋯」，選擇「在瀏覽器中開啟」。</span>`;
-  const why = where==='home'
-    ? `你正在 ${IN_APP} 的內建瀏覽器裡，作答完可能無法下載圖片或分享。建議先改用手機的瀏覽器（例如 Chrome、Safari）開啟再作答。`
-    : `你正在 ${IN_APP} 的內建瀏覽器裡，可能無法下載圖片或分享。可以直接截圖保存結果；改用瀏覽器開啟的話，需要重新作答。`;
+  const how = IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">${t('inapp.open')}</a>` : `<span>${t('inapp.how')}</span>`;
+  const why = t(where==='home' ? 'inapp.home' : 'inapp.result', {app:IN_APP});
   return `<div class="warn inapp"><p>${why}</p>${how}</div>`;
 }
 /* 分享測驗連結（不含個人結果）。頁首的「分享測驗」和結果頁的「邀請朋友來測驗」共用 */
@@ -1732,18 +1907,18 @@ $('#bar-theme').addEventListener('click', ()=>{
 });
 if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', syncTheme);
 syncTheme();
-$('#bar-share').addEventListener('click', ()=>shareTest('動物本色：DISC 行為風格測驗，大約 5–10 分鐘，測出你的本色是哪幾種動物！', toast));
+$('#bar-share').addEventListener('click', ()=>shareTest(t('test.shareText'), toast));
 async function inviteFriends(){
-  return shareTest('我剛測出我的動物本色，大約 5–10 分鐘，你也來測測看你的本色是哪幾種動物！', t=>{ $('#invite-msg').textContent = t; });
+  return shareTest(t('test.inviteText'), m=>{ $('#invite-msg').textContent = m; });
 }
 async function shareTest(text, out){
-  const data = {title:'動物本色｜DISC 行為風格測驗', text, url:testURL()};
+  const data = {title:t('test.shareTitle'), text, url:testURL()};
   if (navigator.share){
     try { await navigator.share(data); out(''); return; }
     catch(e){ if (e && e.name==='AbortError'){ out(''); return; } }
   }
-  if (await copyText(`${data.text}\n${data.url}`)) out('測驗連結已複製，可以直接貼給朋友。');
-  else out(`請複製這個連結傳給朋友：${data.url}`, true);
+  if (await copyText(`${data.text}\n${data.url}`)) out(t('test.copied'));
+  else out(t('test.copyThis', {url:data.url}), true);
 }
 /* 複製文字：先用新的剪貼簿功能，不行再用舊方法（App 內建瀏覽器常常只支援舊方法） */
 async function copyText(t){
@@ -1752,33 +1927,33 @@ async function copyText(t){
     document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length); const ok=document.execCommand('copy'); ta.remove(); return ok; } catch(e){ return false; }
 }
 async function shareResult(r, where){
-  const msg = t => { const m=document.querySelector(`.share-msg[data-msg="${where}"]`); if (m) m.textContent=t; };
-  msg('正在產生圖片…');
+  const msg = s => { const m=document.querySelector(`.share-msg[data-msg="${where}"]`); if (m) m.textContent=s; };
+  msg(t('share.making'));
   const img = lastImage || await buildShareImage(r, false);
   const label = animalLine(r);
   const file = img.blob ? new File([img.blob], img.name, {type:'image/png'}) : null;
   if (file && navigator.canShare && navigator.canShare({files:[file]})){
-    const host = siteHost(), link = host ? `\n你也來測測看：${location.protocol}//${host}` : '';
-    try { await navigator.share({files:[file], title:'我的動物本色', text:`我測出我的動物本色是「${label}」，你的是什麼？${link}`}); msg(''); return; }
+    const host = siteHost(), link = host ? t('share.link', {url:`${location.protocol}//${host}`}) : '';
+    try { await navigator.share({files:[file], title:t('share.title'), text:t('share.text', {label})+link}); msg(''); return; }
     catch(e){ if (e && e.name==='AbortError'){ msg(''); return; } }
   }
   if (img.blob && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
-    try { await navigator.clipboard.write([new ClipboardItem({'image/png': img.blob})]); msg('結果圖片已複製，可以直接貼到 LINE、Messenger 等聊天室傳給朋友。'); return; }
+    try { await navigator.clipboard.write([new ClipboardItem({'image/png': img.blob})]); msg(t('share.copied')); return; }
     catch(e){}
   }
   buildShareImage(r, true);
-  msg('這個瀏覽器不支援直接分享，請先下載圖片，再傳給朋友。');
+  msg(t('share.unsupported'));
 }
 
 /* ===== 會員：Google 登入、保存結果、我的歷次結果 ===== */
 const CONTACT = 'a21420000@gmail.com';
 let USER = null;
-const fmtDate = t => new Date(t).toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
+const fmtDate = d => new Date(d).toLocaleDateString(L.locale, L.dateOpts);
 /* 結果頁的額外區塊：看過去的結果時顯示提示列；看自己剛做完的結果時顯示「保存這次結果」 */
 function resultExtras(r){
   const el = $('#s-result');
   if (st.viewOnly){
-    el.insertAdjacentHTML('afterbegin', `<div class="card view-bar"><p>這是你在 ${fmtDate(st.finishedAt)} 的結果。</p><button class="btn" id="back-history">回到我的歷次結果</button></div>`);
+    el.insertAdjacentHTML('afterbegin', `<div class="card view-bar"><p>${t('view.past', {date:fmtDate(st.finishedAt)})}</p><button class="btn" id="back-history">${t('view.back')}</button></div>`);
     $('#back-history').addEventListener('click', openHistory);
     ['#again','#again-confirm','#rate'].forEach(q=>{ const x=$(q); if (!x) return; (q==='#rate' ? x.closest('.card') : x).hidden = true; });
     return;
@@ -1792,23 +1967,23 @@ function resultExtras(r){
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
   if (USER){
-    box.innerHTML = `<h3 class="hl">已保存到你的帳號</h3>
-      <p class="small muted">登入帳號：${esc(USER.email||'')}</p>
-      <div class="actions"><button class="btn" id="go-history">查看我的歷次結果</button><button class="btn link" id="sign-out">登出</button></div>`;
+    box.innerHTML = `<h3 class="hl">${t('save.done')}</h3>
+      <p class="small muted">${t('save.who', {email:esc(USER.email||'')})}</p>
+      <div class="actions"><button class="btn" id="go-history">${t('save.goHistory')}</button><button class="btn link" id="sign-out">${t('signout')}</button></div>`;
     $('#go-history').addEventListener('click', openHistory);
     $('#sign-out').addEventListener('click', signOut);
     return;
   }
-  const blocked = IN_APP ? `<div class="warn inapp"><span>Google 不允許在 ${IN_APP} 的內建瀏覽器裡登入。請改用手機的瀏覽器（例如 Chrome、Safari）打開這個網頁再登入。</span>${IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">改用瀏覽器開啟</a>` : ''}</div>` : '';
-  box.innerHTML = `<h3 class="hl">想保留這次結果嗎？</h3>
-    <p>用 Google 帳號登入後，這次的結果會存在你的帳號裡，換手機或過一陣子回來都看得到。</p>
+  const blocked = IN_APP ? `<div class="warn inapp"><span>${t('save.blocked', {app:IN_APP})}</span>${IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">${t('inapp.open')}</a>` : ''}</div>` : '';
+  box.innerHTML = `<h3 class="hl">${t('save.h')}</h3>
+    <p>${t('save.p')}</p>
     ${blocked}
-    <div class="actions"><button class="btn primary" id="sign-in"${IN_APP?' disabled':''}>用 Google 帳號登入</button></div>
+    <div class="actions"><button class="btn primary" id="sign-in"${IN_APP?' disabled':''}>${t('save.signin')}</button></div>
     <p class="small muted" id="sign-in-msg" role="status">${note||''}</p>`;
   $('#sign-in').addEventListener('click', async ()=>{
-    const b = $('#sign-in'); b.disabled = true; $('#sign-in-msg').textContent = '正在前往 Google 登入…';
+    const b = $('#sign-in'); b.disabled = true; $('#sign-in-msg').textContent = t('save.going');
     try { await BK.signInWithGoogle(); }
-    catch(e){ b.disabled = false; $('#sign-in-msg').textContent = '無法連線到登入服務。請確認網路後再按一次。'; }
+    catch(e){ b.disabled = false; $('#sign-in-msg').textContent = t('save.fail'); }
   });
 }
 async function signOut(){
@@ -1824,20 +1999,20 @@ let HIST = [];
 async function openHistory(){
   if (st && st.viewOnly) st = load();
   show('s-history');
-  $('#hist-who').textContent = USER ? `登入帳號：${USER.email||''}` : '';
-  $('#hist-list').innerHTML = ''; $('#hist-msg').textContent = '正在讀取…';
+  $('#hist-who').textContent = USER ? t('save.who', {email:USER.email||''}) : '';
+  $('#hist-list').innerHTML = ''; $('#hist-msg').textContent = t('hist.loading');
   $('#del-confirm').hidden = true; $('#del-msg').textContent = '';
   try { HIST = await BK.listMyResults(); }
-  catch(e){ $('#hist-msg').textContent = '無法讀取結果。請確認網路後，回到首頁再按一次「我的歷次結果」。'; return; }
-  if (!HIST.length){ $('#hist-msg').textContent = '這個帳號還沒有保存的結果。做完測驗後，在結果頁按「用 Google 帳號登入」，結果就會保存到這裡。'; return; }
-  $('#hist-msg').textContent = `共 ${HIST.length} 次結果，點一下可以打開。`;
+  catch(e){ $('#hist-msg').textContent = t('hist.fail'); return; }
+  if (!HIST.length){ $('#hist-msg').textContent = t('hist.empty'); return; }
+  $('#hist-msg').textContent = t('hist.count', {n:HIST.length});
   renderHistList();
 }
 function renderHistList(){
   $('#hist-list').innerHTML = HIST.map((row,i)=>{
     const r = score({seq:row.seq, answers:row.answers, times:row.times||{}});
-    return `<li><div class="hist-row"><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? '暫時無法判定' : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button><button class="btn link hist-del" data-del="${i}" aria-label="刪除 ${fmtDate(row.created_at)} 的結果">刪除</button></div>
-      <div class="confirm" data-confirm="${i}" hidden role="alert"><p>確定要刪除 ${fmtDate(row.created_at)} 的這次結果嗎？刪除後無法復原。</p><button class="btn" data-keep="${i}">保留</button><button class="btn primary" data-delok="${i}">確定刪除</button></div></li>`;
+    return `<li><div class="hist-row"><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? t('res.none') : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button><button class="btn link hist-del" data-del="${i}" aria-label="${t('hist.delAria', {date:fmtDate(row.created_at)})}">${t('hist.del')}</button></div>
+      <div class="confirm" data-confirm="${i}" hidden role="alert"><p>${t('hist.delAsk', {date:fmtDate(row.created_at)})}</p><button class="btn" data-keep="${i}">${t('hist.keep')}</button><button class="btn primary" data-delok="${i}">${t('hist.delOk')}</button></div></li>`;
   }).join('');
 }
 /* 單筆刪除：按「刪除」先出現確認，按「確定刪除」才真的刪 */
@@ -1848,15 +2023,15 @@ $('#hist-list').addEventListener('click', async e=>{
   if (d.dataset.del !== undefined){ box.hidden = false; box.querySelector('[data-keep]').focus(); return; }
   if (d.dataset.keep !== undefined){ box.hidden = true; $(`[data-del="${i}"]`).focus(); return; }
   box.querySelectorAll('button').forEach(x=>x.disabled = true);
-  $('#hist-msg').textContent = '正在刪除…';
+  $('#hist-msg').textContent = t('hist.deleting');
   try {
     await BK.deleteMyResult(HIST[i].id);
     HIST.splice(i, 1);
     renderHistList();
-    $('#hist-msg').textContent = HIST.length ? `已刪除這次結果。還有 ${HIST.length} 次結果，點一下可以打開。` : '已刪除這次結果。這個帳號目前沒有保存的結果。';
+    $('#hist-msg').textContent = HIST.length ? t('hist.deleted', {n:HIST.length}) : t('hist.deletedNone');
   } catch(err){
     box.querySelectorAll('button').forEach(x=>x.disabled = false);
-    $('#hist-msg').textContent = '刪除沒有完成。請確認網路後再按一次「確定刪除」。';
+    $('#hist-msg').textContent = t('hist.delFail');
   }
 });
 $('#hist-list').addEventListener('click', e=>{
@@ -1872,12 +2047,12 @@ $('#hist-out').addEventListener('click', signOut);
 $('#del-open').addEventListener('click', ()=>{ $('#del-confirm').hidden = false; $('#del-cancel').focus(); });
 $('#del-cancel').addEventListener('click', ()=>{ $('#del-confirm').hidden = true; $('#del-open').focus(); });
 $('#del-ok').addEventListener('click', async ()=>{
-  $('#del-confirm').hidden = true; $('#del-msg').textContent = '正在刪除…';
+  $('#del-confirm').hidden = true; $('#del-msg').textContent = t('hist.deleting');
   try {
     const n = await BK.deleteMyData();
     HIST = []; $('#hist-list').innerHTML = ''; $('#hist-msg').textContent = '';
-    $('#del-msg').textContent = `已刪除 ${n} 筆結果。如果也要刪除登入帳號本身，請寄信到 ${CONTACT}。`;
-  } catch(e){ $('#del-msg').textContent = '刪除沒有完成。請確認網路後再試一次。'; }
+    $('#del-msg').textContent = t('delall.done', {n, email:CONTACT});
+  } catch(e){ $('#del-msg').textContent = t('delall.fail'); }
 });
 /* 有登入紀錄（或剛從 Google 登入回來）才載入登入程式 */
 if (BK.enabled && BK.hasSession()){
@@ -1887,12 +2062,49 @@ if (BK.enabled && BK.hasSession()){
     USER = u; BK.takeReturnState();
     if (q.has('code') || cancelled) history.replaceState(history.state, '', location.pathname + location.hash);
     authUI();
-    if (cancelled) renderSaveCard('登入沒有完成。需要的話，可以再按一次「用 Google 帳號登入」。');
+    if (cancelled) renderSaveCard(t('save.cancelled'));
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
+
+/* ===== 語言切換：英文在 js/lang-en.js，第一次切到英文時才載入（8 秒載不到就留在中文並提示） ===== */
+const loadEN = () => window.DISC_LANG_EN ? Promise.resolve(window.DISC_LANG_EN) : new Promise((res, rej)=>{
+  const sc = document.createElement('script'), tm = setTimeout(()=>rej(new Error('timeout')), 8000);
+  sc.src = 'js/lang-en.js';
+  sc.onload = ()=>{ clearTimeout(tm); window.DISC_LANG_EN ? res(window.DISC_LANG_EN) : rej(new Error('empty')); };
+  sc.onerror = ()=>{ clearTimeout(tm); rej(new Error('load')); };
+  document.head.appendChild(sc);
+});
+/* 換語言後重畫目前的畫面：作答中不重新抽題、不重設作答時間；打開中的確認視窗先關掉 */
+function rerender(){
+  syncHomeButtons(); renderClassNote();
+  $('#inapp-home').innerHTML = inAppNoteHTML('home');
+  [homeDialog, restartDialog].forEach(d=>{ if (d.open) d.close(); });
+  $('#toast').textContent = '';
+  if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
+  else if (!$('#s-blind').hidden && st && st.blindOrders) renderBlind(blindPage);
+  else if (!$('#s-info').hidden){ infoMode(); ['#email-err','#uname-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
+  else if (!$('#s-result').hidden && st && st.done){ const y = window.scrollY; renderResult(); window.scrollTo(0, y); }
+  else if (!$('#s-history').hidden) openHistory();
+}
+async function setLang(code, {save=true}={}){
+  let ok = true;
+  if (code==='en'){ try { useDict(await loadEN()); } catch(e){ ok = false; code = 'zh'; useDict(); } }
+  else useDict();
+  LANG = code;
+  if (save && ok){ try{ localStorage.setItem('disc-lang', code); }catch(e){} }
+  applyStatic(); lastImage = null; rerender();
+  document.documentElement.classList.remove('lang-loading');
+  if (!ok) toast(ZH.ui['lang.fail'], true);
+}
+$('#bar-lang').addEventListener('click', ()=>setLang(LANG==='en' ? 'zh' : 'en'));
+{ let stored = null; try{ stored = localStorage.getItem('disc-lang'); }catch(e){}
+  const q = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+  if (pickLang(location.search, stored)==='en') setLang('en', {save: q==='en'});
+  else { if (q==='zh'){ try{ localStorage.setItem('disc-lang', 'zh'); }catch(e){} } document.documentElement.classList.remove('lang-loading'); }
+}
 /* 補送上次沒送出的作答（待送出區是空的就不會連線） */
 if (BK.enabled){
   if (st && st.sid && st.sync && st.sync!=='sent' && st.sync!=='rejected' && !BK.isQueued(st.sid)) { st.sync='sent'; save(); }

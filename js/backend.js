@@ -160,6 +160,9 @@
     // 作答方式：一題一頁（page）、全部列出（list），中途切換過就是 mixed
     const modes = (st.modes || []).filter((m) => m === 'page' || m === 'list');
     if (modes.length) p.layout = modes.length > 1 ? 'mixed' : modes[0];
+    // 作答語言：zh-TW／en，中途切換過就是 mixed（伺服器還沒有這個欄位時會忽略）
+    const langs = (st.langs || []).filter((l) => l === 'zh' || l === 'en');
+    if (langs.length) p.lang = langs.length > 1 ? 'mixed' : (langs[0] === 'en' ? 'en' : 'zh-TW');
     return p;
   }
 
