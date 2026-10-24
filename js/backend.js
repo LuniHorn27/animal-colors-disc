@@ -14,6 +14,7 @@
      await DiscBackend.signInWithGoogle(st);        // 保存結果（會跳轉到 Google）
      DiscBackend.user                               // 目前登入的會員（或 null）
      await DiscBackend.listMyResults();             // 我的歷次結果
+     await DiscBackend.myPeerInvites();             // 他評：自己帳號下的邀請（我的歷次結果用）
      await DiscBackend.setRetest(true);             // 願意收到重測邀請
      await DiscBackend.deleteMyData();              // 刪除我的資料
      await DiscBackend.signOut();
@@ -284,6 +285,13 @@
     return data;
   }
 
+  // 他評「換個角度看自己」：自己帳號下的邀請 [{code, nickname, created_at, response_id, n}]（我的歷次結果用；讀不到就當作沒有）
+  async function myPeerInvites() {
+    if (!enabled || !user) return [];
+    const { data, error } = await client.rpc('get_my_peer_invites');
+    return error || !Array.isArray(data) ? [] : data;
+  }
+
   async function getRetest() {
     if (!enabled || !user) return false;
     const { data } = await client.from('members').select('retest_ok').eq('user_id', user.id).maybeSingle();
@@ -317,7 +325,7 @@
 
   window.DiscBackend = {
     enabled, init, checkClass, prepare, renderTurnstile, queue, flush, rate, isQueued,
-    hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults,
+    hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults, myPeerInvites,
     getRetest, setRetest, deleteMyData, deleteMyResult, signOut,
     onAuthChange(fn) { listeners.push(fn); },
     onSync(fn) { syncListeners.push(fn); },

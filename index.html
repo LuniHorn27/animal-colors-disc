@@ -116,7 +116,9 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 @media (min-width:768px){.info-grid.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;max-width:none;align-items:start}}
 .form-row{display:flex;flex-direction:column;gap:6px}
 .form-row label{font-weight:500}
-select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:48px;padding:0 12px}
+/* 下拉選單不用瀏覽器原生外觀（iPhone Safari 原生的會比較矮、比較窄），和文字欄位一樣大：整欄寬、48px 高；右邊的箭頭用兩個斜角漸層畫 */
+select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px solid var(--line);border-radius:10px;height:48px;min-height:48px;padding:0 36px 0 12px;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 19px) 50%,calc(100% - 14px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
 .blind{display:flex;flex-direction:column;gap:10px}
 /* 直覺題的選項也是題目，用和第 1–44 題題目相同的粉圓字型 */
 .blind .opt{padding:14px 16px;align-items:flex-start;line-height:1.7;font-family:var(--font-round);font-size:17px;font-synthesis:none}
@@ -167,17 +169,15 @@ select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid 
 .ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
 .ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
 .ak-S{background:color-mix(in srgb,var(--s) 22%,transparent)} .ak-C{background:color-mix(in srgb,var(--c) 20%,transparent)}
+/* 四向圖：電腦版圖在左、三行說明在右；手機版說明排到圖下面 */
+.chart-side{display:grid;grid-template-columns:minmax(0,460px) minmax(180px,1fr);column-gap:clamp(16px,3vw,32px);align-items:center;margin-top:4px}
+.chart-side .legend{margin-top:0}
+@media (max-width:767.98px){.chart-side{grid-template-columns:minmax(0,1fr);row-gap:8px}}
 .chart-svg{width:100%;max-width:480px;display:block;margin:4px auto 0}
 @media (max-width:767.98px){.chart-card{padding-inline:6px}.chart-card>h3,.chart-card>.legend{padding-inline:14px}}
 .hero .eyebrow{font-size:14px;color:var(--muted)}
 .confirm{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--warn-bg);color:var(--warn-ink)}
 .confirm p{flex:1 1 220px}
-.brow{display:grid;grid-template-columns:100px minmax(0,1fr) 34px;align-items:center;gap:8px;margin:14px 0;font-size:15px}
-.brow>span:first-child{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
-.btrack{position:relative;height:18px;border-radius:9px;background:var(--sunk)}
-.bfill{height:100%;border-radius:9px}
-.bmean{position:absolute;top:-5px;bottom:-5px;width:0;border-left:2px dashed var(--faint)}
-.bval{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:8px}
 .sec{padding:24px}
 .sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
@@ -268,14 +268,16 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .donut-side .donut{align-self:center}
 /* 手機寬度：灰色說明改成整行放在圓餅圖下面，卡片才不會太高 */
 @media (max-width:767.98px){.donut-side{grid-template-areas:"pie legend" "notes notes"}}
-.donut{grid-area:pie;width:100%;display:block}
-.donut text{font-family:var(--font-sans);font-weight:700;fill:var(--ink)}
-.donut .c1{font-size:19px;font-weight:400;fill:var(--muted)}
-.donut .c2{font-size:28px}
-.donut .cm .c1{font-size:15px}
-.donut .c2.two{font-size:18px}
-/* 英文比較長：圓環中間的字縮小，才放得進圓圈 */
-:lang(en) .donut .c1{font-size:14px} :lang(en) .donut .c2{font-size:23px} :lang(en) .donut .cm .c1{font-size:12px} :lang(en) .donut .c2.two{font-size:17px}
+/* 左邊不畫圓餅圖，只放本色的花色圓（單一型一個、組合型兩個疊在一起、變色龍用變色龍花色），下面寫「你的本色」和動物名稱 */
+.donut{grid-area:pie;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:0}
+.donut .cs{display:flex;justify-content:center;width:100%}
+.donut .cs svg{width:min(120px,80%);aspect-ratio:1;height:auto;border-radius:50%;display:block;flex:none;box-shadow:0 0 0 4px var(--surface)}
+/* 組合型兩個圓：各占欄寬約六成、疊一點，加起來不超出欄寬 */
+.donut .cs svg:first-child:nth-last-child(2),.donut .cs svg + svg{width:min(100px,58%)}
+.donut .cs svg + svg{margin-left:-14%}
+.donut .ty span{white-space:nowrap}
+.donut .lb{font-size:14px;color:var(--muted)}
+.donut .ty{font-family:var(--font-round);font-size:clamp(16px,4.6vw,20px);font-weight:700;line-height:1.3}
 .donut-legend{grid-area:legend;list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;font-weight:700;align-self:center}
 .donut-legend li{display:flex;align-items:center;gap:8px;margin:0;min-width:0;white-space:nowrap}
 .donut-legend svg.pat{width:18px;height:18px;border-radius:50%;flex:none}
@@ -297,7 +299,6 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .pbar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .pbars .avgline{position:absolute;top:2px;bottom:20px;border-left:2px dashed var(--muted);pointer-events:none}
 .pbars .avglab{position:absolute;bottom:0;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
-.bwrap{position:relative}
 /* 和自己的平均比較：高於平均＝強項，低於平均＝比較少用 */
 .vs-avg{margin:10px 0 0;padding-left:20px;list-style:disc;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
 .vs-avg li{margin:0}
@@ -315,7 +316,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fu-more{display:flex;flex-direction:column;gap:14px}
 .fu-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 @media (min-width:768px){.fu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}}
-input[type=text],input[type=email],input[type=tel]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:48px;padding:0 12px;width:100%}
+input[type=text],input[type=email],input[type=tel]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;height:48px;min-height:48px;padding:0 12px;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none}
 input[aria-invalid="true"]{border-color:var(--err)}
 .field-err{font-size:14px;color:var(--err)}
 .field-err:empty{display:none}
@@ -336,6 +337,23 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 .hist-row .opt{flex:1 1 auto;min-width:0}
 .hist-row .hist-del{flex:none}
 .hist .confirm{margin-top:8px}
+/* 他評「換個角度看自己」：歷次結果每一筆下面的入口 */
+.hist-peer{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:var(--ink);text-underline-offset:3px}
+/* 他評入口卡片：左邊是自己測出來的花色（單一型一個圓、組合型兩個圓、變色龍四色鱗片），右邊是還不知道的「大家眼中」 */
+.peer-pair{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;max-width:360px;margin:4px 0 6px}
+.peer-pair .f{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.peer-pair .lb{font-size:13px;color:var(--muted)}
+.peer-pair .ty{font-family:var(--font-round);font-size:15px;line-height:1.35}
+.peer-pair .arrow{color:var(--faint);font-size:20px}
+.peer-badge{display:flex;align-items:center;justify-content:center;height:64px}
+.peer-badge svg,.peer-badge .ghost{width:56px;height:56px;border-radius:50%;display:block;flex:none}
+.peer-badge svg{box-shadow:0 0 0 3px var(--surface)}
+.peer-badge svg + svg{margin-left:-14px}
+.peer-badge .ghost{border:2.5px dashed var(--faint);background:var(--sunk);display:flex;align-items:center;justify-content:center;font-family:var(--font-round);font-size:28px;color:var(--muted)}
+#peer-card .actions{margin-top:16px}
+#peer-card .actions + .small{margin-top:8px}
+/* 結果標題下的小字連結：捲到「換個角度看自己」卡片 */
+.peer-teaser{align-self:flex-start;font-size:15px;color:var(--ink);text-underline-offset:4px;text-decoration-color:var(--faint);min-height:32px;display:inline-flex;align-items:center}
 .view-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 @media (hover:none){.kbd-hint{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -522,7 +540,9 @@ const CROWN_DEFS = `<linearGradient id="crown-gold" x1="0" y1="0" x2="0" y2="1">
   <linearGradient id="crown-gold-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9A21B"/><stop offset="1" stop-color="#A86A06"/></linearGradient>
   <linearGradient id="crown-silver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#D2D7DE"/><stop offset="1" stop-color="#9DA5B0"/></linearGradient>
   <linearGradient id="crown-silver-band" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C0CA"/><stop offset="1" stop-color="#7D8691"/></linearGradient>`;
-document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + CROWN_DEFS;
+/* 變色龍花色（品牌識別提案定案的四色鱗片）：目前只用在「換個角度看自己」的花色圓 */
+const CHAM_PAT = '<pattern id="pat-X" width="24" height="21" patternUnits="userSpaceOnUse"><rect width="24" height="21" fill="#DADDE2"/><circle cx="6" cy="5" r="4.6" fill="#D66A14"/><circle cx="18" cy="5" r="4.6" fill="#11968A"/><circle cx="0" cy="15.5" r="4.6" fill="#5E9A47"/><circle cx="12" cy="15.5" r="4.6" fill="#6576DC"/><circle cx="24" cy="15.5" r="4.6" fill="#5E9A47"/></pattern>';
+document.querySelector('#pat-defs defs').innerHTML = TYPES.map(patSVG).join('') + CHAM_PAT + CROWN_DEFS;
 /* canvas 版花紋：f = 花的 SVG 單位換算成 canvas 像素的倍率，(ox,oy) = SVG 原點在 canvas 上的位置 */
 function canvasPattern(ctx, t, f, ox, oy){
   const p = PAT[t], k = 4, c = document.createElement('canvas');
@@ -535,6 +555,15 @@ function canvasPattern(ctx, t, f, ox, oy){
   });
   const pat = ctx.createPattern(c,'repeat');
   if (pat.setTransform) pat.setTransform(new DOMMatrix().translateSelf(ox,oy).rotateSelf(p.rot||0).scaleSelf(f*(p.scale||1)/k));
+  return pat;
+}
+/* canvas 版變色龍花紋（和 CHAM_PAT 相同：24×21 一格，灰底＋四色圓點） */
+function chamPattern(ctx, f, ox, oy){
+  const k = 4, c = document.createElement('canvas'); c.width = 24*k; c.height = 21*k;
+  const g = c.getContext('2d'); g.scale(k,k); g.fillStyle = '#DADDE2'; g.fillRect(0,0,24,21);
+  [[6,5,'#D66A14'],[18,5,'#11968A'],[0,15.5,'#5E9A47'],[12,15.5,'#6576DC'],[24,15.5,'#5E9A47']].forEach(([cx,cy,col])=>{ g.fillStyle=col; g.beginPath(); g.arc(cx,cy,4.6,0,Math.PI*2); g.fill(); });
+  const pat = ctx.createPattern(c,'repeat');
+  if (pat.setTransform) pat.setTransform(new DOMMatrix().translateSelf(ox,oy).scaleSelf(f/k));
   return pat;
 }
 /* 四瓣花：方向和四向圖相同（老虎左上、孔雀右上、無尾熊右下、貓頭鷹左下）。
@@ -673,7 +702,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'res.tentative':'（暫定）', 'res.secondary':'副型：{lbl}。{sub}',
   'seg.aria':'結果呈現方式', 'seg.brand':'動物本色', 'seg.data':'精確數據',
   'card.donut':'你的本色組成', 'card.patbars':'四種動物的分數', 'card.chart':'DISC 四向圖', 'card.bars':'四型分數',
-  'chart.legend':'虛線圓是你的平均（{avg} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。',
+  'chart.legend':'虛線圓是你的平均（{avg} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。', 'chart.l1':'虛線圓是你的平均（{avg} 分）。', 'chart.l2':'點在虛線外，代表此型較明顯。', 'chart.l3':'點在虛線內，代表此型較隱晦。',
   'share.h':'分享你的結果', 'share.p':'產生一張包含完整分析的結果圖片，可以下載或分享給朋友。', 'share.make':'產生結果圖片',
   'share.alt':'我的動物本色結果圖片', 'share.download':'下載圖片', 'share.fileDefault':'動物本色-結果.png',
   'share.hold':'手機可以長按圖片儲存', 'invite':'邀請朋友來測驗', 'share.dock':'儲存／分享結果圖片',
@@ -1404,12 +1433,6 @@ function donutNotes(r){
     : r.kind==='chameleon' ? t('donut.cham') : '';
   return [t('donut.n2'), top].filter(Boolean);
 }
-function barsHTML(r){
-  const m = pct(r.avg);
-  return `<div class="bwrap">` + TYPES.map(t=>`<div class="brow"><span><span class="dot" style="background:${TCOLOR[t]}"></span>${LBL(t)}</span>
-    <div class="btrack"><div class="bfill" style="width:${pct(r.mean[t])}%;background:${TCOLOR[t]}"></div><div class="bmean" style="left:${m}%"></div></div>
-    <span class="bval">${pct(r.mean[t])}</span></div>`).join('') + `</div>`;
-}
 /* 標題：依分數高低排列，每個動物用自己的顏色 */
 function titleParts(r){
   if (r.kind==='chameleon') return [{text:t('res.chamShort'), t:null}];
@@ -1470,28 +1493,17 @@ const CROWN = c => `<svg class="crown" viewBox="0 0 28 24" aria-hidden="true">
     <circle cx="9" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/><circle cx="14" cy="19.3" r="1.3" fill="var(--crown-${c}-gem)"/><circle cx="19" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/>
     <circle cx="2.8" cy="6.8" r="1.9" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/><circle cx="14" cy="3.1" r="2.1" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/><circle cx="25.2" cy="6.8" r="1.9" fill="url(#crown-${c})" stroke="var(--crown-${c}-edge)" stroke-width=".9"/>
   </svg>`;
+/* 本色組成：左邊放本色的花色圓（單一型一個、組合型兩個、變色龍用變色龍花色）＋「你的本色」＋動物名稱；右邊是比例和頭冠 */
 function donutSVG(vals, center, tops=[]){
-  const cx=160, cy=160, Ro=112, Ri=66, segs=donutGeom(vals), pr=pctRound(segs);
-  const P = (r,a)=>[cx+r*Math.cos(a*Math.PI/180), cy+r*Math.sin(a*Math.PI/180)].map(v=>+v.toFixed(1));
-  let g = '';
-  segs.forEach(s=>{ if (s.p<=0) return;
-    const a1 = Math.min(s.a1, s.a0+359.9), big = (a1-s.a0)>180?1:0;
-    const [x1,y1]=P(Ro,s.a0), [x2,y2]=P(Ro,a1), [x3,y3]=P(Ri,a1), [x4,y4]=P(Ri,s.a0);
-    g += `<path class="pt" d="M${x1} ${y1}A${Ro} ${Ro} 0 ${big} 1 ${x2} ${y2}L${x3} ${y3}A${Ri} ${Ri} 0 ${big} 0 ${x4} ${y4}Z" fill="url(#pat-${s.t})" stroke-width="3"/>`; });
-  /* 組合型（例如 D 老虎＋I 孔雀）分兩行，才放得進圓圈中間 */
-  const parts = center.split(t('res.plusShort'));
-  /* 每一行用 dominant-baseline="central" 以行的中心定位，整組文字的上下中心對齊圓心 */
-  const line = (y, cls, t) => `<text x="${cx}" y="${cy+y}" text-anchor="middle" dominant-baseline="central" class="${cls}">${t}</text>`;
-  g += parts.length>1
-    ? `<g class="cm">${line(-36,'c1',t('donut.center'))}${line(-11,'c2 two',parts[0])}${line(11,'c2 two',t('res.plusMark'))}${line(33,'c2 two',parts[1])}</g>`
-    : line(-19,'c1',t('donut.center')) + line(12,'c2',center);
+  const pr=pctRound(donutGeom(vals));
+  const circles = (tops.length ? tops : ['X']).map(t=>`<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('');
   /* 右邊的比例：固定 D、I、S、C 的順序和大小；本色的型旁邊放冠軍頭冠。
      比例最高的是金色；組合型的第二型是銀色，但兩型分數完全一樣時兩個都是金色 */
   /* 用原始分數比較（百分比四捨五入後，一樣的分數也可能顯示成 34%、33%） */
   const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
   const crownOf = t => !tops.includes(t) ? '' : CROWN(t===ranked[0] || vals[t]===vals[ranked[0]] ? 'gold' : 'silver');
   const legend = `<ul class="donut-legend" aria-hidden="true">${TYPES.map(t=>`<li><svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>${LBL(t)}${crownOf(t)}<b>${pr[t]}%</b></li>`).join('')}</ul>`;
-  return `<svg class="flower donut" viewBox="40 40 240 240" role="img" aria-label="${t('donut.aria', {list:TYPES.map(c=>t('pct.item', {lbl:LBL(c), n:pr[c]})).join(L.listSep)})}">${g}</svg>${legend}`;
+  return `<div class="donut" role="img" aria-label="${t('donut.aria', {list:TYPES.map(c=>t('pct.item', {lbl:LBL(c), n:pr[c]})).join(L.listSep)})}"><div class="cs">${circles}</div><span class="lb">${t('donut.center')}</span><span class="ty">${center.split(t('res.plusShort')).map(x=>`<span>${esc(x)}</span>`).join(t('res.plusMark'))}</span></div>${legend}`;
 }
 function patBarsHTML(vals, avg){
   const order = TYPES;
@@ -1573,6 +1585,7 @@ if (BK.onSync) BK.onSync((sid, state)=>{
   st.sync = state; save();
   const n = $('#sync-note'); if (n) n.textContent = syncText();
   syncBanner();
+  if (state==='sent') renderPeerCard();
 });
 
 function renderResult(){
@@ -1607,9 +1620,9 @@ function renderResult(){
           <div class="legend"><ul class="vs-avg">${donutNotes(r).map(t=>`<li>${akHTML(t)}</li>`).join('')}</ul></div></div></div>
         <div class="card only-brand"><h3>${t('card.patbars')}</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
-        <div class="card chart-card only-data"><h3>${t('card.chart')}</h3>${chartSVG(r)}
-          <div class="legend"><span>${t('chart.legend', {avg:pct(r.avg)})}</span></div></div>
-        <div class="card only-data"><h3>${t('card.bars')}</h3>${barsHTML(r)}
+        <div class="card chart-card only-data"><h3>${t('card.chart')}</h3><div class="chart-side">${chartSVG(r)}
+          <div class="legend"><ul class="vs-avg"><li>${t('chart.l1', {avg:pct(r.avg)})}</li><li>${t('chart.l2')}</li><li>${t('chart.l3')}</li></ul></div></div></div>
+        <div class="card only-data"><h3>${t('card.bars')}</h3>${patBarsHTML(vals, pct(r.avg))}
           <div class="legend">${vsAvgHTML(r)}</div></div>
       </aside>
       <div class="main">
@@ -1794,21 +1807,23 @@ async function buildShareImage(r, reveal){
 
   } else {
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
-    // 本色組成圈
+    // 本色組成：左邊本色的花色圓＋「你的本色」＋動物名稱，右邊四種動物的比例（和網頁一樣）
     y += 90; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.donut'), PAD, y);
-    const segs=donutGeom(vals), pr=pctRound(segs), Ro=220, Ri=132, cx=W/2, cy=y+80+Ro;
-    segs.forEach(sg=>{ if (sg.p<=0) return; const a0=sg.a0*Math.PI/180, a1=Math.min(sg.a1, sg.a0+359.9)*Math.PI/180;
-      x.beginPath(); x.arc(cx,cy,Ro,a0,a1); x.arc(cx,cy,Ri,a1,a0,true); x.closePath();
-      x.fillStyle=canvasPattern(x,sg.t,2.2,0,0); x.fill(); x.lineWidth=7; x.lineJoin='round'; x.strokeStyle=P.card; x.stroke(); });
-    x.font=`700 30px ${SANS}`; x.fillStyle=P.ink;
-    donutLabels(segs, cx, cy, Ro+34, 42).forEach(l=>{ x.textAlign=l.anchor==='end'?'right':l.anchor==='start'?'left':'center'; x.fillText(`${LBL(l.t)} ${pr[l.t]}%`, l.x, l.y+10); });
-    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(t('donut.center'), cx, animalLine(r).includes(t('res.plusShort')) ? cy-48 : cy-18);
-    { const c=animalLine(r), parts=c.split(t('res.plusShort'));
-      if (parts.length>1){ x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(parts[0], cx, cy+20); x.fillText(t('res.plusMark'), cx, cy+62); x.fillText(parts[1], cx, cy+104); }
-      else { let size=40; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>Ri*2-36 && size>24){ size-=2; x.font=`700 ${size}px ${SANS}`; }
-        x.fillStyle=P.ink; x.fillText(c, cx, cy+30); } }
+    const pr=pctRound(donutGeom(vals)), ts=r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : ['X'];
+    const Rc = ts.length>1 ? 120 : 150, colX = PAD+200, cy = y+60+150;
+    ts.forEach((t,i)=>{ const cx = ts.length>1 ? colX+(i?1:-1)*95 : colX;
+      x.beginPath(); x.arc(cx,cy,Rc,0,Math.PI*2); x.closePath();
+      x.fillStyle = t==='X' ? chamPattern(x, Rc*2/56, cx-Rc, cy-Rc) : canvasPattern(x,t,Rc*2/56,cx-Rc,cy-Rc); x.fill();
+      x.lineWidth=8; x.strokeStyle=P.card; x.stroke(); });
+    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(t('donut.center'), colX, cy+150+56);
+    { const c=animalLine(r); let size=34; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>390 && size>22){ size-=2; x.font=`700 ${size}px ${SANS}`; }
+      x.fillStyle=P.ink; x.fillText(c, colX, cy+150+104); }
     x.textAlign='left';
-    y = cy+Ro+84; donutNotes(r).forEach((s,i)=>{ if (i) y+=40; y = drawRich(units(t('img.bullet')+s), PAD, y, maxW, 24, 36, P.muted); });
+    { const lx=PAD+450, rx=PAD+maxW; TYPES.forEach((t,i)=>{ const ry=cy-105+i*70;
+        x.beginPath(); x.arc(lx+16,ry,16,0,Math.PI*2); x.fillStyle=canvasPattern(x,t,32/56,lx,ry-16); x.fill();
+        x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), lx+46, ry+11);
+        x.textAlign='right'; x.fillText(`${pr[t]}%`, rx, ry+11); x.textAlign='left'; }); }
+    y = cy+150+104+70; donutNotes(r).forEach((nt,i)=>{ if (i) y+=40; y = drawRich(units(t('img.bullet')+nt), PAD, y, maxW, 24, 36, P.muted); });
     // 花紋長條（由高到低）
     y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.patbars'), PAD, y);
     const order=TYPES, barX=PAD+200, barW=maxW-200-80, ax=barX+barW*pct(r.avg)/100;
@@ -1892,7 +1907,7 @@ function inAppNoteHTML(where){
   const why = t(where==='home' ? 'inapp.home' : 'inapp.result', {app:IN_APP});
   return `<div class="warn inapp"><p>${why}</p>${how}</div>`;
 }
-/* 分享測驗連結（不含個人結果）。頁首的「分享測驗」和結果頁的「邀請朋友來測驗」共用 */
+/* 分享測驗連結（不含個人結果）。頁首的「分享測驗」和結果頁的「邀請朋友測DISC」共用 */
 const testURL = () => SITE_URL ? `https://${SITE_URL}/` : location.origin + location.pathname;
 let toastTimer = 0;
 function toast(t, long){ const el=$('#toast'); el.textContent=t; clearTimeout(toastTimer); if (t) toastTimer=setTimeout(()=>el.textContent='', long ? 12000 : 4000); }
@@ -1963,6 +1978,55 @@ function resultExtras(r){
   if (!anchor) return;
   anchor.insertAdjacentHTML('afterend', '<div class="card account" id="save-card"></div>');
   renderSaveCard();
+  /* 「換個角度看自己」目前只有中文版：英文畫面不顯示入口 */
+  if (L.code!=='zh') return;
+  $('#save-card').insertAdjacentHTML('afterend', '<div class="card" id="peer-card"></div>');
+  renderPeerCard();
+  const hero = el.querySelector('.hero');
+  if (hero){
+    hero.insertAdjacentHTML('beforeend', `<a class="peer-teaser" href="#peer-card">在大家眼中，你也是${esc(peerShort(r))}嗎？ ↓</a>`);
+    hero.querySelector('.peer-teaser').addEventListener('click', (e)=>{
+      e.preventDefault();
+      $('#peer-card').scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
+    });
+  }
+}
+/* 邀請頁（peer.html）要顯示自評花色，但它不會計分：先把這份作答的本色記在瀏覽器裡（作答編號 → 例如 "SC"，變色龍是空字串） */
+function rememberPeerSelf(rid, r){
+  try { const m = JSON.parse(localStorage.getItem('disc-peer-self-v1')) || {}; m[rid] = peerTypes(r).join(''); localStorage.setItem('disc-peer-self-v1', JSON.stringify(m)); } catch(e){}
+}
+/* 動物名稱（不含代號），例如「無尾熊＋貓頭鷹」 */
+const peerShort = r => titleParts(r).map(p=>p.t?ANIMAL[p.t]:p.text).join('');
+const peerTypes = r => r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [];
+function peerBadgeHTML(r){
+  const ts = peerTypes(r);
+  const circles = ts.length ? ts.map(t=>`<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-${t})"/></svg>`).join('')
+    : '<svg viewBox="0 0 56 56" aria-hidden="true"><rect width="56" height="56" fill="url(#pat-X)"/></svg>';
+  return `<div class="peer-pair" aria-hidden="true">
+    <div class="f"><div class="peer-badge">${circles}</div><span class="lb">你自評</span><span class="ty">${esc(peerShort(r))}</span></div>
+    <span class="arrow">⇄</span>
+    <div class="f"><div class="peer-badge"><div class="ghost">?</div></div><span class="lb">大家眼中</span><span class="ty" style="color:var(--muted)">等被邀請人回覆</span></div>
+  </div>`;
+}
+/* 他評「換個角度看自己」的入口：放在「想保留這次結果嗎？」下面，自己的結果處理好了再邀請別人評。
+   要等作答送出、拿到這份作答的編號（disc-claims-v1）之後才能按 */
+function renderPeerCard(){
+  const box = $('#peer-card'); if (!box || !st) return;
+  if (L.code!=='zh'){ box.remove(); return; }
+  let rid = null;
+  try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
+  if (rid) rememberPeerSelf(rid, score(st));
+  box.innerHTML = `<h3 class="hl">換個角度看自己</h3>${peerBadgeHTML(score(st))}
+    <p>你自評是 ${akHTML(animalLine(score(st)))}。朋友眼中的你也一樣嗎？心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，請朋友、家人、老師花 2–3 分鐘的時間快速測驗，幫助你換一個角度認識自己吧！</p>
+    <div class="actions">${rid ? `<a class="btn primary" href="peer.html#from=${esc(rid)}">了解他人眼中的我</a>` : '<button class="btn primary" disabled>了解他人眼中的我</button>'}</div>
+    ${rid ? '' : '<p class="small muted">作答資料送出後就能邀請。</p>'}`;
+  if (!rid) return;
+  /* 已經替這份作答產生過邀請：多一個「查看結果對照」，直接到結果對照頁。
+     先看這個瀏覽器存的邀請（有專屬連結的鑰匙），沒有的話，登入的人從帳號裡找 */
+  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">查看結果對照</a>`); };
+  let own = null; try { own = JSON.parse(localStorage.getItem('disc-peer-v1')); } catch(e){}
+  if (own && own.code && own.ownerToken && own.responseId === rid) return addCmp(`peer.html#k=${own.code}.${own.ownerToken}`);
+  if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && box.isConnected) addCmp(`peer.html#k=${hit.code}`); }).catch(()=>{});
 }
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
@@ -1995,14 +2059,21 @@ function authUI(){
   if (!$('#s-result').hidden && !(st && st.viewOnly)) renderSaveCard();
 }
 /* 我的歷次結果 */
-let HIST = [];
+let HIST = [], PEER_INV = [];
+/* 他評入口：這次結果已經有邀請就打開對照結果，還沒有就去產生邀請 */
+function histPeerHTML(row){
+  if (L.code!=='zh') return '';
+  const hit = PEER_INV.find(x=>x.response_id===row.id);
+  return hit ? `<a class="hist-peer" href="peer.html#k=${esc(hit.code)}">看大家眼中的我（${+hit.n||0} 人回覆）›</a>`
+             : `<a class="hist-peer" href="peer.html#from=${esc(row.id)}">了解他人眼中的我 ›</a>`;
+}
 async function openHistory(){
   if (st && st.viewOnly) st = load();
   show('s-history');
   $('#hist-who').textContent = USER ? t('save.who', {email:USER.email||''}) : '';
   $('#hist-list').innerHTML = ''; $('#hist-msg').textContent = t('hist.loading');
   $('#del-confirm').hidden = true; $('#del-msg').textContent = '';
-  try { HIST = await BK.listMyResults(); }
+  try { [HIST, PEER_INV] = await Promise.all([BK.listMyResults(), BK.myPeerInvites ? BK.myPeerInvites() : []]); }
   catch(e){ $('#hist-msg').textContent = t('hist.fail'); return; }
   if (!HIST.length){ $('#hist-msg').textContent = t('hist.empty'); return; }
   $('#hist-msg').textContent = t('hist.count', {n:HIST.length});
@@ -2011,7 +2082,9 @@ async function openHistory(){
 function renderHistList(){
   $('#hist-list').innerHTML = HIST.map((row,i)=>{
     const r = score({seq:row.seq, answers:row.answers, times:row.times||{}});
+    if (r.kind!=='none') rememberPeerSelf(row.id, r);
     return `<li><div class="hist-row"><button class="opt" data-i="${i}"><b>${esc(r.kind==='none' ? t('res.none') : animalLine(r))}</b><span class="small muted">${fmtDate(row.created_at)}</span></button><button class="btn link hist-del" data-del="${i}" aria-label="${t('hist.delAria', {date:fmtDate(row.created_at)})}">${t('hist.del')}</button></div>
+      ${r.kind==='none' ? '' : histPeerHTML(row)}
       <div class="confirm" data-confirm="${i}" hidden role="alert"><p>${t('hist.delAsk', {date:fmtDate(row.created_at)})}</p><button class="btn" data-keep="${i}">${t('hist.keep')}</button><button class="btn primary" data-delok="${i}">${t('hist.delOk')}</button></div></li>`;
   }).join('');
 }

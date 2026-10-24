@@ -693,5 +693,8 @@
  "ui.delall.keep": "保留資料",
  "ui.delall.done": "已刪除 {n} 筆結果。如果也要刪除登入帳號本身，請寄信到 {email}。",
  "ui.delall.done.one": "已刪除 {n} 筆結果。如果也要刪除登入帳號本身，請寄信到 {email}。",
- "ui.delall.fail": "刪除沒有完成。請確認網路後再試一次。"
+ "ui.delall.fail": "刪除沒有完成。請確認網路後再試一次。",
+ "ui.chart.l1": "虛線圓是你的平均（{avg} 分）。",
+ "ui.chart.l2": "點在虛線外，代表此型較明顯。",
+ "ui.chart.l3": "點在虛線內，代表此型較隱晦。"
 }
