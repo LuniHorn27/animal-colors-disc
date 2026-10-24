@@ -699,6 +699,7 @@
  "ui.chart.l2": "點在虛線外，代表此型較明顯。",
  "ui.chart.l3": "點在虛線內，代表此型較隱晦。",
  "ui.peer.title": "換個角度看自己",
+ "ui.peer.new": "新",
  "ui.peer.self": "你自評",
  "ui.peer.others": "大家眼中",
  "ui.peer.wait": "等被邀請人回覆",

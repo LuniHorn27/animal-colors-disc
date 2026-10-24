@@ -35,6 +35,7 @@ window.DISC_LANG_EN = {
   "bar.lang": "Switch to Chinese 中文",
   "lang.fail": "English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。",
   "peer.title": "See Yourself from a Different Angle",
+  "peer.new": "New",
   "peer.self": "Your own view",
   "peer.others": "Others' view",
   "peer.wait": "Waiting for replies",

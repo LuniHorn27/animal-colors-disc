@@ -373,6 +373,10 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 #peer-card.nudge .ghost span{animation:peer-pop .7s ease-out .5s 2}
 /* 問句獨立成一個色塊（同解析裡的 .tip），圖置中，段落之間留空；按鈕和下面的小字靠左（同「想保留這次結果嗎？」的登入按鈕） */
 #peer-card .peer-pair{margin:8px auto 18px}
+/* 標題旁的「新」小標籤：放在標題外面，底線才不會延伸到標籤下面；已經邀請過（有「查看結果對照」）就拿掉 */
+#peer-card .peer-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+#peer-card .peer-head h3{margin-bottom:0;min-width:0}
+.peer-new{flex:none;margin-top:4px;padding:5px 10px;border-radius:999px;background:var(--ink);color:var(--surface);font-size:13px;line-height:1;font-weight:500;white-space:nowrap}
 #peer-card .tip{margin:0 0 12px;font-size:16px}
 #peer-card .tip + p{line-height:1.85}
 #peer-card .actions{margin-top:24px}
@@ -656,7 +660,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'bar.brand':'測出你的\u200b動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.theme.light':'淺色模式', 'bar.share':'分享測驗',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
-  'peer.title':'換個角度看自己', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
+  'peer.title':'換個角度看自己', 'peer.new':'新', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
   'home.h1':'測出你的動物本色',
   'home.intro':'此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。',
   'home.tcode.D':'D 支配', 'home.tcode.I':'I 影響', 'home.tcode.S':'S 穩定', 'home.tcode.C':'C 分析',
@@ -2056,7 +2060,7 @@ function renderPeerCard(){
   let rid = null;
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
   if (rid) rememberPeerSelf(rid, score(st));
-  box.innerHTML = `<h3 class="hl">${t('peer.title')}</h3>${peerBadgeHTML(score(st))}
+  box.innerHTML = `<div class="peer-head"><h3 class="hl">${t('peer.title')}</h3><span class="peer-new">${t('peer.new')}</span></div>${peerBadgeHTML(score(st))}
     <p class="tip">${t('peer.q', {ak:akHTML(animalLine(score(st)))})}</p>
     <p>${t('peer.p')}</p>
     <div class="actions">${rid ? `<a class="btn primary" href="${peerHref('#from='+esc(rid))}">${t('peer.btn')}</a>` : `<button class="btn primary" disabled>${t('peer.btn')}</button>`}</div>
@@ -2064,7 +2068,7 @@ function renderPeerCard(){
   if (!rid) return;
   /* 已經替這份作答產生過邀請：多一個「查看結果對照」，直接到結果對照頁。
      先看這個瀏覽器存的邀請（有專屬連結的鑰匙），沒有的話，登入的人從帳號裡找 */
-  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">${t('peer.cmp')}</a>`); };
+  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">${t('peer.cmp')}</a>`); box.querySelector('.peer-new')?.remove(); };
   let own = null; try { own = JSON.parse(localStorage.getItem('disc-peer-v1')); } catch(e){}
   if (own && own.code && own.ownerToken && own.responseId === rid) return addCmp(peerHref(`#k=${own.code}.${own.ownerToken}`));
   if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && box.isConnected) addCmp(peerHref(`#k=${hit.code}`)); }).catch(()=>{});
