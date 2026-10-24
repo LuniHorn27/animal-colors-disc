@@ -16,6 +16,7 @@
     'doc.title': '換個角度看自己｜動物本色',
     'brand': '測出你的動物本色',
     'theme': '深色模式',
+    'theme.light': '淺色模式',
     'bar.lang.short': 'EN',
     'bar.lang': '切換成英文 English',
     'lang.fail': 'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',

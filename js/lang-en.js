@@ -29,6 +29,7 @@ window.DISC_LANG_EN = {
   "bar.nav": "Site navigation",
   "bar.qmode": "Show all questions",
   "bar.theme": "Dark mode",
+  "bar.theme.light": "Light mode",
   "bar.share": "Share the test",
   "bar.lang.short": "中",
   "bar.lang": "Switch to Chinese 中文",

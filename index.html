@@ -368,7 +368,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <div class="bar-actions">
       <button type="button" class="bar-btn" id="bar-lang"><span class="lang-k" aria-hidden="true" data-i18n="bar.lang.short">EN</span><span class="lbl" data-i18n="bar.lang">切換成英文 English</span></button>
       <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.qmode">全部列出</span></button>
-      <button type="button" class="bar-btn" id="bar-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.theme">深色模式</span></button>
+      <button type="button" class="bar-btn" id="bar-theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.theme">深色模式</span></button>
       <button type="button" class="bar-btn" id="bar-share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl" data-i18n="bar.share">分享測驗</span></button>
     </div>
   </div>
@@ -626,7 +626,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   animal:ANIMAL, tname:TNAME, ui:{
   'site.title':'測出你的動物本色｜DISC 行為風格測驗',
   'site.desc':'每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。46 題，約 5–10 分鐘，測出你的動物本色。',
-  'bar.brand':'測出你的動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.share':'分享測驗',
+  'bar.brand':'測出你的動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.theme.light':'淺色模式', 'bar.share':'分享測驗',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
   'peer.title':'換個角度看自己', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.p':'你自評是 {ak}。朋友眼中的你也一樣嗎？心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
@@ -1913,7 +1913,8 @@ function toast(t, long){ const el=$('#toast'); el.textContent=t; clearTimeout(to
 /* 深色模式開關：沒選過時跟著系統顯示；切換後記住 */
 const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
 const isDark = () => { const t=document.documentElement.dataset.theme; return t ? t==='dark' : !!(darkMQ && darkMQ.matches); };
-const syncTheme = () => $('#bar-theme').setAttribute('aria-checked', String(isDark()));
+/* 按鈕名稱顯示按下去會切到的模式（像語言按鈕一樣）；記在 data-i18n，換語言時也跟著對 */
+const syncTheme = () => { const l=$('#bar-theme .lbl'); l.dataset.i18n = isDark() ? 'bar.theme.light' : 'bar.theme'; l.textContent = t(l.dataset.i18n); };
 $('#bar-theme').addEventListener('click', ()=>{
   const t = isDark() ? 'light' : 'dark';
   document.documentElement.dataset.theme = t; try{ localStorage.setItem('disc-theme', t); }catch(e){}

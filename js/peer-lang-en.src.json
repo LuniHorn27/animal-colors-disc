@@ -3,6 +3,7 @@
  "ui.doc.title": "換個角度看自己｜動物本色",
  "ui.brand": "測出你的動物本色",
  "ui.theme": "深色模式",
+ "ui.theme.light": "淺色模式",
  "ui.bar.lang.short": "EN",
  "ui.bar.lang": "切換成英文 English",
  "ui.lang.fail": "English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。",

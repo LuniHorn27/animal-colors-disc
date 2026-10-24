@@ -6,6 +6,7 @@ window.PEER_LANG_EN = {
   "doc.title": "See Yourself from a Different Angle｜Inner Animal",
   "brand": "What's Your Inner Animal?",
   "theme": "Dark mode",
+  "theme.light": "Light mode",
   "bar.lang.short": "中",
   "bar.lang": "Switch to Chinese 中文",
   "lang.fail": "English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。",
