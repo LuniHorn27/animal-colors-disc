@@ -888,9 +888,12 @@ async function renderOwner(code, token, my) {
       const up = lines.find((x) => x.dir === 'peer'), down = lines.find((x) => x.dir === 'self');
       // 中文句子裡「是」後面接英文代號時空一格（你自評是 S-無尾熊）；變色龍沒有代號就不空
       const selfTs = typesOf(res.self_result), selfA = (selfTs.length && X.lang !== 'en' ? ' ' : '') + animalsOf(selfTs, true);
-      const sentence = up ? T('ow.s.up', { a: selfA, f: featureOf(up.t) })
-        : down ? T('ow.s.down', { a: selfA, f: featureOf(down.t) })
-        : T('ow.s.same', { a: selfA });
+      // 句子裡的「大家」跟著上面的篩選器換成朋友、家人、同事…
+      const rel = group === '全部' ? '' : (g.n === 1 ? X.relLo(group) : X.relPl(group));
+      const sub = rel ? T('ow.sub.rel', { rel: esc(rel) }) : T('ow.sub.all');
+      const sentence = up ? T('ow.s.up', { a: selfA, f: featureOf(up.t), sub })
+        : down ? T('ow.s.down', { a: selfA, f: featureOf(down.t), sub })
+        : T('ow.s.same', { a: selfA, sub });
       const who = group === '全部' ? T('ow.who.all', { n: g.n }) : T('ow.who.rel', { n: g.n, rel: esc(g.n === 1 ? X.relLo(group) : X.relPl(group)) });
       body = `<div class="chips" role="group" aria-label="${T('ow.filter')}">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${esc(x.relation === '全部' ? T('ow.all') : X.rel(x.relation))}<span class="n">${x.n}</span></button>`).join('')}</div>
         ${few ? `<div class="warn stack" style="gap:10px" id="few-box"><p>${T('ow.few', { n: total })}</p>${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false, line: false })}</div>` : ''}
