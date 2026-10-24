@@ -127,7 +127,6 @@ window.PEER_LANG_EN = {
   "rr.seeFull": "See full profile",
   "rr.hide": "Hide profile",
   "rr.ref": "The test and the profile above are for reference only",
-  "rr.del": "To have this reply deleted, see the <a href=\"{href}\">Privacy Policy</a>.",
   "cta.t": "Want to find out your own inner animal?",
   "cta.b1": "Based on the DISC theory by psychologist William Marston in 1928. It groups behavioral styles into four tendencies and uses four animals to stand for them.",
   "cta.b2": "Everyone has all four animals, just in different amounts. No type is better than another. Each type has its own strengths and blind spots.",
