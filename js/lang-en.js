@@ -416,6 +416,27 @@ window.DISC_LANG_EN = {
    "true of me"
   ]
  ],
+ "scaleT": [
+  [
+   "Very untrue",
+   "of me"
+  ],
+  [
+   "Somewhat untrue",
+   "of me"
+  ],
+  [
+   "Neutral"
+  ],
+  [
+   "Somewhat true",
+   "of me"
+  ],
+  [
+   "Very true",
+   "of me"
+  ]
+ ],
  "blind": {
   "D": [
    "I focus on results and efficiency, and I find ways to push through difficulties.",
