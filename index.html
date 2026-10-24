@@ -171,9 +171,9 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .fold-body{display:flex;flex-direction:column;gap:16px;margin-top:16px}
 /* 還沒打開時，捲到畫面上整張卡片輕輕浮起兩次，提示可以點開 */
 @keyframes fold-float{0%,100%{transform:translateY(0);box-shadow:0 0 0 rgba(0,0,0,0)}50%{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.14)}}
-.fold-card.nudge{animation:fold-float 1.4s ease-in-out 2}
+.fold-card.nudge,#peer-card.nudge{animation:fold-float 1.4s ease-in-out 2}
 .fold-card.open.nudge{animation:none}
-@media (prefers-reduced-motion:reduce){.fold-btn svg{transition:none}.fold-card.nudge{animation:none}}
+@media (prefers-reduced-motion:reduce){.fold-btn svg{transition:none}.fold-card.nudge,#peer-card.nudge{animation:none}}
 .side,.main{display:flex;flex-direction:column;gap:16px;min-width:0}
 .pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
 .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
@@ -1999,6 +1999,19 @@ function resultExtras(r){
   renderSaveCard();
   $('#save-card').insertAdjacentHTML('afterend', '<div class="card" id="peer-card"></div>');
   renderPeerCard();
+  /* 「換個角度看自己」卡片捲進畫面時輕輕浮起兩下（同完整解析的卡片），按過裡面的按鈕就不再跳 */
+  const pc = $('#peer-card');
+  if (window.IntersectionObserver){
+    let tapped = false;
+    pc.addEventListener('click', e=>{ if (e.target.closest('.btn')) tapped = true; });
+    const io = new IntersectionObserver(es=>es.forEach(e=>{
+      if (!e.isIntersecting) return;
+      if (tapped){ io.disconnect(); return; }
+      pc.classList.remove('nudge'); void pc.offsetWidth; pc.classList.add('nudge');
+    }), {threshold:.6});
+    io.observe(pc);
+    pc.addEventListener('animationend', ()=>pc.classList.remove('nudge'));
+  }
   const hero = el.querySelector('.hero');
   if (hero){
     hero.insertAdjacentHTML('beforeend', `<a class="peer-teaser" href="#peer-card">${t('peer.teaser', {a:esc(peerShort(r))})}</a>`);
