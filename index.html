@@ -1597,7 +1597,7 @@ function renderResult(){
   let html = syncBannerHTML();
   html += warns.map(w=>`<div class="warn">${w}</div>`).join('');
   const confirmHTML = `<div class="confirm" id="again-confirm" hidden role="alert"><p>${t('again.confirm')}</p><button class="btn" id="again-cancel">${t('again.keep')}</button><button class="btn primary" id="again-ok">${t('again.ok')}</button></div>`;
-  const shareBtns = (id) => `<button class="btn" data-share="${id}">${t('share.btn')}</button>`;
+  const shareBtns = (id) => `<button class="btn primary" data-share="${id}">${t('share.btn')}</button>`;
   const RATE_L = [1,2,3,4,5].map(v=>t('rate.'+v));
   const rating = `<div class="card rate-card"><div class="rate-head"><h3 class="hl">${t('rate.h')}</h3><span class="small muted">${t('rate.p')}</span></div><div class="rate" id="rate" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${st.rating===v}" aria-label="${v} ${RATE_L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${RATE_L[0]}</span><span id="rate-msg" role="status">${st.rating?t('rate.thanks'):''}</span><span aria-hidden="true">${RATE_L[4]}</span></div></div>`;
   if (r.kind==='none'){
@@ -1635,7 +1635,7 @@ function renderResult(){
             <p class="small muted">${t('share.p')}</p>
             <div class="actions" style="margin-top:12px"><button class="btn primary" id="make-img">${t('share.make')}</button></div>
             <div id="share-out" hidden><img class="share-img" id="share-img" alt="${t('share.alt')}">
-              <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn" id="dl-img" download="${t('share.fileDefault')}">${t('share.download')}</a>${shareBtns('card')}</div>
+              <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn primary" id="dl-img" download="${t('share.fileDefault')}">${t('share.download')}</a>${shareBtns('card')}</div>
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">${t('share.hold')}</p></div>
           </div>
         </div>
