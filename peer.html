@@ -171,8 +171,6 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .type .tx{display:flex;flex-direction:column;line-height:1.35}
 .type b{font-size:16px}
 .type .tx small{font-size:14px;color:var(--muted);font-weight:400}
-/* 頁尾「測出自己的動物本色」卡片的底色和 --sunk 幾乎一樣（深色模式完全一樣），卡片裡的小卡改用 --surface 才分得出格子 */
-#cta-card .type{background:var(--surface)}
 /* 英文的類型名稱比較長（Conscientiousness）：同 index.html，窄螢幕時一欄一個、長字可以換行 */
 :lang(en) .type small{font-size:12px;overflow-wrap:anywhere}
 @media (max-width:520px){:lang(en) .types{grid-template-columns:1fr}}
@@ -768,7 +766,7 @@ function compHTML(rec, nick) {
 const swatchSm = (t) => `<svg class="pat" viewBox="0 0 18 18"><rect width="18" height="18" fill="url(#pat-${t})"/></svg>`;
 
 // 作答完的畫面：頁尾的「測出自己的動物本色」卡片（也用在找不到邀請的畫面）。中間放主測驗首頁的四種動物小卡
-const ctaHTML = () => `<div class="card stack" id="cta-card" style="gap:10px;background:var(--selected);border:none">
+const ctaHTML = () => `<div class="card stack" id="cta-card" style="gap:10px">
       <h2 style="font-size:20px">${T('cta.t')}</h2>
       <p class="small">${T('cta.b1')}</p>
       ${typesHTML()}
