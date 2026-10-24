@@ -185,6 +185,10 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 /* 英文的兩個類型名稱比較長，縮小一點才放得進同一行 */
 :lang(en) .hero h1.two-t{font-size:min(36px,4.6cqi)}
 .hero .one{font-family:var(--font-round);font-synthesis:none;font-size:clamp(18px,4.2cqi,21px);line-height:1.6;color:var(--main,var(--ink))}
+/* 對照結果頁的兩行對照：左邊灰色小標「你的角度／他人角度」，右邊自評用黑字、他人眼中用主色 */
+.hero .vs{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:baseline}
+.hero .vs .k{font-family:var(--font-sans);font-size:15px;color:var(--muted);white-space:nowrap}
+.hero .vs .v-self{color:var(--ink)}
 /* 朋友作答完：底部固定「測出自己的動物本色」（同 index.html 的 .share-dock） */
 .cta-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;transition:opacity .2s ease,transform .2s ease}
 .cta-dock .btn{width:100%;max-width:480px}
@@ -884,23 +888,22 @@ async function renderOwner(code, token, my) {
           <p style="font-weight:700">${T('ow.eachT')}</p>
           ${rowsNamed}${rowsAnon}${anonNote}
         </div>` : `<p class="small muted">${T('ow.anonAll', { n: res.n_anon })}</p>`;
-      // 最上面的結論：大家眼中的類型＋一句和自評的對照（用落差最大的那一型）
+      // 最上面的結論：大家眼中的類型＋兩行對照「你的角度／他人角度」（他人角度只講落差最大的那一型）
       const up = lines.find((x) => x.dir === 'peer'), down = lines.find((x) => x.dir === 'self');
-      // 中文句子裡「是」後面接英文代號時空一格（你自評是 S-無尾熊）；變色龍沒有代號就不空
-      const selfTs = typesOf(res.self_result), selfA = (selfTs.length && X.lang !== 'en' ? ' ' : '') + animalsOf(selfTs, true);
-      // 句子裡的「大家」跟著上面的篩選器換成朋友、家人、同事…
+      const peerLine = up ? T('ow.s.up', { a: animalsOf([up.t], true), f: featureOf(up.t) })
+        : down ? T('ow.s.down', { a: animalsOf([down.t], true), f: featureOf(down.t) })
+        : T('ow.s.same');
+      // 「他人角度」跟著上面的篩選器換成朋友角度、家人角度…
       const rel = group === '全部' ? '' : (g.n === 1 ? X.relLo(group) : X.relPl(group));
-      const sub = rel ? T('ow.sub.rel', { rel: esc(rel) }) : T('ow.sub.all');
-      const sentence = up ? T('ow.s.up', { a: selfA, f: featureOf(up.t), sub })
-        : down ? T('ow.s.down', { a: selfA, f: featureOf(down.t), sub })
-        : T('ow.s.same', { a: selfA, sub });
+      const vs = `<div class="one vs"><span class="k">${T('ow.v.self')}</span><span class="v-self">${animalsOf(typesOf(res.self_result), true)}</span>`
+        + `<span class="k">${rel ? T('ow.v.rel', { rel: esc(rel) }) : T('ow.v.all')}</span><span>${peerLine}</span></div>`;
       const who = group === '全部' ? T('ow.who.all', { n: g.n }) : T('ow.who.rel', { n: g.n, rel: esc(g.n === 1 ? X.relLo(group) : X.relPl(group)) });
       body = `<div class="chips" role="group" aria-label="${T('ow.filter')}">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${esc(x.relation === '全部' ? T('ow.all') : X.rel(x.relation))}<span class="n">${x.n}</span></button>`).join('')}</div>
         ${few ? `<div class="warn stack" style="gap:10px" id="few-box"><p>${T('ow.few', { n: total })}</p>${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false, line: false })}</div>` : ''}
         <div class="hero" style="--main:${mainColor(peerRes) || 'var(--ink)'}">
           <p class="eyebrow">${T('ow.eyebrow', { who, code: heroCode(peerRes) })}</p>
           ${heroH1(peerRes, true)}
-          <p class="one">${sentence}</p>
+          ${vs}
         </div>
         <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${backLink()}</div>
         <div class="gaps">${gapHTML}</div>
