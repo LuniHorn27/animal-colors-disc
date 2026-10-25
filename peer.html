@@ -504,7 +504,7 @@ async function setLang(code, { save = true } = {}) {
   useLang();
   if (save && ok) { try { localStorage.setItem('disc-lang', code); } catch (e) {} }
   // 網址上的 ?lang= 跟著改（重新整理、複製網址都維持同一語言）
-  try { const u = new URL(location.href); if (u.searchParams.has('lang')) { u.searchParams.set('lang', code); history.replaceState(null, '', u); } } catch (e) {}
+  try { const u = new URL(location.href); if (u.searchParams.has('lang')) { u.searchParams.set('lang', code); history.replaceState(history.state, '', u); } } catch (e) {}
   applyStatic(); syncLangBtn();
   document.documentElement.classList.remove('lang-loading');
   $('#toast').textContent = '';
@@ -578,8 +578,8 @@ async function renderInvite(my, from = null) {
   if (P.user) {
     const mine = await P.getMyInvites(); still(my);
     const hit = from ? mine.find((x) => x.response_id === from) : null;
-    if (hit) { location.hash = '#k=' + hit.code; return; }
-    if (!from && mine.length && !P.latestClaim()) { location.hash = '#k=' + mine[0].code; return; }
+    if (hit) return goHash('#k=' + hit.code);
+    if (!from && mine.length && !P.latestClaim()) return goHash('#k=' + mine[0].code);
   }
   // 這個瀏覽器沒有這份（或任何一份）主測驗結果，也沒登入：同一個提示頁，可以去做測驗或登入帳號
   if (!P.user && (from ? !P.resultClaim(from).token : !P.latestClaim())) {
@@ -1064,6 +1064,23 @@ async function renderOwner(code, token, my) {
 }
 
 /* ---------- 路由 ---------- */
+// 自動轉到對照頁：換掉目前這一筆，不多記一筆（按返回不會又被轉回來），也保留分頁標記
+function goHash(h) { history.replaceState(history.state, '', h); render(); }
+// 「我的結果｜他人角度」切換（index.html 有同一套）：從主頁點過來的，這一筆標成 tabBack，
+// 點「我的結果」或「看我的完整結果」就用上一頁回去，瀏覽紀錄不會越疊越多；從這裡點過去的，主頁按返回會回到這裡
+const TAB_KEY = 'disc-tab-from';
+function markTab() { try { sessionStorage.setItem(TAB_KEY, 'peer:' + Date.now()); } catch (e) {} }
+function takeTab(from) {
+  try { const [f, at] = String(sessionStorage.getItem(TAB_KEY)).split(':'); sessionStorage.removeItem(TAB_KEY); return f === from && Date.now() - at < 30000; }
+  catch (e) { return false; }
+}
+const onTabEntry = () => !!(history.state && history.state.tabBack);
+if (takeTab('index')) try { history.replaceState({ tabBack: 1 }, ''); } catch (e) {}
+document.addEventListener('click', (e) => {
+  if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  if (!e.target.closest('#ptab-mine, .back-link')) return;
+  if (onTabEntry()) { e.preventDefault(); history.back(); } else markTab();
+});
 async function render() {
   if (!P.enabled) return message(T('nobackend.t'), T('nobackend.b'));
   const h = P.parseHash(location.hash);

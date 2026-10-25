@@ -228,6 +228,8 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .tab-badge.n{padding:0 6px}
 /* 很窄的手機：兩個分頁平分會把「Others' view」加標籤擠到換行，改成依內容分寬 */
 @media (max-width:359px){.ptabs a{flex:1 1 auto;white-space:nowrap}}
+/* 「這支手機沒有你的測驗結果」頁的三個出路：按鈕排成一欄 */
+.none-page .btn{width:100%}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* 作答頁：上方工具列固定在畫面頂端（切換「全部列出」的按鈕在這裡），題目進度固定在工具列下方 */
 body.on-quiz .site-bar{position:sticky;top:0;z-index:10}
@@ -571,6 +573,17 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <p class="small muted" id="del-msg" role="status"></p>
     </div>
   </section>
+
+  <!-- 從換個角度頁面點「我的結果」，但這個瀏覽器沒有主測驗結果 -->
+  <section id="s-none" class="stack none-page" hidden>
+    <h2 id="none-t"></h2>
+    <p class="muted" id="none-b"></p>
+    <div class="stack" style="gap:10px">
+      <button type="button" class="btn primary" id="none-login"></button>
+      <button type="button" class="btn" id="none-quiz" data-i18n="none.quiz">重新測驗</button>
+      <a class="btn" id="none-peer" href="peer.html" data-i18n="none.peer">回到他人角度</a>
+    </div>
+  </section>
 </div>
 
 <p class="toast" id="toast" role="status" aria-live="polite"></p>
@@ -727,7 +740,12 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關', 'menu.other':'其他',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
-  'peer.title':'換個角度看自己', 'peer.new':'新', 'tab.nav':'結果切換', 'tab.mine':'我的結果', 'tab.others':'他人角度', 'tab.invited':'已邀請', 'tab.replies':'{n} 人回覆', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
+  'peer.title':'換個角度看自己', 'peer.new':'新', 'tab.nav':'結果切換', 'tab.mine':'我的結果', 'tab.others':'他人角度', 'tab.invited':'已邀請', 'tab.replies':'{n} 人回覆',
+  'none.tPhone':'這支手機沒有你的測驗結果', 'none.tPc':'這台電腦沒有你的測驗結果',
+  'none.b':'測驗結果只存在做測驗的那支手機或電腦裡。之前登入並保存過結果的話，登入後就能打開；也可以在這裡重新測驗。',
+  'none.bIn':'你已經登入，可以從「我的歷次結果」打開保存過的結果；也可以在這裡重新測驗。',
+  'none.bOff':'測驗結果只存在做測驗的那支手機或電腦裡。可以回到那台裝置查看，或在這裡重新測驗。',
+  'none.quiz':'重新測驗', 'none.peer':'回到他人角度', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
   'home.h1':'測出你的動物本色',
   'home.intro':'此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。',
   'home.tcode.D':'D 支配', 'home.tcode.I':'I 影響', 'home.tcode.S':'S 穩定', 'home.tcode.C':'C 分析',
@@ -1098,19 +1116,33 @@ const BK = window.DiscBackend || {enabled:false};
 
 function show(id){
   if (id==='s-info'){ infoMode(); if (BK.enabled) BK.prepare(); }
-  ['s-home','s-quiz','s-info','s-blind','s-result','s-history'].forEach(s=>$('#'+s).hidden = s!==id);
+  ['s-home','s-quiz','s-info','s-blind','s-result','s-history','s-none'].forEach(s=>$('#'+s).hidden = s!==id);
   if (id!=='s-result') document.body.classList.remove('dock-on');
   $('#bar-qmode').hidden = id!=='s-quiz';
-  $('#ptabs').hidden = !(id==='s-result' && $('#peer-card'));
+  $('#ptabs').hidden = !((id==='s-result' && $('#peer-card')) || id==='s-none');
+  if (id==='s-none') $('#ptab-badge').hidden = true;
   document.body.classList.toggle('on-quiz', id==='s-quiz');
   $('#app').classList.toggle('wide', id==='s-result');
-  if (FLOW.includes(id)) guardOn();
+  if (FLOW.includes(id) || onTabEntry()) guardOn(id);
   window.scrollTo(0,0);
 }
 /* 手機的返回鍵／返回手勢：整個網站是同一個網頁，進入作答、結果等畫面時先多記一筆瀏覽紀錄（網址不變），
    按返回時就由網頁自己處理（見下方 popstate），不會直接離開網站 */
 const FLOW = ['s-quiz','s-blind','s-info','s-result','s-history'];
-function guardOn(){ try{ if (!(history.state && history.state.disc)) history.pushState({disc:1}, ''); }catch(e){} }
+function guardOn(id){ try{
+  const s = history.state;
+  /* 從另一個分頁過來的那一筆只代表結果頁（或「沒有結果」頁），到別的畫面要再記一筆，按返回才會先回到結果頁 */
+  if (!(s && s.disc) || (s.tabBack && id!=='s-result' && id!=='s-none')) history.pushState({disc:1}, '');
+}catch(e){} }
+/* 「我的結果｜他人角度」切換：點過去時先在 sessionStorage 記一下，另一頁打開時把那一筆瀏覽紀錄標成 tabBack。
+   在標過的那一頁點回原本的分頁，就用「上一頁」回去，瀏覽紀錄不會越疊越多；按返回也直接回到原本的頁面 */
+const TAB_KEY = 'disc-tab-from';
+function markTab(){ try{ sessionStorage.setItem(TAB_KEY, 'index:'+Date.now()); }catch(e){} }
+function takeTab(from){
+  try{ const [f, at] = String(sessionStorage.getItem(TAB_KEY)).split(':'); sessionStorage.removeItem(TAB_KEY); return f===from && Date.now()-at < 30000; }
+  catch(e){ return false; }
+}
+const onTabEntry = () => !!(history.state && history.state.tabBack);
 
 /* home */
 document.getElementById('home-flower').outerHTML = flowerSVG({D:82,I:64,S:44,C:56},{id:'home-flower'});
@@ -1478,6 +1510,8 @@ window.addEventListener('popstate', ()=>{
   if (menu.open){ menu.close(); guardOn(); return; }
   if (homeDialog.open){ homeDialog.close(); guardOn(); return; }
   if (inProgress()){ guardOn(); askGoHome(); return; }
+  /* 退回從另一個分頁過來的那一筆：顯示那一筆的畫面（結果頁或「沒有結果」頁）；正在看過去的結果時照舊回到歷次結果 */
+  if (onTabEntry() && !(onResult() && st && st.viewOnly)){ histBack = null; tabView(); return; }
   if (!$('#s-history').hidden && histBack==='away'){ histBack = null; history.back(); return; }   // 從「換個角度」頁的選單來的：再退一步回那一頁
   if (!$('#s-history').hidden){ if (histBack==='s-result' && st && st.done){ histBack = null; renderResult(); show('s-result'); } else goHome(); return; }
   if (onResult()){ if (st && st.viewOnly){ guardOn(); openHistory(); } else goHome(); return; }
@@ -2209,9 +2243,35 @@ function renderPeerCard(){
 }
 $('#ptabs a[aria-current]').addEventListener('click', e=>{ e.preventDefault(); window.scrollTo(0,0); });
 $('#ptab-peer').addEventListener('click', e=>{
-  if ($('#ptab-peer').getAttribute('href')!=='#peer-card') return;
-  e.preventDefault(); $('#peer-card')?.scrollIntoView({block:'start'});
+  if ($('#ptab-peer').getAttribute('href')==='#peer-card'){ e.preventDefault(); $('#peer-card')?.scrollIntoView({block:'start'}); return; }
+  if (onTabEntry()){ e.preventDefault(); history.back(); }   // 從換個角度頁面過來的：用上一頁回去
 });
+/* 從結果頁（或「沒有結果」頁）點到換個角度頁面：記下來，那邊點「我的結果」就用上一頁回來 */
+document.addEventListener('click', e=>{
+  if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  if (e.target.closest('#ptabs a[href^="peer.html"], #s-result a[href^="peer.html"], #s-none a[href^="peer.html"]')) markTab();
+});
+/* 從換個角度頁面點「我的結果」，這個瀏覽器卻沒有主測驗結果：說明結果存在做測驗的裝置，給三個出路 */
+function renderNone(){
+  const phone = window.matchMedia && matchMedia('(pointer:coarse)').matches;
+  $('#none-t').textContent = t(phone ? 'none.tPhone' : 'none.tPc');
+  $('#none-b').textContent = t(USER ? 'none.bIn' : BK.enabled ? 'none.b' : 'none.bOff');
+  $('#none-login').hidden = !BK.enabled;
+  $('#none-login').textContent = t(USER ? 'hist.h' : 'menu.signin');
+}
+function showNone(){ renderNone(); show('s-none'); }
+/* 從另一個分頁過來的那一筆要顯示的畫面 */
+function tabView(){ const r = load(); if (r && r.done){ st = r; renderResult(); show('s-result'); } else showNone(); }
+$('#none-login').addEventListener('click', async ()=>{
+  if (USER) return openHistory(null);
+  if (IN_APP) return toast(t('save.blocked', {app:IN_APP}), true);
+  /* 登入回來後直接打開歷次結果 */
+  try{ sessionStorage.setItem('disc-want-hist', '1'); }catch(e){}
+  toast(t('save.going'));
+  try { await BK.signInWithGoogle(); } catch(e){ toast(t('save.fail')); }
+});
+$('#none-quiz').addEventListener('click', ()=>{ goHome(); $('#agree').focus(); });
+$('#none-peer').addEventListener('click', e=>{ if (onTabEntry()){ e.preventDefault(); history.back(); } });
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
   if (USER){
@@ -2242,6 +2302,7 @@ function authUI(){
   $('#my-results').hidden = !USER;
   /* 登入狀態確定後，換個角度卡片也重畫一次：帳號裡的邀請要登入後才查得到 */
   if (!$('#s-result').hidden && !(st && st.viewOnly)){ renderSaveCard(); renderPeerCard(); }
+  if (!$('#s-none').hidden) renderNone();
 }
 /* 我的歷次結果 */
 let HIST = [], PEER_INV = [];
@@ -2316,6 +2377,10 @@ $('#del-ok').addEventListener('click', async ()=>{
 /* 「換個角度」頁的選單點「我的歷次結果」會連到 ./#history：登入後直接打開歷次結果 */
 const WANT_HIST = location.hash === '#history';
 if (WANT_HIST) history.replaceState(history.state, '', location.pathname + location.search);
+/* 從「沒有結果」頁按登入：回來後也直接打開歷次結果 */
+const WANT_HIST_NONE = (()=>{ try{ const v = sessionStorage.getItem('disc-want-hist'); sessionStorage.removeItem('disc-want-hist'); return v==='1'; }catch(e){ return false; } })();
+/* 從換個角度頁面點「我的結果」或「看我的完整結果」過來：這一筆標成分頁，不再多記一筆（按返回直接回到那一頁） */
+if (takeTab('peer')) try{ history.replaceState({disc:1, tabBack:1}, ''); }catch(e){}
 /* 有登入紀錄（或剛從 Google 登入回來）才載入登入程式 */
 if (BK.enabled && BK.hasSession()){
   const q = new URLSearchParams(location.search);
@@ -2326,11 +2391,13 @@ if (BK.enabled && BK.hasSession()){
     authUI();
     if (cancelled) renderSaveCard(t('save.cancelled'));
     if (WANT_HIST && USER) openHistory('away');
+    else if (WANT_HIST_NONE && USER) openHistory(null);
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
+else if (onTabEntry()) showNone();
 
 /* ===== 語言切換：英文在 js/lang-en.js，第一次切到英文時才載入（8 秒載不到就留在中文並提示） ===== */
 const loadEN = () => window.DISC_LANG_EN ? Promise.resolve(window.DISC_LANG_EN) : new Promise((res, rej)=>{
@@ -2352,6 +2419,7 @@ function rerender(){
   else if (!$('#s-info').hidden){ infoMode(); ['#email-err','#uname-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
   else if (!$('#s-result').hidden && st && st.done){ const y = window.scrollY; renderResult(); window.scrollTo(0, y); }
   else if (!$('#s-history').hidden) openHistory();
+  else if (!$('#s-none').hidden) renderNone();
 }
 async function setLang(code, {save=true}={}){
   let ok = true;
