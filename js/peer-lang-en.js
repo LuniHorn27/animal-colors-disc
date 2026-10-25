@@ -575,19 +575,19 @@ window.PEER_LANG_EN = {
     "title": "A side of you that you may not notice",
     "tag": "Blind area | Others see it, you don't",
     "D": [
-     "People see you as decisive and direct, more than you think you are. With them, you may often be the one who decides first and pushes things forward: when a discussion gets stuck, one \"let's just go with this\" from you gets everything moving. You may feel it is no big deal, but to others this is what a person with clear opinions looks like.",
+     "People can clearly see how decisive and direct you are, even if you don't feel it much yourself. With them, you may often be the one who decides first and pushes things forward: when a discussion gets stuck, one \"let's just go with this\" from you gets everything moving. It may feel like no big deal to you, but to others it is what a person with clear opinions looks like.",
      "Think back: was there a time when I made a decision and things moved forward because of it? How did that feel for you?"
     ],
     "I": [
-     "People see you as enthusiastic and easy to talk to, more than you think you are. You may be especially relaxed when you are with them, bringing up topics and keeping the mood going so things don't go quiet. You may feel you are just chatting naturally, but others remember that being with you feels easy and full of energy.",
+     "People can clearly feel how enthusiastic and easy to talk to you are, even if you haven't noticed it yourself. With them, you may be especially relaxed, bringing up topics and keeping the mood going so things don't go quiet. It may feel like natural conversation to you, but others remember that being with you feels easy and full of energy.",
      "Was there a time when being with me felt especially good? What made you feel at ease that day?"
     ],
     "S": [
-     "People see you as steady and considerate, more than you think you are. The care that feels ordinary to you, such as remembering how someone is doing, letting them finish what they want to say, or keeping them company when they are down, may be something others remember. To them, you are someone who makes them feel safe and reliable.",
+     "People can see how steady and considerate you are, even if it doesn't feel like much to you. The care that feels ordinary to you, such as remembering how someone is doing, letting them finish what they want to say, or keeping them company when they are down, may be something others remember. To them, you are someone who makes them feel safe and reliable.",
      "Was there a time when my company or help meant a lot to you? Can you tell me more about what was going on?"
     ],
     "C": [
-     "People see you as careful and precise, more than you think you are. Your habit of double-checking and getting the details right does not go unnoticed, and it makes others feel at ease leaving things to you. You may feel you are just being cautious, but to others it is a trait they can rely on.",
+     "People can see how careful and precise you are, even if you think of it as just being cautious. Your habit of double-checking and getting the details right makes others feel at ease leaving things to you. To you it may seem only natural, but to others it is a trait they can rely on.",
      "Was there a time when me double-checking made things go more smoothly? How do you see the way I work?"
     ]
    },
