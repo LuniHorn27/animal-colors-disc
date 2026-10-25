@@ -575,19 +575,23 @@ window.PEER_LANG_EN = {
     "title": "A side of you that you may not notice",
     "tag": "Blind area | Others see it, you don't",
     "D": [
-     "You may work quickly and take action readily, and people notice. When a discussion drags on, you might speak up first or get things started, and things begin to move; when someone needs to take responsibility, you are often the first to step forward. You may feel it is just something you do naturally, but in others' eyes you might be the person who makes them feel \"with you around, we have a direction.\"",
+     "People can feel how fast you move things forward",
+     "When a discussion stalls, you might be the first to get things started, and everything begins to move. You may feel it is just something you do, but in others' eyes you are the person who makes them think, \"with you around, we have a direction.\"",
      "Think back: was there a time when I made a decision and things moved forward because of it? How did that feel for you?"
     ],
     "I": [
-     "Being with you may make people feel especially at ease. You start conversations and lift the mood, you have plenty of ideas, and you tell things in a lively, engaging way, so even quieter people may feel able to speak up. You may think you are just chatting, but others may remember that day with you as a really good one.",
+     "Being with you feels especially easy",
+     "You start conversations, lift the mood, and bring plenty of ideas, so even quieter people may feel able to speak up. You may think you are just chatting, but others may remember that day as a really good one.",
      "Was there a time when being with me felt especially good? What made you feel at ease that day?"
     ],
     "S": [
-     "The small things you do quietly may be remembered by everyone. You are patient, you let people finish what they want to say, you remember how they have been doing, and you keep them company when they are down. It may feel ordinary to you, but it may mean a great deal of reassurance to them. Many people may be thinking: it's so good to have you around.",
+     "The small things you do quietly stay in people's hearts",
+     "You are patient, you let people finish what they want to say, and you keep them company when they are down. It may feel ordinary to you, but it may mean a great deal of reassurance to them.",
      "Was there a time when my company or help meant a lot to you? Can you tell me more about what was going on?"
     ],
     "C": [
-     "Your organized way of working and attention to detail may not go unnoticed. You double-check and look after quality, so people feel especially at ease leaving things to you. You may think it is just a habit, but others may be quietly grateful: how lucky to have you.",
+     "Leave it to you, and people feel at ease",
+     "You are organized, careful with details, and you double-check things. You may think it is just a habit, but others may be quietly grateful: how lucky to have you.",
      "Was there a time when me double-checking made things go more smoothly? How do you see the way I work?"
     ]
    },
@@ -595,25 +599,33 @@ window.PEER_LANG_EN = {
     "title": "A side that people see less",
     "tag": "Hidden area | You see it, others don't",
     "D": [
-     "You actually have strong opinions and plenty of drive to act, but in a crowd you may listen to what others say first and leave the spotlight to them. That thoughtfulness is a good thing, though others may not realize you already have ideas in mind. A reminder: now and then, share your views openly. People might light up when they hear them!",
-     "In your eyes, what am I like when I have to make a decision? When would you want me to say what I think more directly?"
+     "You have plenty of ideas, but often leave the spotlight to others",
+     "You have opinions and drive to act, but in a crowd you may listen to what others say first. That thoughtfulness is a good thing, though others may not realize you already have ideas.",
+     "In your eyes, what am I like when I have to make a decision? When would you want me to say what I think more directly?",
+     "A reminder: now and then, share your views openly. People might light up when they hear them!"
     ],
     "I": [
-     "You are actually warm and lively, with what seems like an endless supply of ideas, but this side may mostly be kept for people you know and trust. Around friends you don't know well yet, you may observe the mood first and deliberately hold back, so others see a quieter, calmer you. A reminder: now and then, show more of your charm. Others might be pleasantly surprised to find how fun you are!",
-     "When do I seem more relaxed, and when do I seem quieter? Which side of me would you like to see more?"
+     "Your charm may mostly be kept for people you know",
+     "You are warm and lively, full of ideas, but around people you don't know well yet you may observe the mood first, so others see a quieter, calmer you.",
+     "When do I seem more relaxed, and when do I seem quieter? Which side of me would you like to see more?",
+     "A reminder: now and then, show a bit more of yourself. Others might be pleasantly surprised to find how fun you are!"
     ],
     "S": [
-     "You actually care a lot about the people around you, and you are patient and accepting, but you may tend to keep it inside rather than say it. You quietly remember what they need and think of them, but they may not know it. Now and then, say it out loud, even just \"How have you been lately?\" When people feel they are on your mind, they will surely be very happy.",
-     "How do you usually know that someone cares about you? Have you felt that from me?"
+     "Your care may not have reached them yet",
+     "You care a lot about the people around you, and you are patient and accepting, but you may tend to keep your care inside. You quietly remember what they need, and they may not know it.",
+     "How do you usually know that someone cares about you? Have you felt that from me?",
+     "A reminder: now and then, ask \"How have you been lately?\" and they will be glad to know they are on your mind."
     ],
     "C": [
-     "You actually work in an organized and rigorous way, and many details are things you quietly checked in private. But others may only see the finished result, without knowing how much thought and time you put in to make sure everything is foolproof. A reminder: now and then, tell people directly what you did, so they can better understand your care and thoroughness.",
-     "How do you usually see the way I handle things? If I told you I often check things over again in private, how would that feel to you?"
+     "The effort you put in may not be visible to others",
+     "You work in an organized, rigorous way, and many details are things you quietly checked in private. Others may only see the smooth result, without knowing how much time you spent making sure everything is foolproof.",
+     "How do you usually see the way I handle things? If I told you I often check things over again in private, how would that feel to you?",
+     "A reminder: now and then, share what you did, so they can better understand your care and thoroughness."
     ]
    },
    "sameTitle": "Where you and others agree",
    "sameTag": "Open area | You and others both see it",
-   "same": "The way people see you may be very close to how you see yourself. You know yourself well, and others really do see you. Such agreement is rare, and may mean that you and the people around you are genuine and honest with each other."
+   "same": "The way people see you may be very close to how you see yourself. Such agreement is rare, and may mean that you and the people around you are genuine and honest with each other."
   },
   "SECT": {
    "core": "{name}'s core traits",
