@@ -251,6 +251,32 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 @media (hover:hover){.bar-btn:hover .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}}
 .bar-btn:focus-visible .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}
 .bar-actions .bar-btn:last-child .lbl{left:auto;right:0;transform:none}
+/* 頁首「選單」按鈕和選單：手機從下方滑出，電腦（768px 以上）在按鈕下方打開；位置由程式依按鈕算 */
+.bar-menu{width:auto;padding:0 14px;gap:6px;font-weight:600}
+.bar-menu svg{width:18px;height:18px}
+.menu{position:fixed;inset:auto 0 0;margin:0;width:100%;max-width:none;max-height:calc(100dvh - 48px);overflow-y:auto;padding:0;border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.menu-in{padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.menu-in:focus{outline:none}
+.menu-grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 4px}
+.menu-sec{margin:12px 8px 4px;font-family:var(--font-sans);font-size:13px;font-weight:600;line-height:1.4;color:var(--muted)}
+.menu-who{margin:0 8px 4px;font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.menu-row{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:6px 8px;border:0;border-radius:12px;background:none;color:var(--ink);font:inherit;font-size:17px;line-height:1.4;text-align:left;text-decoration:none;cursor:pointer}
+.menu-row:hover{background:var(--sunk)}
+.menu-row:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
+.menu-row>svg{flex:none;width:22px;height:22px;color:var(--muted)}
+.menu-row small{display:block;font-size:13px;color:var(--muted)}
+.menu-row .r{margin-left:auto;padding-left:8px;font-size:15px;color:var(--muted)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:8px 0}
+@media (prefers-reduced-motion:no-preference){.menu[open]{animation:menu-up .22s ease-out}}
+@keyframes menu-up{from{transform:translateY(40px);opacity:0}}
+@media (min-width:768px){
+  .menu{inset:auto;width:290px;max-height:calc(100dvh - 90px);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .menu::backdrop{background:rgba(20,22,26,.12)}
+  .menu-in{padding:6px 8px 8px}
+  .menu-grab{display:none}
+  .menu-row{min-height:46px;font-size:16px}
+  @keyframes menu-up{from{transform:translateY(-6px);opacity:0}}
+}
 /* 結果頁手機版：底部固定「儲存／分享結果圖片」，捲動時一直顯示 */
 .share-dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center}
 .share-dock .btn{width:100%;max-width:480px}
@@ -406,8 +432,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <div class="bar-actions">
       <button type="button" class="bar-btn" id="bar-lang"><span class="lang-k" aria-hidden="true" data-i18n="bar.lang.short">EN</span><span class="lbl" data-i18n="bar.lang">切換成英文 English</span></button>
       <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.qmode">全部列出</span></button>
-      <button type="button" class="bar-btn" id="bar-theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.theme">深色模式</span></button>
-      <button type="button" class="bar-btn" id="bar-share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl" data-i18n="bar.share">分享測驗</span></button>
+      <button type="button" class="bar-btn bar-menu" id="bar-menu" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span data-i18n="menu.btn">選單</span></button>
     </div>
   </div>
 </header>
@@ -552,6 +577,26 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   <p id="rd-desc" class="muted"></p>
   <div class="actions"><button class="btn" id="rd-keep" autofocus></button><button class="btn primary" id="rd-ok" data-i18n="again.ok">清除並重新作答</button></div>
 </dialog>
+<!-- 頁首「選單」：手機從下方滑出，電腦在右上角往下打開 -->
+<dialog id="menu" class="menu" aria-label="選單" data-i18n-attr="aria-label:menu.btn">
+  <div class="menu-in" tabindex="-1">
+    <div class="menu-grab" aria-hidden="true"></div>
+    <div id="m-acct">
+      <h2 class="menu-sec" data-i18n="menu.account">帳號</h2>
+      <p class="menu-who" id="m-who" hidden></p>
+      <button type="button" class="menu-row" id="m-signin"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12h-8"/><path d="M20 12a8 8 0 1 1-2.6-5.9"/></svg><span><span data-i18n="menu.signin">用 Google 登入</span><small data-i18n="menu.signinSub">換手機也看得到你的結果</small></span></button>
+      <button type="button" class="menu-row" id="m-history" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg><span data-i18n="home.myResults">我的歷次結果</span></button>
+      <button type="button" class="menu-row" id="m-signout" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg><span data-i18n="signout">登出</span></button>
+      <hr>
+    </div>
+    <h2 class="menu-sec" data-i18n="menu.settings">設定</h2>
+    <button type="button" class="menu-row" id="m-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span data-i18n="bar.theme">深色模式</span><span class="r" id="m-theme-v" aria-hidden="true">關</span></button>
+    <button type="button" class="menu-row" id="m-share"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/></svg><span data-i18n="bar.share">分享這個測驗給朋友</span></button>
+    <hr>
+    <h2 class="menu-sec" data-i18n="menu.other">其他</h2>
+    <a class="menu-row" id="m-privacy" href="privacy.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span data-i18n="home.privacy">隱私說明</span></a>
+  </div>
+</dialog>
 
 <script src="js/config.js"></script>
 <script src="js/backend.js"></script>
@@ -670,7 +715,9 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   animal:ANIMAL, tname:TNAME, ui:{
   'site.title':'測出你的動物本色｜DISC 行為風格測驗',
   'site.desc':'每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。46 題，約 5–10 分鐘，測出你的動物本色。',
-  'bar.brand':'測出你的\u200b動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.theme.light':'淺色模式', 'bar.share':'分享測驗',
+  'bar.brand':'測出你的\u200b動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.share':'分享這個測驗給朋友',
+  'menu.btn':'選單', 'menu.account':'帳號', 'menu.signin':'用 Google 登入', 'menu.signinSub':'換手機也看得到你的結果',
+  'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關', 'menu.other':'其他',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
   'peer.title':'換個角度看自己', 'peer.new':'新', 'tab.nav':'結果切換', 'tab.mine':'我的結果', 'tab.others':'他人角度', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
@@ -706,7 +753,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'hd.title':'要回到首頁嗎？', 'hd.progress':'你的作答進度會保存在這個瀏覽器裡，之後可以在首頁按「繼續上次的作答」接著做。',
   'hd.progressStay':'繼續作答',
   'hd.result':'你的結果會保存在這個瀏覽器裡，之後可以在首頁按「查看我的結果」再打開。如果重新作答，這次的結果會被新的結果取代。',
-  'hd.resultStay':'留在結果頁', 'nav.home':'回到首頁',
+  'hd.resultStay':'留在結果頁', 'nav.home':'回到首頁', 'hd.leaveTitle':'要離開作答嗎？', 'hd.leave':'離開作答',
   'chart.up':'主動', 'chart.down':'配合', 'chart.left':'重事', 'chart.right':'重人',
   'chart.aria':'DISC 四向圖：{list}，你的平均 {avg} 分', 'score.item':'{lbl} {n} 分',
   'vs.cham':'你的四種分數都很接近，沒有特別突出或特別少展現的一型，能依情境切換不同的風格。',
@@ -1385,10 +1432,21 @@ const inProgress = () => ['s-quiz','s-info','s-blind'].some(id=>!$('#'+id).hidde
 const onResult = () => !$('#s-result').hidden;
 const homeDialog = $('#home-dialog');
 const HOME_ASK = {progress:{desc:'hd.progress', stay:'hd.progressStay'}, result:{desc:'hd.result', stay:'hd.resultStay'}};
+let afterLeave = null;   // 從選單點了會離開作答的項目：按「離開作答」後要做的事
 function askGoHome(){
   const m = onResult() ? HOME_ASK.result : HOME_ASK.progress;
+  afterLeave = null;
+  $('#hd-title').textContent = t('hd.title'); $('#hd-go').textContent = t('nav.home');
   $('#hd-desc').textContent = t(m.desc); $('#hd-stay').textContent = t(m.stay);
   if (homeDialog.showModal) homeDialog.showModal(); else if (window.confirm(t('hd.title')+t(m.desc))) goHome();
+}
+/* 作答中從選單點了會離開作答的項目：用同一個確認框先問，標題和按鈕改成「離開作答」 */
+function leaveThen(fn){
+  if (!inProgress()) return fn();
+  $('#hd-title').textContent = t('hd.leaveTitle'); $('#hd-go').textContent = t('hd.leave');
+  $('#hd-desc').textContent = t('hd.progress'); $('#hd-stay').textContent = t('hd.progressStay');
+  if (!homeDialog.showModal){ if (window.confirm(t('hd.leaveTitle')+t('hd.progress'))) fn(); return; }
+  afterLeave = fn; homeDialog.showModal();
 }
 function goHome(){
   if (homeDialog.open) homeDialog.close();
@@ -1399,7 +1457,7 @@ function goHome(){
   show('s-home');
 }
 $('#hd-stay').addEventListener('click', ()=>homeDialog.close());
-$('#hd-go').addEventListener('click', goHome);
+$('#hd-go').addEventListener('click', ()=>{ const fn = afterLeave; afterLeave = null; if (!fn) return goHome(); homeDialog.close(); fn(); });
 $('#view-result').addEventListener('click', ()=>{ if (st && st.done){ renderResult(); show('s-result'); } });
 document.querySelector('.bar-brand').addEventListener('click', e=>{
   if (inProgress() || onResult()){ e.preventDefault(); askGoHome(); }
@@ -1410,12 +1468,42 @@ document.querySelector('.bar-brand').addEventListener('click', e=>{
    看過去的結果 → 回到我的歷次結果；首頁 → 照常離開網站 */
 window.addEventListener('popstate', ()=>{
   if (restartDialog.open) restartDialog.close();
+  if (menu.open){ menu.close(); guardOn(); return; }
   if (homeDialog.open){ homeDialog.close(); guardOn(); return; }
   if (inProgress()){ guardOn(); askGoHome(); return; }
-  if (!$('#s-history').hidden){ goHome(); return; }
+  if (!$('#s-history').hidden){ if (histBack==='s-result' && st && st.done){ histBack = null; renderResult(); show('s-result'); } else goHome(); return; }
   if (onResult()){ if (st && st.viewOnly){ guardOn(); openHistory(); } else goHome(); return; }
   if (!(history.state && history.state.disc)) history.back();
 });
+
+/* 頁首「選單」：帳號（登入／我的歷次結果／登出）、設定（深色模式、分享）、其他（隱私說明）。
+   沒有後端時不顯示帳號區；作答中點了會離開作答的項目，先跳出確認框 */
+const menu = $('#menu');
+function openMenu(){
+  $('#m-acct').hidden = !BK.enabled;
+  $('#m-signin').hidden = !!USER; $('#m-history').hidden = $('#m-signout').hidden = !USER;
+  $('#m-who').hidden = !USER; $('#m-who').textContent = USER ? t('save.who', {email:USER.email||''}) : '';
+  const wide = matchMedia('(min-width:768px)').matches, r = $('#bar-menu').getBoundingClientRect();
+  menu.style.top = wide ? Math.round(r.bottom + 8)+'px' : '';
+  menu.style.right = wide ? Math.round(document.documentElement.clientWidth - r.right)+'px' : '';
+  menu.showModal(); $('.menu-in').focus();   // 焦點放在整個清單上，第一項不會一打開就有外框
+  $('#bar-menu').setAttribute('aria-expanded', 'true');
+}
+$('#bar-menu').addEventListener('click', openMenu);
+menu.addEventListener('close', ()=>$('#bar-menu').setAttribute('aria-expanded', 'false'));
+menu.addEventListener('click', e=>{ if (e.target===menu) menu.close(); });   // 點選單外面就關
+$('#m-signin').addEventListener('click', ()=>{
+  menu.close();
+  if (IN_APP) return toast(t('save.blocked', {app:IN_APP}), true);
+  leaveThen(async ()=>{
+    toast(t('save.going'));
+    try { await BK.signInWithGoogle(); } catch(e){ toast(t('save.fail')); }
+  });
+});
+/* 從結果頁打開歷次結果，按返回會回到結果頁 */
+$('#m-history').addEventListener('click', ()=>{ menu.close(); const back = onResult() && !(st && st.viewOnly) ? 's-result' : null; leaveThen(()=>openHistory(back)); });
+$('#m-signout').addEventListener('click', ()=>{ menu.close(); leaveThen(signOut); });
+$('#m-privacy').addEventListener('click', e=>{ menu.close(); if (inProgress()){ e.preventDefault(); leaveThen(()=>{ location.href = 'privacy.html'; }); } });
 
 /* result */
 const pct = m => Math.round((m-1)/4*100);
@@ -1958,16 +2046,16 @@ function toast(t, long){ const el=$('#toast'); el.textContent=t; clearTimeout(to
 /* 深色模式開關：沒選過時跟著系統顯示；切換後記住 */
 const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
 const isDark = () => { const t=document.documentElement.dataset.theme; return t ? t==='dark' : !!(darkMQ && darkMQ.matches); };
-/* 按鈕名稱顯示按下去會切到的模式（像語言按鈕一樣）；記在 data-i18n，換語言時也跟著對 */
-const syncTheme = () => { const l=$('#bar-theme .lbl'); l.dataset.i18n = isDark() ? 'bar.theme.light' : 'bar.theme'; l.textContent = t(l.dataset.i18n); };
-$('#bar-theme').addEventListener('click', ()=>{
+/* 選單裡的「深色模式」開關：右邊寫目前是開還是關 */
+const syncTheme = () => { const on = isDark(); $('#m-theme').setAttribute('aria-checked', String(on)); $('#m-theme-v').textContent = t(on ? 'menu.on' : 'menu.off'); };
+$('#m-theme').addEventListener('click', ()=>{
   const t = isDark() ? 'light' : 'dark';
   document.documentElement.dataset.theme = t; try{ localStorage.setItem('disc-theme', t); }catch(e){}
   syncTheme();
 });
 if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', syncTheme);
 syncTheme();
-$('#bar-share').addEventListener('click', ()=>shareTest(t('test.shareText'), toast));
+$('#m-share').addEventListener('click', ()=>{ menu.close(); shareTest(t('test.shareText'), toast); });
 async function inviteFriends(){
   return shareTest(t('test.inviteText'), m=>{ $('#invite-msg').textContent = m; });
 }
@@ -2014,7 +2102,7 @@ function resultExtras(r){
   const el = $('#s-result');
   if (st.viewOnly){
     el.insertAdjacentHTML('afterbegin', `<div class="card view-bar"><p>${t('view.past', {date:fmtDate(st.finishedAt)})}</p><button class="btn" id="back-history">${t('view.back')}</button></div>`);
-    $('#back-history').addEventListener('click', openHistory);
+    $('#back-history').addEventListener('click', ()=>openHistory());
     ['#again','#again-confirm','#rate'].forEach(q=>{ const x=$(q); if (!x) return; (q==='#rate' ? x.closest('.card') : x).hidden = true; });
     return;
   }
@@ -2100,7 +2188,7 @@ function renderSaveCard(note){
     box.innerHTML = `<h3 class="hl">${t('save.done')}</h3>
       <p class="small muted">${t('save.who', {email:esc(USER.email||'')})}</p>
       <div class="actions"><button class="btn" id="go-history">${t('save.goHistory')}</button><button class="btn link" id="sign-out">${t('signout')}</button></div>`;
-    $('#go-history').addEventListener('click', openHistory);
+    $('#go-history').addEventListener('click', ()=>openHistory(null));
     $('#sign-out').addEventListener('click', signOut);
     return;
   }
@@ -2132,7 +2220,9 @@ function histPeerHTML(row){
   return hit ? `<a class="hist-peer" href="${peerHref('#k='+esc(hit.code))}">${t('peer.hist.see', {n:+hit.n||0})}</a>`
              : `<a class="hist-peer" href="${peerHref('#from='+esc(row.id))}">${t('peer.hist.go')}</a>`;
 }
-async function openHistory(){
+let histBack = null;   // 歷次結果按返回要回去的畫面（從結果頁的選單打開時是結果頁）
+async function openHistory(back){
+  if (back !== undefined) histBack = back;
   if (st && st.viewOnly) st = load();
   show('s-history');
   $('#hist-who').textContent = USER ? t('save.who', {email:USER.email||''}) : '';
@@ -2179,7 +2269,7 @@ $('#hist-list').addEventListener('click', e=>{
         done:true, finishedAt:Date.parse(row.created_at), viewOnly:true};
   lastImage = null; renderResult(); show('s-result');
 });
-$('#my-results').addEventListener('click', openHistory);
+$('#my-results').addEventListener('click', ()=>openHistory(null));
 $('#hist-home').addEventListener('click', goHome);
 $('#hist-out').addEventListener('click', signOut);
 $('#del-open').addEventListener('click', ()=>{ $('#del-confirm').hidden = false; $('#del-cancel').focus(); });
@@ -2219,7 +2309,8 @@ const loadEN = () => window.DISC_LANG_EN ? Promise.resolve(window.DISC_LANG_EN) 
 function rerender(){
   syncHomeButtons(); renderClassNote();
   $('#inapp-home').innerHTML = inAppNoteHTML('home');
-  [homeDialog, restartDialog].forEach(d=>{ if (d.open) d.close(); });
+  [homeDialog, restartDialog, menu].forEach(d=>{ if (d.open) d.close(); });
+  syncTheme();
   $('#toast').textContent = '';
   if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
   else if (!$('#s-blind').hidden && st && st.blindOrders) renderBlind(blindPage);
