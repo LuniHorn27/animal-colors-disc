@@ -31,7 +31,7 @@ window.PEER_LANG_EN = {
   "retry": "Try again",
   "nobackend.t": "Not available right now",
   "nobackend.b": "The site isn't fully set up yet. Please try again later.",
-  "back.full": "See my full result",
+  "back.full": "See my personal result",
   "tab.nav": "Switch results",
   "tab.mine": "My result",
   "tab.others": "Others' view",

@@ -1073,7 +1073,7 @@ async function renderOwner(code, token, my) {
 // 自動轉到對照頁：換掉目前這一筆，不多記一筆（按返回不會又被轉回來），也保留分頁標記
 function goHash(h) { history.replaceState(history.state, '', h); render(); }
 // 「我的結果｜他人角度」切換（index.html 有同一套）：從主頁點過來的，這一筆標成 tabBack，
-// 點「我的結果」或「看我的完整結果」就用上一頁回去，瀏覽紀錄不會越疊越多；從這裡點過去的，主頁按返回會回到這裡
+// 點「我的結果」或「看我的個人結果」就用上一頁回去，瀏覽紀錄不會越疊越多；從這裡點過去的，主頁按返回會回到這裡
 const TAB_KEY = 'disc-tab-from';
 function markTab() { try { sessionStorage.setItem(TAB_KEY, 'peer:' + Date.now()); } catch (e) {} }
 function takeTab(from) {

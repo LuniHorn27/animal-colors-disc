@@ -2375,7 +2375,7 @@ const WANT_HIST = location.hash === '#history';
 if (WANT_HIST) history.replaceState(history.state, '', location.pathname + location.search);
 /* 從「沒有結果」頁按登入：回來後也直接打開歷次結果 */
 const WANT_HIST_NONE = (()=>{ try{ const v = sessionStorage.getItem('disc-want-hist'); sessionStorage.removeItem('disc-want-hist'); return v==='1'; }catch(e){ return false; } })();
-/* 從換個角度頁面點「我的結果」或「看我的完整結果」過來：這一筆標成分頁，不再多記一筆（按返回直接回到那一頁） */
+/* 從換個角度頁面點「我的結果」或「看我的個人結果」過來：這一筆標成分頁，不再多記一筆（按返回直接回到那一頁） */
 if (takeTab('peer')) try{ history.replaceState({disc:1, tabBack:1}, ''); }catch(e){}
 /* 有登入紀錄（或剛從 Google 登入回來）才載入登入程式 */
 if (BK.enabled && BK.hasSession()){

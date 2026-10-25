@@ -41,7 +41,7 @@
     'retry': '再試一次',
     'nobackend.t': '目前無法使用',
     'nobackend.b': '網站還沒有設定好後端，請稍後再試。',
-    'back.full': '看我的完整結果',
+    'back.full': '看我的「個人結果」',
     'tab.nav': '結果切換',
     'tab.mine': '我的結果',
     'tab.others': '他人角度',

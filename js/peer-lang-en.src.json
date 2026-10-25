@@ -28,7 +28,7 @@
  "ui.retry": "再試一次",
  "ui.nobackend.t": "目前無法使用",
  "ui.nobackend.b": "網站還沒有設定好後端，請稍後再試。",
- "ui.back.full": "看我的完整結果",
+ "ui.back.full": "看我的「個人結果」",
  "ui.tab.nav": "結果切換",
  "ui.tab.mine": "我的結果",
  "ui.tab.others": "他人角度",
