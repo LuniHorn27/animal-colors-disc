@@ -575,38 +575,38 @@ window.PEER_LANG_EN = {
     "title": "A side of you that you may not notice",
     "D": [
      "People see you as decisive and direct, more than you think you are. With them, you may often be the one who decides first and pushes things forward: when a discussion gets stuck, one \"let's just go with this\" from you gets everything moving. You may feel it is no big deal, but to others this is what a person with clear opinions looks like.",
-     "What made you think I am decisive?"
+     "Think back: was there a time when I made a decision and things moved forward because of it? How did that feel for you?"
     ],
     "I": [
      "People see you as enthusiastic and easy to talk to, more than you think you are. You may be especially relaxed when you are with them, bringing up topics and keeping the mood going so things don't go quiet. You may feel you are just chatting naturally, but others remember that being with you feels easy and full of energy.",
-     "When is it liveliest when you are with me?"
+     "Was there a time when being with me felt especially good? What made you feel at ease that day?"
     ],
     "S": [
      "People see you as steady and considerate, more than you think you are. The care that feels ordinary to you, such as remembering how someone is doing, letting them finish what they want to say, or keeping them company when they are down, may be something others remember. To them, you are someone who makes them feel safe and reliable.",
-     "What have I done that made you feel looked after?"
+     "Was there a time when my company or help meant a lot to you? Can you tell me more about what was going on?"
     ],
     "C": [
      "People see you as careful and precise, more than you think you are. Your habit of double-checking and getting the details right does not go unnoticed, and it makes others feel at ease leaving things to you. You may feel you are just being cautious, but to others it is a trait they can rely on.",
-     "What made you think I am careful?"
+     "Was there a time when me double-checking made things go more smoothly? How do you see the way I work?"
     ]
    },
    "down": {
     "title": "A side that people see less",
     "D": [
      "You see yourself as decisive and direct, but people feel it less. Perhaps you use your decisiveness mostly on your own matters, and in group decisions you listen first and prefer not to take over. As a result, you may have an answer in mind while others don't know what you think, so they don't see you as someone with strong opinions.",
-     "Do you think I make decisions quickly?"
+     "In your eyes, what am I like when I have to make a decision? When would you want me to say what I think more directly?"
     ],
     "I": [
      "You see yourself as enthusiastic and easy to talk to, but people feel it less. Perhaps your enthusiasm shows up mostly in familiar settings or with certain people, and you hold back around others. They only see your quiet side and may not know how much you enjoy talking and how energetic you can be.",
-     "Do you think I am easy to talk to?"
+     "When do I seem more relaxed, and when do I seem quieter? Which side of me would you like to see more?"
     ],
     "S": [
      "You see yourself as steady and considerate, but people feel it less. Perhaps your care stays mostly inside, or is shown in ways others don't notice, such as quietly remembering what someone needs without saying it. They may not realize how much you care about them, so they don't see you as especially thoughtful.",
-     "Do you think I am someone you can rely on?"
+     "How do you usually know that someone cares about you? Have you felt that from me?"
     ],
     "C": [
      "You see yourself as careful and precise, but people feel it less. Perhaps your care and checking mostly happen where others can't see, such as going over the data again on your own. Others only see the final result and don't know how much effort went into it, so they don't see you as especially rigorous.",
-     "Do you think I work carefully?"
+     "How do you usually see the way I handle things? If I told you I often check things over again in private, how would that feel to you?"
     ]
    },
    "same": "The way people see you is very close to how you described yourself. How you see yourself is about how others see you too."
