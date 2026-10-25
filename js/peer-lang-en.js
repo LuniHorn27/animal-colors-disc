@@ -611,6 +611,8 @@ window.PEER_LANG_EN = {
      "How do you usually see the way I handle things? If I told you I often check things over again in private, how would that feel to you?"
     ]
    },
+   "sameTitle": "Where you and others agree",
+   "sameTag": "Open area | You and others both see it",
    "same": "The way people see you is very close to how you described yourself. How you see yourself is about how others see you too."
   },
   "SECT": {

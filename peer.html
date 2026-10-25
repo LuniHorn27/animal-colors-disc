@@ -848,7 +848,7 @@ async function renderOwner(code, token, my) {
       // 落差說明：每一型一張卡片，開頭標動物和「你可能沒注意到的一面／大家比較少看見的一面」
       const gapCard = (x) => { const g2 = R.GAP[x.dir === 'peer' ? 'up' : 'down'];
         return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t, true)}${g2.title}</p><p class="tag">${g2.tag}</p><p>${g2[x.t][0]}</p><p class="ask">${T('ow.ask', { q: g2[x.t][1] })}</p></div>`; };
-      const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p>${R.GAP.same}</p></div>`;
+      const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p class="gh">${R.GAP.sameTitle}</p><p class="tag">${R.GAP.sameTag}</p><p>${R.GAP.same}</p></div>`;
       // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
       // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
       const anonList = Array.isArray(res.anon) ? res.anon : null;
