@@ -39,11 +39,6 @@ window.PEER_LANG_EN = {
   "tab.invited": "Invited",
   "tab.replies": "{n} replies",
   "tab.replies.one": "{n} reply",
-  "lv.hi": "High",
-  "lv.mh": "Fairly high",
-  "lv.mid": "Medium",
-  "lv.ml": "Fairly low",
-  "lv.lo": "Low",
   "cham": "Chameleon",
   "cham.full": "Chameleon (Balanced)",
   "title.one": "{t} {animal} ({type})",
@@ -178,16 +173,6 @@ window.PEER_LANG_EN = {
   "ow.more.n": "{n} replies so far",
   "ow.more.n.one": "{n} reply so far",
   "ow.more.b": "Invite a few more for a fuller result.",
-  "ow.cmpT": "The four animals, side by side",
-  "ow.legSelf": "Your own view",
-  "ow.legPeer": "Others' view (average of {n} people)",
-  "ow.legPeer.one": "Others' view (1 person)",
-  "ow.you": "You",
-  "ow.others": "Others",
-  "ow.less": "Less",
-  "ow.avg": "Average",
-  "ow.moreS": "More",
-  "ow.cmpNote": "The middle line is the average of the four animals. Your own answers and the replies use different questions, so each side is converted separately. We only compare which animals are higher or lower in you. The labels on the right (High to Low) compare each animal with your own average.",
   "ow.eachT": "How each person sees you",
   "ow.anon": "Anonymous",
   "ow.anonMore": "{n} more people replied anonymously. They are only counted in the averages above.",
@@ -612,43 +597,47 @@ window.PEER_LANG_EN = {
   "GAP": {
    "up": {
     "title": "A side of you that you may not notice",
+    "tag": "Blind area | Others see it, you don't",
     "D": [
-     "People see you as decisive and direct, more than you think you are. With them, you may often be the one who decides first and pushes things forward.",
-     "What made you think I am decisive?"
+     "You may work quickly and take action readily, and people notice. When a discussion drags on, you might speak up first or get things started, and things begin to move; when someone needs to take responsibility, you are often the first to step forward. You may feel it is just something you do naturally, but in others' eyes you might be the person who makes them feel \"with you around, we have a direction.\"",
+     "Think back: was there a time when I made a decision and things moved forward because of it? How did that feel for you?"
     ],
     "I": [
-     "People see you as enthusiastic and easy to talk to, more than you think you are. You may be especially relaxed when you are with them.",
-     "When is it liveliest when you are with me?"
+     "Being with you may make people feel especially at ease. You start conversations and lift the mood, you have plenty of ideas, and you tell things in a lively, engaging way, so even quieter people may feel able to speak up. You may think you are just chatting, but others may remember that day with you as a really good one.",
+     "Was there a time when being with me felt especially good? What made you feel at ease that day?"
     ],
     "S": [
-     "People see you as steady and considerate, more than you think you are. The care that feels ordinary to you may be something others remember.",
-     "What have I done that made you feel looked after?"
+     "The small things you do quietly may be remembered by everyone. You are patient, you let people finish what they want to say, you remember how they have been doing, and you keep them company when they are down. It may feel ordinary to you, but it may mean a great deal of reassurance to them. Many people may be thinking: it's so good to have you around.",
+     "Was there a time when my company or help meant a lot to you? Can you tell me more about what was going on?"
     ],
     "C": [
-     "People see you as careful and precise, more than you think you are. Your habit of double-checking does not go unnoticed.",
-     "What made you think I am careful?"
+     "Your organized way of working and attention to detail may not go unnoticed. You double-check and look after quality, so people feel especially at ease leaving things to you. You may think it is just a habit, but others may be quietly grateful: how lucky to have you.",
+     "Was there a time when me double-checking made things go more smoothly? How do you see the way I work?"
     ]
    },
    "down": {
     "title": "A side that people see less",
+    "tag": "Hidden area | You see it, others don't",
     "D": [
-     "You see yourself as decisive and direct, but people feel it less. Perhaps you use your decisiveness mostly on your own matters.",
-     "Do you think I make decisions quickly?"
+     "You actually have strong opinions and plenty of drive to act, but in a crowd you may listen to what others say first and leave the spotlight to them. That thoughtfulness is a good thing, though others may not realize you already have ideas in mind. A reminder: now and then, share your views openly. People might light up when they hear them!",
+     "In your eyes, what am I like when I have to make a decision? When would you want me to say what I think more directly?"
     ],
     "I": [
-     "You see yourself as enthusiastic and easy to talk to, but people feel it less. Perhaps your enthusiasm shows up mostly in familiar settings.",
-     "Do you think I am easy to talk to?"
+     "You are actually warm and lively, with what seems like an endless supply of ideas, but this side may mostly be kept for people you know and trust. Around friends you don't know well yet, you may observe the mood first and deliberately hold back, so others see a quieter, calmer you. A reminder: now and then, show more of your charm. Others might be pleasantly surprised to find how fun you are!",
+     "When do I seem more relaxed, and when do I seem quieter? Which side of me would you like to see more?"
     ],
     "S": [
-     "You see yourself as steady and considerate, but people feel it less. Perhaps your care stays mostly inside, or is shown in ways others don't notice.",
-     "Do you think I am someone you can rely on?"
+     "You actually care a lot about the people around you, and you are patient and accepting, but you may tend to keep it inside rather than say it. You quietly remember what they need and think of them, but they may not know it. Now and then, say it out loud, even just \"How have you been lately?\" When people feel they are on your mind, they will surely be very happy.",
+     "How do you usually know that someone cares about you? Have you felt that from me?"
     ],
     "C": [
-     "You see yourself as careful and precise, but people feel it less. Perhaps your care and checking mostly happen where others can't see.",
-     "Do you think I work carefully?"
+     "You actually work in an organized and rigorous way, and many details are things you quietly checked in private. But others may only see the finished result, without knowing how much thought and time you put in to make sure everything is foolproof. A reminder: now and then, tell people directly what you did, so they can better understand your care and thoroughness.",
+     "How do you usually see the way I handle things? If I told you I often check things over again in private, how would that feel to you?"
     ]
    },
-   "same": "The way people see you is very close to how you described yourself. How you see yourself is about how others see you too."
+   "sameTitle": "Where you and others agree",
+   "sameTag": "Open area | You and others both see it",
+   "same": "The way people see you may be very close to how you see yourself. You know yourself well, and others really do see you. Such agreement is rare, and may mean that you and the people around you are genuine and honest with each other."
   },
   "SECT": {
    "core": "{name}'s core traits",

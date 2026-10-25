@@ -141,31 +141,13 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .pick.least[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .q-hint{font-size:15px;color:var(--muted);min-height:1.6em;margin:0}
 /* 結果 */
-.legend{display:flex;gap:16px;font-size:15px;align-items:center;flex-wrap:wrap}
-.dotc{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.dotc.self{background:var(--ink)} .dotc.peer{border:2px solid var(--ink)}
 /* 落差說明卡片：左邊粗線用那一型的動物色 */
 .gaps{display:flex;flex-direction:column;gap:12px}
 .gap{padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--gc,var(--line))}
 .gap p + p{margin-top:6px}
 .gap .gh{display:flex;align-items:center;gap:8px;font-weight:700}
+.gap .tag{font-size:13px;color:var(--muted)}
 .gap .ask{font-size:15px;color:var(--muted)}
-.db{display:flex;flex-direction:column;gap:12px}
-.db-row,.db-head,.db-scale{display:grid;grid-template-columns:84px 1fr 30px 30px;column-gap:6px;align-items:center}
-.db-row{font-size:15px}
-.db-row > span:first-child{white-space:nowrap}
-.db-row .v{font-variant-numeric:tabular-nums;text-align:right}
-.db-row .v.s{font-weight:700}
-.db-head{font-size:13px;color:var(--muted);text-align:right;margin-bottom:-6px}
-.db-track{position:relative;height:28px}
-.db-track .axis{position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
-.db-track .mid{position:absolute;left:50%;top:2px;bottom:2px;border-left:1.5px dashed var(--faint)}
-.db-track .seg{position:absolute;top:calc(50% - 3px);height:6px;border-radius:3px;background:var(--sunk)}
-.db-track .pt{position:absolute;top:calc(50% - 8px);width:16px;height:16px;border-radius:50%;margin-left:-8px}
-.db-track .pt.self{background:var(--ink)}
-.db-track .pt.peer{background:var(--surface);border:3px solid var(--ink)}
-.db-scale{font-size:13px;color:var(--faint)}
-.db-scale div{display:flex;justify-content:space-between}
 .sec{padding:24px}
 .sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
 .sec h3::after,h3.hl::after{content:"";display:block;width:100%;height:4px;border-radius:2px;margin-top:6px;background:var(--main,var(--ink))}
@@ -582,8 +564,6 @@ const failView = () => message(T('fail.t'), T('fail.b'), `<button class="btn pri
 
 // 回到主測驗看自己的完整結果（首頁有「查看我的結果」；登入的人也可以從「我的歷次結果」打開）
 const backLink = () => `<a class="back-link" href="./">${T('back.full')}</a>`;
-// 逐一比較右邊的字：換算後（profile）和自己平均比的高低
-const lvOf = (z) => T(z >= 1 ? 'lv.hi' : z >= 0.4 ? 'lv.mh' : z > -0.4 ? 'lv.mid' : z > -1 ? 'lv.ml' : 'lv.lo');
 
 /* =====================================================================
    一、邀請頁（邀請人）
@@ -1021,20 +1001,11 @@ async function renderOwner(code, token, my) {
       // 兩邊各自換算成「形狀」再比（見 peer-bank.js profile）：自評和他評的尺度不同，直接比他評會顯得比較極端
       const selfN = B.profile(B.normSelf(res.self_mean)), peerN = B.profile(B.normPeer(g.scores));
       const selfKey = keyOf(res.self_result), peerRes = B.classify(g.scores), peerKey = peerRes.key;
-      // 圖的兩端固定是 ±1.8（換算後的最大可能值約 ±1.73）
-      const pos = (x) => (50 + (Math.max(-1.8, Math.min(1.8, x)) / 1.8) * 45).toFixed(1);
-      const rows = TYPES.map((t) => {
-        const a = pos(selfN[t]), b = pos(peerN[t]), lo = Math.min(a, b), w = Math.abs(a - b);
-        return `<div class="db-row"><span><span class="dotc" style="background:${COLOR[t]}"></span>${codeName(t)}</span>
-          <div class="db-track"><div class="axis"></div><div class="mid"></div><div class="seg" style="left:${lo}%;width:${w}%"></div>
-          <div class="pt peer" style="left:${b}%"></div><div class="pt self" style="left:${a}%"></div></div>
-          <span class="v s">${lvOf(selfN[t])}</span><span class="v">${lvOf(peerN[t])}</span></div>`;
-      }).join('');
       const lines = B.gapLines(selfN, peerN);
       // 落差說明：每一型一張卡片，開頭標動物和「你可能沒注意到的一面／大家比較少看見的一面」
       const gapCard = (x) => { const g2 = R.GAP[x.dir === 'peer' ? 'up' : 'down'];
-        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t, true)}${g2.title}</p><p>${g2[x.t][0]}</p><p class="ask">${T('ow.ask', { q: g2[x.t][1] })}</p></div>`; };
-      const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p>${R.GAP.same}</p></div>`;
+        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t, true)}${g2.title}</p><p class="tag">${g2.tag}</p><p>${g2[x.t][0]}</p><p class="ask">${T('ow.ask', { q: g2[x.t][1] })}</p></div>`; };
+      const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p class="gh">${R.GAP.sameTitle}</p><p class="tag">${R.GAP.sameTag}</p><p>${R.GAP.same}</p></div>`;
       // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
       // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
       const anonList = Array.isArray(res.anon) ? res.anon : null;
@@ -1064,14 +1035,6 @@ async function renderOwner(code, token, my) {
         </div>
         <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${backLink()}</div>
         <div class="gaps">${gapHTML}</div>
-        <div class="card db">
-          <p style="font-weight:700">${T('ow.cmpT')}</p>
-          <div class="legend"><span><span class="dotc self"></span>${T('ow.legSelf')}</span><span><span class="dotc peer"></span>${T('ow.legPeer', { n: g.n })}</span></div>
-          <div class="db-head" aria-hidden="true"><span></span><span></span><span>${T('ow.you')}</span><span>${T('ow.others')}</span></div>
-          ${rows}
-          <div class="db-scale"><span></span><div><span>${T('ow.less')}</span><span>${T('ow.avg')}</span><span>${T('ow.moreS')}</span></div><span></span><span></span></div>
-          <p class="note">${T('ow.cmpNote')}</p>
-        </div>
         ${named}
         <p class="note">${T('ow.ref')}</p>
         ${few ? '' : `<div class="card stack" style="gap:10px" id="more-box">
