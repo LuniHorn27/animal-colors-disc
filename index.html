@@ -216,7 +216,9 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 /* brand */
 .site-bar{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px);padding-top:env(safe-area-inset-top,0px)}
 /* 結果頁和換個角度頁面共用的「我的結果｜他人角度」分頁（peer.html 有同一份） */
-.ptabs{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px)}
+.ptabs{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px);position:sticky;top:0;z-index:9}
+/* 往下捲時頁首捲走，只有分頁列留在最上面；捲到某張卡片時留出分頁列的高度 */
+html:has(#ptabs:not([hidden])){scroll-padding-top:56px}
 .ptabs-in{max-width:800px;margin-inline:auto;display:flex}
 .ptabs a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;margin-bottom:-1px;border-bottom:3px solid transparent;color:var(--muted);font-size:16px;font-weight:600;text-decoration:none}
 .ptabs a:hover{color:var(--ink)}
