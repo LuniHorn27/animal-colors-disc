@@ -224,9 +224,9 @@ html:has(#ptabs:not([hidden])){scroll-padding-top:56px}
 .ptabs a:hover{color:var(--ink)}
 .ptabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
 .ptabs a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;border-radius:6px}
-/* 「他人角度」旁的小標籤：還沒邀請「新」→ 邀請後「已邀請」→ 有人回覆就顯示人數 */
-.tab-badge{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 8px;border-radius:999px;background:var(--ink);color:var(--surface);font-size:12px;line-height:1;font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
-.tab-badge.inv{background:var(--sunk);color:var(--muted)}
+/* 「他人角度」旁的小標籤：還沒邀請「新」→ 邀請後「已邀請」→ 有人回覆就顯示人數；「新」和人數用墨色實心，「已邀請」用墨色框線，深淺模式都看得清楚 */
+.tab-badge{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 8px;border-radius:999px;background:var(--ink);color:var(--surface);font-size:13px;line-height:1;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tab-badge.inv{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
 .tab-badge.n{padding:0 6px}
 /* 很窄的手機：兩個分頁平分會把「Others' view」加標籤擠到換行，改成依內容分寬 */
 @media (max-width:359px){.ptabs a{flex:1 1 auto;white-space:nowrap}}
