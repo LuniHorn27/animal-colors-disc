@@ -601,6 +601,8 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 <dialog id="menu" class="menu" aria-label="選單" data-i18n-attr="aria-label:menu.btn">
   <div class="menu-in" tabindex="-1">
     <div class="menu-grab" aria-hidden="true"></div>
+    <button type="button" class="menu-row" id="m-peer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg><span data-i18n="peer.title">換個角度看自己</span></button>
+    <hr>
     <div id="m-acct">
       <h2 class="menu-sec" data-i18n="menu.account">帳號</h2>
       <p class="menu-who" id="m-who" hidden></p>
@@ -1515,7 +1517,7 @@ window.addEventListener('popstate', ()=>{
   if (!(history.state && history.state.disc)) history.back();
 });
 
-/* 頁首「選單」：帳號（登入／我的歷次結果／登出）、設定（深色模式、分享）、其他（隱私說明）。
+/* 頁首「選單」：換個角度看自己、帳號（登入／我的歷次結果／登出）、設定（深色模式、分享）。
    沒有後端時不顯示帳號區；作答中點了會離開作答的項目，先跳出確認框 */
 const menu = $('#menu');
 function openMenu(){
@@ -1542,6 +1544,12 @@ $('#m-signin').addEventListener('click', ()=>{
 /* 從結果頁打開歷次結果，按返回會回到結果頁 */
 $('#m-history').addEventListener('click', ()=>{ menu.close(); const back = onResult() && !(st && st.viewOnly) ? 's-result' : null; leaveThen(()=>openHistory(back)); });
 $('#m-signout').addEventListener('click', ()=>{ menu.close(); leaveThen(signOut); });
+/* 換個角度看自己：在結果頁就跟按上方「他人角度」分頁一樣；其他畫面直接打開換個角度頁面（那邊會依這台裝置的結果和邀請決定顯示什麼） */
+$('#m-peer').addEventListener('click', ()=>{
+  menu.close();
+  if (!$('#ptabs').hidden) return $('#ptab-peer').click();
+  leaveThen(()=>{ location.href = peerHref(''); });
+});
 
 /* result */
 const pct = m => Math.round((m-1)/4*100);
