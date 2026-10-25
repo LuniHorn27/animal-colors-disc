@@ -37,7 +37,6 @@ window.DISC_LANG_EN = {
   "menu.settings": "Settings",
   "menu.on": "On",
   "menu.off": "Off",
-  "menu.other": "More",
   "bar.lang.short": "中",
   "bar.lang": "Switch to Chinese 中文",
   "lang.fail": "English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。",

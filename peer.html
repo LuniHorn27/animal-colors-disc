@@ -323,9 +323,6 @@ svg text{font-family:var(--font-sans)}
     <h2 class="menu-sec" data-i18n="menu.settings">設定</h2>
     <button type="button" class="menu-row" id="m-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span data-i18n="theme">深色模式</span><span class="r" id="m-theme-v" aria-hidden="true">關</span></button>
     <button type="button" class="menu-row" id="m-share"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/></svg><span data-i18n="menu.share">分享這個測驗給朋友</span></button>
-    <hr>
-    <h2 class="menu-sec" data-i18n="menu.other">其他</h2>
-    <a class="menu-row" id="m-privacy" href="privacy.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span data-i18n="menu.privacy">隱私說明</span></a>
   </div>
 </dialog>
 <main class="wrap" id="app"></main>
@@ -478,7 +475,6 @@ menu.addEventListener('click', (e) => { if (e.target === menu) menu.close(); });
 $('#m-signin').addEventListener('click', () => { menu.close(); P.signInWithGoogle().catch(() => toast(T('loginFail'))); });
 $('#m-signout').addEventListener('click', async () => { menu.close(); try { await P.signOut(); } catch (e) {} render(); });
 $('#m-history').addEventListener('click', () => menu.close());
-$('#m-privacy').addEventListener('click', () => menu.close());
 $('#m-share').addEventListener('click', async () => {
   menu.close();
   const url = new URL('./', location.href).href, data = { title: T('menu.shareTitle'), text: T('menu.shareText'), url };

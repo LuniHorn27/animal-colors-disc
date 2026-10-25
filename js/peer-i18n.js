@@ -31,8 +31,6 @@
     'menu.shareTitle': '動物本色｜DISC 行為風格測驗',
     'menu.shareText': '動物本色：DISC 行為風格測驗，大約 5–10 分鐘，測出你的本色是哪幾種動物！',
     'menu.copied': '測驗連結已複製，可以直接貼給朋友。',
-    'menu.other': '其他',
-    'menu.privacy': '隱私說明',
     'bar.lang': '切換成英文 English',
     'lang.fail': 'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
     'copied': '已複製',

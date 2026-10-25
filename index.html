@@ -614,9 +614,6 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <h2 class="menu-sec" data-i18n="menu.settings">設定</h2>
     <button type="button" class="menu-row" id="m-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span data-i18n="bar.theme">深色模式</span><span class="r" id="m-theme-v" aria-hidden="true">關</span></button>
     <button type="button" class="menu-row" id="m-share"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/></svg><span data-i18n="bar.share">分享這個測驗給朋友</span></button>
-    <hr>
-    <h2 class="menu-sec" data-i18n="menu.other">其他</h2>
-    <a class="menu-row" id="m-privacy" href="privacy.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span data-i18n="home.privacy">隱私說明</span></a>
   </div>
 </dialog>
 
@@ -739,7 +736,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'site.desc':'每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。46 題，約 5–10 分鐘，測出你的動物本色。',
   'bar.brand':'測出你的\u200b動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.share':'分享這個測驗給朋友',
   'menu.btn':'選單', 'menu.account':'帳號', 'menu.signin':'用 Google 登入', 'menu.signinSub':'換手機也看得到你的結果',
-  'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關', 'menu.other':'其他',
+  'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
   'peer.title':'換個角度看自己', 'peer.new':'新', 'tab.nav':'結果切換', 'tab.mine':'我的結果', 'tab.others':'他人角度', 'tab.invited':'已邀請', 'tab.replies':'{n} 人回覆',
@@ -1547,7 +1544,6 @@ $('#m-signin').addEventListener('click', ()=>{
 /* 從結果頁打開歷次結果，按返回會回到結果頁 */
 $('#m-history').addEventListener('click', ()=>{ menu.close(); const back = onResult() && !(st && st.viewOnly) ? 's-result' : null; leaveThen(()=>openHistory(back)); });
 $('#m-signout').addEventListener('click', ()=>{ menu.close(); leaveThen(signOut); });
-$('#m-privacy').addEventListener('click', e=>{ menu.close(); if (inProgress()){ e.preventDefault(); leaveThen(()=>{ location.href = 'privacy.html'; }); } });
 
 /* result */
 const pct = m => Math.round((m-1)/4*100);
