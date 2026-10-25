@@ -573,6 +573,7 @@ window.PEER_LANG_EN = {
   "GAP": {
    "up": {
     "title": "A side of you that you may not notice",
+    "tag": "Blind area | Others see it, you don't",
     "D": [
      "People see you as decisive and direct, more than you think you are. With them, you may often be the one who decides first and pushes things forward: when a discussion gets stuck, one \"let's just go with this\" from you gets everything moving. You may feel it is no big deal, but to others this is what a person with clear opinions looks like.",
      "Think back: was there a time when I made a decision and things moved forward because of it? How did that feel for you?"
@@ -592,6 +593,7 @@ window.PEER_LANG_EN = {
    },
    "down": {
     "title": "A side that people see less",
+    "tag": "Hidden area | You see it, others don't",
     "D": [
      "You see yourself as decisive and direct, but people feel it less. Perhaps you use your decisiveness mostly on your own matters, and in group decisions you listen first and prefer not to take over. As a result, you may have an answer in mind while others don't know what you think, so they don't see you as someone with strong opinions.",
      "In your eyes, what am I like when I have to make a decision? When would you want me to say what I think more directly?"
