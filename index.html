@@ -1471,6 +1471,7 @@ window.addEventListener('popstate', ()=>{
   if (menu.open){ menu.close(); guardOn(); return; }
   if (homeDialog.open){ homeDialog.close(); guardOn(); return; }
   if (inProgress()){ guardOn(); askGoHome(); return; }
+  if (!$('#s-history').hidden && histBack==='away'){ histBack = null; history.back(); return; }   // 從「換個角度」頁的選單來的：再退一步回那一頁
   if (!$('#s-history').hidden){ if (histBack==='s-result' && st && st.done){ histBack = null; renderResult(); show('s-result'); } else goHome(); return; }
   if (onResult()){ if (st && st.viewOnly){ guardOn(); openHistory(); } else goHome(); return; }
   if (!(history.state && history.state.disc)) history.back();
@@ -2282,6 +2283,9 @@ $('#del-ok').addEventListener('click', async ()=>{
     $('#del-msg').textContent = t('delall.done', {n, email:CONTACT});
   } catch(e){ $('#del-msg').textContent = t('delall.fail'); }
 });
+/* 「換個角度」頁的選單點「我的歷次結果」會連到 ./#history：登入後直接打開歷次結果 */
+const WANT_HIST = location.hash === '#history';
+if (WANT_HIST) history.replaceState(history.state, '', location.pathname + location.search);
 /* 有登入紀錄（或剛從 Google 登入回來）才載入登入程式 */
 if (BK.enabled && BK.hasSession()){
   const q = new URLSearchParams(location.search);
@@ -2291,6 +2295,7 @@ if (BK.enabled && BK.hasSession()){
     if (q.has('code') || cancelled) history.replaceState(history.state, '', location.pathname + location.hash);
     authUI();
     if (cancelled) renderSaveCard(t('save.cancelled'));
+    if (WANT_HIST && USER) openHistory('away');
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }

@@ -87,6 +87,33 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .bar-btn svg{width:20px;height:20px;flex:none}
 .bar-btn[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .bar-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* 頁首「選單」（同 index.html）：手機從下方滑出，電腦（768px 以上）在按鈕下方打開；朋友作答的頁面不顯示 */
+.bar-menu{width:auto;padding:0 14px;gap:6px;font-weight:600;font-size:16px}
+.bar-menu svg{width:18px;height:18px}
+.menu{position:fixed;inset:auto 0 0;margin:0;width:100%;max-width:none;max-height:calc(100dvh - 48px);overflow-y:auto;padding:0;border:0;border-radius:20px 20px 0 0;background:var(--surface);color:var(--ink);box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.menu::backdrop{background:rgba(20,22,26,.45)}
+.menu-in{padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.menu-in:focus{outline:none}
+.menu-grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 4px}
+.menu-sec{margin:12px 8px 4px;font-family:var(--font-sans);font-size:13px;font-weight:600;line-height:1.4;color:var(--muted)}
+.menu-who{margin:0 8px 4px;font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.menu-row{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:6px 8px;border:0;border-radius:12px;background:none;color:var(--ink);font:inherit;font-size:17px;line-height:1.4;text-align:left;text-decoration:none;cursor:pointer}
+.menu-row:hover{background:var(--sunk)}
+.menu-row:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
+.menu-row>svg{flex:none;width:22px;height:22px;color:var(--muted)}
+.menu-row small{display:block;font-size:13px;color:var(--muted)}
+.menu-row .r{margin-left:auto;padding-left:8px;font-size:15px;color:var(--muted)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:8px 0}
+@media (prefers-reduced-motion:no-preference){.menu[open]{animation:menu-up .22s ease-out}}
+@keyframes menu-up{from{transform:translateY(40px);opacity:0}}
+@media (min-width:768px){
+  .menu{inset:auto;width:290px;max-height:calc(100dvh - 90px);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .menu::backdrop{background:rgba(20,22,26,.12)}
+  .menu-in{padding:6px 8px 8px}
+  .menu-grab{display:none}
+  .menu-row{min-height:46px;font-size:16px}
+  @keyframes menu-up{from{transform:translateY(-6px);opacity:0}}
+}
 /* 關係、分組 */
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{min-height:48px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:0 16px;font-size:16px}
@@ -260,8 +287,8 @@ svg text{font-family:var(--font-sans)}
   <div class="bar-in">
     <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span data-i18n="brand">測出你的​動物本色</span></a>
     <div class="bar-actions">
-      <button type="button" class="bar-btn" id="bar-theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span class="lbl" data-i18n="theme">深色模式</span></button>
       <button type="button" class="bar-btn" id="bar-lang"><span class="lang-k" aria-hidden="true" data-i18n="bar.lang.short">EN</span><span class="lbl" data-i18n="bar.lang">切換成英文 English</span></button>
+      <button type="button" class="bar-btn bar-menu" id="bar-menu" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span data-i18n="menu.btn">選單</span></button>
     </div>
   </div>
 </header>
@@ -272,6 +299,26 @@ svg text{font-family:var(--font-sans)}
   </div>
 </nav>
 <svg id="pat-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
+<!-- 頁首「選單」：手機從下方滑出，電腦在右上角往下打開 -->
+<dialog id="menu" class="menu" aria-label="選單">
+  <div class="menu-in" tabindex="-1">
+    <div class="menu-grab" aria-hidden="true"></div>
+    <div id="m-acct">
+      <h2 class="menu-sec" data-i18n="menu.account">帳號</h2>
+      <p class="menu-who" id="m-who" hidden></p>
+      <button type="button" class="menu-row" id="m-signin"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12h-8"/><path d="M20 12a8 8 0 1 1-2.6-5.9"/></svg><span><span data-i18n="menu.signin">用 Google 登入</span><small data-i18n="menu.signinSub">換手機也看得到你的結果</small></span></button>
+      <a class="menu-row" id="m-history" href="./#history" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg><span data-i18n="menu.history">我的歷次結果</span></a>
+      <button type="button" class="menu-row" id="m-signout" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg><span data-i18n="menu.signout">登出</span></button>
+      <hr>
+    </div>
+    <h2 class="menu-sec" data-i18n="menu.settings">設定</h2>
+    <button type="button" class="menu-row" id="m-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span data-i18n="theme">深色模式</span><span class="r" id="m-theme-v" aria-hidden="true">關</span></button>
+    <button type="button" class="menu-row" id="m-share"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/></svg><span data-i18n="menu.share">分享這個測驗給朋友</span></button>
+    <hr>
+    <h2 class="menu-sec" data-i18n="menu.other">其他</h2>
+    <a class="menu-row" id="m-privacy" href="privacy.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span data-i18n="menu.privacy">隱私說明</span></a>
+  </div>
+</dialog>
 <main class="wrap" id="app"></main>
 <div class="toast" id="toast" role="status" hidden></div>
 
@@ -306,6 +353,8 @@ function applyStatic() {
   document.title = T('doc.title');
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = T(el.dataset.i18n); });
   $('#ptabs').setAttribute('aria-label', T('tab.nav'));
+  menu.setAttribute('aria-label', T('menu.btn'));
+  syncTheme();
 }
 const ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
@@ -387,15 +436,48 @@ function pairHTML(ts, code = false) {
 /* ---------- 深色模式開關（同 index.html：沒選過時跟著系統，切換後記住） ---------- */
 const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
 const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : !!(darkMQ && darkMQ.matches); };
-/* 按鈕名稱顯示按下去會切到的模式（像語言按鈕一樣）；記在 data-i18n，換語言時也跟著對 */
-const syncTheme = () => { const l = $('#bar-theme .lbl'); l.dataset.i18n = isDark() ? 'theme.light' : 'theme'; l.textContent = T(l.dataset.i18n); };
-$('#bar-theme').addEventListener('click', () => {
+/* 選單裡的「深色模式」開關：右邊寫開／關 */
+const syncTheme = () => { const d = isDark(); $('#m-theme').setAttribute('aria-checked', String(d)); $('#m-theme-v').textContent = T(d ? 'menu.on' : 'menu.off'); };
+$('#m-theme').addEventListener('click', () => {
   const t = isDark() ? 'light' : 'dark';
   document.documentElement.dataset.theme = t; try { localStorage.setItem('disc-theme', t); } catch (e) {}
   syncTheme();
 });
 if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', syncTheme);
 syncTheme();
+
+/* ---------- 頁首「選單」：帳號（登入／我的歷次結果／登出）、設定（深色模式、分享）、其他（隱私說明） ---------- */
+const menu = $('#menu');
+function fillAcct() {
+  const u = P.user;
+  $('#m-signin').hidden = !!u; $('#m-history').hidden = $('#m-signout').hidden = !u;
+  $('#m-who').hidden = !u; $('#m-who').textContent = u ? T('menu.who', { email: u.email || '' }) : '';
+}
+function openMenu() {
+  $('#m-acct').hidden = !P.enabled;
+  fillAcct();
+  if (P.enabled && !P.user) P.init().then(fillAcct).catch(() => {});
+  const wide = matchMedia('(min-width:768px)').matches, r = $('#bar-menu').getBoundingClientRect();
+  menu.style.top = wide ? Math.round(r.bottom + 8) + 'px' : '';
+  menu.style.right = wide ? Math.round(document.documentElement.clientWidth - r.right) + 'px' : '';
+  menu.showModal(); $('.menu-in').focus();   // 焦點放在整個清單上，第一項不會一打開就有外框
+  $('#bar-menu').setAttribute('aria-expanded', 'true');
+}
+$('#bar-menu').addEventListener('click', openMenu);
+menu.addEventListener('close', () => $('#bar-menu').setAttribute('aria-expanded', 'false'));
+menu.addEventListener('click', (e) => { if (e.target === menu) menu.close(); });   // 點選單外面就關
+$('#m-signin').addEventListener('click', () => { menu.close(); P.signInWithGoogle().catch(() => toast(T('loginFail'))); });
+$('#m-signout').addEventListener('click', async () => { menu.close(); try { await P.signOut(); } catch (e) {} render(); });
+$('#m-history').addEventListener('click', () => menu.close());
+$('#m-privacy').addEventListener('click', () => menu.close());
+$('#m-share').addEventListener('click', async () => {
+  menu.close();
+  const url = new URL('./', location.href).href, data = { title: T('menu.shareTitle'), text: T('menu.shareText'), url };
+  if (navigator.share) {
+    try { await navigator.share(data); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(data.text + '\n' + url); toast(T('menu.copied')); } catch (e) { toast(T('copyFail')); }
+});
 
 /* ---------- 語言切換（同主測驗：disc-lang 共用，?lang= 優先） ---------- */
 const loadEN = () => window.PEER_LANG_EN ? Promise.resolve(window.PEER_LANG_EN) : new Promise((res, rej) => {
@@ -969,6 +1051,8 @@ async function render() {
   const my = ++renderId;
   // 「我的結果｜他人角度」分頁只給邀請人看（邀請頁、連結頁、對照頁），評的人看不到
   $('#ptabs').hidden = h.mode === 'rate';
+  $('#bar-menu').hidden = h.mode === 'rate';   // 朋友作答的頁面只留 EN
+  if (menu.open) menu.close();
   try {
     if (h.mode === 'rate') await renderRate(h.code, my);
     else if (h.mode === 'owner') await renderOwner(h.code, h.token, my);

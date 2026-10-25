@@ -258,6 +258,9 @@
     if (error) throw new Error('無法開始登入');
   }
 
+  // 登出（主測驗頁和這頁共用同一個登入）
+  async function signOut() { if (client) await client.auth.signOut(); user = null; }
+
   // ---------- 瀏覽器儲存 ----------
   function saveOwner(rec) { store.set(K_OWNER, rec); }
   function loadOwner() { return store.get(K_OWNER); }
@@ -266,7 +269,7 @@
 
   window.PeerBackend = Object.assign({}, pure, {
     enabled, init, latestClaim, resultClaim, createInvite, getInvite, prepareBot, submitRating, getResults, setOpen,
-    getMyInvites, signInWithGoogle, saveOwner, loadOwner, saveRated, loadRated,
+    getMyInvites, signInWithGoogle, signOut, saveOwner, loadOwner, saveRated, loadRated,
     onAuthChange(fn) { listeners.push(fn); },
   });
   // 登入狀態要隨時讀到最新的（Object.assign 只會複製當下的值，所以另外定義成 getter）
