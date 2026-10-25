@@ -87,9 +87,11 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .bar-btn svg{width:20px;height:20px;flex:none}
 .bar-btn[aria-checked="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .bar-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-/* 頁首「選單」（同 index.html）：手機從下方滑出，電腦（768px 以上）在按鈕下方打開；朋友作答的頁面不顯示 */
-.bar-menu{width:auto;padding:0 14px;gap:6px;font-weight:600;font-size:16px}
-.bar-menu svg{width:18px;height:18px}
+/* 滑鼠移到按鈕上（或用鍵盤移到按鈕上）時，按鈕下方浮出名稱（同 index.html） */
+@media (hover:hover){.bar-btn:hover .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}}
+.bar-btn:focus-visible .lbl{width:auto;height:auto;overflow:visible;clip:auto;top:calc(100% + 8px);left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:13px;font-weight:500;line-height:1.4;z-index:30;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.bar-actions .bar-btn:last-child .lbl{left:auto;right:0;transform:none}
+/* 頁首選單按鈕只放圖示（同 index.html）：手機從下方滑出，電腦（768px 以上）在按鈕下方打開；朋友作答的頁面不顯示 */
 .menu{position:fixed;inset:auto 0 0;margin:0;width:100%;max-width:none;max-height:calc(100dvh - 48px);overflow-y:auto;padding:0;border:0;border-radius:20px 20px 0 0;background:var(--surface);color:var(--ink);box-shadow:0 -8px 30px rgba(0,0,0,.18)}
 .menu::backdrop{background:rgba(20,22,26,.45)}
 .menu-in{padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px))}
@@ -297,7 +299,7 @@ svg text{font-family:var(--font-sans)}
     <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span data-i18n="brand">測出你的​動物本色</span></a>
     <div class="bar-actions">
       <button type="button" class="bar-btn" id="bar-lang"><span class="lang-k" aria-hidden="true" data-i18n="bar.lang.short">EN</span><span class="lbl" data-i18n="bar.lang">切換成英文 English</span></button>
-      <button type="button" class="bar-btn bar-menu" id="bar-menu" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span data-i18n="menu.btn">選單</span></button>
+      <button type="button" class="bar-btn bar-menu" id="bar-menu" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl" data-i18n="menu.btn">選單</span></button>
     </div>
   </div>
 </header>
