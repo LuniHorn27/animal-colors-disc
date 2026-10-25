@@ -32,7 +32,6 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-siz
 .home-col{display:flex;flex-direction:column;gap:16px;padding-block:clamp(8px,3vh,32px)}
 .home-col h1{font-size:clamp(34px,5vw,52px);margin-bottom:4px}
 .home-col .types{margin:8px 0}
-@media (min-width:768px){.home-col .types{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .start-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:16px}
 h1,h2,h3{font-family:var(--font-round);font-weight:400;font-synthesis:none;line-height:1.35;text-wrap:balance;margin:0}
 h1{font-size:30px} h2{font-size:22px} h3{font-size:18px}
@@ -47,7 +46,9 @@ a.btn{text-decoration:none;color:var(--ink)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.link{border:none;background:none;min-height:44px;padding:0 4px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 :focus-visible{outline:3px solid var(--btn);outline-offset:2px}
-.types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0}
+/* 四種動物一律一行四個（和換個角度頁面同一套）：寬度不夠橫排時改成花紋在上、文字在下置中 */
+.types{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:4px 0;container-type:inline-size}
+@container (max-width:540px){.type{flex-direction:column;gap:6px;padding:12px 4px;text-align:center}.type .tx{align-items:center}}
 .type{border-radius:12px;padding:12px 14px;background:var(--sunk)}
 .type{display:flex;align-items:center;gap:12px}
 .type .lt{font-family:var(--font-round);font-size:32px;font-weight:400;line-height:1;width:34px;text-align:center}
@@ -306,9 +307,10 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .home-hero .flower{width:min(220px,62vw);justify-self:start;order:-1}
 @media (min-width:768px){.home-hero{grid-template-columns:minmax(0,1fr) 230px;gap:24px}.home-hero .flower{width:100%;order:0;justify-self:end}}
 .type .pat{width:34px;height:34px;flex:none;border-radius:50% 50% 50% 6px;display:block}
-/* 英文的類型名稱比較長（Conscientiousness）：窄螢幕時動物方塊一欄一個，長字可以換行；頂端列的站名字小一點 */
+/* 英文的類型名稱比較長（Conscientiousness）：820px 以下就上下排，手機一欄一個，長字可以換行；頂端列的站名字小一點 */
 :lang(en) .type small{font-size:12px;overflow-wrap:anywhere}
-@media (max-width:520px){:lang(en) .types{grid-template-columns:1fr}}
+@container (max-width:820px){:lang(en) .type{flex-direction:column;gap:6px;padding:12px 4px;text-align:center}:lang(en) .type .tx{align-items:center}}
+@media (max-width:520px){:lang(en) .types{grid-template-columns:1fr}:lang(en) .types .type{flex-direction:row;gap:12px;padding:12px 14px;text-align:left}:lang(en) .types .type .tx{align-items:flex-start}}
 :lang(en) .bar-brand{font-size:16px;line-height:1.2}
 @media (max-width:400px){:lang(en) .bar-brand{font-size:14px}}
 .type .tx{display:flex;flex-direction:column;line-height:1.35}
