@@ -122,6 +122,8 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .chip[aria-pressed="true"]{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
 .chip .n{color:var(--faint);margin-left:4px;font-variant-numeric:tabular-nums}
 .chip[aria-pressed="true"] .n{color:inherit;opacity:.7}
+.chips.sm{gap:6px;margin-bottom:4px}
+.chips.sm .chip{min-height:44px;padding:0 12px;font-size:15px}
 /* 作答 */
 .top{display:flex;justify-content:space-between;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
 .progress{height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
@@ -982,7 +984,7 @@ async function renderOwner(code, token, my) {
   }
   if (token && !P.user && (!own || own.code !== code || own.ownerToken !== token)) P.saveOwner({ code, ownerToken: token, nickname: res.nickname });
   tabBadge(+res.groups[0].n || 'invited');
-  let group = '全部';
+  let group = '全部', nameGroup = '全部';   // nameGroup：「每個人眼中的你」名單自己的篩選
   // keep：重畫時不捲回最上面（切換頁尾的開關時用）
   const draw = (keep = false) => {
     const g = res.groups.find((x) => x.relation === group) || res.groups[0];
@@ -1009,12 +1011,20 @@ async function renderOwner(code, token, my) {
       const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p class="gh">${R.GAP.sameTitle}</p><p class="tag">${R.GAP.sameTag}</p><p>${R.GAP.same}</p></div>`;
       // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
       // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
+      // 名單上方可依關係篩選（只看留名字的人的關係；匿名的人不顯示關係，只出現在「全部」）。篩了也不會變的時候不顯示
       const anonList = Array.isArray(res.anon) ? res.anon : null;
-      const rowsNamed = res.named.map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation === '其他' && x.relation_note ? x.relation_note : X.rel(x.relation))}</span></span><span>${akList(x.result)}</span></div>`).join('');
-      const rowsAnon = anonList ? anonList.map((x) => `<div class="row"><span class="muted">${T('ow.anon')}</span><span>${akList(x.result)}</span></div>`).join('') : '';
-      const anonNote = anonList ? '' : res.n_anon ? `<p class="small muted">${T('ow.anonMore', { n: res.n_anon })}</p>` : '';
+      const nRels = ['朋友', '家人', '老師', '同學', '同事', '其他'].filter((r) => res.named.some((x) => x.relation === r));
+      res.named.forEach((x) => { if (!nRels.includes(x.relation)) nRels.push(x.relation); });
+      const nAnon = anonList ? anonList.length : res.n_anon || 0;
+      if (!nRels.includes(nameGroup)) nameGroup = '全部';
+      const nAll = nameGroup === '全部';
+      const nameChips = nRels.length > 1 || (nRels.length === 1 && nAnon) ? `<div class="chips sm" role="group" aria-label="${T('ow.filter')}">${[['全部', res.named.length + nAnon], ...nRels.map((r) => [r, res.named.filter((x) => x.relation === r).length])].map(([r, n]) => `<button type="button" class="chip" aria-pressed="${r === nameGroup}" data-ng="${esc(r)}">${esc(r === '全部' ? T('ow.all') : X.rel(r))}<span class="n">${n}</span></button>`).join('')}</div>` : '';
+      const rowsNamed = res.named.filter((x) => nAll || x.relation === nameGroup).map((x) => `<div class="row"><span>${esc(x.name)}<span class="tag">${esc(x.relation === '其他' && x.relation_note ? x.relation_note : X.rel(x.relation))}</span></span><span>${akList(x.result)}</span></div>`).join('');
+      const rowsAnon = anonList && nAll ? anonList.map((x) => `<div class="row"><span class="muted">${T('ow.anon')}</span><span>${akList(x.result)}</span></div>`).join('') : '';
+      const anonNote = anonList || !nAll ? '' : res.n_anon ? `<p class="small muted">${T('ow.anonMore', { n: res.n_anon })}</p>` : '';
       const named = rowsNamed || rowsAnon ? `<div class="card named">
           <p style="font-weight:700">${T('ow.eachT')}</p>
+          ${nameChips}
           ${rowsNamed}${rowsAnon}${anonNote}
         </div>` : `<p class="small muted">${T('ow.anonAll', { n: res.n_anon })}</p>`;
       // 最上面的結論：大家眼中的類型＋兩行對照「你的角度／他人角度」（他人角度只講落差最大的那一型）
@@ -1053,6 +1063,11 @@ async function renderOwner(code, token, my) {
       </div>
     </div>`, keep);
     app.querySelectorAll('[data-g]').forEach((b) => b.addEventListener('click', () => { group = b.dataset.g; draw(); }));
+    // 名單篩選：原地重畫，不捲動，焦點留在剛按的按鈕
+    app.querySelectorAll('[data-ng]').forEach((b) => b.addEventListener('click', () => {
+      nameGroup = b.dataset.ng; draw(true);
+      [...app.querySelectorAll('[data-ng]')].find((x) => x.dataset.ng === nameGroup)?.focus({ preventScroll: true });
+    }));
     ['#more-box', '#few-box', '#empty-box'].forEach((q) => { const el = $(q); if (el) bindShare(el, res.nickname || '', inviteUrl); });
     $('#sw').addEventListener('click', async (e) => {
       const want = !res.is_open, b = e.currentTarget;
