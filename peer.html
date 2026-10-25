@@ -518,18 +518,36 @@ else { if ((new URLSearchParams(location.search).get('lang') || '').toLowerCase(
 /* ---------- 作答中要離開時先確認（C2） ---------- */
 let quizActive = false;
 let relang = null;  // 作答中換語言時，重畫目前這一題用
+// 作答中按上一頁：先停在作答畫面問一次（進度已經存在瀏覽器）；選離開才真的回上一頁
+const QUIZ_GUARD = 'peerQuiz';
+function quizGuard() { try { if (!(history.state && history.state[QUIZ_GUARD])) history.pushState(Object.assign({}, history.state, { [QUIZ_GUARD]: 1 }), ''); } catch (e) {} }
+let guardLeft = false;  // 送出後還停在作答時多加的那一筆：上一頁要多退一步，不然要按兩次
+window.addEventListener('popstate', () => {
+  if (!quizActive) { if (guardLeft) { guardLeft = false; history.back(); } return; }
+  askLeave(() => {
+    history.back();
+    // 前面沒有別的頁面可回：留在這頁，回到開頭（會問要不要接著作答）
+    setTimeout(() => { if (!quizActive) render(); }, 400);
+  }, quizGuard);
+});
+// 重新整理、關掉分頁：瀏覽器自己的「要離開嗎？」（有選過答案才問）
+window.addEventListener('beforeunload', (e) => { if (quizActive && quizDirty) { e.preventDefault(); e.returnValue = ''; } });
+let quizDirty = false;
 document.querySelector('.bar-brand').addEventListener('click', (e) => {
   if (!quizActive) return;
   e.preventDefault();
-  if (document.querySelector('.leave')) return;
+  askLeave(() => { location.href = './'; });
+});
+function askLeave(go, stay = null) {
+  const old = document.querySelector('.leave'); if (old) old.remove();
   const box = document.createElement('div');
   box.className = 'leave'; box.setAttribute('role', 'alertdialog'); box.setAttribute('aria-label', T('lv.t'));
   box.innerHTML = `<p><b>${T('lv.t')}</b>${T('lv.b')}</p><div class="btns"><button class="btn primary" data-stay>${T('lv.stay')}</button><button class="btn" data-go>${T('lv.go')}</button></div>`;
   document.body.appendChild(box);
   box.querySelector('[data-stay]').focus();
-  box.querySelector('[data-stay]').addEventListener('click', () => box.remove());
-  box.querySelector('[data-go]').addEventListener('click', () => { quizActive = false; location.href = './'; });
-});
+  box.querySelector('[data-stay]').addEventListener('click', () => { box.remove(); if (stay) stay(); });
+  box.querySelector('[data-go]').addEventListener('click', () => { box.remove(); quizActive = false; go(); });
+}
 const app = $('#app');
 const view = (html, keepScroll = false) => { app.innerHTML = html; if (!keepScroll) window.scrollTo(0, 0); };
 // 網址很快換來換去時，較早、還在等伺服器的畫面不能蓋掉新的：每次 render 拿一個編號，等完伺服器先確認自己還是最新的
@@ -722,8 +740,10 @@ async function renderRate(code, my) {
   // 找不到邀請、邀請暫停：下面放「測出自己的動物本色」卡片，留住點進來的人
   if (!inv) return message(T('nf.t'), T('nf.b'), ctaHTML());
   const done = P.loadRated(code);
-  if (done) return renderRaterResult(inv.nickname, done, true);
+  if (done) { P.clearDraft(code); return renderRaterResult(inv.nickname, done, true); }
   if (!inv.isOpen) return message(T('cl.t'), T('cl.b'), ctaHTML());
+  const draft = P.loadDraft(code);
+  if (draft && draft.seq.length === B.ITEM_COUNT && Object.keys(draft.picks).length) return askResume(code, inv.nickname, draft);
   const nm = esc(inv.nickname);  // 開頭頁提到被邀請的人時，引號放在字典句子裡
   view(`<div class="stack">
     <h1>${T('rs.h1', { nm })}</h1>
@@ -774,13 +794,33 @@ async function renderRate(code, my) {
   });
 }
 
-function runQuiz(code, nick, relation, name, relationNote) {
-  const seq = B.makeSeq(), picks = {}, times = {}, n = seq.length, sid = P.newSid();
-  let idx = 0, shownAt = Date.now(), advanceTimer = null, locked = false;
-  const langs = new Set([X.lang]);  // 作答期間用過的語言，送出時記到資料庫（切換過就是 mixed）
-  const nm = esc(nick);
+// 上次作答到一半：從第 N 題繼續，或清掉重新開始（回到開頭頁）
+function askResume(code, nick, d) {
+  const i = Math.min(d.idx || 0, B.ITEM_COUNT - 1) + 1;
+  view(`<div class="stack">
+    <h1>${T('rs.resumeT', { i })}</h1>
+    <p class="muted">${T('rs.resumeB', { i, n: B.ITEM_COUNT, nm: esc(nick) })}</p>
+    <div class="stack" style="gap:10px">
+      <button class="btn primary block" id="r-resume">${T('rs.resume')}</button>
+      <button class="btn block" id="r-restart">${T('rs.restart')}</button>
+    </div>
+  </div>`);
+  $('#r-resume').focus();
+  $('#r-resume').addEventListener('click', () => { P.prepareBot(); runQuiz(code, nick, d.relation, d.name, d.relationNote, d); });
+  $('#r-restart').addEventListener('click', () => { P.clearDraft(code); render(); });
+}
 
-  quizActive = true;
+// d：上次存的進度（接著作答時才有）
+function runQuiz(code, nick, relation, name, relationNote, d = null) {
+  const seq = d ? d.seq : B.makeSeq(), picks = d ? d.picks : {}, times = d ? d.times || {} : {}, n = seq.length, sid = d ? d.sid : P.newSid();
+  let idx = d ? Math.min(d.idx || 0, n - 1) : 0, shownAt = Date.now(), advanceTimer = null, locked = false;
+  const langs = new Set(d && d.langs ? d.langs : []).add(X.lang);  // 作答期間用過的語言，送出時記到資料庫（切換過就是 mixed）
+  const nm = esc(nick);
+  // 每選一次、換一題就存一次，離開後打開同一個連結可以接著作答
+  const save = () => { quizDirty = true; P.saveDraft(code, { sid, seq, picks, times, idx, relation, relationNote, name, langs: [...langs] }); };
+
+  quizActive = true; quizDirty = !!d;
+  quizGuard();
   relang = () => { langs.add(X.lang); draw(); };  // 換語言：留在同一題、答案不動
   // 還差什麼才能往下：一個敘述不能同時是最像和最不像
   function hint(p, last) {
@@ -824,6 +864,7 @@ function runQuiz(code, nick, relation, name, relationNote) {
     p[kind] = w;
     if (p[other] === w) delete p[other];
     if (p.most && p.least) times[key] = (times[key] || 0) + (Date.now() - shownAt), shownAt = Date.now();
+    save();
     draw([w, kind]);
     clearTimeout(advanceTimer);
     if (p.most && p.least && idx < n - 1) advanceTimer = setTimeout(() => go(1), 350);
@@ -833,6 +874,7 @@ function runQuiz(code, nick, relation, name, relationNote) {
     clearTimeout(advanceTimer);
     idx = Math.max(0, Math.min(n - 1, idx + d));
     shownAt = Date.now();
+    if (quizDirty) save();
     draw();
   }
   async function send() {
@@ -844,7 +886,7 @@ function runQuiz(code, nick, relation, name, relationNote) {
     $('#q-prev').disabled = true;
     seq.forEach((it) => { const k = B.itemKey(it.i); times[k] = Math.min(600000, Math.round(times[k] || 0)); });
     const out = await P.submitRating({ sid, code, relation, relationNote, name, seq, picks, times, lang: langs.size > 1 ? 'mixed' : X.lang === 'en' ? 'en' : 'zh-TW' });
-    if (out.ok) { quizActive = false; return renderRaterResult(nick, out, false); }
+    if (out.ok) { quizActive = false; guardLeft = !!(history.state && history.state[QUIZ_GUARD]); P.clearDraft(code); return renderRaterResult(nick, out, false); }
     const msg = T('q.e.' + (['closed', 'not_found', 'network'].includes(out.error) ? out.error : 'invalid'));
     const e = $('#q-err'); e.textContent = msg; e.hidden = false;
     if (out.error === 'network') { btn.disabled = false; btn.textContent = T('q.again'); }
@@ -1085,6 +1127,8 @@ async function render() {
   if (!P.enabled) return message(T('nobackend.t'), T('nobackend.b'));
   const h = P.parseHash(location.hash);
   const my = ++renderId;
+  quizActive = false; guardLeft = false;
+  if (document.querySelector('.leave')) document.querySelector('.leave').remove();
   // 「我的結果｜他人角度」分頁只給邀請人看（邀請頁、連結頁、對照頁），評的人看不到
   $('#ptabs').hidden = h.mode === 'rate';
   $('#bar-menu').hidden = h.mode === 'rate';   // 朋友作答的頁面只留 EN

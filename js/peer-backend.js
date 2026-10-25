@@ -78,6 +78,8 @@
   const K_CLAIMS = 'disc-claims-v1';      // 主測驗：每份作答（號碼牌）送出後拿到的 {id, token}
   const K_OWNER = 'disc-peer-v1';         // 邀請人：{code, ownerToken, nickname}
   const K_RATED = 'disc-peer-rated-v1';   // 評的人：{邀請碼: {sid, ref, scores, result}}
+  const K_DRAFT = 'disc-peer-draft-v1';   // 評的人作答到一半：{邀請碼: {sid, seq, picks, times, idx, relation, relationNote, name, langs, at}}
+  const DRAFT_DAYS = 30;                  // 作答進度留多久
   const enabled = !!(CFG.supabaseUrl && CFG.supabaseAnonKey && CFG.turnstileSiteKey);
   let client = null, user = null, tsToken = null, tsWidget = null;
   const listeners = [];
@@ -266,10 +268,19 @@
   function loadOwner() { return store.get(K_OWNER); }
   function saveRated(code, rec) { const all = store.get(K_RATED) || {}; all[code] = rec; store.set(K_RATED, all); }
   function loadRated(code) { const all = store.get(K_RATED) || {}; return all[code] || null; }
+  // 作答到一半的進度：送出成功或選「重新開始」就刪掉；太久沒回來的也刪掉
+  function saveDraft(code, d) { const all = store.get(K_DRAFT) || {}; all[code] = Object.assign({}, d, { at: Date.now() }); store.set(K_DRAFT, all); }
+  function loadDraft(code) {
+    const all = store.get(K_DRAFT) || {}, d = all[code];
+    if (!d) return null;
+    if (!(Date.now() - d.at < DRAFT_DAYS * 86400000) || !Array.isArray(d.seq) || !d.picks) { clearDraft(code); return null; }
+    return d;
+  }
+  function clearDraft(code) { const all = store.get(K_DRAFT) || {}; if (!(code in all)) return; delete all[code]; store.set(K_DRAFT, all); }
 
   window.PeerBackend = Object.assign({}, pure, {
     enabled, init, latestClaim, resultClaim, createInvite, getInvite, prepareBot, submitRating, getResults, setOpen,
-    getMyInvites, signInWithGoogle, signOut, saveOwner, loadOwner, saveRated, loadRated,
+    getMyInvites, signInWithGoogle, signOut, saveOwner, loadOwner, saveRated, loadRated, saveDraft, loadDraft, clearDraft,
     onAuthChange(fn) { listeners.push(fn); },
   });
   // 登入狀態要隨時讀到最新的（Object.assign 只會複製當下的值，所以另外定義成 getter）
