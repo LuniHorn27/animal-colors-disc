@@ -149,6 +149,8 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .gap p + p{margin-top:6px}
 .gap .gh{display:flex;align-items:center;gap:8px;font-weight:700}
 .gap .tag{font-size:13px;color:var(--muted)}
+.gap .hl{font-weight:700;margin-top:10px}
+.gap .tip{font-size:15px;color:var(--muted)}
 .gap .ask{font-size:15px;color:var(--muted)}
 .sec{padding:24px}
 .sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
@@ -1007,7 +1009,7 @@ async function renderOwner(code, token, my) {
       const lines = B.gapLines(selfN, peerN);
       // 落差說明：每一型一張卡片，開頭標動物和「你可能沒注意到的一面／大家比較少看見的一面」
       const gapCard = (x) => { const g2 = R.GAP[x.dir === 'peer' ? 'up' : 'down'];
-        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t, true)}${g2.title}</p><p class="tag">${g2.tag}</p><p>${g2[x.t][0]}</p><p class="ask">${T('ow.ask', { q: g2[x.t][1] })}</p></div>`; };
+        return `<div class="gap" style="--gc:${COLOR[x.t]}"><p class="gh">${ak(x.t, true)}${g2.title}</p><p class="tag">${g2.tag}</p><p class="hl">${g2[x.t][0]}</p><p>${g2[x.t][1]}</p>${g2[x.t][3] ? `<p class="tip">${g2[x.t][3]}</p>` : ''}<p class="ask">${T('ow.ask', { q: g2[x.t][2] })}</p></div>`; };
       const gapHTML = lines.length ? lines.map(gapCard).join('') : `<div class="gap"><p class="gh">${R.GAP.sameTitle}</p><p class="tag">${R.GAP.sameTag}</p><p>${R.GAP.same}</p></div>`;
       // 每個人眼中的你：留名字的人（名字＋關係＋類型），接著是匿名的人（只寫「匿名」和類型，不顯示關係）。
       // 後端升級 v12 之前沒有 anon 清單，匿名的人只顯示人數
