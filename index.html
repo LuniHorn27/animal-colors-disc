@@ -215,6 +215,13 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 /* brand */
 .site-bar{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px);padding-top:env(safe-area-inset-top,0px)}
+/* 結果頁和換個角度頁面共用的「我的結果｜他人角度」分頁（peer.html 有同一份） */
+.ptabs{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px)}
+.ptabs-in{max-width:800px;margin-inline:auto;display:flex}
+.ptabs a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;margin-bottom:-1px;border-bottom:3px solid transparent;color:var(--muted);font-size:16px;font-weight:600;text-decoration:none}
+.ptabs a:hover{color:var(--ink)}
+.ptabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
+.ptabs a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;border-radius:6px}
 /* 作答頁：上方工具列固定在畫面頂端（切換「全部列出」的按鈕在這裡），題目進度固定在工具列下方 */
 body.on-quiz .site-bar{position:sticky;top:0;z-index:10}
 body.on-quiz .quiz-head{top:calc(61px + env(safe-area-inset-top,0px))}
@@ -404,6 +411,12 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     </div>
   </div>
 </header>
+<nav class="ptabs" id="ptabs" aria-label="結果切換" data-i18n-attr="aria-label:tab.nav" hidden>
+  <div class="ptabs-in">
+    <a href="./" aria-current="page" data-i18n="tab.mine">我的結果</a>
+    <a id="ptab-peer" href="#peer-card"><span data-i18n="tab.others">他人角度</span></a>
+  </div>
+</nav>
 <div class="wrap" id="app">
 
   <section id="s-home" class="stack">
@@ -660,7 +673,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'bar.brand':'測出你的\u200b動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.theme.light':'淺色模式', 'bar.share':'分享測驗',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
-  'peer.title':'換個角度看自己', 'peer.new':'新', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
+  'peer.title':'換個角度看自己', 'peer.new':'新', 'tab.nav':'結果切換', 'tab.mine':'我的結果', 'tab.others':'他人角度', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
   'home.h1':'測出你的動物本色',
   'home.intro':'此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。',
   'home.tcode.D':'D 支配', 'home.tcode.I':'I 影響', 'home.tcode.S':'S 穩定', 'home.tcode.C':'C 分析',
@@ -1034,6 +1047,7 @@ function show(id){
   ['s-home','s-quiz','s-info','s-blind','s-result','s-history'].forEach(s=>$('#'+s).hidden = s!==id);
   if (id!=='s-result') document.body.classList.remove('dock-on');
   $('#bar-qmode').hidden = id!=='s-quiz';
+  $('#ptabs').hidden = !(id==='s-result' && $('#peer-card'));
   document.body.classList.toggle('on-quiz', id==='s-quiz');
   $('#app').classList.toggle('wide', id==='s-result');
   if (FLOW.includes(id)) guardOn();
@@ -2060,6 +2074,8 @@ function renderPeerCard(){
   let rid = null;
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
   if (rid) rememberPeerSelf(rid, score(st));
+  /* 上方「他人角度」分頁：還沒有作答編號時先捲到下面的卡片（卡片上說明要等送出） */
+  $('#ptab-peer').href = rid ? peerHref('#from='+esc(rid)) : '#peer-card';
   box.innerHTML = `<div class="peer-head"><h3 class="hl">${t('peer.title')}</h3><span class="peer-new">${t('peer.new')}</span></div>${peerBadgeHTML(score(st))}
     <p class="tip">${t('peer.q', {ak:akHTML(animalLine(score(st)))})}</p>
     <p>${t('peer.p')}</p>
@@ -2068,11 +2084,16 @@ function renderPeerCard(){
   if (!rid) return;
   /* 已經替這份作答產生過邀請：多一個「查看結果對照」，直接到結果對照頁。
      先看這個瀏覽器存的邀請（有專屬連結的鑰匙），沒有的話，登入的人從帳號裡找 */
-  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">${t('peer.cmp')}</a>`); box.querySelector('.peer-new')?.remove(); };
+  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">${t('peer.cmp')}</a>`); box.querySelector('.peer-new')?.remove(); $('#ptab-peer').href = href; };
   let own = null; try { own = JSON.parse(localStorage.getItem('disc-peer-v1')); } catch(e){}
   if (own && own.code && own.ownerToken && own.responseId === rid) return addCmp(peerHref(`#k=${own.code}.${own.ownerToken}`));
   if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && box.isConnected) addCmp(peerHref(`#k=${hit.code}`)); }).catch(()=>{});
 }
+$('#ptabs a[aria-current]').addEventListener('click', e=>{ e.preventDefault(); window.scrollTo(0,0); });
+$('#ptab-peer').addEventListener('click', e=>{
+  if ($('#ptab-peer').getAttribute('href')!=='#peer-card') return;
+  e.preventDefault(); $('#peer-card')?.scrollIntoView({block:'start'});
+});
 function renderSaveCard(note){
   const box = $('#save-card'); if (!box) return;
   if (USER){

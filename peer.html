@@ -152,6 +152,13 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .nw{white-space:nowrap}
 .tag{display:inline-block;font-size:13px;border-radius:6px;padding:0 6px;background:var(--sunk);color:var(--muted);margin-left:6px}
 .back-link{align-self:center;display:inline-flex;align-items:center;min-height:44px;font-size:15px;color:var(--ink);text-underline-offset:4px}
+/* 結果頁和換個角度頁面共用的「我的結果｜他人角度」分頁（index.html 有同一份）；評的人看到的畫面不顯示 */
+.ptabs{background:var(--surface);border-bottom:1px solid var(--line);padding-inline:clamp(16px,4vw,48px)}
+.ptabs-in{max-width:800px;margin-inline:auto;display:flex}
+.ptabs a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;margin-bottom:-1px;border-bottom:3px solid transparent;color:var(--muted);font-size:16px;font-weight:600;text-decoration:none}
+.ptabs a:hover{color:var(--ink)}
+.ptabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
+.ptabs a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;border-radius:6px}
 .settings{padding:16px 18px;border-radius:14px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:6px}
 .switch{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .switch button{width:52px;height:32px;border-radius:16px;border:1px solid var(--line);background:var(--sunk);position:relative;flex:none}
@@ -258,6 +265,12 @@ svg text{font-family:var(--font-sans)}
     </div>
   </div>
 </header>
+<nav class="ptabs" id="ptabs" aria-label="結果切換" hidden>
+  <div class="ptabs-in">
+    <a href="./" id="ptab-mine" data-i18n="tab.mine">我的結果</a>
+    <a href="#" id="ptab-peer" aria-current="page"><span data-i18n="tab.others">他人角度</span></a>
+  </div>
+</nav>
 <svg id="pat-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
 <main class="wrap" id="app"></main>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -292,6 +305,7 @@ function applyStatic() {
   document.documentElement.lang = X.lang === 'en' ? 'en' : 'zh-Hant-TW';
   document.title = T('doc.title');
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = T(el.dataset.i18n); });
+  $('#ptabs').setAttribute('aria-label', T('tab.nav'));
 }
 const ICON_CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
@@ -953,12 +967,15 @@ async function render() {
   if (!P.enabled) return message(T('nobackend.t'), T('nobackend.b'));
   const h = P.parseHash(location.hash);
   const my = ++renderId;
+  // 「我的結果｜他人角度」分頁只給邀請人看（邀請頁、連結頁、對照頁），評的人看不到
+  $('#ptabs').hidden = h.mode === 'rate';
   try {
     if (h.mode === 'rate') await renderRate(h.code, my);
     else if (h.mode === 'owner') await renderOwner(h.code, h.token, my);
     else await renderInvite(my, h.from || null);
   } catch (e) { if (!(e instanceof Stale) && my === renderId) failView(); }
 }
+$('#ptab-peer').addEventListener('click', (e) => { e.preventDefault(); window.scrollTo(0, 0); });
 window.addEventListener('hashchange', render);
 render();
 </script>
