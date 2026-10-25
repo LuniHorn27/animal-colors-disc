@@ -186,6 +186,13 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .ptabs a:hover{color:var(--ink)}
 .ptabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
 .ptabs a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;border-radius:6px}
+/* 「他人角度」旁的小標籤：還沒邀請「新」→ 邀請後「已邀請」→ 有人回覆就顯示人數（index.html 有同一份） */
+.tab-badge{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 8px;border-radius:999px;background:var(--ink);color:var(--surface);font-size:12px;line-height:1;font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tab-badge.inv{background:var(--sunk);color:var(--muted)}
+.tab-badge.n{padding:0 6px}
+/* 很窄的手機：兩個分頁平分會把「Others' view」加標籤擠到換行，改成依內容分寬 */
+@media (max-width:359px){.ptabs a{flex:1 1 auto;white-space:nowrap}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .settings{padding:16px 18px;border-radius:14px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:6px}
 .switch{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .switch button{width:52px;height:32px;border-radius:16px;border:1px solid var(--line);background:var(--sunk);position:relative;flex:none}
@@ -295,7 +302,7 @@ svg text{font-family:var(--font-sans)}
 <nav class="ptabs" id="ptabs" aria-label="結果切換" hidden>
   <div class="ptabs-in">
     <a href="./" id="ptab-mine" data-i18n="tab.mine">我的結果</a>
-    <a href="#" id="ptab-peer" aria-current="page"><span data-i18n="tab.others">他人角度</span></a>
+    <a href="#" id="ptab-peer" aria-current="page"><span data-i18n="tab.others">他人角度</span><span class="tab-badge" id="ptab-badge" hidden></span></a>
   </div>
 </nav>
 <svg id="pat-defs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
@@ -541,6 +548,15 @@ async function copy(text) {
   try { await navigator.clipboard.writeText(text); toast(T('copied')); }
   catch (e) { toast(T('copyFail')); }
 }
+// 「他人角度」分頁的小標籤：'new' 還沒邀請、'invited' 已邀請但還沒有人回覆、數字＝回覆人數、null 不顯示
+function tabBadge(state) {
+  const b = $('#ptab-badge');
+  b.hidden = state == null;
+  if (b.hidden) return;
+  b.className = 'tab-badge' + (state === 'invited' ? ' inv' : typeof state === 'number' ? ' n' : '');
+  b.innerHTML = state === 'new' ? T('tab.new') : state === 'invited' ? T('tab.invited')
+    : `<span aria-hidden="true">${state}</span><span class="sr">${T('tab.replies', { n: state })}</span>`;
+}
 function message(title, body, actions = '') {
   view(`<div class="stack"><h2>${title}</h2><p class="muted">${body}</p>${actions}</div>`);
 }
@@ -579,6 +595,7 @@ async function renderInvite(my, from = null) {
     </div>`);
     return bindLogin();
   }
+  tabBadge('new');
   view(`<div class="stack">
     <h1>${T('title')}</h1>
     <div class="stack" style="gap:6px">
@@ -680,6 +697,7 @@ function renderLinks(own) {
     ${saveHTML}
   </div>`);
   bindShare($('#send-box'), nick, inviteUrl);
+  tabBadge('invited');
   const ss = $('#self-save');
   if (ss) ss.addEventListener('click', () => { $('#self-box').hidden = false; ss.hidden = true; });
   const co = $('#cp-own'); if (co) co.addEventListener('click', () => copy(ownerUrl));
@@ -691,7 +709,7 @@ function renderLinks(own) {
     const n = +res.groups[0].n || 0;
     $('#n-line').textContent = n ? T('lk.n', { n }) : T('lk.n0');
     $('#n-num').textContent = n;
-    if (n) $('#go-owner').classList.add('primary');
+    if (n) { $('#go-owner').classList.add('primary'); tabBadge(n); }
   }).catch(() => {});
 }
 
@@ -940,6 +958,7 @@ async function renderOwner(code, token, my) {
       `${P.user ? '' : `<button class="btn primary block" id="go-login">${T('need.login')}</button>`}<a class="btn block" href="#">${T('ow.bad.back')}</a>`) || bindLogin();
   }
   if (token && !P.user && (!own || own.code !== code || own.ownerToken !== token)) P.saveOwner({ code, ownerToken: token, nickname: res.nickname });
+  tabBadge(+res.groups[0].n || 'invited');
   let group = '全部';
   // keep：重畫時不捲回最上面（切換頁尾的開關時用）
   const draw = (keep = false) => {
@@ -1053,6 +1072,7 @@ async function render() {
   $('#ptabs').hidden = h.mode === 'rate';
   $('#bar-menu').hidden = h.mode === 'rate';   // 朋友作答的頁面只留 EN
   if (menu.open) menu.close();
+  tabBadge(null);
   try {
     if (h.mode === 'rate') await renderRate(h.code, my);
     else if (h.mode === 'owner') await renderOwner(h.code, h.token, my);

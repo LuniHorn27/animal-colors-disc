@@ -15,6 +15,7 @@
      DiscBackend.user                               // 目前登入的會員（或 null）
      await DiscBackend.listMyResults();             // 我的歷次結果
      await DiscBackend.myPeerInvites();             // 他評：自己帳號下的邀請（我的歷次結果用）
+     await DiscBackend.peerCount(code, ownerToken); // 他評：這個瀏覽器存的邀請目前幾個人回覆
      await DiscBackend.setRetest(true);             // 願意收到重測邀請
      await DiscBackend.deleteMyData();              // 刪除我的資料
      await DiscBackend.signOut();
@@ -292,6 +293,24 @@
     return error || !Array.isArray(data) ? [] : data;
   }
 
+  // 他評：這個瀏覽器存的邀請（有專屬碼）目前幾個人回覆，結果頁「他人角度」分頁的小標籤用。
+  // 和 checkClass 一樣直接呼叫，不必載入登入程式；讀不到就回傳 null（標籤維持「已邀請」）
+  async function peerCount(code, ownerToken) {
+    if (!enabled || !code || !ownerToken) return null;
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 8000);
+    try {
+      const res = await fetch(CFG.supabaseUrl + '/rest/v1/rpc/get_peer_results', {
+        method: 'POST', signal: ctl.signal,
+        headers: { apikey: CFG.supabaseAnonKey, Authorization: 'Bearer ' + CFG.supabaseAnonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_code: code, p_owner_token: ownerToken }),
+      });
+      if (!res.ok) return null;
+      const d = await res.json();
+      return d && d.groups && d.groups[0] ? +d.groups[0].n || 0 : null;
+    } catch (e) { return null; } finally { clearTimeout(timer); }
+  }
+
   async function getRetest() {
     if (!enabled || !user) return false;
     const { data } = await client.from('members').select('retest_ok').eq('user_id', user.id).maybeSingle();
@@ -325,7 +344,7 @@
 
   window.DiscBackend = {
     enabled, init, checkClass, prepare, renderTurnstile, queue, flush, rate, isQueued,
-    hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults, myPeerInvites,
+    hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults, myPeerInvites, peerCount,
     getRetest, setRetest, deleteMyData, deleteMyResult, signOut,
     onAuthChange(fn) { listeners.push(fn); },
     onSync(fn) { syncListeners.push(fn); },

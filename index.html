@@ -222,6 +222,13 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .ptabs a:hover{color:var(--ink)}
 .ptabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
 .ptabs a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;border-radius:6px}
+/* 「他人角度」旁的小標籤：還沒邀請「新」→ 邀請後「已邀請」→ 有人回覆就顯示人數 */
+.tab-badge{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 8px;border-radius:999px;background:var(--ink);color:var(--surface);font-size:12px;line-height:1;font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tab-badge.inv{background:var(--sunk);color:var(--muted)}
+.tab-badge.n{padding:0 6px}
+/* 很窄的手機：兩個分頁平分會把「Others' view」加標籤擠到換行，改成依內容分寬 */
+@media (max-width:359px){.ptabs a{flex:1 1 auto;white-space:nowrap}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* 作答頁：上方工具列固定在畫面頂端（切換「全部列出」的按鈕在這裡），題目進度固定在工具列下方 */
 body.on-quiz .site-bar{position:sticky;top:0;z-index:10}
 body.on-quiz .quiz-head{top:calc(61px + env(safe-area-inset-top,0px))}
@@ -406,7 +413,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 #peer-card.nudge .ghost span{animation:peer-pop .7s ease-out .5s 2}
 /* 問句獨立成一個色塊（同解析裡的 .tip），圖置中，段落之間留空；按鈕和下面的小字靠左（同「想保留這次結果嗎？」的登入按鈕） */
 #peer-card .peer-pair{margin:8px auto 18px}
-/* 標題旁的「新」小標籤：放在標題外面，底線才不會延伸到標籤下面；已經邀請過（有「查看結果對照」）就拿掉 */
+/* 標題旁的「新」小標籤：放在標題外面，底線才不會延伸到標籤下面；已經邀請過就拿掉（和上方「他人角度」分頁的標籤同一個狀態，見 setPeerState） */
 #peer-card .peer-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
 #peer-card .peer-head h3{margin-bottom:0;min-width:0}
 .peer-new{flex:none;margin-top:4px;padding:5px 10px;border-radius:999px;background:var(--ink);color:var(--surface);font-size:13px;line-height:1;font-weight:500;white-space:nowrap}
@@ -439,7 +446,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 <nav class="ptabs" id="ptabs" aria-label="結果切換" data-i18n-attr="aria-label:tab.nav" hidden>
   <div class="ptabs-in">
     <a href="./" aria-current="page" data-i18n="tab.mine">我的結果</a>
-    <a id="ptab-peer" href="#peer-card"><span data-i18n="tab.others">他人角度</span></a>
+    <a id="ptab-peer" href="#peer-card"><span data-i18n="tab.others">他人角度</span><span class="tab-badge" id="ptab-badge" hidden></span></a>
   </div>
 </nav>
 <div class="wrap" id="app">
@@ -720,7 +727,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關', 'menu.other':'其他',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
   'lang.fail':'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
-  'peer.title':'換個角度看自己', 'peer.new':'新', 'tab.nav':'結果切換', 'tab.mine':'我的結果', 'tab.others':'他人角度', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
+  'peer.title':'換個角度看自己', 'peer.new':'新', 'tab.nav':'結果切換', 'tab.mine':'我的結果', 'tab.others':'他人角度', 'tab.invited':'已邀請', 'tab.replies':'{n} 人回覆', 'peer.self':'你自評', 'peer.others':'大家眼中', 'peer.wait':'等被邀請人回覆', 'peer.q':'你自評是 {ak}，朋友眼中的你也一樣嗎？', 'peer.p':'心理學理論「周哈里窗」提到，透過他人的回饋，能夠更加全面的認識自己，邀請朋友、家人、老師、或是其他信任的人，花 2–3 分鐘的時間快速測驗，幫助你「換一個角度」認識自己吧！', 'peer.btn':'了解他人眼中的我', 'peer.cmp':'查看結果對照', 'peer.hint':'作答資料送出後就能邀請。', 'peer.teaser':'在大家眼中，你也是{a}嗎？ ↓', 'peer.hist.see':'看大家眼中的我（{n} 人回覆）›', 'peer.hist.go':'了解他人眼中的我 ›',
   'home.h1':'測出你的動物本色',
   'home.intro':'此份測驗根據心理學家馬斯頓（William Marston）1928 年提出的 DISC 理論設計，把人的行為風格分成四種傾向，用四種動物代表。',
   'home.tcode.D':'D 支配', 'home.tcode.I':'I 影響', 'home.tcode.S':'S 穩定', 'home.tcode.C':'C 分析',
@@ -2158,8 +2165,20 @@ function peerBadgeHTML(r){
    要等作答送出、拿到這份作答的編號（disc-claims-v1）之後才能按 */
 /* 他評頁的連結：英文畫面帶 ?lang=en，朋友打開就是英文 */
 const peerHref = hash => 'peer.html' + (L.code==='en' ? '?lang=en' : '') + hash;
+/* 邀請進度：'new' 還沒邀請、'invited' 已邀請但還沒有人回覆、數字＝回覆人數。
+   上方「他人角度」分頁的小標籤和卡片標題旁的「新」都跟著這個狀態 */
+function setPeerState(state){
+  const b = $('#ptab-badge');
+  b.className = 'tab-badge' + (state==='invited' ? ' inv' : typeof state==='number' ? ' n' : '');
+  b.innerHTML = state==='new' ? t('peer.new') : state==='invited' ? t('tab.invited')
+    : `<span aria-hidden="true">${state}</span><span class="sr">${t('tab.replies', {n:state})}</span>`;
+  b.hidden = false;
+  if (state!=='new') $('#peer-card .peer-new')?.remove();
+}
+let peerCardN = 0;   // 重畫卡片時，舊的查詢結果就不套用
 function renderPeerCard(){
   const box = $('#peer-card'); if (!box || !st) return;
+  const my = ++peerCardN;
   let rid = null;
   try { const c = (JSON.parse(localStorage.getItem('disc-claims-v1')) || {})[st.sid]; rid = c && c.id; } catch(e){}
   if (rid) rememberPeerSelf(rid, score(st));
@@ -2170,13 +2189,23 @@ function renderPeerCard(){
     <p>${t('peer.p')}</p>
     <div class="actions">${rid ? `<a class="btn primary" href="${peerHref('#from='+esc(rid))}">${t('peer.btn')}</a>` : `<button class="btn primary" disabled>${t('peer.btn')}</button>`}</div>
     ${rid ? '' : `<p class="small muted">${t('peer.hint')}</p>`}`;
+  setPeerState('new');
   if (!rid) return;
-  /* 已經替這份作答產生過邀請：多一個「查看結果對照」，直接到結果對照頁。
+  /* 已經替這份作答產生過邀請：多一個「查看結果對照」，直接到結果對照頁，標籤改成「已邀請」或回覆人數。
      先看這個瀏覽器存的邀請（有專屬連結的鑰匙），沒有的話，登入的人從帳號裡找 */
-  const addCmp = href => { const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">${t('peer.cmp')}</a>`); box.querySelector('.peer-new')?.remove(); $('#ptab-peer').href = href; };
+  const addCmp = (href, n) => {
+    const a = box.querySelector('.actions'); if (a && !box.querySelector('.go-cmp')) a.insertAdjacentHTML('beforeend', `<a class="btn go-cmp" href="${esc(href)}">${t('peer.cmp')}</a>`);
+    $('#ptab-peer').href = href;
+    setPeerState(n > 0 ? +n : 'invited');
+  };
   let own = null; try { own = JSON.parse(localStorage.getItem('disc-peer-v1')); } catch(e){}
-  if (own && own.code && own.ownerToken && own.responseId === rid) return addCmp(peerHref(`#k=${own.code}.${own.ownerToken}`));
-  if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && box.isConnected) addCmp(peerHref(`#k=${hit.code}`)); }).catch(()=>{});
+  if (own && own.code && own.ownerToken && own.responseId === rid){
+    const href = peerHref(`#k=${own.code}.${own.ownerToken}`);
+    addCmp(href);
+    if (BK.peerCount) BK.peerCount(own.code, own.ownerToken).then(n => { if (n > 0 && my===peerCardN) addCmp(href, n); }).catch(()=>{});
+    return;
+  }
+  if (USER && BK.myPeerInvites) BK.myPeerInvites().then(list => { const hit = (list||[]).find(x=>x.response_id===rid); if (hit && my===peerCardN) addCmp(peerHref(`#k=${hit.code}`), hit.n); }).catch(()=>{});
 }
 $('#ptabs a[aria-current]').addEventListener('click', e=>{ e.preventDefault(); window.scrollTo(0,0); });
 $('#ptab-peer').addEventListener('click', e=>{
@@ -2211,7 +2240,8 @@ async function signOut(){
 }
 function authUI(){
   $('#my-results').hidden = !USER;
-  if (!$('#s-result').hidden && !(st && st.viewOnly)) renderSaveCard();
+  /* 登入狀態確定後，換個角度卡片也重畫一次：帳號裡的邀請要登入後才查得到 */
+  if (!$('#s-result').hidden && !(st && st.viewOnly)){ renderSaveCard(); renderPeerCard(); }
 }
 /* 我的歷次結果 */
 let HIST = [], PEER_INV = [];
