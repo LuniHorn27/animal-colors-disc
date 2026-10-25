@@ -575,19 +575,19 @@ window.PEER_LANG_EN = {
     "title": "A side of you that you may not notice",
     "tag": "Blind area | Others see it, you don't",
     "D": [
-     "People can clearly see how decisive and direct you are, even if you don't feel it much yourself. With them, you may often be the one who decides first and pushes things forward: when a discussion gets stuck, one \"let's just go with this\" from you gets everything moving. It may feel like no big deal to you, but to others it is what a person with clear opinions looks like.",
+     "You may work quickly and take action readily, and people notice. When a discussion drags on, you might speak up first or get things started, and things begin to move; when someone needs to take responsibility, you are often the first to step forward. You may feel it is just something you do naturally, but in others' eyes you might be the person who makes them feel \"with you around, we have a direction.\"",
      "Think back: was there a time when I made a decision and things moved forward because of it? How did that feel for you?"
     ],
     "I": [
-     "People can clearly feel how enthusiastic and easy to talk to you are, even if you haven't noticed it yourself. With them, you may be especially relaxed, bringing up topics and keeping the mood going so things don't go quiet. It may feel like natural conversation to you, but others remember that being with you feels easy and full of energy.",
+     "Being with you may make people feel especially at ease. You start conversations and lift the mood, you have plenty of ideas, and you tell things in a lively, engaging way, so even quieter people may feel able to speak up. You may think you are just chatting, but others may remember that day with you as a really good one.",
      "Was there a time when being with me felt especially good? What made you feel at ease that day?"
     ],
     "S": [
-     "People can see how steady and considerate you are, even if it doesn't feel like much to you. The care that feels ordinary to you, such as remembering how someone is doing, letting them finish what they want to say, or keeping them company when they are down, may be something others remember. To them, you are someone who makes them feel safe and reliable.",
+     "The small things you do quietly may be remembered by everyone. You are patient, you let people finish what they want to say, you remember how they have been doing, and you keep them company when they are down. It may feel ordinary to you, but it may mean a great deal of reassurance to them. Many people may be thinking: it's so good to have you around.",
      "Was there a time when my company or help meant a lot to you? Can you tell me more about what was going on?"
     ],
     "C": [
-     "People can see how careful and precise you are, even if you think of it as just being cautious. Your habit of double-checking and getting the details right makes others feel at ease leaving things to you. To you it may seem only natural, but to others it is a trait they can rely on.",
+     "Your organized way of working and attention to detail may not go unnoticed. You double-check and look after quality, so people feel especially at ease leaving things to you. You may think it is just a habit, but others may be quietly grateful: how lucky to have you.",
      "Was there a time when me double-checking made things go more smoothly? How do you see the way I work?"
     ]
    },
@@ -595,25 +595,25 @@ window.PEER_LANG_EN = {
     "title": "A side that people see less",
     "tag": "Hidden area | You see it, others don't",
     "D": [
-     "You see yourself as decisive and direct, but people feel it less. Perhaps you use your decisiveness mostly on your own matters, and in group decisions you listen first and prefer not to take over. As a result, you may have an answer in mind while others don't know what you think, so they don't see you as someone with strong opinions.",
+     "You actually have strong opinions and plenty of drive to act, but in a crowd you may listen to what others say first and leave the spotlight to them. That thoughtfulness is a good thing, though others may not realize you already have ideas in mind. A reminder: now and then, share your views openly. People might light up when they hear them!",
      "In your eyes, what am I like when I have to make a decision? When would you want me to say what I think more directly?"
     ],
     "I": [
-     "You see yourself as enthusiastic and easy to talk to, but people feel it less. Perhaps your enthusiasm shows up mostly in familiar settings or with certain people, and you hold back around others. They only see your quiet side and may not know how much you enjoy talking and how energetic you can be.",
+     "You are actually warm and lively, with what seems like an endless supply of ideas, but this side may mostly be kept for people you know and trust. Around friends you don't know well yet, you may observe the mood first and deliberately hold back, so others see a quieter, calmer you. A reminder: now and then, show more of your charm. Others might be pleasantly surprised to find how fun you are!",
      "When do I seem more relaxed, and when do I seem quieter? Which side of me would you like to see more?"
     ],
     "S": [
-     "You see yourself as steady and considerate, but people feel it less. Perhaps your care stays mostly inside, or is shown in ways others don't notice, such as quietly remembering what someone needs without saying it. They may not realize how much you care about them, so they don't see you as especially thoughtful.",
+     "You actually care a lot about the people around you, and you are patient and accepting, but you may tend to keep it inside rather than say it. You quietly remember what they need and think of them, but they may not know it. Now and then, say it out loud, even just \"How have you been lately?\" When people feel they are on your mind, they will surely be very happy.",
      "How do you usually know that someone cares about you? Have you felt that from me?"
     ],
     "C": [
-     "You see yourself as careful and precise, but people feel it less. Perhaps your care and checking mostly happen where others can't see, such as going over the data again on your own. Others only see the final result and don't know how much effort went into it, so they don't see you as especially rigorous.",
+     "You actually work in an organized and rigorous way, and many details are things you quietly checked in private. But others may only see the finished result, without knowing how much thought and time you put in to make sure everything is foolproof. A reminder: now and then, tell people directly what you did, so they can better understand your care and thoroughness.",
      "How do you usually see the way I handle things? If I told you I often check things over again in private, how would that feel to you?"
     ]
    },
    "sameTitle": "Where you and others agree",
    "sameTag": "Open area | You and others both see it",
-   "same": "The way people see you is very close to how you described yourself. How you see yourself is about how others see you too."
+   "same": "The way people see you may be very close to how you see yourself. You know yourself well, and others really do see you. Such agreement is rare, and may mean that you and the people around you are genuine and honest with each other."
   },
   "SECT": {
    "core": "{name}'s core traits",
