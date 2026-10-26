@@ -143,7 +143,7 @@ window.PEER_LANG_EN = {
   "rr.top1": "The biggest share is {a}. This is \"{nm}\"'s inner animal in your eyes.",
   "rr.top2": "{a} and {b} have the biggest shares and they are close, so both are \"{nm}\"'s inner animals.",
   "rr.top3": "All four animals have similar shares, so in your eyes \"{nm}\" is a Chameleon.",
-  "rr.full": "{name}'s full profile",
+  "rr.full": "{name}'s profile, from your point of view",
   "rr.seeFull": "See full profile",
   "rr.hide": "Hide profile",
   "rr.ref": "The test and the profile above are for reference only",
