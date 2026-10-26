@@ -271,6 +271,14 @@ html:has(#ptabs:not([hidden])){scroll-padding-top:56px}
 .fold-btn svg{width:22px;height:22px;flex:none;transition:transform .2s ease}
 .fold-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .fold-body{display:flex;flex-direction:column;gap:16px;align-self:stretch}
+/* 這個測驗像「某某」嗎？（同主測驗結果頁）：五個大方塊排成一列，兩端寫「完全不像／非常像」，選了之後填滿墨色 */
+.rate-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px}
+.rate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
+.rate .opt{display:flex;align-items:center;justify-content:center;min-height:56px;padding:0;border-radius:12px;background:var(--surface);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--btn);border:2px solid var(--btn);transition:background .15s}
+.rate .opt[aria-pressed="true"]{background:var(--btn);border-color:var(--btn);color:var(--btn-ink)}
+.rate-ends{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:12px;margin-top:6px;font-size:14px;color:var(--muted)}
+.rate-ends>:last-child{text-align:right}
+#rate-msg{white-space:nowrap}
 /* 作答中要離開時的確認（同 index.html 的「要回到首頁嗎？」） */
 .leave{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(560px,calc(100% - 32px));z-index:70;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;background:var(--warn-bg);color:var(--warn-ink);box-shadow:0 10px 30px rgba(0,0,0,.25)}
 svg text{font-family:var(--font-sans)}
@@ -725,7 +733,7 @@ async function renderRate(code, my) {
   // 找不到邀請、邀請暫停：下面放「測出自己的動物本色」卡片，留住點進來的人
   if (!inv) return message(T('nf.t'), T('nf.b'), ctaHTML());
   const done = P.loadRated(code);
-  if (done) { P.clearDraft(code); return renderRaterResult(inv.nickname, done, true); }
+  if (done) { P.clearDraft(code); return renderRaterResult(code, inv.nickname, done, true); }
   if (!inv.isOpen) return message(T('cl.t'), T('cl.b'), ctaHTML());
   const draft = P.loadDraft(code);
   if (draft && draft.seq.length === B.ITEM_COUNT && Object.keys(draft.picks).length) return askResume(code, inv.nickname, draft);
@@ -871,7 +879,7 @@ function runQuiz(code, nick, relation, name, relationNote, d = null) {
     $('#q-prev').disabled = true;
     seq.forEach((it) => { const k = B.itemKey(it.i); times[k] = Math.min(600000, Math.round(times[k] || 0)); });
     const out = await P.submitRating({ sid, code, relation, relationNote, name, seq, picks, times, lang: langs.size > 1 ? 'mixed' : X.lang === 'en' ? 'en' : 'zh-TW' });
-    if (out.ok) { quizActive = false; guardLeft = !!(history.state && history.state[QUIZ_GUARD]); P.clearDraft(code); return renderRaterResult(nick, out, false); }
+    if (out.ok) { quizActive = false; guardLeft = !!(history.state && history.state[QUIZ_GUARD]); P.clearDraft(code); return renderRaterResult(code, nick, out, false); }
     const msg = T('q.e.' + (['closed', 'not_found', 'network'].includes(out.error) ? out.error : 'invalid'));
     const e = $('#q-err'); e.textContent = msg; e.hidden = false;
     if (out.error === 'network') { btn.disabled = false; btn.textContent = T('q.again'); }
@@ -931,7 +939,12 @@ function setupCtaDock() {
     io.observe(card);
   }
 }
-function renderRaterResult(nick, rec, again) {
+// 「這個測驗像「某某」嗎？」（同主測驗結果頁的評分卡）：分數只用來改善測驗，邀請人看不到
+function rateHTML(nm, v) {
+  const L = [1, 2, 3, 4, 5].map((i) => T('rr.rate.' + i));
+  return `<div class="card rate-card"><div class="rate-head"><h3 class="hl" id="rate-h">${T('rr.rate.h', { nm })}</h3><span class="small muted">${T('rr.rate.p')}</span></div><div class="rate" id="rate" role="group" aria-labelledby="rate-h">${[1, 2, 3, 4, 5].map((i) => `<button type="button" class="opt" data-v="${i}" aria-pressed="${v === i}" aria-label="${i} ${L[i - 1]}">${i}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span id="rate-msg" role="status">${v ? T('rr.rate.thanks') : ''}</span><span aria-hidden="true">${L[4]}</span></div></div>`;
+}
+function renderRaterResult(code, nick, rec, again) {
   const key = keyOf(rec.result), t = R.TEXT[key], nm = esc(nick);
   const main = mainColor(rec.result);
   const secs = R.sections(key, nick);
@@ -956,11 +969,19 @@ function renderRaterResult(nick, rec, again) {
         ${secs.map((x) => `<div class="card sec"><h3>${x.title}</h3><ul>${x.items.map((y) => `<li>${y}</li>`).join('')}</ul>${x.tip ? `<div class="tip"><b>${x.tip[0]}</b>${x.tip[1]}</div>` : ''}</div>`).join('')}
       </div>
     </div>
+    ${rateHTML(nm, rec.rating)}
     <p class="note">${T('rr.ref')}</p>
     ${ctaHTML()}
   </div>
   <div class="cta-dock" id="cta-dock"><a class="btn primary" href="./">${T('cta.btn')}</a></div>`);
   setupCtaDock();
+  $('#rate').addEventListener('click', (e) => {
+    const b = e.target.closest('.opt');
+    if (!b) return;
+    P.rateResult(code, +b.dataset.v).catch(() => {});
+    document.querySelectorAll('#rate .opt').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    $('#rate-msg').textContent = T('rr.rate.thanks');
+  });
   const fold = $('#fold'), fb = fold.querySelector('.fold-btn');
   fb.addEventListener('click', () => {
     const open = fb.getAttribute('aria-expanded') !== 'true';

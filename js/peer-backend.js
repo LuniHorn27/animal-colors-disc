@@ -11,6 +11,7 @@
      await PeerBackend.getInvite(code)              // {nickname, isOpen} 或 null
      PeerBackend.prepareBot()                       // 作答時在背景準備機器人驗證
      await PeerBackend.submitRating({sid, code, relation, name, seq, picks, times, lang})  // lang：zh-TW／en／mixed，可省略
+     await PeerBackend.rateResult(code, 4)          // 「這個測驗像「某某」嗎？」1–5
      await PeerBackend.getResults(code, ownerToken) // 對照結果或 null
      await PeerBackend.setOpen(code, ownerToken, true|false)
      await PeerBackend.getMyInvites()               // 登入者自己的邀請
@@ -77,7 +78,7 @@
   const K_CLAIM = 'disc-claim-v1';        // 主測驗：最近一次送出的 {id, token}
   const K_CLAIMS = 'disc-claims-v1';      // 主測驗：每份作答（號碼牌）送出後拿到的 {id, token}
   const K_OWNER = 'disc-peer-v1';         // 邀請人：{code, ownerToken, nickname}
-  const K_RATED = 'disc-peer-rated-v1';   // 評的人：{邀請碼: {sid, ref, scores, result}}
+  const K_RATED = 'disc-peer-rated-v1';   // 評的人：{邀請碼: {sid, ref, scores, result, rating}}
   const K_DRAFT = 'disc-peer-draft-v1';   // 評的人作答到一半：{邀請碼: {sid, seq, picks, times, idx, relation, relationNote, name, langs, at}}
   const DRAFT_DAYS = 30;                  // 作答進度留多久
   const enabled = !!(CFG.supabaseUrl && CFG.supabaseAnonKey && CFG.turnstileSiteKey);
@@ -250,6 +251,20 @@
     }
   }
 
+  // 「這個測驗像「某某」嗎？」：用這次作答的號碼牌補上評分（只用來改善測驗，邀請人看不到）。
+  // 也記在瀏覽器裡，重新打開結果頁時還看得到自己選的分數
+  async function rateResult(code, rating) {
+    const rec = loadRated(code);
+    if (!rec) return false;
+    saveRated(code, Object.assign({}, rec, { rating }));
+    if (!enabled || !rec.sid) return false;
+    try {
+      await init();
+      const { data, error } = await client.rpc('set_peer_rating', { p_sid: rec.sid, p_rating: rating });
+      return !error && data === true;
+    } catch (e) { return false; }
+  }
+
   // ---------- 登入 ----------
   async function signInWithGoogle() {
     if (!enabled) return;
@@ -279,7 +294,7 @@
   function clearDraft(code) { const all = store.get(K_DRAFT) || {}; if (!(code in all)) return; delete all[code]; store.set(K_DRAFT, all); }
 
   window.PeerBackend = Object.assign({}, pure, {
-    enabled, init, latestClaim, resultClaim, createInvite, getInvite, prepareBot, submitRating, getResults, setOpen,
+    enabled, init, latestClaim, resultClaim, createInvite, getInvite, prepareBot, submitRating, rateResult, getResults, setOpen,
     getMyInvites, signInWithGoogle, signOut, saveOwner, loadOwner, saveRated, loadRated, saveDraft, loadDraft, clearDraft,
     onAuthChange(fn) { listeners.push(fn); },
   });
