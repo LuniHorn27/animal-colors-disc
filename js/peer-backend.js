@@ -266,11 +266,12 @@
   }
 
   // ---------- 登入 ----------
-  async function signInWithGoogle() {
+  // home：登入後回到首頁（朋友作答完的結果頁用）
+  async function signInWithGoogle({ home = false } = {}) {
     if (!enabled) return;
     await init();
     // 不帶 # 後面的內容：專屬碼不能交給登入服務；登入回來後用帳號找自己的邀請
-    const redirectTo = location.origin + location.pathname;
+    const redirectTo = home ? new URL('./', location.href).href : location.origin + location.pathname;
     const { error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
     if (error) throw new Error('無法開始登入');
   }

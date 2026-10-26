@@ -309,6 +309,10 @@ svg text{font-family:var(--font-sans)}
 <dialog id="menu" class="menu" aria-label="選單">
   <div class="menu-in" tabindex="-1">
     <div class="menu-grab" aria-hidden="true"></div>
+    <div id="m-home-sec" hidden>
+      <a class="menu-row" id="m-home" href="./"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-6h4v6"/></svg><span><span data-i18n="menu.home">回到首頁</span><small data-i18n="menu.homeSub">測出你的動物本色｜DISC 行為風格測驗</small></span></a>
+      <hr>
+    </div>
     <div id="m-acct">
       <h2 class="menu-sec" data-i18n="menu.account">帳號</h2>
       <p class="menu-who" id="m-who" hidden></p>
@@ -449,14 +453,16 @@ $('#m-theme').addEventListener('click', () => {
 if (darkMQ && darkMQ.addEventListener) darkMQ.addEventListener('change', syncTheme);
 syncTheme();
 
-/* ---------- 頁首「選單」：帳號（登入／我的歷次結果／登出）、設定（深色模式、分享）、其他（隱私說明） ---------- */
+/* ---------- 頁首「選單」：朋友作答完的結果頁多一個「回到首頁」；帳號（登入／我的歷次結果／登出）、設定（深色模式、分享）、其他（隱私說明） ---------- */
 const menu = $('#menu');
 function fillAcct() {
   const u = P.user;
   $('#m-signin').hidden = !!u; $('#m-history').hidden = $('#m-signout').hidden = !u;
   $('#m-who').hidden = !u; $('#m-who').textContent = u ? T('menu.who', { email: u.email || '' }) : '';
 }
+const rateMode = () => P.parseHash(location.hash).mode === 'rate';
 function openMenu() {
+  $('#m-home-sec').hidden = !rateMode();
   $('#m-acct').hidden = !P.enabled;
   fillAcct();
   if (P.enabled && !P.user) P.init().then(fillAcct).catch(() => {});
@@ -469,9 +475,11 @@ function openMenu() {
 $('#bar-menu').addEventListener('click', openMenu);
 menu.addEventListener('close', () => $('#bar-menu').setAttribute('aria-expanded', 'false'));
 menu.addEventListener('click', (e) => { if (e.target === menu) menu.close(); });   // 點選單外面就關
-$('#m-signin').addEventListener('click', () => { menu.close(); P.signInWithGoogle().catch(() => toast(T('loginFail'))); });
+// 朋友的結果頁登入後回到首頁（這頁登入回來會變成邀請頁，對朋友來說看不懂）
+$('#m-signin').addEventListener('click', () => { menu.close(); P.signInWithGoogle({ home: rateMode() }).catch(() => toast(T('loginFail'))); });
 $('#m-signout').addEventListener('click', async () => { menu.close(); try { await P.signOut(); } catch (e) {} render(); });
 $('#m-history').addEventListener('click', () => menu.close());
+$('#m-home').addEventListener('click', () => menu.close());
 $('#m-share').addEventListener('click', async () => {
   menu.close();
   const url = new URL('./', location.href).href, data = { title: T('menu.shareTitle'), text: T('menu.shareText'), url };
@@ -975,6 +983,7 @@ function renderRaterResult(code, nick, rec, again) {
   </div>
   <div class="cta-dock" id="cta-dock"><a class="btn primary" href="./">${T('cta.btn')}</a></div>`);
   setupCtaDock();
+  $('#bar-menu').hidden = false;
   $('#rate').addEventListener('click', (e) => {
     const b = e.target.closest('.opt');
     if (!b) return;
@@ -1133,7 +1142,7 @@ async function render() {
   if (document.querySelector('.leave')) document.querySelector('.leave').remove();
   // 「我的結果｜他人角度」分頁只給邀請人看（邀請頁、連結頁、對照頁），評的人看不到
   $('#ptabs').hidden = h.mode === 'rate';
-  $('#bar-menu').hidden = h.mode === 'rate';   // 朋友作答的頁面只留 EN
+  $('#bar-menu').hidden = h.mode === 'rate';   // 朋友作答的頁面只留 EN，作答完的結果頁才出現選單
   if (menu.open) menu.close();
   tabBadge(null);
   try {
