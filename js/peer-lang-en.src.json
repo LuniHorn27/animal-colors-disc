@@ -129,7 +129,7 @@
  "ui.lv.stay": "繼續作答",
  "ui.lv.go": "離開",
  "ui.rr.again": "你已經回覆過「{nm}」了，這是你上次的結果。",
- "ui.rr.sent": "已將測驗結果傳送給「{nm}」，謝謝你！",
+ "ui.rr.sent": "已將測驗結果自動傳送給「{nm}」，謝謝你！",
  "ui.rr.eyebrow": "在你眼中，「{nm}」的動物本色{code}",
  "ui.rr.mix": "本色組成",
  "ui.rr.inEyes": "在你眼中",

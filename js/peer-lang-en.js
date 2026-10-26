@@ -133,7 +133,7 @@ window.PEER_LANG_EN = {
   "lv.stay": "Keep going",
   "lv.go": "Leave",
   "rr.again": "You have already replied to \"{nm}\". This is your result from last time.",
-  "rr.sent": "Your result has been sent to \"{nm}\". Thank you!",
+  "rr.sent": "Your result has been sent to \"{nm}\" automatically. Thank you!",
   "rr.eyebrow": "\"{nm}\"'s inner animal in your eyes{code}",
   "rr.mix": "Inner animal mix",
   "rr.inEyes": "In your eyes",
