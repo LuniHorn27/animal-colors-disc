@@ -535,8 +535,9 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <select id="job"><option value="">請選擇</option><option value="在學">在學</option><option value="在職">在職</option><option value="自由工作者">自由工作者</option><option value="家管">家管</option><option value="待業">待業</option><option value="退休">退休</option><option value="其他">其他</option></select>
       <input type="text" id="job-other" maxlength="40" hidden data-i18n-attr="aria-label:info.jobOther;placeholder:info.jobOther">
       <span class="field-err" id="job-err" role="alert"></span></div>
-    <div class="form-row"><label for="school" data-i18n="info.school">在學／畢業學校</label>
-      <input type="text" id="school" maxlength="40" autocomplete="organization"></div>
+    <div class="form-row"><label for="school"><span data-i18n="info.school">在學／畢業學校</span><i class="req" aria-hidden="true">*</i></label>
+      <input type="text" id="school" maxlength="40" autocomplete="organization">
+      <span class="field-err" id="school-err" role="alert"></span></div>
     <div class="form-row"><label for="major"><span data-i18n="info.major">在學／畢業科系</span><i class="req" aria-hidden="true">*</i></label>
       <input type="text" id="major" maxlength="40" autocomplete="off">
       <span class="field-err" id="major-err" role="alert"></span></div>
@@ -1121,7 +1122,7 @@ let st = null;
 const save = () => { if (st && st.viewOnly) return; try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} };
 const load = () => { try{ return JSON.parse(localStorage.getItem(STORE)); }catch(e){ return null; } };
 const clear = () => { try{ localStorage.removeItem(STORE); }catch(e){} };
-/* 班級代碼：網址加上 ?c=A101，這份作答就會記錄班級（名字、年齡層、性別、就業狀態、科系皆必填，個人與班級相同） */
+/* 班級代碼：網址加上 ?c=A101，這份作答就會記錄班級（名字、年齡層、性別、就業狀態、學校、科系皆必填，個人與班級相同） */
 const COHORT = (()=>{ const c=new URLSearchParams(location.search).get('c'); return c && /^[A-Za-z0-9_-]{1,32}$/.test(c) ? c : null; })();
 const newSid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2));
 const BK = window.DiscBackend || {enabled:false};
@@ -1389,13 +1390,14 @@ $('#email').addEventListener('blur', ()=>showEmailErr(!emailOK()));
 $('#email').addEventListener('input', ()=>{ if ($('#email').getAttribute('aria-invalid')==='true' && emailOK()) showEmailErr(false); });
 $('#job').addEventListener('change', ()=>{ $('#job-other').hidden = $('#job').value!=='其他'; });
 const classMode = () => !!(st && st.cohort);
-/* 必填：名字、年齡層、性別、就業狀態（選「其他」要說明）、科系。用紅色 * 標示，不寫「必填」字樣 */
+/* 必填：名字、年齡層、性別、就業狀態（選「其他」要說明）、學校、科系。用紅色 * 標示，不寫「必填」字樣 */
 const REQ_FIELDS = [
   {el:'#uname', err:'#uname-err', msg:'err.name', ok:()=>!!$('#uname').value.trim()},
   {el:'#age', err:'#age-err', msg:'err.pick', ok:()=>!!$('#age').value},
   {el:'#gender', err:'#gender-err', msg:'err.pick', ok:()=>!!$('#gender').value},
   {el:'#job', err:'#job-err', msg:'err.pick', ok:()=>!!$('#job').value},
   {el:'#job-other', err:'#job-err', msg:'err.fill', ok:()=>$('#job').value!=='其他' || !!$('#job-other').value.trim()},
+  {el:'#school', err:'#school-err', msg:'err.fill', ok:()=>!!$('#school').value.trim()},
   {el:'#major', err:'#major-err', msg:'err.fill', ok:()=>!!$('#major').value.trim()}];
 function showReqErr(f, on){
   $(f.el).setAttribute('aria-invalid', String(on));
@@ -1403,7 +1405,7 @@ function showReqErr(f, on){
 }
 REQ_FIELDS.forEach(f=>{
   $(f.el).setAttribute('aria-required', 'true');
-  $(f.el).addEventListener(f.el==='#uname'||f.el==='#major'||f.el==='#job-other' ? 'input' : 'change', ()=>{ if (f.ok()) showReqErr(f, false); });
+  $(f.el).addEventListener(f.el==='#uname'||f.el==='#school'||f.el==='#major'||f.el==='#job-other' ? 'input' : 'change', ()=>{ if (f.ok()) showReqErr(f, false); });
 });
 $('#job').addEventListener('change', ()=>{ if ($('#job').value!=='其他') showReqErr(REQ_FIELDS[4], false); });
 /* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
@@ -2440,7 +2442,7 @@ function rerender(){
   $('#toast').textContent = '';
   if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
   else if (!$('#s-blind').hidden && st && st.blindOrders) renderBlind(blindPage);
-  else if (!$('#s-info').hidden){ ['#email-err','#uname-err','#age-err','#gender-err','#job-err','#major-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
+  else if (!$('#s-info').hidden){ ['#email-err','#uname-err','#age-err','#gender-err','#job-err','#school-err','#major-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
   else if (!$('#s-result').hidden && st && st.done){ const y = window.scrollY; renderResult(); window.scrollTo(0, y); }
   else if (!$('#s-history').hidden) openHistory();
   else if (!$('#s-none').hidden) renderNone();
