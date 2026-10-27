@@ -519,7 +519,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <span class="field-err" id="uname-err" role="alert"></span></div>
     <div class="form-row"><label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="email-hint email-err">
-      <span class="small muted" id="email-hint" hidden data-i18n="info.emailHint">如果未來想收到其他測驗連結，歡迎填寫信箱。</span>
+      <span class="small muted" id="email-hint" data-i18n="info.emailHint">如果未來想收到其他測驗連結，歡迎填寫信箱。</span>
       <span class="field-err" id="email-err" role="alert"></span></div>
     <div class="form-row"><label for="age" data-i18n="info.age">年齡層</label>
       <select id="age"><option value="">請選擇</option><option value="14 歲以下">14 歲以下</option><option value="15–19 歲">15–19 歲</option><option value="20–24 歲">20–24 歲</option><option value="25–29 歲">25–29 歲</option><option value="30–34 歲">30–34 歲</option><option value="35–39 歲">35–39 歲</option><option value="40–44 歲">40–44 歲</option><option value="45–49 歲">45–49 歲</option><option value="50–54 歲">50–54 歲</option><option value="55–59 歲">55–59 歲</option><option value="60–64 歲">60–64 歲</option><option value="65 歲以上">65 歲以上</option></select></div>
@@ -1382,7 +1382,6 @@ function infoMode(){
   /* 說明文字：班級連結和一般連結用同一段（使用者決定，2026-10-16） */
   $('#uname-label').textContent = cm ? t('info.nameReq') : t('info.name');
   $('#uname').required = cm;
-  $('#email-hint').hidden = !cm;
   $('#row-edu').hidden = cm; $('#row-job').hidden = cm;
 }
 function showNameErr(on){
