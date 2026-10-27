@@ -221,6 +221,7 @@ window.DISC_LANG_EN = {
   "fb.sub": "Tell us what works, what feels off, or what doesn't seem accurate, and let's improve this test together!",
   "fb.max": "(up to 3)",
   "fb.fav.q": "Which part did you like best?",
+  "fb.linked": "Your rating from the results page is filled in. Tap to change it.",
   "fb.fav.a": "Analysis",
   "fb.fav.b": "Charts and features",
   "fb.f1": "Core traits",

@@ -320,6 +320,8 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fb-ends{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:var(--muted);margin-top:2px}
 .fb-rh{font-size:14px;color:var(--muted);margin:6px 0 0;text-align:center}
 .fb-rec.set .fb-rh{display:none}
+.fb-rate{margin-bottom:12px}
+.fb-rate .fb-hint{margin:8px 0 0}
 .fb-rg{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;cursor:pointer}
 .fb-rg::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--sunk);border:1px solid var(--line)}
 .fb-rg::-moz-range-track{height:8px;border-radius:4px;background:var(--sunk);border:1px solid var(--line)}
@@ -794,7 +796,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關',
   'menu.feedback':'意見回饋', 'menu.feedbackSub':'好的、不好的都歡迎回饋',
   'fb.back':'返回', 'fb.h':'你的想法，讓測驗更好', 'fb.sub':'有什麼好的、卡卡的、或是不太準的地方，都歡迎告訴我們，讓我們一起優化這個測驗吧！',
-  'fb.max':'（最多 3 個）', 'fb.fav.q':'你最喜歡哪個部分？', 'fb.fav.a':'解析內容', 'fb.fav.b':'圖表與功能',
+  'fb.max':'（最多 3 個）', 'fb.linked':'已帶入你在結果頁的評分，想改可以直接點。', 'fb.fav.q':'你最喜歡哪個部分？', 'fb.fav.a':'解析內容', 'fb.fav.b':'圖表與功能',
   'fb.f1':'核心特質', 'fb.f2':'你的優勢', 'fb.f3':'可能的盲點', 'fb.f4':'你的溝通方式', 'fb.f5':'壓力下的你', 'fb.f6':'適合的工作環境與方向', 'fb.f7':'和其他動物相處',
   'fb.f8':'本色組成圖', 'fb.f9':'四種動物的分數', 'fb.f10':'分享結果圖片', 'fb.f11':'換個角度看自己',
   'fb.help.q':'測完後，你覺得有哪些幫助？',
@@ -1627,6 +1629,8 @@ const FB_HELPS = ['h1','h2','h3','h4','h5','h6'];
 const FB_MAX = 3;
 const FB_BACK = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
 let FB = null, fbBack = null, fbSending = false;
+/* 最近一次作答完的結果：評分跟結果頁共用，只收集一次 */
+const fbResult = () => { const s = (st && st.seq && !st.viewOnly) ? st : load(); return s && s.done ? s : null; };
 const fbFresh = () => ({sid:newSid(), favs:[], helps:[], rec:null, msg:''});
 function openFeedback(back){
   fbBack = back; FB = fbFresh();
@@ -1649,6 +1653,7 @@ function renderFeedback(){
   el.innerHTML = `<div class="fb-top"><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.back')}">${FB_BACK}</button><span class="fb-title">${t('menu.feedback')}</span></div>
   <form id="fb-form" novalidate>
     <h2>${t('fb.h')}</h2><p class="fb-sub">${t('fb.sub')}</p>
+    ${fbRating()}
     ${acc('fb.fav.q', `<p class="fb-grp">${t('fb.fav.a')}</p><div class="fb-chips">${chips(FB_FAVS[0])}</div><p class="fb-grp">${t('fb.fav.b')}</p><div class="fb-chips">${chips(FB_FAVS[1])}</div>`, 'favs')}
     ${acc('fb.help.q', `<div class="fb-chips">${chips(FB_HELPS)}</div>`, 'helps')}
     <div class="fb-rec${FB.rec?' set':''}" id="fb-rec"><p class="fb-qh">${t('fb.rec.q')}</p><div class="fb-rgw"><b class="fb-bub" id="fb-bub" aria-hidden="true"></b><input class="fb-rg" id="fb-rg" type="range" min="1" max="10" step="1" value="${FB.rec||5}" aria-label="${t('fb.rec.aria')}"></div><div class="fb-ends"><span>${t('fb.rec.lo')}</span><span>${t('fb.rec.hi')}</span></div><p class="fb-rh">${t('fb.rec.hint')}</p></div>
@@ -1658,12 +1663,17 @@ function renderFeedback(){
   fbSync(); fbBubble();
   window.scrollTo(0,0);
 }
+function fbRating(){
+  const r = fbResult(); if (!r) return '';
+  const L = [1,2,3,4,5].map(v=>t('rate.'+v));
+  return `<div class="card fb-rate"><h3 class="fb-qh">${t('rate.h')}</h3><div class="rate" id="fb-ratebox" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="${r.rating===v}" aria-label="${v} ${L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span></span><span aria-hidden="true">${L[4]}</span></div>${r.rating?`<p class="fb-hint">${t('fb.linked')}</p>`:''}</div>`;
+}
 /* 已選的數量徽章、送出鈕（什麼都沒回答時不能送） */
 function fbSync(){
   const el = $('#s-feedback');
   el.querySelectorAll('.fb-chip').forEach(b=>b.setAttribute('aria-pressed', String(FB.favs.includes(b.dataset.k)||FB.helps.includes(b.dataset.k))));
   ['favs','helps'].forEach(k=>{ const c = el.querySelector(`.fb-cnt[data-n="${k}"]`), n = FB[k].length; c.textContent = n+'/'+FB_MAX; c.classList.toggle('on', n>0); });
-  $('#fb-go').disabled = fbSending || !(FB.favs.length || FB.helps.length || FB.rec || FB.msg.trim());
+  $('#fb-go').disabled = fbSending || !(FB.favs.length || FB.helps.length || FB.rec || FB.msg.trim() || FB.rated);
 }
 /* 滑桿上方的數字泡泡跟著圓鈕走 */
 function fbBubble(){
@@ -1673,6 +1683,15 @@ function fbBubble(){
 }
 $('#s-feedback').addEventListener('click', e=>{
   if (e.target.closest('#fb-back')) return fbLeave();
+  const rb = e.target.closest('#fb-ratebox .opt');
+  if (rb){   // 改評分：寫回結果頁的評分並送到後台（跟結果頁同一個動作）
+    const r = fbResult(), v = +rb.dataset.v; if (!r) return;
+    r.rating = v; if (r===st) save(); else try{ localStorage.setItem(STORE, JSON.stringify(r)); }catch(err){}
+    if (BK.enabled && r.sid) BK.rate(r.sid, v).catch(()=>{});
+    FB.rated = true;
+    $('#fb-ratebox').querySelectorAll('.opt').forEach(o=>o.setAttribute('aria-pressed', String(+o.dataset.v===v)));
+    return fbSync();
+  }
   const b = e.target.closest('.fb-chip'); if (!b) return;
   const k = b.dataset.k, list = k[0]==='f' ? FB.favs : FB.helps, i = list.indexOf(k);
   if (i>=0) list.splice(i,1); else if (list.length<FB_MAX) list.push(k);
@@ -1688,7 +1707,8 @@ $('#s-feedback').addEventListener('submit', async e=>{
   const body = {sid:FB.sid, favs:FB.favs, helps:FB.helps, recommend:FB.rec, message:FB.msg.trim()||null, lang:LANG==='en'?'en':'zh-TW'};
   fbSending = true; $('#fb-go').textContent = t('fb.sending'); fbSync();
   let ok = false;
-  try { ok = await BK.sendFeedback(body); } catch(err){}
+  if (!(body.favs.length || body.helps.length || body.recommend || body.message)) ok = true;   // 只動了評分：已經送過了
+  else try { ok = await BK.sendFeedback(body); } catch(err){}
   fbSending = false;
   if (!ok){ $('#fb-go').textContent = t('fb.send'); fbSync(); return toast(t('fb.fail'), true); }
   FB.done = true; renderFeedback();
