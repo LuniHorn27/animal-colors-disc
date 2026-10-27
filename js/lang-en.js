@@ -112,7 +112,7 @@ window.DISC_LANG_EN = {
   "info.h": "About you",
   "info.name": "Name",
   "info.nameReq": "Name (required)",
-  "info.emailHint": "If you would like to receive links to other assessments in the future, feel free to enter your email.",
+  "info.emailHint": "If you would like to receive other psychological assessments in the future, feel free to leave your email.",
   "info.age": "Age group",
   "info.gender": "Gender",
   "info.edu": "Education",
