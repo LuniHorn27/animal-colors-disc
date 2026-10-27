@@ -321,6 +321,8 @@ svg text{font-family:var(--font-sans)}
       <button type="button" class="menu-row" id="m-signout" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg><span data-i18n="menu.signout">登出</span></button>
       <hr>
     </div>
+    <a class="menu-row" id="m-feedback" href="./#feedback"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg><span><span data-i18n="menu.feedback">意見回饋</span><small data-i18n="menu.feedbackSub">好的、不好的都歡迎回饋</small></span></a>
+    <hr>
     <h2 class="menu-sec" data-i18n="menu.settings">設定</h2>
     <button type="button" class="menu-row" id="m-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span data-i18n="theme">深色模式</span><span class="r" id="m-theme-v" aria-hidden="true">關</span></button>
     <button type="button" class="menu-row" id="m-share"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/></svg><span data-i18n="menu.share">分享這個測驗給朋友</span></button>
@@ -480,6 +482,7 @@ $('#m-signin').addEventListener('click', () => { menu.close(); P.signInWithGoogl
 $('#m-signout').addEventListener('click', async () => { menu.close(); try { await P.signOut(); } catch (e) {} render(); });
 $('#m-history').addEventListener('click', () => menu.close());
 $('#m-home').addEventListener('click', () => menu.close());
+$('#m-feedback').addEventListener('click', () => menu.close());
 $('#m-share').addEventListener('click', async () => {
   menu.close();
   const url = new URL('./', location.href).href, data = { title: T('menu.shareTitle'), text: T('menu.shareText'), url };

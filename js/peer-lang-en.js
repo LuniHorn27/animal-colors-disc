@@ -22,6 +22,8 @@ window.PEER_LANG_EN = {
   "menu.shareText": "What's Your Inner Animal? A DISC behavioral style test. In about 5–10 minutes, find out which animals you are!",
   "menu.copied": "Test link copied. You can paste it to your friends.",
   "menu.home": "Back to home",
+  "menu.feedback": "Feedback",
+  "menu.feedbackSub": "Good or bad, we want to hear it",
   "menu.homeSub": "What's Your Inner Animal? | DISC Behavioral Style Test",
   "bar.lang": "Switch to Chinese 中文",
   "lang.fail": "English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。",
