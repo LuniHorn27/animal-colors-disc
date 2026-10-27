@@ -142,6 +142,14 @@
   const setOutbox = (list) => store.set(K_OUTBOX, list);
   const emit = (sid, state) => syncListeners.forEach((fn) => { try { fn(sid, state); } catch (e) {} });
 
+  const clip = (v) => String(v || '').trim().slice(0, 40);
+  function extraInfo(info) {
+    const o = {};
+    if (info.job === '其他' && clip(info.jobOther)) o.jobOther = clip(info.jobOther);
+    if (clip(info.school)) o.school = clip(info.school);
+    if (clip(info.major)) o.major = clip(info.major);
+    return o;
+  }
   function buildPayload(st) {
     const info = st.info || {};
     const name = (info.name || '').trim().slice(0, 40), email = (info.email || '').trim();
@@ -152,6 +160,8 @@
       answers: st.answers,
       times: Object.fromEntries(st.seq.map((id) => [id, Math.min(MAX_MS, Math.max(0, Math.round((st.times || {})[id] || 0)))])),
       info: { age: info.age || '', gender: info.gender || '', edu: info.edu || '', job: info.job || '' },
+      // 新欄位（2026-10）：只有有填才送，舊版後台不認識這些欄位時整份會被擋，所以後台要先更新
+      ...extraInfo(info),
       blind: st.blind || null,
       blind2: st.blind2 || null,
     };
