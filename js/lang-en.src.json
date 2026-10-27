@@ -515,7 +515,7 @@
  "ui.info.h": "個人資料",
  "ui.info.name": "名字",
  "ui.info.nameReq": "名字（必填）",
- "ui.info.emailHint": "填了之後，結果會寄到這個信箱。",
+ "ui.info.emailHint": "如果未來想收到其他測驗連結，歡迎填寫信箱。",
  "ui.info.age": "年齡層",
  "ui.info.gender": "性別",
  "ui.info.edu": "學歷",
