@@ -376,6 +376,8 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 input[type=text],input[type=email],input[type=tel]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;height:48px;min-height:48px;padding:0 12px;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none}
 input[aria-invalid="true"]{border-color:var(--err)}
 .field-err{font-size:14px;color:var(--err)}
+.req{color:var(--err);font-style:normal;margin-left:3px}
+select[aria-invalid="true"]{border-color:var(--err)}
 .field-err:empty{display:none}
 dialog{border:0;border-radius:16px;padding:24px;max-width:min(440px,calc(100vw - 32px));background:var(--surface);color:var(--ink)}
 dialog::backdrop{background:rgba(20,22,26,.45)}
@@ -514,26 +516,30 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   <section id="s-info" class="stack" hidden>
     <h2 id="info-h" data-i18n="info.h">個人資料</h2>
     <div class="info-grid stack">
-    <div class="form-row"><label for="uname" id="uname-label">名字</label>
+    <div class="form-row"><label for="uname"><span data-i18n="info.name">名字</span><i class="req" aria-hidden="true">*</i></label>
       <input type="text" id="uname" autocomplete="name" maxlength="40" aria-describedby="uname-err">
       <span class="field-err" id="uname-err" role="alert"></span></div>
     <div class="form-row"><label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="email-hint email-err">
       <span class="small muted" id="email-hint" data-i18n="info.emailHint">如果未來想收到其他心理測驗，歡迎留下您的信箱。</span>
       <span class="field-err" id="email-err" role="alert"></span></div>
-    <div class="form-row"><label for="age" data-i18n="info.age">年齡層</label>
-      <select id="age"><option value="">請選擇</option><option value="14 歲以下">14 歲以下</option><option value="15–19 歲">15–19 歲</option><option value="20–24 歲">20–24 歲</option><option value="25–29 歲">25–29 歲</option><option value="30–34 歲">30–34 歲</option><option value="35–39 歲">35–39 歲</option><option value="40–44 歲">40–44 歲</option><option value="45–49 歲">45–49 歲</option><option value="50–54 歲">50–54 歲</option><option value="55–59 歲">55–59 歲</option><option value="60–64 歲">60–64 歲</option><option value="65 歲以上">65 歲以上</option></select></div>
-    <div class="form-row"><label for="gender" data-i18n="info.gender">性別</label>
-      <select id="gender"><option value="">請選擇</option><option value="生理男">生理男</option><option value="生理女">生理女</option></select></div>
+    <div class="form-row"><label for="age"><span data-i18n="info.age">年齡層</span><i class="req" aria-hidden="true">*</i></label>
+      <select id="age"><option value="">請選擇</option><option value="14 歲以下">14 歲以下</option><option value="15–19 歲">15–19 歲</option><option value="20–24 歲">20–24 歲</option><option value="25–29 歲">25–29 歲</option><option value="30–34 歲">30–34 歲</option><option value="35–39 歲">35–39 歲</option><option value="40–44 歲">40–44 歲</option><option value="45–49 歲">45–49 歲</option><option value="50–54 歲">50–54 歲</option><option value="55–59 歲">55–59 歲</option><option value="60–64 歲">60–64 歲</option><option value="65 歲以上">65 歲以上</option></select>
+      <span class="field-err" id="age-err" role="alert"></span></div>
+    <div class="form-row"><label for="gender"><span data-i18n="info.gender">性別</span><i class="req" aria-hidden="true">*</i></label>
+      <select id="gender"><option value="">請選擇</option><option value="生理男">生理男</option><option value="生理女">生理女</option></select>
+      <span class="field-err" id="gender-err" role="alert"></span></div>
     <div class="form-row"><label for="edu" data-i18n="info.edu">學歷</label>
       <select id="edu"><option value="">請選擇</option><option value="國中以下">國中以下</option><option value="高中職">高中職</option><option value="專科">專科</option><option value="大學">大學</option><option value="碩士">碩士</option><option value="博士">博士</option></select></div>
-    <div class="form-row"><label for="job" data-i18n="info.job">就業狀態</label>
+    <div class="form-row"><label for="job"><span data-i18n="info.job">就業狀態</span><i class="req" aria-hidden="true">*</i></label>
       <select id="job"><option value="">請選擇</option><option value="在學">在學</option><option value="在職">在職</option><option value="自由工作者">自由工作者</option><option value="家管">家管</option><option value="待業">待業</option><option value="退休">退休</option><option value="其他">其他</option></select>
-      <input type="text" id="job-other" maxlength="40" hidden data-i18n-attr="aria-label:info.jobOther;placeholder:info.jobOther"></div>
+      <input type="text" id="job-other" maxlength="40" hidden data-i18n-attr="aria-label:info.jobOther;placeholder:info.jobOther">
+      <span class="field-err" id="job-err" role="alert"></span></div>
     <div class="form-row"><label for="school" data-i18n="info.school">在學／畢業學校</label>
       <input type="text" id="school" maxlength="40" autocomplete="organization"></div>
-    <div class="form-row"><label for="major" data-i18n="info.major">在學／畢業科系</label>
-      <input type="text" id="major" maxlength="40" autocomplete="off"></div>
+    <div class="form-row"><label for="major"><span data-i18n="info.major">在學／畢業科系</span><i class="req" aria-hidden="true">*</i></label>
+      <input type="text" id="major" maxlength="40" autocomplete="off">
+      <span class="field-err" id="major-err" role="alert"></span></div>
     </div>
     <fieldset class="followup" id="followup">
       <legend data-i18n="fu.legend">想要更深入了解自己嗎？</legend>
@@ -772,12 +778,12 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'quiz.missToast':'第 {n} 題還沒有回答。', 'quiz.qn':'第 {n} 題', 'quiz.miss':'尚未回答',
   'quiz.err':'還有 {n} 題沒有回答，已經幫你移到第 {q} 題。',
   'blind.h':'憑直覺，選一段最像的描述',
-  'info.h':'個人資料', 'info.name':'名字', 'info.nameReq':'名字（必填）', 'info.emailHint':'如果未來想收到其他心理測驗，歡迎留下您的信箱。',
+  'info.h':'個人資料', 'info.name':'名字', 'info.emailHint':'如果未來想收到其他心理測驗，歡迎留下您的信箱。',
   'info.age':'年齡層', 'info.gender':'性別', 'info.edu':'學歷', 'info.job':'就業狀態', 'info.jobOther':'其他，請說明', 'info.school':'在學／畢業學校', 'info.major':'在學／畢業科系', 'info.choose':'請選擇',
   'fu.legend':'想要更深入了解自己嗎？', 'fu.want':'我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果',
   'fu.more':'如有意願，請留下你的聯絡資訊', 'fu.phone':'電話',
   'err.email':'Email 格式好像不完整，例如 name@example.com。不想留也可以空白。',
-  'err.name':'請填寫名字，老師才能把結果對應到你。',
+  'err.name':'請填寫名字。', 'err.pick':'請選擇一個選項。', 'err.fill':'請填寫這一欄。',
   'err.phone':'電話號碼好像不完整，例如 0912-345-678。不想留也可以空白。',
   'err.line':'LINE ID 是 4–20 個英文、數字或 . _ -，可以在 LINE 的「個人檔案」裡找到。不想留也可以空白。',
   'info.next':'查看我的結果', 'info.sending':'正在送出作答…', 'info.wait':'通常幾秒內就會完成，請不要關閉這個頁面。',
@@ -1121,7 +1127,7 @@ const newSid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toStr
 const BK = window.DiscBackend || {enabled:false};
 
 function show(id){
-  if (id==='s-info'){ infoMode(); if (BK.enabled) BK.prepare(); }
+  if (id==='s-info'){ if (BK.enabled) BK.prepare(); }
   ['s-home','s-quiz','s-info','s-blind','s-result','s-history','s-none'].forEach(s=>$('#'+s).hidden = s!==id);
   if (id!=='s-result') document.body.classList.remove('dock-on');
   $('#bar-qmode').hidden = id!=='s-quiz';
@@ -1383,17 +1389,23 @@ $('#email').addEventListener('blur', ()=>showEmailErr(!emailOK()));
 $('#email').addEventListener('input', ()=>{ if ($('#email').getAttribute('aria-invalid')==='true' && emailOK()) showEmailErr(false); });
 $('#job').addEventListener('change', ()=>{ $('#job-other').hidden = $('#job').value!=='其他'; });
 const classMode = () => !!(st && st.cohort);
-function infoMode(){
-  const cm = classMode();
-  /* 說明文字：班級連結和一般連結用同一段（使用者決定，2026-10-16） */
-  $('#uname-label').textContent = cm ? t('info.nameReq') : t('info.name');
-  $('#uname').required = cm;
+/* 必填：名字、年齡層、性別、就業狀態（選「其他」要說明）、科系。用紅色 * 標示，不寫「必填」字樣 */
+const REQ_FIELDS = [
+  {el:'#uname', err:'#uname-err', msg:'err.name', ok:()=>!!$('#uname').value.trim()},
+  {el:'#age', err:'#age-err', msg:'err.pick', ok:()=>!!$('#age').value},
+  {el:'#gender', err:'#gender-err', msg:'err.pick', ok:()=>!!$('#gender').value},
+  {el:'#job', err:'#job-err', msg:'err.pick', ok:()=>!!$('#job').value},
+  {el:'#job-other', err:'#job-err', msg:'err.fill', ok:()=>$('#job').value!=='其他' || !!$('#job-other').value.trim()},
+  {el:'#major', err:'#major-err', msg:'err.fill', ok:()=>!!$('#major').value.trim()}];
+function showReqErr(f, on){
+  $(f.el).setAttribute('aria-invalid', String(on));
+  $(f.err).textContent = on ? t(f.msg) : '';
 }
-function showNameErr(on){
-  $('#uname').setAttribute('aria-invalid', String(on));
-  $('#uname-err').textContent = on ? t('err.name') : '';
-}
-$('#uname').addEventListener('input', ()=>{ if ($('#uname').value.trim()) showNameErr(false); });
+REQ_FIELDS.forEach(f=>{
+  $(f.el).setAttribute('aria-required', 'true');
+  $(f.el).addEventListener(f.el==='#uname'||f.el==='#major'||f.el==='#job-other' ? 'input' : 'change', ()=>{ if (f.ok()) showReqErr(f, false); });
+});
+$('#job').addEventListener('change', ()=>{ if ($('#job').value!=='其他') showReqErr(REQ_FIELDS[4], false); });
 /* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
 const FU = {
   phone:{el:'#fu-phone', err:'#fu-phone-err', ok:v=>/^[0-9+() -]{8,20}$/.test(v) && v.replace(/\D/g,'').length>=8,
@@ -1411,7 +1423,8 @@ $('#fu-want').addEventListener('change', ()=>{
   $('#fu-more').hidden = !on; $('#fu-want').setAttribute('aria-expanded', String(on));
 });
 $('#info-next').addEventListener('click', ()=>{
-  if (classMode() && !$('#uname').value.trim()){ showNameErr(true); $('#uname').focus(); return; }
+  const bad = REQ_FIELDS.filter(f=>!f.ok());
+  if (bad.length){ REQ_FIELDS.forEach(f=>showReqErr(f, bad.includes(f))); $(bad[0].el).focus(); return; }
   if (!emailOK()){ showEmailErr(true); $('#email').focus(); return; }
   const want = $('#fu-want').checked;
   if (want){ for (const k of Object.keys(FU)) if (!fuOK(k)){ showFuErr(k, true); $(FU[k].el).focus(); return; } }
@@ -2427,7 +2440,7 @@ function rerender(){
   $('#toast').textContent = '';
   if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
   else if (!$('#s-blind').hidden && st && st.blindOrders) renderBlind(blindPage);
-  else if (!$('#s-info').hidden){ infoMode(); ['#email-err','#uname-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
+  else if (!$('#s-info').hidden){ ['#email-err','#uname-err','#age-err','#gender-err','#job-err','#major-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
   else if (!$('#s-result').hidden && st && st.done){ const y = window.scrollY; renderResult(); window.scrollTo(0, y); }
   else if (!$('#s-history').hidden) openHistory();
   else if (!$('#s-none').hidden) renderNone();
