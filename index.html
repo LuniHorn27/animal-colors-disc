@@ -1424,7 +1424,7 @@ $('#fu-want').addEventListener('change', ()=>{
 });
 $('#info-next').addEventListener('click', ()=>{
   const bad = REQ_FIELDS.filter(f=>!f.ok());
-  if (bad.length){ REQ_FIELDS.forEach(f=>showReqErr(f, bad.includes(f))); $(bad[0].el).focus(); return; }
+  if (bad.length){ REQ_FIELDS.forEach(f=>showReqErr(f, false)); bad.forEach(f=>showReqErr(f, true)); $(bad[0].el).focus(); return; }
   if (!emailOK()){ showEmailErr(true); $('#email').focus(); return; }
   const want = $('#fu-want').checked;
   if (want){ for (const k of Object.keys(FU)) if (!fuOK(k)){ showFuErr(k, true); $(FU[k].el).focus(); return; } }
