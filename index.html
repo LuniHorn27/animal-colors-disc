@@ -529,8 +529,9 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <div class="form-row"><label for="gender"><span data-i18n="info.gender">性別</span><i class="req" aria-hidden="true">*</i></label>
       <select id="gender"><option value="">請選擇</option><option value="生理男">生理男</option><option value="生理女">生理女</option></select>
       <span class="field-err" id="gender-err" role="alert"></span></div>
-    <div class="form-row"><label for="edu" data-i18n="info.edu">學歷</label>
-      <select id="edu"><option value="">請選擇</option><option value="國中以下">國中以下</option><option value="高中職">高中職</option><option value="專科">專科</option><option value="大學">大學</option><option value="碩士">碩士</option><option value="博士">博士</option></select></div>
+    <div class="form-row"><label for="edu"><span data-i18n="info.edu">學歷</span><i class="req" aria-hidden="true">*</i></label>
+      <select id="edu"><option value="">請選擇</option><option value="國中以下">國中以下</option><option value="高中職">高中職</option><option value="專科">專科</option><option value="大學">大學</option><option value="碩士">碩士</option><option value="博士">博士</option></select>
+      <span class="field-err" id="edu-err" role="alert"></span></div>
     <div class="form-row"><label for="job"><span data-i18n="info.job">就業狀態</span><i class="req" aria-hidden="true">*</i></label>
       <select id="job"><option value="">請選擇</option><option value="在學">在學</option><option value="在職">在職</option><option value="自由工作者">自由工作者</option><option value="家管">家管</option><option value="待業">待業</option><option value="退休">退休</option><option value="其他">其他</option></select>
       <input type="text" id="job-other" maxlength="40" hidden data-i18n-attr="aria-label:info.jobOther;placeholder:info.jobOther">
@@ -1390,11 +1391,12 @@ $('#email').addEventListener('blur', ()=>showEmailErr(!emailOK()));
 $('#email').addEventListener('input', ()=>{ if ($('#email').getAttribute('aria-invalid')==='true' && emailOK()) showEmailErr(false); });
 $('#job').addEventListener('change', ()=>{ $('#job-other').hidden = $('#job').value!=='其他'; });
 const classMode = () => !!(st && st.cohort);
-/* 必填：名字、年齡層、性別、就業狀態（選「其他」要說明）、學校、科系。用紅色 * 標示，不寫「必填」字樣 */
+/* 必填：名字、年齡層、性別、學歷、就業狀態（選「其他」要說明）、學校、科系。用紅色 * 標示，不寫「必填」字樣 */
 const REQ_FIELDS = [
   {el:'#uname', err:'#uname-err', msg:'err.name', ok:()=>!!$('#uname').value.trim()},
   {el:'#age', err:'#age-err', msg:'err.pick', ok:()=>!!$('#age').value},
   {el:'#gender', err:'#gender-err', msg:'err.pick', ok:()=>!!$('#gender').value},
+  {el:'#edu', err:'#edu-err', msg:'err.pick', ok:()=>!!$('#edu').value},
   {el:'#job', err:'#job-err', msg:'err.pick', ok:()=>!!$('#job').value},
   {el:'#job-other', err:'#job-err', msg:'err.fill', ok:()=>$('#job').value!=='其他' || !!$('#job-other').value.trim()},
   {el:'#school', err:'#school-err', msg:'err.fill', ok:()=>!!$('#school').value.trim()},
@@ -1407,7 +1409,7 @@ REQ_FIELDS.forEach(f=>{
   $(f.el).setAttribute('aria-required', 'true');
   $(f.el).addEventListener(f.el==='#uname'||f.el==='#school'||f.el==='#major'||f.el==='#job-other' ? 'input' : 'change', ()=>{ if (f.ok()) showReqErr(f, false); });
 });
-$('#job').addEventListener('change', ()=>{ if ($('#job').value!=='其他') showReqErr(REQ_FIELDS[4], false); });
+$('#job').addEventListener('change', ()=>{ if ($('#job').value!=='其他') showReqErr(REQ_FIELDS.find(f=>f.el==='#job-other'), false); });
 /* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
 const FU = {
   phone:{el:'#fu-phone', err:'#fu-phone-err', ok:v=>/^[0-9+() -]{8,20}$/.test(v) && v.replace(/\D/g,'').length>=8,
@@ -2442,7 +2444,7 @@ function rerender(){
   $('#toast').textContent = '';
   if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
   else if (!$('#s-blind').hidden && st && st.blindOrders) renderBlind(blindPage);
-  else if (!$('#s-info').hidden){ ['#email-err','#uname-err','#age-err','#gender-err','#job-err','#school-err','#major-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
+  else if (!$('#s-info').hidden){ ['#email-err','#uname-err','#age-err','#gender-err','#edu-err','#job-err','#school-err','#major-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
   else if (!$('#s-result').hidden && st && st.done){ const y = window.scrollY; renderResult(); window.scrollTo(0, y); }
   else if (!$('#s-history').hidden) openHistory();
   else if (!$('#s-none').hidden) renderNone();
