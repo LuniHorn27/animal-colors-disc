@@ -126,7 +126,7 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 .quiz-end{margin-top:4px;padding-top:24px;border-top:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start;gap:12px}
 .quiz-end .field-err:empty{display:none}
 .info-grid{gap:20px;max-width:560px}
-/* 電腦版：兩欄並排，填滿整個版面寬度（名字｜Email、年齡層｜性別、學歷｜職業類別） */
+/* 電腦版：兩欄並排，填滿整個版面寬度（名字｜Email、年齡層｜性別、學歷｜就業狀態、學校｜科系） */
 @media (min-width:768px){.info-grid.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;max-width:none;align-items:start}}
 .form-row{display:flex;flex-direction:column;gap:6px}
 .form-row label{font-weight:500}
@@ -1121,7 +1121,7 @@ let st = null;
 const save = () => { if (st && st.viewOnly) return; try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} };
 const load = () => { try{ return JSON.parse(localStorage.getItem(STORE)); }catch(e){ return null; } };
 const clear = () => { try{ localStorage.removeItem(STORE); }catch(e){} };
-/* 班級代碼：網址加上 ?c=A101，這份作答就會記錄班級（班級模式：名字必填，不問學歷和職業） */
+/* 班級代碼：網址加上 ?c=A101，這份作答就會記錄班級（名字、年齡層、性別、就業狀態、科系皆必填，個人與班級相同） */
 const COHORT = (()=>{ const c=new URLSearchParams(location.search).get('c'); return c && /^[A-Za-z0-9_-]{1,32}$/.test(c) ? c : null; })();
 const newSid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2));
 const BK = window.DiscBackend || {enabled:false};
