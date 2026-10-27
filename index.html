@@ -2586,9 +2586,13 @@ if (BK.enabled && BK.hasSession()){
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }
+/* 「換個角度」頁的選單點「意見回饋」會連到 ./#feedback：直接打開意見回饋頁 */
+const WANT_FB = location.hash === '#feedback';
+if (WANT_FB) history.replaceState(history.state, '', location.pathname + location.search);
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
 else if (onTabEntry()) showNone();
+if (WANT_FB && BK.enabled) openFeedback(null);
 
 /* ===== 語言切換：英文在 js/lang-en.js，第一次切到英文時才載入（8 秒載不到就留在中文並提示） ===== */
 const loadEN = () => window.DISC_LANG_EN ? Promise.resolve(window.DISC_LANG_EN) : new Promise((res, rej)=>{
