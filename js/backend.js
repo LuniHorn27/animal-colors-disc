@@ -11,6 +11,7 @@
      DiscBackend.flush();                           // 頁面載入時：補送上次沒送出的作答
      DiscBackend.onSync((sid, state) => {});         // 送出狀態：'sending' | 'sent' | 'pending' | 'rejected'
      DiscBackend.rate(st.sid, 4);                   // 「結果像你嗎？」
+     await DiscBackend.sendFeedback({sid, favs, helps, recommend, message, lang}); // 意見回饋頁（Edge Function feedback-submit）
      await DiscBackend.signInWithGoogle(st);        // 保存結果（會跳轉到 Google）
      DiscBackend.user                               // 目前登入的會員（或 null）
      await DiscBackend.listMyResults();             // 我的歷次結果
@@ -246,6 +247,20 @@
   }
   const isQueued = (sid) => outbox().some((x) => x.sid === sid);
 
+  /* ---------- 意見回饋 ---------- */
+  // 回饋頁送出：不進待送出區，沒送成就留在頁面讓使用者再按一次；號碼牌 sid 讓重送不會多存一筆。
+  // 「解析像你嗎？」的評分不在這裡送，沿用 rate()（結果頁和回饋頁共用，只收集一次）
+  async function sendFeedback(fb) {
+    if (!enabled) return false;
+    await init();
+    const token = await waitForToken();
+    if (!token) return false;
+    const { error } = await client.functions.invoke('feedback-submit', {
+      body: Object.assign({}, fb, { turnstile_token: useToken() }),
+    });
+    return !error;
+  }
+
   /* ---------- 會員 ---------- */
   // 這個瀏覽器裡有沒有登入紀錄（或剛從 Google 登入回來）。沒有的話就不必載入登入程式
   function hasSession() {
@@ -343,7 +358,7 @@
   async function signOut() { if (enabled) await client.auth.signOut(); user = null; }
 
   window.DiscBackend = {
-    enabled, init, checkClass, prepare, renderTurnstile, queue, flush, rate, isQueued,
+    enabled, init, checkClass, prepare, renderTurnstile, queue, flush, rate, isQueued, sendFeedback,
     hasSession, signInWithGoogle, claimPending, takeReturnState, listMyResults, myPeerInvites, peerCount,
     getRetest, setRetest, deleteMyData, deleteMyResult, signOut,
     onAuthChange(fn) { listeners.push(fn); },
