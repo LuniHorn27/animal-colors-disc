@@ -112,7 +112,6 @@ window.DISC_LANG_EN = {
   "info.h": "About you",
   "info.name": "Name",
   "info.nameReq": "Name (required)",
-  "info.emailHint": "If you fill this in, your result will be sent to this email address.",
   "info.age": "Age group",
   "info.gender": "Gender",
   "info.edu": "Education",
