@@ -154,9 +154,9 @@ const TYPES = ['D','I','S','C'];
 const ANIMAL = {D:'老虎', I:'孔雀', S:'無尾熊', C:'貓頭鷹', CH:'變色龍'};
 const TNAME = {D:'支配', I:'影響', S:'穩定', C:'分析'};
 const COLOR = {D:'var(--d)', I:'var(--i)', S:'var(--s)', C:'var(--c)', CH:'var(--x)'};
-const LABELS = [['D'],['I'],['S'],['C'],['DI','D','I'],['IS','I','S'],['SC','S','C'],['CD','C','D'],['DS','D','S'],['IC','I','C'],['CH']];
+const LABELS = [['D'],['I'],['S'],['C'],['CH'],['DI','D','I'],['IS','I','S'],['SC','S','C'],['CD','C','D'],['DS','D','S'],['IC','I','C']];
 /* 完整類型的四組：在第幾個類型之前放小標題 */
-const GROUPS = {0:['單一型','一種動物特別明顯'], 4:['組合型','相鄰兩種差不多明顯'], 8:['對角型','方向相反的兩種都明顯'], 10:['變色龍','四種差不多']};
+const GROUPS = {0:['單一型','一種動物特別明顯'], 4:['變色龍','四種差不多'], 5:['組合型','相鄰兩種差不多明顯'], 9:['對角型','方向相反的兩種都明顯']};
 const REFRESH_MS = 10000;
 const LBL = k => k === 'CH' ? '變色龍' : `${k} ${ANIMAL[k]}`;
 const $ = s => document.querySelector(s);
