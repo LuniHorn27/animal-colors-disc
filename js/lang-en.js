@@ -125,7 +125,6 @@ window.DISC_LANG_EN = {
   "fu.more": "If you're interested, please leave your contact information.",
   "fu.phone": "Phone",
   "line.text": "If you're interested, feel free to join our official LINE:",
-  "line.about": "About Sugar:",
   "err.email": "This email address looks incomplete. Example: name@example.com. You can also leave it blank.",
   "err.name": "Please enter your name.",
   "err.pick": "Please choose an option.",
