@@ -124,6 +124,7 @@ window.DISC_LANG_EN = {
   "fu.want": "I'd like to learn more about career directions that suit me, or have a consultant explain my result in more depth.",
   "fu.more": "If you're interested, please leave your contact information.",
   "fu.phone": "Phone",
+  "line.text": "If you're interested, feel free to join our official LINE:",
   "err.email": "This email address looks incomplete. Example: name@example.com. You can also leave it blank.",
   "err.name": "Please enter your name.",
   "err.pick": "Please choose an option.",
