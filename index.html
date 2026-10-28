@@ -609,11 +609,12 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
             <span class="field-err" id="fu-line-err" role="alert"></span></div>
         </div>
       </div>
+      <div class="stack" id="line-join" style="gap:8px;align-items:flex-start" hidden>
+        <p data-i18n="line.text">想進一步了解適合自己的職涯方向嗎？歡迎加入官方 LINE，了解更多資訊：</p>
+        <a class="btn" href="https://line.me/R/ti/p/@vuy3954h?oat_content=url&amp;ts=10121644" target="_blank" rel="noopener" data-i18n="line.btn">加入官方 LINE</a>
+        <p class="small muted"><span data-i18n="line.about">關於方糖的介紹：</span><a href="https://linktr.ee/teacherfun" target="_blank" rel="noopener">linktr.ee/teacherfun</a></p>
+      </div>
     </fieldset>
-    <div class="stack" id="line-join" style="gap:8px;align-items:flex-start" hidden>
-      <p data-i18n="line.text">歡迎加入官方 LINE 帳號。</p>
-      <a class="btn" href="https://linktr.ee/teacherfun" target="_blank" rel="noopener" data-i18n="line.btn">加入官方 LINE</a>
-    </div>
     <div class="stack" style="gap:8px;align-items:flex-start"><button class="btn primary" id="info-next" data-i18n="info.next">查看我的結果</button>
       <p class="small muted" id="info-wait" role="status"></p></div>
   </section>
@@ -857,7 +858,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'info.age':'年齡層', 'info.gender':'性別', 'info.edu':'學歷', 'info.job':'就業狀態', 'info.jobOther':'其他，請說明', 'info.school':'在學／畢業學校', 'info.major':'在學／畢業科系', 'info.choose':'請選擇',
   'fu.legend':'想要更深入了解自己嗎？', 'fu.want':'我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果',
   'fu.more':'如有意願，請留下你的聯絡資訊', 'fu.phone':'電話',
-  'line.text':'歡迎加入官方 LINE 帳號。', 'line.btn':'加入官方 LINE',
+  'line.text':'想進一步了解適合自己的職涯方向嗎？歡迎加入官方 LINE，了解更多資訊：', 'line.btn':'加入官方 LINE', 'line.about':'關於方糖的介紹：',
   'err.email':'Email 格式好像不完整，例如 name@example.com。不想留也可以空白。',
   'err.name':'請填寫名字。', 'err.pick':'請選擇一個選項。', 'err.fill':'請填寫這一欄。',
   'err.phone':'電話號碼好像不完整，例如 0912-345-678。不想留也可以空白。',
@@ -1484,11 +1485,8 @@ REQ_FIELDS.forEach(f=>{
   $(f.el).addEventListener(f.el==='#uname'||f.el==='#school'||f.el==='#major'||f.el==='#job-other' ? 'input' : 'change', ()=>{ if (f.ok()) showReqErr(f, false); });
 });
 $('#job').addEventListener('change', ()=>{ if ($('#job').value!=='其他') showReqErr(REQ_FIELDS.find(f=>f.el==='#job-other'), false); });
-/* 10/29 班級：不問「想進一步了解」（電話、LINE ID），改邀請加入官方 LINE */
-if (COHORT && /^1029/.test(COHORT)){
-  $('#followup').hidden = true;
-  $('#line-join').hidden = false;
-}
+/* 10/29 班級：「想進一步了解」不問電話、LINE ID，勾選後改顯示官方 LINE 的加入連結 */
+const LINE_JOIN = !!(COHORT && /^1029/.test(COHORT));
 /* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
 const FU = {
   phone:{el:'#fu-phone', err:'#fu-phone-err', ok:v=>/^[0-9+() -]{8,20}$/.test(v) && v.replace(/\D/g,'').length>=8,
@@ -1503,7 +1501,8 @@ Object.keys(FU).forEach(k=>{
 });
 $('#fu-want').addEventListener('change', ()=>{
   const on = $('#fu-want').checked;
-  $('#fu-more').hidden = !on; $('#fu-want').setAttribute('aria-expanded', String(on));
+  $('#fu-more').hidden = !on || LINE_JOIN; $('#line-join').hidden = !(on && LINE_JOIN);
+  $('#fu-want').setAttribute('aria-expanded', String(on));
 });
 $('#info-next').addEventListener('click', ()=>{
   const bad = REQ_FIELDS.filter(f=>!f.ok());
