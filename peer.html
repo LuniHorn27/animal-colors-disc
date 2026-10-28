@@ -152,6 +152,28 @@ ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
 .gap .hl{font-weight:700;margin-top:10px}
 .gap .tip{font-size:15px;color:var(--muted)}
 .gap .ask{font-size:15px;color:var(--muted)}
+/* 對照圖：每一型上下兩條，自評實色在上、他評淡色在下；顏色用各型的品牌色 */
+.sr-sub{font-size:13px;color:var(--muted);margin:0 0 14px}
+.sr-leg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:0 0 18px}
+.sr-leg span{display:inline-flex;align-items:center;gap:6px}
+.sr-lg{width:18px;height:12px;border-radius:4px;background:var(--ink)}
+.sr-lg.lt{opacity:.4}
+.sr-item{margin-bottom:18px}
+.sr-item:last-of-type{margin-bottom:0}
+.sr-name{font-weight:700;font-size:15px;margin-bottom:8px}
+.sr-bl{display:grid;grid-template-columns:52px minmax(0,1fr) 40px;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.sr-bl:last-child{margin-bottom:0}
+.sr-bl b{font-weight:400}
+.sr-bl.sr-you{color:var(--ink);font-weight:700}
+.sr-t{height:12px;border-radius:6px;background:var(--sunk);position:relative;overflow:hidden}
+.sr-f{position:absolute;left:0;top:0;bottom:0;border-radius:6px}
+.sr-bl.sr-peer .sr-f{opacity:.4}
+.sr-n{text-align:right;font-variant-numeric:tabular-nums}
+.sr-D .sr-f{background:var(--d)}
+.sr-I .sr-f{background:var(--i)}
+.sr-S .sr-f{background:var(--s)}
+.sr-C .sr-f{background:var(--c)}
+.sr-note{font-size:12px;color:var(--muted);margin:14px 0 0;line-height:1.6}
 .sec{padding:24px}
 .sec h3,h3.hl{font-size:22px;margin-bottom:14px;width:fit-content;max-width:100%}
 .sec h3::after,h3.hl::after{content:"";display:block;width:100%;height:4px;border-radius:2px;margin-top:6px;background:var(--main,var(--ink))}
@@ -1072,7 +1094,19 @@ async function renderOwner(code, token, my) {
       const vs = `<div class="one vs"><span class="k">${T('ow.v.self')}</span><span class="v-self" style="--self:${mainColor(res.self_result) || 'var(--ink)'}">${animalsOf(typesOf(res.self_result), true)}</span>`
         + `<span class="k">${rel ? T('ow.v.rel', { rel: esc(rel) }) : T('ow.v.all')}</span><span>${peerLine}</span></div>`;
       const who = group === '全部' ? T('ow.who.all', { n: g.n }) : T('ow.who.rel', { n: g.n, rel: esc(g.n === 1 ? X.relLo(group) : X.relPl(group)) });
-      body = `<div class="chips" role="group" aria-label="${T('ow.filter')}">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${esc(x.relation === '全部' ? T('ow.all') : X.rel(x.relation))}<span class="n">${x.n}</span></button>`).join('')}</div>
+      // 對照圖：兩邊各自換成「占總分的比例」（四型加起來是 100%），每一型上下兩條；他評那條的名稱跟著上面的篩選走
+      const pLab = group === '全部' ? T('sr.all') : esc(X.rel(group));
+      const shr = (o) => { const s = TYPES.reduce((a, t) => a + (o[t] || 0), 0); return Object.fromEntries(TYPES.map((t) => [t, s > 0 ? (o[t] || 0) / s : 0])); };
+      const selfSh = shr(res.self_mean), peerSh = shr(g.scores);
+      const srBar = (cls, lb, v) => `<div class="sr-bl ${cls}"><b>${lb}</b><span class="sr-t"><span class="sr-f" style="width:${(v * 100).toFixed(1)}%"></span></span><span class="sr-n">${Math.round(v * 100)}%</span></div>`;
+      const shareHTML = `<div class="card">
+          <p style="font-weight:700;margin:0 0 4px">${T('sr.h')}</p>
+          <p class="sr-sub">${T('sr.sub', { p: pLab })}</p>
+          <div class="sr-leg"><span><span class="sr-lg"></span>${T('sr.leg.you')}</span><span><span class="sr-lg lt"></span>${T('sr.leg.peer', { p: pLab })}</span></div>
+          ${TYPES.map((t) => `<div class="sr-item sr-${t}"><div class="sr-name">${codeName(t)}</div>${srBar('sr-you', T('sr.you'), selfSh[t])}${srBar('sr-peer', pLab, peerSh[t])}</div>`).join('')}
+          <p class="sr-note">${T('sr.note', { p: pLab })}</p>
+        </div>`;
+      body =`<div class="chips" role="group" aria-label="${T('ow.filter')}">${res.groups.map((x) => `<button type="button" class="chip" aria-pressed="${x.relation === group}" data-g="${x.relation}">${esc(x.relation === '全部' ? T('ow.all') : X.rel(x.relation))}<span class="n">${x.n}</span></button>`).join('')}</div>
         ${few ? `<div class="warn stack" style="gap:10px" id="few-box"><p>${T('ow.few', { n: total })}</p>${shareBtnsHTML(res.nickname || '', inviteUrl, { copy: false, line: false })}</div>` : ''}
         <div class="hero" style="--main:${mainColor(peerRes) || 'var(--ink)'}">
           <p class="eyebrow">${T('ow.eyebrow', { who, code: heroCode(peerRes) })}</p>
@@ -1080,6 +1114,7 @@ async function renderOwner(code, token, my) {
           ${vs}
         </div>
         <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${backLink()}</div>
+        ${shareHTML}
         <div class="gaps">${gapHTML}</div>
         ${named}
         <p class="note">${T('ow.ref')}</p>
