@@ -1479,6 +1479,15 @@ REQ_FIELDS.forEach(f=>{
   $(f.el).addEventListener(f.el==='#uname'||f.el==='#school'||f.el==='#major'||f.el==='#job-other' ? 'input' : 'change', ()=>{ if (f.ok()) showReqErr(f, false); });
 });
 $('#job').addEventListener('change', ()=>{ if ($('#job').value!=='其他') showReqErr(REQ_FIELDS.find(f=>f.el==='#job-other'), false); });
+/* 班級專屬的基本資料：只有網址班級代碼符合的班級才套用，主測驗與其他班級維持原樣。
+   10/29 課堂：不問就業狀態，自動記為「學生」（伺服器接受這個值） */
+const COHORT_INFO = [{match:/^1029/, job:'學生'}];
+const cohortInfo = COHORT_INFO.find(c=>c.match.test(COHORT||''));
+if (cohortInfo){
+  $('#job').add(new Option(cohortInfo.job, cohortInfo.job));
+  $('#job').value = cohortInfo.job;
+  $('#job').closest('.form-row').style.display = 'none';
+}
 /* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
 const FU = {
   phone:{el:'#fu-phone', err:'#fu-phone-err', ok:v=>/^[0-9+() -]{8,20}$/.test(v) && v.replace(/\D/g,'').length>=8,
