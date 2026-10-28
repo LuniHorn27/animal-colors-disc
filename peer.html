@@ -1094,6 +1094,7 @@ async function renderOwner(code, token, my) {
       const vs = `<div class="one vs"><span class="k">${T('ow.v.self')}</span><span class="v-self" style="--self:${mainColor(res.self_result) || 'var(--ink)'}">${animalsOf(typesOf(res.self_result), true)}</span>`
         + `<span class="k">${rel ? T('ow.v.rel', { rel: esc(rel) }) : T('ow.v.all')}</span><span>${peerLine}</span></div>`;
       const who = group === '全部' ? T('ow.who.all', { n: g.n }) : T('ow.who.rel', { n: g.n, rel: esc(g.n === 1 ? X.relLo(group) : X.relPl(group)) });
+      const SHOW_SHARE = false;   // 「四種動物的比例」圖先收起來，測試完沒問題再改成 true
       // 對照圖：兩邊各自換成「占總分的比例」（四型加起來是 100%），每一型上下兩條；他評那條的名稱跟著上面的篩選走
       const pLab = group === '全部' ? T('sr.all') : esc(X.rel(group));
       const shr = (o) => { const s = TYPES.reduce((a, t) => a + (o[t] || 0), 0); return Object.fromEntries(TYPES.map((t) => [t, s > 0 ? (o[t] || 0) / s : 0])); };
@@ -1114,7 +1115,7 @@ async function renderOwner(code, token, my) {
           ${vs}
         </div>
         <div class="card stack" style="gap:8px">${duoHTML(typesOf(res.self_result), typesOf(peerRes))}${backLink()}</div>
-        ${shareHTML}
+        ${SHOW_SHARE ? shareHTML : ''}
         <div class="gaps">${gapHTML}</div>
         ${named}
         <p class="note">${T('ow.ref')}</p>
