@@ -41,12 +41,6 @@ section h2{font-size:24px;margin-bottom:6px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 20px;margin:10px 0 0;padding:0;list-style:none;font-size:15px;color:var(--muted)}
 .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px}
 .legend b{color:var(--ink);font-weight:500}
-.bg h3{font-size:16px;font-weight:500;margin:18px 0 6px}
-.bg h3:first-child{margin-top:0}
-.bg ul{margin:0;padding:0;list-style:none;font-size:15px;color:var(--muted)}
-.bg li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px solid var(--sunk)}
-.bg li b{color:var(--ink);font-weight:500;white-space:nowrap}
-.bg li span{overflow-wrap:anywhere}
 
 /* 主要動物：花紋長條，全頁唯一的重點 */
 .animals{display:flex;flex-direction:column;gap:14px}
@@ -113,12 +107,6 @@ section h2{font-size:24px;margin-bottom:6px}
     <p class="sub">依作答時選填的性別。</p>
     <div class="split" id="split" aria-hidden="true"></div>
     <ul class="legend" id="legend"></ul>
-  </section>
-
-  <section id="sec-bg" hidden aria-labelledby="h-bg">
-    <h2 id="h-bg">學員背景</h2>
-    <p class="sub">依作答時填寫的資料；沒填的不列入。學校與科系是自己輸入的，只列出人數最多的幾項。</p>
-    <div class="bg" id="bg"></div>
   </section>
 
   <section id="sec-animals" hidden aria-labelledby="h-animals">
@@ -205,25 +193,6 @@ function renderGender(g){
 }
 
 const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-/* 學員背景：學歷、就業狀態（固定選項，照順序）＋學校、科系（自由填寫，後台只給人數最多的幾項）。
-   後台還沒更新、沒有這些欄位時整區隱藏 */
-function renderBg(d){
-  const fixed = (title, order, obj) => {
-    if (!obj) return '';
-    const keys = order.filter(k => obj[k]).concat(Object.keys(obj).filter(k => k && !order.includes(k) && obj[k]));
-    if (!keys.length) return '';
-    const ps = pct(keys.map(k => obj[k]));
-    return `<h3>${title}</h3><ul>` + keys.map((k, i) => `<li><span>${esc(k)}</span><b>${obj[k]} 人（${ps[i]}%）</b></li>`).join('') + '</ul>';
-  };
-  const top = (title, arr) => !arr || !arr.length ? '' :
-    `<h3>${title}</h3><ul>` + arr.map(x => `<li><span>${esc(x.name)}</span><b>${x.n} 人</b></li>`).join('') + '</ul>';
-  const html = fixed('學歷', ['國中以下','高中職','專科','大學','碩士','博士'], d.edu)
-    + fixed('就業狀態', ['在學','在職','自由工作者','家管','待業','退休','其他'], d.job)
-    + top('學校（人數最多）', d.schools) + top('科系（人數最多）', d.majors);
-  $('#bg').innerHTML = html;
-  $('#sec-bg').hidden = !html;
-}
-
 function renderAnimals(a){
   const keys = ['D','I','S','C','CH'];
   const ns = keys.map(k => a[k] || 0), ps = pct(ns);
@@ -288,7 +257,7 @@ const clock = () => new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minu
 
 function showMessage(text){
   $('#msg').textContent = text; $('#msg').hidden = false;
-  ['#count','#count-note','#empty','#sec-gender','#sec-bg','#sec-animals','#sec-labels','#sec-dist','#foot'].forEach(s => $(s).hidden = true);
+  ['#count','#count-note','#empty','#sec-gender','#sec-animals','#sec-labels','#sec-dist','#foot'].forEach(s => $(s).hidden = true);
 }
 
 let timer = null, failures = 0, stopped = false;
@@ -319,9 +288,9 @@ async function load(){
     $('#count-note').textContent = d.flagged ? `其中 ${d.flagged} 份可能不太可靠（作答太快，或注意力題沒有照指示選），仍列入下面的統計。` : '';
     const has = d.total > 0;
     $('#empty').hidden = has;
-    ['#sec-gender','#sec-bg','#sec-animals','#sec-labels','#sec-dist'].forEach(s => $(s).hidden = !has);
+    ['#sec-gender','#sec-animals','#sec-labels','#sec-dist'].forEach(s => $(s).hidden = !has);
     $('#sec-gender').hidden = !has || !d.gender;
-    if (has){ if (d.gender) renderGender(d.gender); renderBg(d); renderAnimals(d.animals); renderLabels(d.labels); renderDist(d.scores); }
+    if (has){ if (d.gender) renderGender(d.gender); renderAnimals(d.animals); renderLabels(d.labels); renderDist(d.scores); }
     setStatus('', `自動更新中，最後更新 ${clock()}`);
   } catch (e) {
     failures++;
