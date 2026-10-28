@@ -423,6 +423,9 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .followup legend{float:left;width:100%;padding:0;font-family:var(--font-round);font-size:20px;line-height:1.35}
 .followup legend+*{clear:both}
 .fu-more{display:flex;flex-direction:column;gap:14px}
+.fu-line{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding-top:16px;border-top:1px solid var(--line)}
+.fu-line[hidden]{display:none}
+.fu-line p{margin:0}
 .fu-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 @media (min-width:768px){.fu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}}
 input[type=text],input[type=email],input[type=tel]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;height:48px;min-height:48px;padding:0 12px;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none}
@@ -609,10 +612,10 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
             <span class="field-err" id="fu-line-err" role="alert"></span></div>
         </div>
       </div>
-      <div class="stack" id="line-join" style="gap:8px;align-items:flex-start" hidden>
-        <p data-i18n="line.text">想進一步了解適合自己的職涯方向嗎？歡迎加入官方 LINE，了解更多資訊：</p>
+      <div class="fu-line" id="line-join" hidden>
+        <p data-i18n="line.text">有興趣的話，歡迎主動私訊官方 LINE。</p>
         <a class="btn" href="https://line.me/R/ti/p/@vuy3954h?oat_content=url&amp;ts=10121644" target="_blank" rel="noopener" data-i18n="line.btn">加入官方 LINE</a>
-        <p class="small muted"><span data-i18n="line.about">關於方糖的介紹：</span><a href="https://linktr.ee/teacherfun" target="_blank" rel="noopener">linktr.ee/teacherfun</a></p>
+        <p class="small muted"><span data-i18n="line.about">認識方糖：</span><a href="https://linktr.ee/teacherfun" target="_blank" rel="noopener">linktr.ee/teacherfun</a></p>
       </div>
     </fieldset>
     <div class="stack" style="gap:8px;align-items:flex-start"><button class="btn primary" id="info-next" data-i18n="info.next">查看我的結果</button>
@@ -857,8 +860,8 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'info.h':'個人資料', 'info.name':'名字', 'info.emailHint':'如果未來想收到其他心理測驗，歡迎留下您的信箱。',
   'info.age':'年齡層', 'info.gender':'性別', 'info.edu':'學歷', 'info.job':'就業狀態', 'info.jobOther':'其他，請說明', 'info.school':'在學／畢業學校', 'info.major':'在學／畢業科系', 'info.choose':'請選擇',
   'fu.legend':'想要更深入了解自己嗎？', 'fu.want':'我想進一步了解適合自己的職涯方向，或希望有顧問更深入解析這次的結果',
-  'fu.more':'如有意願，請留下你的聯絡資訊', 'fu.phone':'電話',
-  'line.text':'想進一步了解適合自己的職涯方向嗎？歡迎加入官方 LINE，了解更多資訊：', 'line.btn':'加入官方 LINE', 'line.about':'關於方糖的介紹：',
+  'fu.more':'如有意願，請留下你的聯絡資訊', 'fu.phone':'電話', 'fu.want29':'我想進一步了解適合自己的職涯方向',
+  'line.text':'有興趣的話，歡迎主動私訊官方 LINE。', 'line.btn':'加入官方 LINE', 'line.about':'認識方糖：',
   'err.email':'Email 格式好像不完整，例如 name@example.com。不想留也可以空白。',
   'err.name':'請填寫名字。', 'err.pick':'請選擇一個選項。', 'err.fill':'請填寫這一欄。',
   'err.phone':'電話號碼好像不完整，例如 0912-345-678。不想留也可以空白。',
@@ -1487,6 +1490,11 @@ REQ_FIELDS.forEach(f=>{
 $('#job').addEventListener('change', ()=>{ if ($('#job').value!=='其他') showReqErr(REQ_FIELDS.find(f=>f.el==='#job-other'), false); });
 /* 10/29 班級：「想進一步了解」不問電話、LINE ID，勾選後改顯示官方 LINE 的加入連結 */
 const LINE_JOIN = !!(COHORT && /^1029/.test(COHORT));
+if (LINE_JOIN){
+  const fuWant = $('#fu-want').nextElementSibling;
+  fuWant.dataset.i18n = 'fu.want29';
+  fuWant.textContent = t('fu.want29');
+}
 /* 想進一步了解：電話、LINE ID 都是選填，有填才檢查格式（離開欄位時檢查，改對了馬上清掉提示） */
 const FU = {
   phone:{el:'#fu-phone', err:'#fu-phone-err', ok:v=>/^[0-9+() -]{8,20}$/.test(v) && v.replace(/\D/g,'').length>=8,
