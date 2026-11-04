@@ -83,9 +83,10 @@ test('檔名用台灣日期', () => {
   assert.equal(api.fileName('demo', new Date('2026-11-04T17:00:00Z')), 'demo_作答資料_2026-11-05.xlsx');
 });
 
-test('聯絡名單的類型文字', () => {
-  assert.equal(api.keyLabel('D'), 'D 老虎');
-  assert.equal(api.keyLabel('IS'), 'I 孔雀＋S 無尾熊');
-  assert.equal(api.keyLabel('chameleon'), '變色龍');
-  assert.equal(api.keyLabel(null), '');
+test('類型文字：變色龍的 key 是 CH，無法判定沒有 key', () => {
+  assert.equal(api.typeLabel('single', 'D'), 'D 老虎');
+  assert.equal(api.typeLabel('combo', 'IS'), 'I 孔雀＋S 無尾熊');
+  assert.equal(api.typeLabel('chameleon', 'CH'), '變色龍');
+  assert.equal(api.typeLabel('none', null), '無法判定');
+  assert.equal(api.typeLabel(null, null), '');
 });

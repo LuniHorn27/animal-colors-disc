@@ -18,22 +18,16 @@
   const QCOL = Object.fromEntries(QS.map((q, i) => [q, colName(i + 3)]));
 
   function typeLabel(kind, k) {
-    if (!kind || !k) return '';
-    if (kind === 'single') return A[k];
+    if (!kind) return '';
     if (kind === 'chameleon') return '變色龍';
     if (kind === 'none') return '無法判定';
+    if (!k) return '';
+    if (kind === 'single') return A[k];
     return A[k[0]] + '＋' + A[k[1]];
   }
   function kindName(kind, k) {
     if (!kind) return '';
     return { single: '單一型', chameleon: '變色龍', none: '無法判定' }[kind] || (ADJ.has(k) ? '組合型' : '對角型');
-  }
-  /* 聯絡名單只有 key：一個字母是單一型，兩個字母是組合或對角型 */
-  function keyLabel(k) {
-    if (!k) return '';
-    if (k === 'chameleon') return '變色龍';
-    if (k === 'none') return '無法判定';
-    return k.length === 1 ? (A[k] || k) : typeLabel('combo', k);
   }
   // 和 Python round() 相同（.5 取偶數），秒數才會和本機版一致
   function roundSeconds(ms) {
@@ -150,7 +144,7 @@
     return `${code}_作答資料_${taipeiParts(now || new Date()).date}.xlsx`;
   }
 
-  const api = { parseBank, fillWorkbook, fileName, taipeiParts, keyLabel, QS };
+  const api = { parseBank, fillWorkbook, fileName, taipeiParts, typeLabel, QS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.DISC_ADMIN_EXPORT = api;
 })(typeof window !== 'undefined' ? window : globalThis);
