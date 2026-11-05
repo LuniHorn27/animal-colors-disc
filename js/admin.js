@@ -345,7 +345,7 @@
       S.classes.unshift(item);
       S.create = { open: false };
       uiOf(r.id).msg = `「${item.name}」建立好了，可以複製連結了。`;
-      draw(`copy-student-${r.id}`);
+      draw(`copy-msg-${r.id}`);
     } catch (e) {
       if (e.handled) return;
       c.busy = false;
@@ -370,6 +370,14 @@
       }
       draw();
     }, cls, Object.assign({ fk: `${key}-${c.id}` }, more || {}));
+  }
+  /* 要傳給講師的罐頭訊息：一則訊息裡同時放兩個連結 */
+  function cannedMessage(c) {
+    const who = (c.contact || '').trim();
+    return `嗨嗨${who}，關於${c.name}的DISC的專屬連結以及統計表連結已經設定好囉！\n\n`
+      + '只要點擊以下此「專屬測驗連結」，學生送出後，統計表將會自動更新，方便當下可以即時閱覽圖表，你有空可以在測試看看🙌🏻\n\n'
+      + `1. 專屬測驗連結：${studentLink(c.code)}\n`
+      + `2. 即時的統計表：${statsLink(c.stats_token)}`;
   }
   function linkRow(c, key, label, url) {
     return h('div', { class: 'linkbox' },
@@ -412,11 +420,15 @@
             ? '這是舊班級，統計表連結沒有存下來，沒辦法再顯示。要複製的話，請按下面的「重新產生統計表連結」，已經發出去的舊連結會馬上失效。'
             : '目前沒有統計表連結。按下面的「產生統計表連結」就能複製。')),
       h('div', { class: 'btn-row' },
+        c.stats_token
+          ? copyBtn(c, 'copy-msg', '複製罐頭訊息', '罐頭訊息', () => cannedMessage(c), 'primary')
+          : btn('複製罐頭訊息', () => {}, 'primary', { fk: `copy-msg-${c.id}`, disabled: true }),
         panelBtn('qr', '顯示 QR code', () => makeQr(c)),
         btn(u.exporting ? '正在匯出…' : '匯出 Excel', () => exportOne(c), '', { fk: `export-${c.id}`, disabled: u.exporting }),
         panelBtn('deadline', '改期限', () => initDeadline(c)),
         panelBtn('info', '改班級資料', () => initInfo(c)),
         panelBtn('regen', c.stats_expires_at ? '重新產生統計表連結' : '產生統計表連結')),
+      !c.stats_token ? h('p', { class: 'note' }, '要先有統計表連結，才能複製罐頭訊息。') : null,
       status(u.msg), status(u.err, 'err'),
       u.panel === 'qr' ? qrPanel(c, u) : null,
       u.panel === 'deadline' ? deadlinePanel(c, u) : null,
