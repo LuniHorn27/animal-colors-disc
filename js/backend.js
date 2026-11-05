@@ -32,7 +32,9 @@
   const K_CLAIMS = 'disc-claims-v1';    // 每份作答（sid）送出後拿到的 {id, token}，評分用
   const K_OUTBOX = 'disc-outbox-v1';    // 待送出區：還沒成功送到伺服器的作答
   const K_RETURN = 'disc-return-v1';    // 登入跳轉前暫存的作答狀態
+  const K_DEVICE = 'disc-device-v1';    // 這台裝置的隨機編號：只在班級作答時送出，用來分辨同班同名的人
   const COHORT_RE = /^[A-Za-z0-9_-]{1,32}$/;
+  const DEVICE_RE = /^[A-Za-z0-9-]{8,64}$/;
   const MAX_MS = 3600000;               // 伺服器接受的單題作答時間上限（1 小時）
 
   const enabled = !!(CFG.supabaseUrl && CFG.supabaseAnonKey && CFG.turnstileSiteKey);
@@ -151,6 +153,14 @@
     if (clip(info.major)) o.major = clip(info.major);
     return o;
   }
+  // 第一次用到時才產生。瀏覽器不讓存就不送，因為每次都換編號反而會把同一個人算成很多人。
+  function deviceId() {
+    const saved = store.get(K_DEVICE);
+    if (typeof saved === 'string' && DEVICE_RE.test(saved)) return saved;
+    const id = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    store.set(K_DEVICE, id);
+    return store.get(K_DEVICE) === id ? id : null;
+  }
   function buildPayload(st) {
     const info = st.info || {};
     const name = (info.name || '').trim().slice(0, 40), email = (info.email || '').trim();
@@ -169,7 +179,11 @@
     if (name || email) p.contact = { name, email };
     // 勾選「想進一步了解」才送；電話、LINE ID 可以是空字串
     if (info.followup) p.followup = { phone: info.followup.phone || '', line: info.followup.line || '' };
-    if (st.cohort && COHORT_RE.test(st.cohort)) p.cohort = st.cohort;
+    if (st.cohort && COHORT_RE.test(st.cohort)) {
+      p.cohort = st.cohort;
+      const device = deviceId();
+      if (device) p.device_id = device;
+    }
     // 作答方式：一題一頁（page）、全部列出（list），中途切換過就是 mixed
     const modes = (st.modes || []).filter((m) => m === 'page' || m === 'list');
     if (modes.length) p.layout = modes.length > 1 ? 'mixed' : modes[0];
