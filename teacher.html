@@ -305,7 +305,7 @@ let resizeT = null;
 window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (lastScores) renderDist(lastScores); }, 150); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); schedule(); });
 
-if (!CFG.supabaseUrl || !/^[0-9a-f]{48}$/.test(TOKEN)){
+if (!CFG.supabaseUrl || !/^([0-9a-f]{48}|[0-9a-hjkmnp-tv-z]{16})$/.test(TOKEN)){
   setStatus('off', '沒有統計資料');
   showMessage('這個統計連結不完整。請確認網址有完整複製，或向提供連結的人索取新的連結。');
 } else {
