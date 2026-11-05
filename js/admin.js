@@ -76,7 +76,9 @@
     code_taken: '這個代碼用過了，換一個。',
     not_found: '找不到這筆資料。請重新整理頁面。',
     before_open: '關閉時間不能早於這班的開放時間，請選晚一點的時間。',
-    class_closed: '這班已關閉，請先改期限。',
+    class_closed: '這班已關閉或沒有期限，請先改期限。',
+    bad_date: '使用日期不正確，請重新選一次。',
+    info_too_long: '有欄位字數太多，請縮短一點。',
     lib_failed: '工具載入失敗，請檢查網路後再試一次。',
     template_failed: '匯出範本載入失敗，請再試一次。',
   };
@@ -142,6 +144,40 @@
       h('input', Object.assign({ id, fk: id, class: 'input', 'aria-invalid': err ? 'true' : null }, attrs)),
       hint ? h('p', { class: 'hint' }, hint) : null,
       err ? h('p', { class: 'field-err', 'data-err': id }, err) : null);
+  }
+  /* 班級補充資料：建立班級和改班級資料共用 */
+  const INFO_KEYS = ['contact', 'audience', 'school', 'department', 'use_date', 'note'];
+  const emptyInfo = () => Object.fromEntries(INFO_KEYS.map((k) => [k, '']));
+  const infoPayload = (o) => Object.fromEntries(INFO_KEYS.map((k) => [k, String(o[k] || '').trim()]));
+  function useWarn(id, useDate, closeDate) {
+    return h('p', { class: 'warn', id, role: 'status', hidden: !(useDate && closeDate && useDate > closeDate) },
+      '使用日期晚於開放期限，到時候連結已經關閉，記得把期限改晚一點。');
+  }
+  function syncUseWarn(id, useDate, closeDate) {
+    const w = document.getElementById(id);
+    if (w) w.hidden = !(useDate && closeDate && useDate > closeDate);
+  }
+  function infoFields(o, prefix, closeDate) {
+    const warnId = prefix + '-use-warn';
+    const bind = (k) => ({ value: o[k], oninput: (e) => { o[k] = e.target.value; } });
+    return [
+      h('h3', null, '班級資料'),
+      h('p', { class: 'note' }, '都可以不填。只有你在後台看得到，不會出現在學生畫面和 Excel。'),
+      h('div', { class: 'two' },
+        field('主要窗口', prefix + '-contact', Object.assign(bind('contact'), { maxLength: 60, autocomplete: 'off' })),
+        field('使用日期', prefix + '-use_date', {
+          type: 'date', value: o.use_date,
+          oninput: (e) => { o.use_date = e.target.value; syncUseWarn(warnId, o.use_date, closeDate()); },
+        })),
+      useWarn(warnId, o.use_date, closeDate()),
+      field('給誰用', prefix + '-audience', Object.assign(bind('audience'), { maxLength: 60, autocomplete: 'off' })),
+      h('div', { class: 'two' },
+        field('學校', prefix + '-school', Object.assign(bind('school'), { maxLength: 60, autocomplete: 'off' })),
+        field('科系', prefix + '-department', Object.assign(bind('department'), { maxLength: 60, autocomplete: 'off' }))),
+      h('div', { class: 'field' },
+        h('label', { htmlFor: prefix + '-note' }, '備註'),
+        h('textarea', Object.assign({ id: prefix + '-note', fk: prefix + '-note', class: 'input', rows: 3, maxLength: 500 }, bind('note')))),
+    ];
   }
   function clearErr(id) {
     const e = root.querySelector(`[data-err="${id}"]`);
@@ -246,7 +282,7 @@
   }
   function toggleCreate() {
     if (S.create.open) { S.create = { open: false }; draw('create-toggle'); return; }
-    S.create = { open: true, name: '', code: newCode(), date: addDays(today(), 30), err: {} };
+    S.create = Object.assign(emptyInfo(), { open: true, name: '', code: newCode(), date: addDays(today(), 30), err: {} });
     S.created = null;
     draw('new-name');
   }
@@ -284,7 +320,15 @@
       h('h2', null, '建立新班級'),
       field('班級名稱', 'new-name', Object.assign(bind('name'), { maxLength: 60, autocomplete: 'off' }), c.err.name),
       field('連結代碼', 'new-code', Object.assign(bind('code'), { maxLength: 32, autocomplete: 'off', autocapitalize: 'off' }), c.err.code, '會出現在學生連結裡，可以改。'),
-      field('開放到', 'new-date', Object.assign(bind('date'), { type: 'date', min: today() }), c.err.date, '當天 23:59 關閉。學生連結和統計表用同一個期限。'),
+      field('開放到', 'new-date', Object.assign(bind('date'), {
+        type: 'date', min: today(),
+        oninput: (e) => {
+          c.date = e.target.value;
+          if (c.err.date) { delete c.err.date; clearErr('new-date'); }
+          syncUseWarn('new-use-warn', c.use_date, c.date);
+        },
+      }), c.err.date, '當天 23:59 關閉。學生連結和統計表用同一個期限。'),
+      infoFields(c, 'new', () => c.date),
       status(c.fail, 'err'),
       h('div', { class: 'btn-row' },
         h('button', { type: 'submit', class: 'btn primary', fk: 'new-submit', disabled: c.busy }, c.busy ? '正在建立…' : '建立班級'),
@@ -298,7 +342,7 @@
     if (first) { draw('new-' + first); return; }
     c.busy = true; draw();
     try {
-      const r = await rpc('admin_create_class', { p_code: c.code.trim(), p_name: c.name.trim(), p_closes_at: toTs(c.date, '23:59') });
+      const r = await rpc('admin_create_class', { p_code: c.code.trim(), p_name: c.name.trim(), p_closes_at: toTs(c.date, '23:59'), p_info: infoPayload(c) });
       S.created = { code: r.code, name: c.name.trim(), token: r.token, msg: '' };
       S.create = { open: false };
       draw('created-copy');
@@ -351,11 +395,15 @@
         c.is_test ? h('span', { class: 'badge test' }, '測試') : null),
       h('div', { class: 'tiles' }, tile(c.people, '使用人數'), tile(c.responses, '作答份數'), tile(c.today, '今天作答')),
       h('dl', { class: 'rows' },
+        c.use_date ? [h('dt', null, '使用日期'), h('dd', null, c.use_date.replace(/-/g, '/'))] : null,
+        [['contact', '主要窗口'], ['audience', '給誰用'], ['school', '學校'], ['department', '科系']]
+          .map(([k, label]) => c[k] ? [h('dt', null, label), h('dd', null, c[k])] : null),
         h('dt', null, '連結代碼'), h('dd', null, c.code),
         h('dt', null, '開放到'), h('dd', null, c.closes_at ? fmt(c.closes_at) : '不限期'),
         statsDiff ? [h('dt', null, '統計表到'), h('dd', null, fmt(c.stats_expires_at))] : null,
         !c.stats_expires_at ? [h('dt', null, '統計表'), h('dd', null, '目前沒有可用的連結')] : null,
-        h('dt', null, '最後作答'), h('dd', null, c.last_at ? fmt(c.last_at) : '還沒有人作答')),
+        h('dt', null, '最後作答'), h('dd', null, c.last_at ? fmt(c.last_at) : '還沒有人作答'),
+        c.note ? [h('dt', null, '備註'), h('dd', { class: 'pre' }, c.note)] : null),
       h('div', { class: 'btn-row' },
         btn('複製學生連結', async () => {
           u.err = ''; u.msg = await copyText(studentLink(c.code)) ? '已複製學生連結。' : '沒有複製成功，請再試一次。';
@@ -364,10 +412,12 @@
         panelBtn('qr', '顯示 QR code', () => makeQr(c)),
         btn(u.exporting ? '正在匯出…' : '匯出 Excel', () => exportOne(c), '', { fk: `export-${c.id}`, disabled: u.exporting }),
         panelBtn('deadline', '改期限', () => initDeadline(c)),
+        panelBtn('info', '改班級資料', () => initInfo(c)),
         panelBtn('regen', '重新產生統計表連結')),
       status(u.msg), status(u.err, 'err'),
       u.panel === 'qr' ? qrPanel(c, u) : null,
       u.panel === 'deadline' ? deadlinePanel(c, u) : null,
+      u.panel === 'info' ? infoPanel(c, u) : null,
       u.panel === 'regen' ? regenPanel(c, u) : null,
       u.token ? tokenPanel(c, u) : null);
   }
@@ -451,6 +501,44 @@
       u.msg = `已更新：開放到 ${fmt(t)}。`;
       u.busy = false;
       draw(`deadline-${c.id}`);
+    } catch (e) {
+      if (e.handled) return;
+      u.busy = false; u.err = errText(e); draw();
+    }
+  }
+
+  /* 改班級資料 */
+  function initInfo(c) {
+    const u = uiOf(c.id);
+    u.info = Object.assign(emptyInfo(), { name: c.name, nameErr: '' });
+    for (const k of INFO_KEYS) u.info[k] = c[k] || '';
+  }
+  function infoPanel(c, u) {
+    const o = u.info, p = 'info-' + c.id;
+    const closeDate = () => c.closes_at ? X.taipeiParts(new Date(c.closes_at)).date : '';
+    return h('form', { class: 'panel', noValidate: true, onsubmit: (e) => { e.preventDefault(); saveInfo(c); } },
+      field('班級名稱', p + '-name', {
+        value: o.name, maxLength: 60, autocomplete: 'off',
+        oninput: (e) => { o.name = e.target.value; if (o.nameErr) { o.nameErr = ''; clearErr(p + '-name'); } },
+      }, o.nameErr),
+      infoFields(o, p, closeDate),
+      h('div', { class: 'btn-row' },
+        h('button', { type: 'submit', class: 'btn primary', fk: `info-save-${c.id}`, disabled: u.busy }, u.busy ? '正在儲存…' : '儲存班級資料'),
+        btn('取消', () => { u.panel = null; draw(`info-${c.id}`); }, 'quiet', { disabled: u.busy })));
+  }
+  async function saveInfo(c) {
+    const u = uiOf(c.id), o = u.info, name = o.name.trim();
+    u.err = ''; u.msg = '';
+    if (!name) { o.nameErr = '請輸入班級名稱。'; draw(`info-${c.id}-name`); return; }
+    u.busy = true; draw();
+    try {
+      const info = infoPayload(o);
+      await rpc('admin_update_class', { p_class_id: c.id, p_name: name, p_info: info });
+      c.name = name;
+      for (const k of INFO_KEYS) c[k] = info[k] || null;
+      u.panel = null; u.busy = false;
+      u.msg = '已更新班級資料。';
+      draw(`info-${c.id}`);
     } catch (e) {
       if (e.handled) return;
       u.busy = false; u.err = errText(e); draw();
