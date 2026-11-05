@@ -18,7 +18,7 @@
     return {
       view: 'loading', email: '', notice: '',
       classes: null, classesErr: '',
-      create: { open: false }, created: null,
+      create: { open: false },
       ui: {}, all: {},
     };
   }
@@ -185,11 +185,6 @@
     const i = document.getElementById(id);
     if (i) i.removeAttribute('aria-invalid');
   }
-  /* 顯示過的統計表連結只有這一次，離開前提醒 */
-  window.addEventListener('beforeunload', (ev) => {
-    if (S.created || Object.values(S.ui).some((u) => u.token)) { ev.preventDefault(); ev.returnValue = ''; }
-  });
-
   /* ---------- 登入 ---------- */
   async function signIn() {
     S.notice = '';
@@ -266,7 +261,6 @@
         btn('建立新班級', toggleCreate, 'primary', { fk: 'create-toggle', 'aria-expanded': S.create.open ? 'true' : 'false' }),
         S.classes.length ? btn(S.all.busy ? S.all.progress || '正在匯出…' : '匯出全部 Excel', exportAll, '', { fk: 'export-all', disabled: S.all.busy }) : null),
       status(S.all.ok), status(S.all.err, 'err'),
-      S.created ? createdPanel() : null,
       S.create.open ? createForm() : null,
       list.length ? list.map(classCard) : h('div', { class: 'card empty' }, h('p', null, '還沒有班級。按「建立新班級」開始。')),
     ];
@@ -283,7 +277,6 @@
   function toggleCreate() {
     if (S.create.open) { S.create = { open: false }; draw('create-toggle'); return; }
     S.create = Object.assign(emptyInfo(), { open: true, name: '', code: newCode(), date: addDays(today(), 30), err: {} });
-    S.created = null;
     draw('new-name');
   }
   function checkCreate(k) {
@@ -343,10 +336,16 @@
     c.busy = true; draw();
     try {
       const r = await rpc('admin_create_class', { p_code: c.code.trim(), p_name: c.name.trim(), p_closes_at: toTs(c.date, '23:59'), p_info: infoPayload(c) });
-      S.created = { code: r.code, name: c.name.trim(), token: r.token, msg: '' };
+      const closes = toTs(c.date, '23:59'), info = infoPayload(c), now = new Date().toISOString();
+      const item = {
+        id: r.id, code: r.code, name: c.name.trim(), opens_at: now, closes_at: closes, created_at: now, is_test: false,
+        stats_expires_at: closes, stats_token: r.token, people: 0, responses: 0, today: 0, last_at: null,
+      };
+      for (const k of INFO_KEYS) item[k] = info[k] || null;
+      S.classes.unshift(item);
       S.create = { open: false };
-      draw('created-copy');
-      loadClasses();
+      uiOf(r.id).msg = `「${item.name}」建立好了，可以複製連結了。`;
+      draw(`copy-student-${r.id}`);
     } catch (e) {
       if (e.handled) return;
       c.busy = false;
@@ -357,23 +356,25 @@
       else { c.fail = errText(e); draw(); }
     }
   }
-  function linkBox(label, url) {
-    return h('div', { class: 'linkbox' }, h('span', { class: 'label' }, label), h('code', null, url));
+  /* 複製按鈕：按下後按鈕文字短暫變成「已複製」，下方也留一行訊息 */
+  function copyBtn(c, key, label, what, text, cls, more) {
+    const u = uiOf(c.id);
+    return btn(u.copied === key ? '已複製' : label, async () => {
+      u.err = ''; u.msg = '';
+      if (await copyText(text())) {
+        u.copied = key; u.msg = `已複製${what}。`;
+        clearTimeout(u.copyTimer);
+        u.copyTimer = setTimeout(() => { u.copied = null; draw(); }, 2000);
+      } else {
+        u.err = '沒有複製成功，請手動選取上面的連結。';
+      }
+      draw();
+    }, cls, Object.assign({ fk: `${key}-${c.id}` }, more || {}));
   }
-  function createdPanel() {
-    const c = S.created, a = studentLink(c.code), b = statsLink(c.token);
-    return h('div', { class: 'card' },
-      h('h2', null, `「${c.name}」建立好了`),
-      h('p', { class: 'warn', role: 'status' }, '統計表連結只顯示這一次，請先複製。'),
-      linkBox('學生連結', a),
-      linkBox('講師統計表', b),
-      status(c.msg),
-      h('div', { class: 'btn-row' },
-        btn('複製兩個連結', async () => {
-          c.msg = await copyText(`學生連結：${a}\n講師統計表：${b}`) ? '已複製兩個連結。' : '沒有複製成功，請手動選取上面的連結。';
-          draw();
-        }, 'primary', { fk: 'created-copy' }),
-        btn('我已複製，關閉', () => { S.created = null; draw('create-toggle'); }, 'quiet')));
+  function linkRow(c, key, label, url) {
+    return h('div', { class: 'linkbox' },
+      h('span', { class: 'label' }, label),
+      h('div', { class: 'link-line' }, h('code', null, url), copyBtn(c, key, '複製連結', label, () => url)));
   }
 
   /* 班級卡片 */
@@ -382,7 +383,6 @@
     const panelBtn = (key, label, open) => btn(label, () => {
       u.msg = ''; u.err = '';
       if (u.panel === key) { u.panel = null; draw(`${key}-${c.id}`); return; }
-      if (u.token) u.token = null;
       u.panel = key;
       if (open) open();
       draw(`${key}-${c.id}`);
@@ -401,25 +401,27 @@
         h('dt', null, '連結代碼'), h('dd', null, c.code),
         h('dt', null, '開放到'), h('dd', null, c.closes_at ? fmt(c.closes_at) : '不限期'),
         statsDiff ? [h('dt', null, '統計表到'), h('dd', null, fmt(c.stats_expires_at))] : null,
-        !c.stats_expires_at ? [h('dt', null, '統計表'), h('dd', null, '目前沒有可用的連結')] : null,
         h('dt', null, '最後作答'), h('dd', null, c.last_at ? fmt(c.last_at) : '還沒有人作答'),
         c.note ? [h('dt', null, '備註'), h('dd', { class: 'pre' }, c.note)] : null),
+      st === 'closed' ? h('p', { class: 'warn' }, '這班已關閉，連結打不開。要再使用請先改期限。') : null,
+      linkRow(c, 'copy-student', '學生連結', studentLink(c.code)),
+      c.stats_token ? linkRow(c, 'copy-stats', '統計表連結', statsLink(c.stats_token))
+        : h('div', { class: 'linkbox' },
+          h('span', { class: 'label' }, '統計表連結'),
+          h('p', { class: 'warn' }, c.stats_expires_at
+            ? '這是舊班級，統計表連結沒有存下來，沒辦法再顯示。要複製的話，請按下面的「重新產生統計表連結」，已經發出去的舊連結會馬上失效。'
+            : '目前沒有統計表連結。按下面的「產生統計表連結」就能複製。')),
       h('div', { class: 'btn-row' },
-        btn('複製學生連結', async () => {
-          u.err = ''; u.msg = await copyText(studentLink(c.code)) ? '已複製學生連結。' : '沒有複製成功，請再試一次。';
-          draw();
-        }, 'primary', { fk: `copy-${c.id}` }),
         panelBtn('qr', '顯示 QR code', () => makeQr(c)),
         btn(u.exporting ? '正在匯出…' : '匯出 Excel', () => exportOne(c), '', { fk: `export-${c.id}`, disabled: u.exporting }),
         panelBtn('deadline', '改期限', () => initDeadline(c)),
         panelBtn('info', '改班級資料', () => initInfo(c)),
-        panelBtn('regen', '重新產生統計表連結')),
+        panelBtn('regen', c.stats_expires_at ? '重新產生統計表連結' : '產生統計表連結')),
       status(u.msg), status(u.err, 'err'),
       u.panel === 'qr' ? qrPanel(c, u) : null,
       u.panel === 'deadline' ? deadlinePanel(c, u) : null,
       u.panel === 'info' ? infoPanel(c, u) : null,
-      u.panel === 'regen' ? regenPanel(c, u) : null,
-      u.token ? tokenPanel(c, u) : null);
+      u.panel === 'regen' ? regenPanel(c, u) : null);
   }
 
   /* QR code */
@@ -547,34 +549,26 @@
 
   /* 重新產生統計表連結 */
   function regenPanel(c, u) {
+    const had = !!c.stats_expires_at;
     return h('div', { class: 'panel' },
-      h('p', { class: 'warn' }, '舊的統計表連結會馬上失效，講師要改用新連結。'),
+      had ? h('p', { class: 'warn' }, '舊的統計表連結會馬上失效，講師要改用新連結。') : h('p', null, '產生後就可以複製。'),
       h('div', { class: 'btn-row' },
-        btn(u.busy ? '正在產生…' : '重新產生', () => regen(c), 'primary', { fk: `regen-go-${c.id}`, disabled: u.busy }),
+        btn(u.busy ? '正在產生…' : had ? '重新產生' : '產生連結', () => regen(c), 'primary', { fk: `regen-go-${c.id}`, disabled: u.busy }),
         btn('取消', () => { u.panel = null; draw(`regen-${c.id}`); }, 'quiet', { disabled: u.busy })));
   }
   async function regen(c) {
-    const u = uiOf(c.id);
-    u.busy = true; u.err = ''; draw();
+    const u = uiOf(c.id), had = !!c.stats_expires_at;
+    u.busy = true; u.err = ''; u.msg = ''; draw();
     try {
-      u.token = await rpc('admin_regen_stats_link', { p_class_id: c.id });
+      c.stats_token = await rpc('admin_regen_stats_link', { p_class_id: c.id });
       c.stats_expires_at = c.closes_at;
       u.panel = null; u.busy = false;
-      draw(`token-copy-${c.id}`);
+      u.msg = had ? '已產生新的統計表連結，舊連結已失效。' : '已產生統計表連結。';
+      draw(`copy-stats-${c.id}`);
     } catch (e) {
       if (e.handled) return;
       u.busy = false; u.err = errText(e); draw();
     }
-  }
-  function tokenPanel(c, u) {
-    const url = statsLink(u.token);
-    return h('div', { class: 'panel' },
-      h('p', { class: 'warn', role: 'status' }, '新的統計表連結只顯示這一次，請先複製。'),
-      linkBox('講師統計表', url),
-      status(u.tokenMsg),
-      h('div', { class: 'btn-row' },
-        btn('複製連結', async () => { u.tokenMsg = await copyText(url) ? '已複製。' : '沒有複製成功，請手動選取上面的連結。'; draw(); }, 'primary', { fk: `token-copy-${c.id}` }),
-        btn('我已複製，關閉', () => { u.token = null; u.tokenMsg = ''; draw(`regen-${c.id}`); }, 'quiet')));
   }
 
   /* ---------- Excel 匯出 ---------- */
