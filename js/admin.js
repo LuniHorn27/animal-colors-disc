@@ -121,7 +121,7 @@
   }
   const STATE_TEXT = { open: '開放中', closed: '已關閉', future: '尚未開放' };
   const studentLink = (code) => `${location.origin}/?c=${encodeURIComponent(code)}`;
-  const statsLink = (token) => `${location.origin}/teacher#k=${token}`;
+  const statsLink = (token) => `${location.origin}/t#k=${token}`;
 
   async function copyText(text) {
     try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
