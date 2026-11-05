@@ -28,16 +28,11 @@ a{color:var(--ink)}
 .bar-in{max-width:800px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px;font-family:var(--font-round);font-size:18px}
 .bar-in img{width:28px;height:28px}
 .bar-in .sp{flex:1}
-.tabs{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-.tabs-in{max-width:800px;margin:0 auto;padding:8px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.tab{min-height:44px;border:0;border-radius:var(--radius-ctrl);background:transparent;color:var(--ink);font:inherit;font-size:16px;cursor:pointer}
-.tab[aria-current="page"]{background:var(--btn);color:var(--btn-ink);font-weight:500}
 main{max-width:800px;margin:0 auto;padding:20px 16px 64px;display:grid;gap:16px}
 main>*{min-width:0}
 
 .btn{min-height:44px;padding:8px 16px;border:1px solid var(--ink);border-radius:var(--radius-ctrl);background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:500;line-height:1.35;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}
 .btn.primary{background:var(--btn);color:var(--btn-ink);border-color:var(--btn)}
-.btn.danger{background:var(--err);border-color:var(--err);color:var(--surface)}
 .btn.quiet{border-color:var(--line);font-weight:400}
 .btn[aria-expanded="true"]{background:var(--selected)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -83,11 +78,8 @@ textarea.input{resize:vertical;line-height:1.6}
 .linkbox code{display:block;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-ctrl);padding:8px 12px;font-size:15px;line-height:1.5;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .qr{display:grid;justify-items:center;gap:8px}
 .qr img{width:240px;height:240px;max-width:100%;border-radius:8px;display:block}
-.check{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:500;cursor:pointer}
-.check input{width:22px;height:22px;margin:0;accent-color:var(--ink)}
 .empty{text-align:center;padding:28px 16px;justify-items:center}
 .note{font-size:15px}
-.search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
 @media (min-width:640px){
   .login{margin-top:80px}
   .tile b{font-size:30px}

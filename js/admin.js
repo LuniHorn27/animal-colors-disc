@@ -1,5 +1,5 @@
 /* 管理後台。真正的權限在資料庫函式（每個函式都先檢查管理者），這裡只負責畫面。
-   學生填的文字一律用 textContent 放進畫面（h() 不會解析 HTML）。 */
+   文字一律用 textContent 放進畫面（h() 不會解析 HTML）。 */
 (function () {
   'use strict';
   const cfg = window.DISC_CONFIG || {};
@@ -16,12 +16,10 @@
 
   function blank() {
     return {
-      view: 'loading', email: '', notice: '', tab: 'classes',
+      view: 'loading', email: '', notice: '',
       classes: null, classesErr: '',
       create: { open: false }, created: null,
       ui: {}, all: {},
-      fu: { list: null, filter: 'todo', ui: {}, err: '' },
-      del: { q: '', results: null, ui: {}, done: '', err: '', busy: false },
     };
   }
   let S = blank();
@@ -76,12 +74,9 @@
     bad_name: '班級名稱要 1 到 60 字。',
     bad_time: '請選現在之後的時間。',
     code_taken: '這個代碼用過了，換一個。',
-    not_found: '找不到這筆資料，可能已被刪除。請重新整理頁面。',
+    not_found: '找不到這筆資料。請重新整理頁面。',
     before_open: '關閉時間不能早於這班的開放時間，請選晚一點的時間。',
     class_closed: '這班已關閉，請先改期限。',
-    note_too_long: '備註最多 500 字。',
-    bad_query: '請輸入 1 到 60 字的名字或 Email。',
-    confirm_mismatch: '輸入的內容和資料不同，請再確認一次。',
     lib_failed: '工具載入失敗，請檢查網路後再試一次。',
     template_failed: '匯出範本載入失敗，請再試一次。',
   };
@@ -196,23 +191,12 @@
 
   /* ---------- 共用外框 ---------- */
   function shell(body) {
-    const tab = (id, label) => h('button', {
-      type: 'button', class: 'tab', fk: 'tab-' + id, 'aria-current': S.tab === id ? 'page' : null,
-      onclick: () => openTab(id),
-    }, label);
     return [
       h('header', { class: 'site-bar' }, h('div', { class: 'bar-in' },
         h('img', { src: 'brand/logo-mark.svg', alt: '' }), h('span', null, '管理後台'), h('span', { class: 'sp' }),
         btn('登出', signOut, 'quiet', { fk: 'signout' }))),
-      h('nav', { class: 'tabs', 'aria-label': '後台功能' }, h('div', { class: 'tabs-in' },
-        tab('classes', '班級'), tab('followups', '聯絡名單'), tab('delete', '刪除資料'))),
       h('main', null, body),
     ];
-  }
-  function openTab(id) {
-    S.tab = id;
-    draw();
-    if (id === 'followups' && !S.fu.list) loadFollowups();
   }
 
   /* ---------- 班級 ---------- */
@@ -572,160 +556,6 @@
     draw();
   }
 
-  /* ---------- 聯絡名單 ---------- */
-  async function loadFollowups() {
-    S.fu.err = '';
-    try {
-      S.fu.list = await rpc('admin_followups');
-    } catch (e) {
-      if (e.handled) return;
-      S.fu.err = errText(e);
-    }
-    draw();
-  }
-  function followupsView() {
-    const f = S.fu;
-    if (f.err && !f.list) return h('div', { class: 'card empty' }, status(f.err, 'err'), btn('再試一次', () => { f.err = ''; draw(); loadFollowups(); }, 'primary'));
-    if (!f.list) return h('p', { role: 'status' }, '正在載入聯絡名單…');
-    if (!f.list.length) return h('div', { class: 'card empty' }, h('h2', null, '還沒有人留下聯絡方式'), h('p', null, '學生想進一步聯絡時，會出現在這裡。'));
-    const todo = f.list.filter((x) => !x.contacted_at), done = f.list.length - todo.length;
-    const pill = (id, label) => h('button', {
-      type: 'button', class: 'btn quiet', fk: 'fu-' + id, 'aria-pressed': f.filter === id ? 'true' : 'false',
-      'aria-expanded': null, onclick: () => { f.filter = id; for (const u of Object.values(f.ui)) u.keep = false; draw(); },
-    }, label);
-    const shown = f.list.filter((x) => {
-      if (f.filter === 'all' || (f.ui[x.response_id] || {}).keep) return true;
-      return f.filter === 'todo' ? !x.contacted_at : !!x.contacted_at;
-    });
-    const pills = h('div', { class: 'tiles', role: 'group', 'aria-label': '篩選聯絡名單' },
-      pill('todo', `還沒聯絡 ${todo.length}`), pill('done', `已聯絡 ${done}`), pill('all', `全部 ${f.list.length}`));
-    pills.querySelectorAll('[aria-pressed="true"]').forEach((b) => { b.classList.remove('quiet'); b.classList.add('primary'); });
-    return [
-      pills,
-      shown.length ? shown.map(followupCard) : h('div', { class: 'card empty' }, h('p', null, f.filter === 'todo' ? '都聯絡過了。' : '這裡還沒有資料。')),
-    ];
-  }
-  function followupCard(x) {
-    const id = x.response_id;
-    const u = S.fu.ui[id] || (S.fu.ui[id] = { contacted: !!x.contacted_at, note: x.note || '' });
-    const type = X.typeLabel(x.result_kind, x.result_key);
-    const tel = x.phone ? 'tel:' + x.phone.replace(/[^\d+]/g, '') : null;
-    const mail = x.email ? 'mailto:' + encodeURIComponent(x.email).replace('%40', '@') : null;
-    return h('article', { class: 'card' },
-      h('div', { class: 'head-row' },
-        h('h2', null, x.name || '未留名字'),
-        x.is_test ? h('span', { class: 'badge test' }, '測試') : null,
-        x.contacted_at ? h('span', { class: 'badge closed' }, '已聯絡') : null),
-      h('dl', { class: 'rows' },
-        h('dt', null, '來源'), h('dd', null, x.class_name || (x.cohort ? x.cohort : '個人版')),
-        h('dt', null, '留下時間'), h('dd', null, fmt(x.created_at)),
-        type ? [h('dt', null, '類型'), h('dd', null, type)] : null,
-        x.phone ? [h('dt', null, '電話'), h('dd', null, h('a', { href: tel }, x.phone))] : null,
-        x.line_id ? [h('dt', null, 'LINE'), h('dd', null, x.line_id)] : null,
-        x.email ? [h('dt', null, 'Email'), h('dd', null, h('a', { href: mail }, x.email))] : null),
-      h('label', { class: 'check' },
-        h('input', { type: 'checkbox', fk: `fu-c-${id}`, checked: u.contacted, onchange: (e) => { u.contacted = e.target.checked; u.msg = ''; } }),
-        '已聯絡'),
-      h('div', { class: 'field' },
-        h('label', { htmlFor: `fu-n-${id}` }, '備註'),
-        h('textarea', { id: `fu-n-${id}`, fk: `fu-n-${id}`, class: 'input', rows: 2, maxLength: 500, value: u.note, oninput: (e) => { u.note = e.target.value; u.msg = ''; } })),
-      status(u.msg), status(u.err, 'err'),
-      btn(u.busy ? '正在儲存…' : '儲存', () => saveFollowup(x), 'primary', { fk: `fu-s-${id}`, disabled: u.busy }));
-  }
-  async function saveFollowup(x) {
-    const u = S.fu.ui[x.response_id];
-    u.busy = true; u.msg = ''; u.err = ''; draw();
-    try {
-      const r = await rpc('admin_save_followup', { p_response_id: x.response_id, p_contacted: u.contacted, p_note: u.note });
-      x.contacted_at = r.contacted_at; x.note = r.note;
-      u.note = r.note || '';
-      u.keep = true;
-      u.msg = '已儲存。';
-    } catch (e) {
-      if (e.handled) return;
-      u.err = errText(e);
-    }
-    u.busy = false;
-    draw();
-  }
-
-  /* ---------- 刪除資料 ---------- */
-  function deleteView() {
-    const d = S.del;
-    return [
-      h('form', { class: 'card', noValidate: true, onsubmit: (e) => { e.preventDefault(); search(); } },
-        h('h2', null, '找到要刪除的人'),
-        h('div', { class: 'search' },
-          h('div', { class: 'field' },
-            h('label', { htmlFor: 'del-q' }, '名字或 Email'),
-            h('input', { id: 'del-q', fk: 'del-q', class: 'input', maxLength: 60, autocomplete: 'off', value: d.q, oninput: (e) => { d.q = e.target.value; } })),
-          h('button', { type: 'submit', class: 'btn primary', fk: 'del-go', disabled: d.busy }, d.busy ? '搜尋中…' : '搜尋')),
-        status(d.err, 'err')),
-      status(d.done),
-      d.results === null ? null
-        : d.results.length ? d.results.map(personCard)
-          : h('div', { class: 'card empty' }, h('p', null, `找不到「${d.searched}」。可以改用 Email 或部分名字再找一次。`)),
-    ];
-  }
-  async function search() {
-    const d = S.del, q = d.q.trim();
-    d.done = ''; d.err = '';
-    if (!q) { d.err = '請輸入名字或 Email。'; draw('del-q'); return; }
-    d.busy = true; draw();
-    try {
-      d.results = await rpc('admin_search_people', { p_q: q });
-      d.searched = q; d.ui = {};
-    } catch (e) {
-      if (e.handled) return;
-      d.err = errText(e);
-    }
-    d.busy = false;
-    draw();
-  }
-  const personKey = (p) => `${p.kind}-${p.id}`;
-  const personLabel = (p) => String(p.name || p.email || '').trim();
-  function personCard(p) {
-    const d = S.del, key = personKey(p), label = personLabel(p);
-    const u = d.ui[key] || (d.ui[key] = {});
-    return h('article', { class: 'card' },
-      h('h2', null, p.name || '未留名字'),
-      h('dl', { class: 'rows' },
-        p.email ? [h('dt', null, 'Email'), h('dd', null, p.email)] : null,
-        h('dt', null, '來源'), h('dd', null, p.class_name || '個人版'),
-        h('dt', null, '作答份數'), h('dd', null, p.responses),
-        h('dt', null, '最後作答'), h('dd', null, p.last_at ? fmt(p.last_at) : '沒有作答')),
-      u.open ? h('form', { class: 'panel', noValidate: true, onsubmit: (e) => { e.preventDefault(); if (u.typed && u.typed.trim() === label) removePerson(p); } },
-        h('p', { class: 'warn' }, '會刪除這個人的作答、聯絡方式和他評，無法復原。已下載的 Excel 和 Supabase 自動備份不會跟著刪。'),
-        field(`輸入「${label}」確認`, `del-t-${key}`, {
-          autocomplete: 'off', value: u.typed || '',
-          oninput: (e) => {
-            u.typed = e.target.value;
-            const b = document.getElementById(`del-b-${key}`);
-            if (b) b.disabled = u.typed.trim() !== label;
-          },
-        }),
-        status(u.err, 'err'),
-        h('div', { class: 'btn-row' },
-          h('button', { type: 'submit', id: `del-b-${key}`, class: 'btn danger', fk: `del-b-${key}`, disabled: u.busy || (u.typed || '').trim() !== label }, u.busy ? '正在刪除…' : '永久刪除'),
-          btn('取消', () => { d.ui[key] = {}; draw(`del-o-${key}`); }, 'quiet', { disabled: u.busy })))
-        : btn('刪除這個人的資料', () => { d.done = ''; u.open = true; draw(`del-t-${key}`); }, '', { fk: `del-o-${key}` }));
-  }
-  async function removePerson(p) {
-    const d = S.del, key = personKey(p), label = personLabel(p), u = d.ui[key];
-    u.busy = true; u.err = ''; draw();
-    try {
-      const n = await rpc('admin_delete_person', { p_kind: p.kind, p_id: p.id, p_confirm: u.typed.trim() });
-      d.results = d.results.filter((x) => personKey(x) !== key);
-      d.done = `已刪除 ${label} 的資料（${n} 份作答）。`;
-      S.fu.list = null; S.fu.ui = {};
-      draw('del-q');
-      loadClasses();
-    } catch (e) {
-      if (e.handled) return;
-      u.busy = false; u.err = errText(e); draw();
-    }
-  }
-
   /* ---------- 畫面入口 ---------- */
   function view() {
     const f = document.createDocumentFragment();
@@ -734,8 +564,7 @@
     else if (S.view === 'denied') f.append(deniedView());
     else if (S.view === 'fail') f.append(failView());
     else {
-      const body = S.tab === 'classes' ? classesView() : S.tab === 'followups' ? followupsView() : deleteView();
-      f.append(...shell(body));
+      f.append(...shell(classesView()));
     }
     return f;
   }
