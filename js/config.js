@@ -11,4 +11,7 @@ window.DISC_CONFIG = {
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mZHVteXR2dmh4aWVxdmJ3cnN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODE2MTYsImV4cCI6MjEwNzQ1NzYxNn0.pbeecUE7bC9_43T5ZUhF1u6lVIluaNFJIdMUN2iIIG8',
   // Cloudflare → Turnstile → 你的網站 → Site Key
   turnstileSiteKey: '0x4AAAAAAFVcBGhv1gngpfCT',
+  // 測驗最後的「個人資料」頁（名字、Email、年齡層、學歷、學校科系、電話、LINE）。
+  // false＝不顯示、不收集，直覺題做完直接看結果；要重新開放就改成 true（隱私說明也要一起改回來）。
+  collectProfile: false,
 };
