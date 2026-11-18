@@ -32,6 +32,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-siz
 .home-col{display:flex;flex-direction:column;gap:16px;padding-block:clamp(8px,3vh,32px)}
 .home-col h1{font-size:clamp(34px,5vw,52px);margin-bottom:4px}
 .home-col .types{margin:8px 0}
+.home-lab{margin:24px 0 0;padding-top:8px;border-top:1px solid var(--line);text-align:center}
+.home-lab a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;font-size:13px;letter-spacing:.04em;color:var(--muted);text-decoration:none}
+.home-lab a:hover{color:var(--ink)}
+.home-lab a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;border-radius:8px}
+.home-lab svg{width:16px;height:16px;flex:none}
 .start-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:16px}
 h1,h2,h3{font-family:var(--font-round);font-weight:400;font-synthesis:none;line-height:1.35;text-wrap:balance;margin:0}
 h1{font-size:30px} h2{font-size:22px} h3{font-size:18px}
@@ -542,6 +547,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <button class="btn" id="my-results" hidden data-i18n="home.myResults">我的歷次結果</button>
     </div>
     </div>
+    <p class="home-lab"><a href="/"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg>尋光引路實驗室 LumineerLab</a></p>
     </div>
   </section>
 
@@ -691,6 +697,8 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <h2 class="menu-sec" data-i18n="menu.settings">設定</h2>
     <button type="button" class="menu-row" id="m-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span data-i18n="bar.theme">深色模式</span><span class="r" id="m-theme-v" aria-hidden="true">關</span></button>
     <button type="button" class="menu-row" id="m-share"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/></svg><span data-i18n="bar.share">分享這個測驗給朋友</span></button>
+    <hr>
+    <a class="menu-row" href="/"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg><span>尋光引路實驗室 LumineerLab</span></a>
   </div>
 </dialog>
 
