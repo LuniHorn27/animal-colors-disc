@@ -2,10 +2,12 @@
 
 繁體中文的 DISC 行為風格測驗網站。依據馬斯頓（William Marston）1928 年提出的 DISC 理論設計，用老虎、孔雀、無尾熊、貓頭鷹四種動物代表四種行為傾向。
 
-網站：https://animal-colors-disc.pages.dev/
+網站：https://lumineerlab.com/animal-colors-disc/（舊網址 animal-colors-disc.pages.dev 會自動轉過來）
 
 - `index.html`：整個網站（單一檔案）
 - `brand/`：品牌色彩設定、標誌、連結預覽圖
 - `js/`：後端串接模組（目前為原型模式，作答只存在瀏覽器）
+- `home/`：lumineerlab.com 首頁（建置中）
+- `build.sh`：Cloudflare Pages 建置指令，測驗放在 `/animal-colors-disc/`，首頁放在最上層
 
 測驗結果僅供自我了解參考，不能作為招募、考核或任何診斷的依據。
