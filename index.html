@@ -628,6 +628,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     <h2 id="blind-h" data-i18n="blind.h">憑直覺，選一段最像的描述</h2>
     <div class="blind" id="blind-opts" role="group" aria-labelledby="blind-h"></div>
     <div class="actions"><button class="btn" id="blind-prev" data-i18n="quiz.prev">上一題</button></div>
+    <p class="small muted" id="blind-wait" role="status"></p>
   </section>
 
   <section id="s-result" class="stack" hidden></section>
@@ -1203,6 +1204,8 @@ const clear = () => { try{ localStorage.removeItem(STORE); }catch(e){} };
 const COHORT = (()=>{ const c=new URLSearchParams(location.search).get('c'); return c && /^[A-Za-z0-9_-]{1,32}$/.test(c) ? c : null; })();
 const newSid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2));
 const BK = window.DiscBackend || {enabled:false};
+/* 「個人資料」頁開關（js/config.js 的 collectProfile）。關閉時直覺題做完直接送出作答、看結果，不收名字、Email 等個資 */
+const COLLECT_PROFILE = !!(window.DISC_CONFIG && window.DISC_CONFIG.collectProfile);
 
 function show(id){
   if (id==='s-info'){ if (BK.enabled) BK.prepare(); }
@@ -1296,7 +1299,7 @@ $('#rd-ok').addEventListener('click', ()=>{ restartDialog.close(); clear(); begi
 $('#resume').addEventListener('click', ()=>{
   const s0 = st && !st.done ? st : load(); if (!s0) return; st=s0;
   const allDone = st.seq.every(id=>st.answers[id]);
-  if (allDone && st.blindOrders && st.blind && st.blind2){ show('s-info'); return; }
+  if (allDone && st.blindOrders && st.blind && st.blind2){ afterBlind(); return; }
   if (allDone && st.blindOrders){ renderBlind(st.blind ? 1 : 0); show('s-blind'); return; }
   show('s-quiz'); renderQuiz();
 });
@@ -1525,23 +1528,38 @@ $('#info-next').addEventListener('click', ()=>{
     edu:$('#edu').value, job:$('#job').value, jobOther:$('#job').value==='其他' ? $('#job-other').value.trim() : '',
     school:$('#school').value.trim(), major:$('#major').value.trim(),
     followup: want ? {phone:$('#fu-phone').value.trim(), line:$('#fu-line').value.trim()} : null};
+  finishQuiz('s-info', $('#info-next'), $('#info-wait'));
+});
+/* 作答完成：存檔、送出、顯示結果。from＝目前所在的畫面（等待時使用者若已離開就不再切換），
+   btn／wait＝送出期間要鎖住的按鈕和顯示提示的位置 */
+function finishQuiz(from, btn, wait){
   st.done=true; st.finishedAt=Date.now();
   if (!(BK.enabled && st.sid)){ save(); renderResult(); show('s-result'); return; }
   /* 先送出作答，確認送到了再顯示結果；最多等 15 秒，還沒送到就先顯示結果，
      結果頁最上方會提示「還沒送出」並提供「再送一次」（背景也會自動再試） */
   st.sync='sending'; save();
-  const btn = $('#info-next'); btn.disabled = true; btn.textContent = t('info.sending');
-  $('#info-wait').textContent = t('info.wait');
+  const label = btn.textContent; btn.disabled = true; if (from==='s-info') btn.textContent = t('info.sending');
+  wait.textContent = t('info.wait');
   BK.queue(st);
   const sid = st.sid, t0 = Date.now();
-  const wait = setInterval(()=>{
+  const timer = setInterval(()=>{
     const fin = !st || st.sid!==sid || st.sync==='sent' || st.sync==='rejected';
     if (!fin && Date.now()-t0 < 15000) return;
-    clearInterval(wait);
-    btn.disabled = false; btn.textContent = t('info.next'); $('#info-wait').textContent = '';
-    if (st && st.sid===sid && !$('#s-info').hidden){ renderResult(); show('s-result'); }
+    clearInterval(timer);
+    btn.disabled = false; btn.textContent = label; wait.textContent = '';
+    if (st && st.sid===sid && !$('#'+from).hidden){ renderResult(); show('s-result'); }
   }, 200);
-});
+}
+/* 直覺題做完（或從首頁繼續作答）之後的下一步：開放個資頁就去填個人資料，否則直接送出、看結果 */
+function afterBlind(){
+  if (COLLECT_PROFILE){ show('s-info'); return; }
+  st.info = {};
+  if (BK.enabled) BK.prepare();   // 在背景準備機器人驗證
+  /* 從首頁「繼續上次的作答」進來時還不在直覺題畫面：先切過去，送出等待的提示才有地方顯示 */
+  if ($('#s-blind').hidden){ renderBlind(1); show('s-blind'); }
+  blindBusy = true;
+  finishQuiz('s-blind', $('#blind-prev'), $('#blind-wait'));
+}
 const BLIND_PARTS = Object.fromEntries(TYPES.map(t=>[t, BLIND[t].split('。').filter(Boolean).map(x=>x+'。')]));
 let blindPage = 0;
 function renderBlind(page, hadFocus){
@@ -1567,7 +1585,7 @@ $('#blind-opts').addEventListener('click', e=>{
   document.querySelectorAll('#blind-opts .opt').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
   setTimeout(()=>{
     if (blindPage===0){ renderBlind(1); window.scrollTo(0,0); return; }
-    show('s-info');
+    afterBlind();
   }, 220);
 });
 /* 第 2 頁的上一題回到第 1 頁；第 1 頁的上一題回到最後一題題目 */
