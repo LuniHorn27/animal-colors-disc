@@ -6,11 +6,11 @@
 <link rel="icon" href="brand/favicon.svg" type="image/svg+xml">
 <meta name="description" content="每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。46 題，約 5–10 分鐘，測出你的動物本色。">
 <!-- 連結預覽（LINE、Facebook 等）。之後換網域時，og:url、og:image、下方程式裡的 SITE_URL 要一起改，並重新產生 brand/qr-site.svg -->
-<meta property="og:url" content="https://animal-colors-disc.pages.dev/">
+<meta property="og:url" content="https://lumineerlab.com/animal-colors-disc/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="測出你的動物本色｜DISC 行為風格測驗">
 <meta property="og:description" content="每個人身上都有老虎、孔雀、無尾熊、貓頭鷹四種動物，只是比例不同。46 題，約 5–10 分鐘，測出你的動物本色。">
-<meta property="og:image" content="https://animal-colors-disc.pages.dev/brand/og-image.png">
+<meta property="og:image" content="https://lumineerlab.com/animal-colors-disc/brand/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="動物本色：測出你的動物本色，DISC 行為風格測驗">
@@ -2091,8 +2091,8 @@ function setupShareDock(){
 
 /* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
 let lastImage = null;
-/* 測驗網址：上線後若改用自訂網域，填在這裡（例如 'disc.example.tw'）；留空時自動用目前網站的網址，本機預覽時不顯示 */
-const SITE_URL = 'animal-colors-disc.pages.dev';
+/* 測驗網址：上線後若改用自訂網域，填在這裡（網域＋子路徑，前面不加 https://、後面不加斜線）；留空時自動用目前網站的網址，本機預覽時不顯示 */
+const SITE_URL = 'lumineerlab.com/animal-colors-disc';
 const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
 /* QR Code 圖檔：brand/qr-site.svg（換網域時要重新產生）。載入失敗就不放 QR Code */
 const loadImage = src => new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
