@@ -26,6 +26,7 @@ document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
 let v = { x: 240, vx: 0, face: 1 };
 // Tab 聚焦到山屋連結時，把玩家移到山屋前 200 像素，相機自然跟過去
 const ui = createUi(document.getElementById('overlay'), placed, {
+  input,
   onFocusTool(x) { v = { ...v, x: Math.min(Math.max(x - 200, START_X - 10), worldLength), vx: 0, face: 1 }; },
 });
 const openTools = placed.filter((p) => p.status === 'open');

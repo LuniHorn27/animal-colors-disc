@@ -9,7 +9,7 @@ function el(tag, cls, text) {
   return e;
 }
 
-// opts: { onFocusTool(x), navigate(href) }
+// opts: { onFocusTool(x), navigate(href), input }（input 有給時才建立觸控左右按鈕）
 export function createUi(root, placed, opts = {}) {
   const navigate = opts.navigate || ((href) => window.location.assign(href));
   const nodes = placed.map((tool) => {
@@ -29,6 +29,24 @@ export function createUi(root, placed, opts = {}) {
     root.appendChild(d);
     return { tool, node: d, dy: 125, r1: 200, r2: 420 };
   });
+  // 靠近開放山屋時出現的「進入」按鈕（觸控裝置、窄螢幕才顯示，樣式見 home.css）
+  const enter = el('a', 'enter', '進入');
+  enter.setAttribute('aria-label', '進入山屋');
+  root.appendChild(enter);
+
+  if (opts.input) {
+    const pad = el('div', 'pad');
+    [['left', '往左騎', '‹'], ['right', '往右騎', '›']].forEach(([dir, label, glyph]) => {
+      const b = el('button', null, glyph);
+      b.type = 'button';
+      b.setAttribute('aria-label', label);
+      b.addEventListener('pointerdown', (e) => { opts.input.press(dir, true); b.setPointerCapture(e.pointerId); });
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((ev) => b.addEventListener(ev, () => opts.input.press(dir, false)));
+      pad.appendChild(b);
+    });
+    root.appendChild(pad);
+  }
+
   const edgeL = el('div', 'edge edge-l', '‹ 山屋');
   const edgeR = el('div', 'edge edge-r', '山屋 ›');
   root.append(edgeL, edgeR);
@@ -55,6 +73,9 @@ export function createUi(root, placed, opts = {}) {
         n.node.style.setProperty('--o', Math.max(0, Math.min(1, (n.r2 - d) / (n.r2 - n.r1))).toFixed(2));
         if (n.sub) n.sub.textContent = d < ENTER_RANGE ? '按 Enter，走進去' : '往前騎，靠近山屋';
       });
+      const close = nodes.find((n) => n.tool.status === 'open' && Math.abs(frame.playerX - n.tool.x) < ENTER_RANGE);
+      enter.classList.toggle('on', !!close);
+      if (close) enter.href = close.tool.href;
       // 邊緣提示：指向離玩家最近的開放山屋
       let nearest = null;
       openNodes.forEach((n) => { if (!nearest || Math.abs(frame.playerX - n.tool.x) < Math.abs(frame.playerX - nearest.tool.x)) nearest = n; });
