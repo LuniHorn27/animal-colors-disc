@@ -12,6 +12,7 @@
 !/_headers
 !/t.html
 !/build.sh
+!/home/
 !/brand/
 !/js/
 !/tests/

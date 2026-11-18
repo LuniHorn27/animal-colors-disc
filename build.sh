@@ -10,5 +10,6 @@ mkdir -p "dist/$APP"
 cp -R *.html brand js "dist/$APP/"
 rm -f "dist/$APP/brand/og-image.html"
 
-# 資安標頭對整個網域都有效，放在最上層
+# lumineerlab.com 首頁與資安標頭放在最上層（資安標頭對整個網域都有效）
+cp -R home/. dist/
 cp _headers dist/
