@@ -52,4 +52,7 @@ if __name__ == "__main__":
     if not os.path.isdir(DIST):
         sys.exit("找不到 dist/，請先執行 sh build.sh")
     print(f"服務 {DIST}，已套用 {len(HEADERS)} 個資安標頭，網址 http://localhost:{port}/")
-    http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()
+    class Server(http.server.ThreadingHTTPServer):
+        request_queue_size = 128  # 瀏覽器一次要十幾個模組檔，預設佇列 5 會被重設連線
+
+    Server(("127.0.0.1", port), Handler).serve_forever()
