@@ -20,3 +20,25 @@ html,body{margin:0;height:100%;background:#04060a;overflow:hidden;color:var(--in
 .plain{max-width:640px;margin:0 auto;padding:72px 16px;position:relative;z-index:10}
 .plain a{color:var(--warm)}
 @media (max-width:479px){.skip-long{display:none}.skip-short{display:inline}}
+
+/* 山屋連結、「？」標籤、邊緣方向提示（位置由 ride/ui.js 每幀設定） */
+#overlay{position:fixed;inset:0;pointer-events:none;z-index:2}
+.node{position:fixed;transform:translate(-50%,-100%);display:block;text-decoration:none;color:inherit;outline:none;left:-999px;top:0}
+.node .label{display:block;white-space:nowrap;text-align:center;font-size:15px;letter-spacing:.15em;
+  opacity:var(--o,0);transition:opacity .15s;text-shadow:0 0 12px #000,0 0 4px #000}
+.node small{display:block;font-size:11px;opacity:.75;letter-spacing:.2em;margin-top:2px}
+.hut{pointer-events:auto;padding:8px 12px}
+.hut .label{color:var(--warm);font-weight:700}
+.soon .label{color:var(--soon);font-size:14px}
+.hut:focus-visible .label{opacity:1;outline:2px solid #ffcf7a99;outline-offset:6px}
+.edge{position:fixed;top:46%;z-index:3;font-size:12px;letter-spacing:.2em;color:var(--warm);opacity:0;pointer-events:none;
+  transition:opacity .4s;text-shadow:0 0 10px #000}
+.edge-r{right:max(18px,env(safe-area-inset-right,0px))}
+.edge-l{left:max(18px,env(safe-area-inset-left,0px))}
+.edge.on{opacity:.9}
+@media (prefers-reduced-motion:no-preference){
+  .edge.on{animation:pulse 2s ease-in-out infinite}
+  .edge-l.on{animation-name:pulseL}
+}
+@keyframes pulse{50%{transform:translateX(3px)}}
+@keyframes pulseL{50%{transform:translateX(-3px)}}
