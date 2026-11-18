@@ -22,5 +22,5 @@ test('樹不會長在路標與山屋位置上', () => {
 
 test('場景物件數量與世界長度有關，空路標清單不當機', () => {
   const s = buildScenery(5000, []);
-  for (const k of ['midTrees', 'backTrees', 'rocks', 'tufts', 'stars']) assert.ok(s[k].length > 0, k);
+  for (const k of ['midTrees', 'backTrees', 'rocks', 'tufts', 'stars', 'flies']) assert.ok(s[k].length > 0, k);
 });

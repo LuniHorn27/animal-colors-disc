@@ -1,6 +1,7 @@
 // 靜態場景繪製：天空、遠山、森林、地面、土路、石頭、草、路牌。
 // 不畫山屋與小屋（hut.js）、不畫騎士（rider.js）、不畫暗幕（light.js）。
 import { groundY } from './world.js';
+import { drawGlow } from './light.js';
 
 const TAU = Math.PI * 2;
 export const START_X = 70;
@@ -46,7 +47,7 @@ export function drawScene(ctx, view, scenery, placed, worldLength) {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
   scenery.stars.forEach((s) => {
-    ctx.fillStyle = 'rgba(225,232,255,' + (0.35 + 0.25 * Math.sin(t * 0.002 + s.p)) + ')';
+    ctx.fillStyle = 'rgba(225,232,255,' + (view.reduced ? 0.45 : 0.35 + 0.25 * Math.sin(t * 0.002 + s.p)) + ')';
     ctx.fillRect((((s.x * W - camX * 0.02) % W) + W) % W, s.y * H, s.s, s.s);
   });
 
@@ -131,4 +132,20 @@ export function drawScene(ctx, view, scenery, placed, worldLength) {
 
   sign(ctx, view, START_X, '出發');
   sign(ctx, view, worldLength, '路還沒走完');
+}
+
+// 螢火蟲（疊加層，用 lighter 混合，要在暗幕之後畫）。reduced 時不飄動、不閃爍，只留靜止的微光。
+export function drawFireflies(ctx, view, flies, t, reduced) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  flies.forEach((f) => {
+    const drift = reduced ? 0 : 1;
+    const x = f.x - view.camX + drift * Math.sin(t * 0.0006 * f.s + f.p) * 30;
+    if (x < -20 || x > view.w + 20) return;
+    const y = view.h * 0.7 + groundY(f.x) - view.camY - f.dy + drift * Math.sin(t * 0.0009 * f.s + f.p * 2) * 16;
+    const b = reduced ? 0.35 : Math.max(0, Math.sin(t * 0.002 * f.s + f.p));
+    drawGlow(ctx, x, y, 9, 0.5 * b, '210,255,160');
+    drawGlow(ctx, x, y, 2, 0.8 * b, '255,255,220');
+  });
+  ctx.restore();
 }
