@@ -6,7 +6,9 @@ import { followCamera } from './camera.js';
 import { createInput } from './input.js';
 import { VEHICLES, stepVehicle, lampParams, computeAim } from './vehicle.js';
 import { drawRider } from './rider.js';
-import { drawDarkness, drawLampGlow } from './light.js';
+import { drawDarkness, drawLampGlow, drawGlow } from './light.js';
+import { drawHutStructure, drawHutLights, drawClosedCabin } from './hut.js';
+import { createUi } from './ui.js';
 
 const canvas = document.getElementById('stage');
 const ctx = canvas.getContext('2d');
@@ -17,6 +19,14 @@ const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((
 const cfg = VEHICLES.bicycle;
 const bounds = { min: START_X - 10, max: worldLength };
 const input = createInput(window);
+const reduced = document.documentElement.dataset.motion === 'reduced';
+
+let v = { x: 240, vx: 0, face: 1 };
+// Tab 聚焦到山屋連結時，把玩家移到山屋前 200 像素，相機自然跟過去
+const ui = createUi(document.getElementById('overlay'), placed, {
+  onFocusTool(x) { v = { ...v, x: Math.min(Math.max(x - 200, START_X - 10), worldLength), vx: 0, face: 1 }; },
+});
+const openTools = placed.filter((p) => p.status === 'open');
 
 let W = 0, H = 0, DPR = 1, S = 1;
 function resize() {
@@ -34,7 +44,6 @@ resize();
 const mouse = { x: 0, y: 0, t: -1e9 };
 window.addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.t = performance.now(); });
 
-let v = { x: 240, vx: 0, face: 1 };
 let camX = 0, camY = 0, last = 0, wheelA = 0, phase = 0, aim = 0.09, walked = 0;
 
 function frame(t) {
@@ -54,6 +63,9 @@ function frame(t) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
   drawScene(ctx, { w: W, h: H, camX, camY, t }, scenery, placed, worldLength);
+  placed.forEach((p) => { if (p.status !== 'open') drawClosedCabin(ctx, { w: W, h: H, camX, camY }, p.x); });
+  const hutView = { w: W, h: H, camX, camY };
+  openTools.forEach((p) => { const hx = p.x - camX; if (hx > -200 && hx < W + 200) drawHutStructure(ctx, hutView, p.x); });
   const { lamp } = drawRider(ctx, { x: X, y: Y, face: v.face, speedRatio: sp, wheelAngle: wheelA, pedalPhase: phase, slope, scale: S });
 
   const stopped = Math.abs(v.vx) < 30;
@@ -62,8 +74,21 @@ function frame(t) {
   const lp = lampParams(sp, cfg);
   const flicker = 1 + 0.03 * Math.sin(t * 0.011) + 0.02 * Math.sin(t * 0.027);
   drawDarkness(ctx, { w: W, h: H, dpr: DPR }, lamp, aim, { len: lp.len * S, half: lp.half, flicker },
-    [{ x: X, y: Y - 40 * S, r: 130 * S, a: 0.9 }]);
+    [{ x: X, y: Y - 40 * S, r: 130 * S, a: 0.9 },
+      ...openTools.filter((p) => p.x - camX > -400 && p.x - camX < W + 400)
+        .map((p) => ({ x: p.x - camX, y: H * 0.7 + groundY(p.x) - camY - 60, r: 320, a: 0.8 }))]);
   drawLampGlow(ctx, lamp, aim, X, Y, S);
+  // 遠方暖色光暈：離最近的開放山屋越近越亮，貼在畫面邊緣
+  let nearest = null;
+  openTools.forEach((p) => { if (!nearest || Math.abs(v.x - p.x) < Math.abs(v.x - nearest.x)) nearest = p; });
+  if (nearest) {
+    const hsx = Math.min(W + 60, Math.max(-60, nearest.x - camX));
+    ctx.globalCompositeOperation = 'lighter';
+    drawGlow(ctx, hsx, H * 0.5, 380, Math.min(1, Math.max(0, 1 - Math.abs(v.x - nearest.x) / 3500)) * 0.1 + 0.02, '255,190,110');
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  openTools.forEach((p) => { const hx = p.x - camX; if (hx > -300 && hx < W + 300) drawHutLights(ctx, hutView, p.x, t, reduced); });
+  ui.update({ playerX: v.x, camX, camY, viewW: W, viewH: H, groundY });
 
   odo.textContent = '已騎 ' + Math.round((v.x - START_X) / 90) + ' 公尺';
   hint.style.opacity = walked > 500 ? 0 : 0.55;
