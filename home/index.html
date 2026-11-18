@@ -7,6 +7,9 @@
 <title>Lumineer Lab</title>
 <meta name="description" content="Lumineer Lab：職涯探索小工具。網站建置中，目前可以先玩「測出你的動物本色」。">
 <!-- lumineerlab.com 的首頁（建置中）。建置時由 build.sh 複製到網站最上層 -->
+<script>/* 舊網址 animal-colors-disc.pages.dev 自動轉到新網址，保留路徑與 ?c= 等參數。
+   舊網址的任何路徑（/、/peer.html、/t…）都會打開這一頁，所以在這裡統一轉。預覽網址（xxx.animal-colors-disc.pages.dev）不轉，方便測試 */
+if(location.hostname==='animal-colors-disc.pages.dev'){var p=location.pathname;if(p.indexOf('/animal-colors-disc/')!==0)p='/animal-colors-disc'+p;location.replace('https://lumineerlab.com'+p+location.search+location.hash);}</script>
 <link rel="icon" href="/animal-colors-disc/brand/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
