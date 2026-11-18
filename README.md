@@ -7,7 +7,7 @@
 - `index.html`：整個網站（單一檔案）
 - `brand/`：品牌色彩設定、標誌、連結預覽圖
 - `js/`：後端串接模組（目前為原型模式，作答只存在瀏覽器）
-- `home/`：lumineerlab.com 首頁（建置中）
+- `home/`：lumineerlab.com 首頁（夜晚山徑騎腳踏車的互動首頁，程式在 `home/ride/`，新增工具只改 `home/ride/tools.js`）與 `home/about/`（關於頁）
 - `build.sh`：Cloudflare Pages 建置指令，測驗放在 `/animal-colors-disc/`，首頁放在最上層
 
 測驗結果僅供自我了解參考，不能作為招募、考核或任何診斷的依據。
