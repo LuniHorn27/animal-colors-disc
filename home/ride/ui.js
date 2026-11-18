@@ -67,9 +67,16 @@ export function createUi(root, placed, opts = {}) {
     update(frame) {
       playerX = frame.playerX;
       nodes.forEach((n) => {
-        const x = n.tool.x - frame.camX, d = Math.abs(frame.playerX - n.tool.x);
+        let x = n.tool.x - frame.camX;
+        const d = Math.abs(frame.playerX - n.tool.x);
+        // 高度隨視窗縮放；開放山屋的名稱水平夾在畫面內（小螢幕不會被切掉），也不壓到頂端的品牌文字
+        const dy = Math.min(n.dy, frame.viewH * 0.32);
+        if (n.tool.status === 'open') {
+          const half = n.node.offsetWidth / 2 + 8;
+          if (frame.viewW > half * 2) x = Math.min(frame.viewW - half, Math.max(half, x));
+        }
         n.node.style.left = x + 'px';
-        n.node.style.top = frame.viewH * 0.7 + frame.groundY(n.tool.x) - frame.camY - n.dy + 'px';
+        n.node.style.top = Math.max(76, frame.viewH * 0.7 + frame.groundY(n.tool.x) - frame.camY - dy) + 'px';
         n.node.style.setProperty('--o', Math.max(0, Math.min(1, (n.r2 - d) / (n.r2 - n.r1))).toFixed(2));
         if (n.sub) n.sub.textContent = d < ENTER_RANGE ? '按 Enter，走進去' : '往前騎，靠近山屋';
       });
