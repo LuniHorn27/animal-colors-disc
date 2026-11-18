@@ -19,7 +19,7 @@ body{background:radial-gradient(ellipse at 50% 0%,#0d1624 0%,var(--bg) 60%) fixe
   min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 header{padding:22px max(24px,env(safe-area-inset-left,0px));opacity:.75;letter-spacing:.2em;font-size:14px;line-height:1.7}
 header b{display:block;font-weight:500;font-size:16px;letter-spacing:.3em}
-main{flex:1;width:100%;max-width:34em;margin:0 auto;padding:8vh 24px 48px}
+main{flex:1;width:100%;display:flex;padding:4vh 24px 40px}
 p{margin:0 0 2.2em;font-size:clamp(14px,4.4vw,19px);letter-spacing:.08em}
 p span{display:block;white-space:nowrap}
 p:first-child{color:var(--warm)}
@@ -28,16 +28,32 @@ nav{padding:0 24px 32px;text-align:center;font-size:14px;letter-spacing:.15em}
 nav a{display:inline-block;min-height:44px;line-height:44px;padding:0 12px;color:var(--ink);opacity:.6;text-decoration:none}
 nav a:hover,nav a:focus-visible{opacity:1;outline:none;text-decoration:underline;text-underline-offset:6px}
 .tool{color:var(--warm)}
+
+/* 任務捲軸：兩根木軸從中央向上下拉開，紙展開後文字一段一段浮現 */
+.scroll{margin:auto;width:100%;max-width:26em}
+.rod{display:block;height:14px;border-radius:7px;background:#6b4a22;border:1px solid #8a6a3a;position:relative;z-index:1}
+.paper{display:grid;grid-template-rows:1fr;margin:-2px 4%;background:#2a2217;border:solid #4a3a22;border-width:0 1px;text-align:center}
+.paper>.in{min-height:0;overflow:hidden;padding:0 12px}
+.paper>.in>p:first-child{margin-top:1.6em}
+.paper>.in>p:last-child{margin-bottom:1.6em}
+@media (prefers-reduced-motion:no-preference){
+  .paper{grid-template-rows:0fr;animation:unfurl 1.6s cubic-bezier(.3,.1,.2,1) .3s forwards}
+  .paper p{opacity:0;transform:translateY(6px);animation:rise .9s ease-out forwards}
+  .paper p:nth-child(1){animation-delay:1.2s}.paper p:nth-child(2){animation-delay:1.65s}
+  .paper p:nth-child(3){animation-delay:2.1s}.paper p:nth-child(4){animation-delay:2.55s}
+}
+@keyframes unfurl{to{grid-template-rows:1fr}}
+@keyframes rise{to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 <header><b>尋光引路實驗室</b>lumineer.lab</header>
-<main>
+<main><div class="scroll"><i class="rod"></i><div class="paper"><div class="in">
 <p><span>迷茫，是人之常情。</span><span>出發，路就在腳下。</span></p>
 <p><span>每一步的行動，</span><span>是勇氣、是希望；</span><span>是光芒，是引導；</span><span>也是未來道路的起點。</span></p>
 <p><span>這裡是尋光引路實驗室，</span><span>有一些陪伴探索的小工具。</span><span>希望有機會陪著你，</span><span>點亮下一道光，實踐下一哩路。</span></p>
 <p><span>不必有完美方法，</span><span>也不需要有標準答案，</span><span>只要先開始，踏出一小步就好。</span></p>
-</main>
+</div></div><i class="rod"></i></div></main>
 <nav><a href="/">回首頁</a> <a class="tool" href="/animal-colors-disc/">找尋你的動物本色</a></nav>
 </body>
 </html>
