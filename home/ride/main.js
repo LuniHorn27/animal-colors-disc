@@ -1,7 +1,7 @@
 // 首頁主程式：組裝資料、輸入、物理、場景、騎士、暗幕與主迴圈。
 import { TOOLS, placeTools } from './tools.js';
 import { groundY, buildScenery } from './world.js';
-import { drawScene, START_X } from './scene.js';
+import { drawScene, drawFireflies, START_X } from './scene.js';
 import { followCamera } from './camera.js';
 import { createInput } from './input.js';
 import { VEHICLES, stepVehicle, lampParams, computeAim } from './vehicle.js';
@@ -19,7 +19,9 @@ const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((
 const cfg = VEHICLES.bicycle;
 const bounds = { min: START_X - 10, max: worldLength };
 const input = createInput(window);
-const reduced = document.documentElement.dataset.motion === 'reduced';
+// 作業系統開了「減少動態」：關閉閃爍、螢火蟲飄動、炊煙、車身起伏（仍可手動騎車）
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
 
 let v = { x: 240, vx: 0, face: 1 };
 // Tab 聚焦到山屋連結時，把玩家移到山屋前 200 像素，相機自然跟過去
@@ -62,17 +64,17 @@ function frame(t) {
 
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
-  drawScene(ctx, { w: W, h: H, camX, camY, t }, scenery, placed, worldLength);
+  drawScene(ctx, { w: W, h: H, camX, camY, t, reduced }, scenery, placed, worldLength);
   placed.forEach((p) => { if (p.status !== 'open') drawClosedCabin(ctx, { w: W, h: H, camX, camY }, p.x); });
   const hutView = { w: W, h: H, camX, camY };
   openTools.forEach((p) => { const hx = p.x - camX; if (hx > -200 && hx < W + 200) drawHutStructure(ctx, hutView, p.x); });
-  const { lamp } = drawRider(ctx, { x: X, y: Y, face: v.face, speedRatio: sp, wheelAngle: wheelA, pedalPhase: phase, slope, scale: S });
+  const { lamp } = drawRider(ctx, { x: X, y: Y, face: v.face, speedRatio: sp, wheelAngle: wheelA, pedalPhase: phase, slope, scale: S, bob: !reduced });
 
   const stopped = Math.abs(v.vx) < 30;
   const mouseState = { x: mouse.x, y: mouse.y, ageMs: t - mouse.t };
   aim = computeAim({ face: v.face, slope, speedRatio: sp, wheelPhase: wheelA, stopped, mouse: mouseState, lamp, prevAim: aim, dt });
   const lp = lampParams(sp, cfg);
-  const flicker = 1 + 0.03 * Math.sin(t * 0.011) + 0.02 * Math.sin(t * 0.027);
+  const flicker = reduced ? 1 : 1 + 0.03 * Math.sin(t * 0.011) + 0.02 * Math.sin(t * 0.027);
   drawDarkness(ctx, { w: W, h: H, dpr: DPR }, lamp, aim, { len: lp.len * S, half: lp.half, flicker },
     [{ x: X, y: Y - 40 * S, r: 130 * S, a: 0.9 },
       ...openTools.filter((p) => p.x - camX > -400 && p.x - camX < W + 400)
@@ -88,6 +90,7 @@ function frame(t) {
     ctx.globalCompositeOperation = 'source-over';
   }
   openTools.forEach((p) => { const hx = p.x - camX; if (hx > -300 && hx < W + 300) drawHutLights(ctx, hutView, p.x, t, reduced); });
+  drawFireflies(ctx, hutView, scenery.flies, t, reduced);
   ui.update({ playerX: v.x, camX, camY, viewW: W, viewH: H, groundY });
 
   odo.textContent = '已騎 ' + Math.round((v.x - START_X) / 90) + ' 公尺';
