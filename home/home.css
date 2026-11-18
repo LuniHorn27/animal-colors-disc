@@ -63,3 +63,9 @@ html,body{margin:0;height:100%;background:#04060a;overflow:hidden;color:var(--in
   .kbd{display:none}
   .touch{display:inline}
 }
+
+/* 角落的 About 入口：低調，不擋畫面 */
+.about{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;
+  min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:.2em;
+  color:var(--ink);opacity:.45;text-decoration:none}
+.about:hover,.about:focus-visible{opacity:1;outline:none;text-decoration:underline;text-underline-offset:6px}
