@@ -17,7 +17,7 @@ const hint = document.getElementById('hint');
 const { placed, worldLength } = placeTools(TOOLS);
 const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((p) => p.x)]);
 const cfg = window.matchMedia('(pointer: coarse)').matches
-  ? { ...VEHICLES.bicycle, vmax: 320 } // 手機觸控時降低最高速度，讓短按更容易控制
+  ? { ...VEHICLES.bicycle, vmax: 240 } // 手機觸控時降低最高速度，讓短按更容易控制
   : VEHICLES.bicycle;
 const bounds = { min: START_X - 10, max: worldLength };
 const input = createInput(window);
