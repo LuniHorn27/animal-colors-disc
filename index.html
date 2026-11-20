@@ -694,7 +694,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 </div>
 <footer class="site-footer" aria-label="頁尾連結" data-i18n-attr="aria-label:footer.label">
   <a href="privacy.html" data-i18n="footer.privacy">隱私權</a><span aria-hidden="true">｜</span>
-  <a href="./#feedback" id="footer-feedback" data-i18n="footer.feedback">心得回饋</a><span aria-hidden="true">｜</span>
+  <a href="./" id="footer-feedback" data-i18n="footer.feedback">心得回饋</a><span aria-hidden="true">｜</span>
   <a href="mailto:hello@lumineerlab.com" data-i18n="footer.contact">聯絡我們</a><span aria-hidden="true">｜</span>
   <a class="lab-link" href="/" aria-label="尋光引路實驗室 LumineerLab"><svg class="lab-mark" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg><span data-i18n="footer.lab">尋光引路實驗室 LumineerLab</span></a>
 </footer>
@@ -2649,9 +2649,9 @@ if (BK.enabled && BK.hasSession()){
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }
-/* 「換個角度」頁的選單點「意見回饋」會連到 ./#feedback：直接開啟回饋彈窗 */
-const WANT_FB = location.hash === '#feedback';
-if (WANT_FB) history.replaceState(history.state, '', location.pathname + location.search);
+/* 「換個角度」頁的選單用明確參數開啟回饋；一般頁面錨點不會意外觸發彈窗 */
+const WANT_FB = new URLSearchParams(location.search).get('feedback') === '1';
+if (WANT_FB) history.replaceState(history.state, '', location.pathname + location.hash);
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
 else if (onTabEntry()) showNone();
