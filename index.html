@@ -306,12 +306,13 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb-dialog{--fb-panel:#282d34;--fb-field:#171a1f;--fb-edge:#626a75}}
 .fb-dialog::backdrop{background:rgba(8,10,13,.68);backdrop-filter:blur(3px)}
 .fb-page{gap:0}
-.fb-top{display:flex;align-items:center;justify-content:flex-end;margin:0 0 2px}
+.fb-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 10px}
+.fb-top h2{font-size:24px;margin:0}
 .fb-back{width:44px;height:44px;border-radius:12px;border:1px solid var(--fb-edge);background:var(--fb-field);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
 .fb-back svg{width:20px;height:20px}
 .fb-back:focus-visible,.fb-chip:focus-visible,.fb-acc summary:focus-visible,.fb-rg:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-.fb-page h2{font-size:24px;margin:4px 0 10px}
-.fb-sub{margin:0 0 20px;padding:10px 12px;border:1px solid var(--fb-edge);border-radius:10px;background:var(--fb-field);color:var(--muted);font-size:14px;line-height:1.5}
+.fb-page h2{font-size:24px;margin:0 0 10px}
+.fb-sub{margin:0 0 20px;color:var(--muted);font-size:15px;line-height:1.55}
 .fb-qh{font-weight:500;font-size:17px;margin:0}
 .fb-qh span{font-weight:400;color:var(--muted);font-size:15px}
 .fb-acc{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:12px}
@@ -355,7 +356,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fb-email input:focus{outline:3px solid var(--ink);outline-offset:1px}
 .fb-email label{display:block;font-weight:500;font-size:17px;margin:0 0 6px}
 .fb-email label span{font-weight:400;color:var(--muted);font-size:15px}
-.fb-email .fb-hint{margin:6px 0 0}
+.fb-email .fb-hint{margin:0 0 8px}
 .fb-go{width:100%;margin-top:20px;min-height:52px}
 .fb-thanks{text-align:center;padding-top:48px}
 .fb-tick{width:64px;height:64px;border-radius:50%;background:var(--ink);color:var(--bg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px}
@@ -847,7 +848,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關',
   'menu.feedback':'心得回饋', 'menu.feedbackSub':'好的、不好的都歡迎回饋',
   'footer.label':'頁尾連結', 'footer.privacy':'隱私權', 'footer.feedback':'心得回饋', 'footer.contact':'聯絡我們', 'footer.lab':'尋光引路實驗室 LumineerLab',
-  'fb.back':'關閉心得回饋', 'fb.close':'關閉', 'fb.h':'心得回饋', 'fb.sub':'先關閉也沒關係，再次打開會保留草稿。',
+  'fb.back':'關閉心得回饋', 'fb.close':'關閉', 'fb.h':'心得回饋', 'fb.sub':'有什麼好的、卡卡的、或是不太準的地方，都歡迎告訴我們，讓我們一起優化這個測驗吧！',
   'fb.max':'（最多 3 個）', 'fb.linked':'已帶入你在結果頁的評分，想改可以直接點。', 'fb.fav.q':'你最喜歡哪個部分？', 'fb.fav.a':'解析內容', 'fb.fav.b':'圖表與功能',
   'fb.f1':'核心特質', 'fb.f2':'你的優勢', 'fb.f3':'可能的盲點', 'fb.f4':'你的溝通方式', 'fb.f5':'壓力下的你', 'fb.f6':'適合的工作環境與方向', 'fb.f7':'和其他動物相處',
   'fb.f8':'本色組成圖', 'fb.f9':'四種動物的分數', 'fb.f10':'分享結果圖片', 'fb.f11':'換個角度看自己',
@@ -1736,12 +1737,12 @@ function renderFeedback(){
     el.innerHTML = `<div class="fb-thanks"><div class="fb-tick"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 id="fb-title">${t('fb.thanks.h')}</h2><p class="muted">${t('fb.thanks.p')}</p><button type="button" class="btn" id="fb-close">${t('fb.close')}</button></div>`;
     return;
   }
-  el.innerHTML = `<div class="fb-top"><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.close')}">×</button></div>
+  el.innerHTML = `<div class="fb-top"><h2 id="fb-title">${t('fb.h')}</h2><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.close')}">×</button></div>
   <form id="fb-form">
-    <h2 id="fb-title">${t('fb.h')}</h2><p class="fb-sub">${t('fb.sub')}</p>
+    <p class="fb-sub">${t('fb.sub')}</p>
     ${fbRating()}
     <div class="fb-msg"><label for="fb-ta">${t('fb.msg.q')} <span>${t('fb.opt')}</span></label><textarea id="fb-ta" maxlength="500" placeholder="${t('fb.msg.hint')}">${esc(FB.msg)}</textarea></div>
-    <div class="fb-email"><label for="fb-email">${t('fb.email.q')} <span>${t('fb.opt')}</span></label><input id="fb-email" type="email" autocomplete="email" maxlength="254" placeholder="${t('fb.email.placeholder')}" value="${esc(FB.email)}"><p class="fb-hint">${t('fb.email.hint')}</p></div>
+    <div class="fb-email"><label for="fb-email">${t('fb.email.q')} <span>${t('fb.opt')}</span></label><p class="fb-hint">${t('fb.email.hint')}</p><input id="fb-email" type="email" autocomplete="email" maxlength="254" placeholder="${t('fb.email.placeholder')}" value="${esc(FB.email)}"></div>
     <button type="submit" class="btn primary fb-go" id="fb-go">${t('fb.send')}</button>
   </form>`;
   fbSync();
