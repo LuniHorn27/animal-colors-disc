@@ -33,6 +33,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-siz
 .site-footer{margin-top:auto;border-top:1px solid var(--line);padding:16px 8px calc(18px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:13px;line-height:1.8;white-space:nowrap}
 .site-footer a{color:inherit;font-size:inherit;text-decoration:none;margin:0 4px}
 .site-footer a:hover{text-decoration:underline}
+@media (max-width:480px){.site-footer{font-size:12px;padding-inline:4px}.site-footer a{margin-inline:2px}}
 #s-home,#s-quiz,#s-info,#s-blind,#s-result,#s-history{max-width:800px;margin-inline:auto}
 .home-col{display:flex;flex-direction:column;gap:16px;padding-block:clamp(8px,3vh,32px)}
 .home-col h1{font-size:clamp(34px,5vw,52px);margin-bottom:4px}
@@ -675,7 +676,8 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 <footer class="site-footer" aria-label="頁尾連結" data-i18n-attr="aria-label:footer.label">
   <a href="privacy.html" data-i18n="footer.privacy">隱私權</a><span aria-hidden="true">｜</span>
   <a href="./#feedback" id="footer-feedback" data-i18n="footer.feedback">心得回饋</a><span aria-hidden="true">｜</span>
-  <a href="mailto:hello@lumineerlab.com" data-i18n="footer.contact">聯絡我們</a>
+  <a href="mailto:hello@lumineerlab.com" data-i18n="footer.contact">聯絡我們</a><span aria-hidden="true">｜</span>
+  <a href="/" data-i18n="footer.lab">尋光引路實驗室 LumineerLab</a>
 </footer>
 
 <p class="toast" id="toast" role="status" aria-live="polite"></p>
@@ -833,7 +835,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'menu.btn':'選單', 'menu.account':'帳號', 'menu.signin':'用 Google 登入', 'menu.signinSub':'換手機也看得到你的結果',
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關',
   'menu.feedback':'心得回饋', 'menu.feedbackSub':'好的、不好的都歡迎回饋',
-  'footer.label':'頁尾連結', 'footer.privacy':'隱私權', 'footer.feedback':'心得回饋', 'footer.contact':'聯絡我們',
+  'footer.label':'頁尾連結', 'footer.privacy':'隱私權', 'footer.feedback':'心得回饋', 'footer.contact':'聯絡我們', 'footer.lab':'尋光引路實驗室 LumineerLab',
   'fb.back':'返回', 'fb.h':'你的想法，讓測驗更好', 'fb.sub':'有什麼好的、卡卡的、或是不太準的地方，都歡迎告訴我們，讓我們一起優化這個測驗吧！',
   'fb.max':'（最多 3 個）', 'fb.linked':'已帶入你在結果頁的評分，想改可以直接點。', 'fb.fav.q':'你最喜歡哪個部分？', 'fb.fav.a':'解析內容', 'fb.fav.b':'圖表與功能',
   'fb.f1':'核心特質', 'fb.f2':'你的優勢', 'fb.f3':'可能的盲點', 'fb.f4':'你的溝通方式', 'fb.f5':'壓力下的你', 'fb.f6':'適合的工作環境與方向', 'fb.f7':'和其他動物相處',

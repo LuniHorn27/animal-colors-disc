@@ -225,6 +225,7 @@ window.DISC_LANG_EN = {
   "footer.privacy": "Privacy Policy",
   "footer.feedback": "Feedback",
   "footer.contact": "Contact us",
+  "footer.lab": "LumineerLab",
   "fb.back": "Back",
   "fb.h": "Your ideas make the test better",
   "fb.sub": "Tell us what works, what feels off, or what doesn't seem accurate, and let's improve this test together!",
