@@ -339,6 +339,8 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fb-rec.set .fb-rh{display:none}
 .fb-rate{margin-bottom:12px;background:var(--fb-field);border-color:var(--fb-edge)}
 .fb-rate .fb-hint{margin:8px 0 0}
+.fb-rating{margin-bottom:12px}
+.fb-rating .fb-qh{margin:0 4px 8px}
 .fb-dialog .rate .opt{color:var(--fb-accent);border-color:var(--fb-accent);background:var(--fb-field)}
 .fb-dialog .rate .opt[aria-pressed="true"]{color:var(--fb-accent-ink);border-color:var(--fb-accent);background:var(--fb-accent)}
 .fb-rg{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;cursor:pointer}
@@ -1754,7 +1756,7 @@ function renderFeedback(){
 function fbRating(){
   const r = fbResult(); if (!r) return '';
   const L = [1,2,3,4,5].map(v=>t('rate.'+v));
-  return `<div class="card fb-rate"><h3 class="fb-qh">${t('rate.h')}</h3><div class="rate" id="fb-ratebox" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="${r.rating===v}" aria-label="${v} ${L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span></span><span aria-hidden="true">${L[4]}</span></div></div>`;
+  return `<div class="fb-rating"><h3 class="fb-qh">${t('rate.h')}</h3><div class="card fb-rate"><div class="rate" id="fb-ratebox" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="${r.rating===v}" aria-label="${v} ${L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span></span><span aria-hidden="true">${L[4]}</span></div></div></div>`;
 }
 /* 有評分、文字或信箱資料時才可送出 */
 function fbSync(){
