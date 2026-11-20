@@ -9,6 +9,9 @@ import { drawRider } from './rider.js';
 import { drawDarkness, drawLampGlow, drawGlow } from './light.js';
 import { drawHutStructure, drawHutLights, drawClosedCabin } from './hut.js';
 import { createUi } from './ui.js';
+import { initMusicControls } from './music.js';
+
+initMusicControls();
 
 const canvas = document.getElementById('stage');
 const ctx = canvas.getContext('2d');

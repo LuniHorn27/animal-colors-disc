@@ -69,3 +69,10 @@ html,body{margin:0;height:100%;background:#04060a;overflow:hidden;color:var(--in
   min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:.2em;
   color:var(--ink);opacity:.45;text-decoration:none}
 .about:hover,.about:focus-visible{opacity:1;outline:none;text-decoration:underline;text-underline-offset:6px}
+
+/* 背景音樂由訪客主動開啟；按鈕不遮住騎乘控制。 */
+.music-toggle{position:fixed;left:max(20px,env(safe-area-inset-left,0px));top:82px;z-index:5;min-height:44px;
+  padding:0 14px;border:1px solid rgba(236,228,210,.24);border-radius:22px;background:rgba(4,6,10,.62);
+  color:var(--ink);font:inherit;font-size:12px;letter-spacing:.12em;opacity:.68;cursor:pointer;backdrop-filter:blur(8px)}
+.music-toggle:hover,.music-toggle:focus-visible{opacity:1;border-color:rgba(255,216,143,.65);outline:2px solid rgba(255,216,143,.45);outline-offset:3px}
+.music-toggle[aria-pressed="true"]{color:var(--warm);border-color:rgba(255,216,143,.42)}
