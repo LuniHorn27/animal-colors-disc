@@ -16,7 +16,9 @@ const odo = document.getElementById('odo');
 const hint = document.getElementById('hint');
 const { placed, worldLength } = placeTools(TOOLS);
 const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((p) => p.x)]);
-const cfg = VEHICLES.bicycle;
+const cfg = window.matchMedia('(pointer: coarse)').matches
+  ? { ...VEHICLES.bicycle, vmax: 320 } // 手機觸控時降低最高速度，讓短按更容易控制
+  : VEHICLES.bicycle;
 const bounds = { min: START_X - 10, max: worldLength };
 const input = createInput(window);
 // 作業系統開了「減少動態」：關閉閃爍、螢火蟲飄動、炊煙、車身起伏（仍可手動騎車）
