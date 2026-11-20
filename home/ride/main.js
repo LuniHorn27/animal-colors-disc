@@ -40,10 +40,10 @@ function enterHut(href) {
     hutTransition.removeEventListener('ended', finish);
     window.location.assign(href);
   };
-  hutTransition.volume = 0.55;
+  hutTransition.volume = 0.4;
   hutTransition.currentTime = 0;
   hutTransition.addEventListener('ended', finish, { once: true });
-  timer = window.setTimeout(finish, 2200);
+  timer = window.setTimeout(finish, 6200);
   hutTransition.play().catch(finish);
 }
 // 作業系統開了「減少動態」：關閉閃爍、螢火蟲飄動、炊煙、車身起伏（仍可手動騎車）
