@@ -301,16 +301,17 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
   @keyframes menu-up{from{transform:translateY(-6px);opacity:0}}
 }
 /* 心得回饋彈窗 */
-.fb-dialog{width:min(560px,calc(100vw - 24px));max-width:none;max-height:min(90dvh,760px);padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);box-shadow:0 18px 60px rgba(0,0,0,.24);overflow:auto}
-.fb-dialog::backdrop{background:rgba(20,22,26,.52);backdrop-filter:blur(2px)}
+.fb-dialog{--fb-panel:#fff;--fb-field:#f7f8fa;--fb-edge:#c4c9d1;width:min(560px,calc(100vw - 24px));max-width:none;max-height:min(90dvh,760px);padding:24px;border:1px solid var(--fb-edge);border-radius:20px;background:var(--fb-panel);color:var(--ink);box-shadow:0 24px 72px rgba(0,0,0,.38);overflow:auto}
+:root[data-theme="dark"] .fb-dialog{--fb-panel:#282d34;--fb-field:#171a1f;--fb-edge:#626a75}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb-dialog{--fb-panel:#282d34;--fb-field:#171a1f;--fb-edge:#626a75}}
+.fb-dialog::backdrop{background:rgba(8,10,13,.68);backdrop-filter:blur(3px)}
 .fb-page{gap:0}
-.fb-top{display:flex;align-items:center;gap:8px;margin:0 0 8px}
-.fb-back{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
+.fb-top{display:flex;align-items:center;justify-content:flex-end;margin:0 0 2px}
+.fb-back{width:44px;height:44px;border-radius:12px;border:1px solid var(--fb-edge);background:var(--fb-field);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
 .fb-back svg{width:20px;height:20px}
 .fb-back:focus-visible,.fb-chip:focus-visible,.fb-acc summary:focus-visible,.fb-rg:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-.fb-title{font-family:var(--font-round);font-size:17px}
-.fb-page h2{font-size:24px;margin:8px 0 4px}
-.fb-sub{margin:0 0 20px;color:var(--muted);font-size:15px}
+.fb-page h2{font-size:24px;margin:4px 0 10px}
+.fb-sub{margin:0 0 20px;padding:10px 12px;border:1px solid var(--fb-edge);border-radius:10px;background:var(--fb-field);color:var(--muted);font-size:14px;line-height:1.5}
 .fb-qh{font-weight:500;font-size:17px;margin:0}
 .fb-qh span{font-weight:400;color:var(--muted);font-size:15px}
 .fb-acc{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:12px}
@@ -347,10 +348,10 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fb-msg label{display:block;font-weight:500;font-size:17px;margin:0 0 2px}
 .fb-msg label span{font-weight:400;color:var(--muted);font-size:15px}
 .fb-hint{margin:0 0 8px;font-size:14px;color:var(--muted)}
-.fb-msg textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;width:100%;box-sizing:border-box;min-height:112px;padding:12px 14px;resize:vertical}
+.fb-msg textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--fb-field);border:1px solid var(--fb-edge);border-radius:12px;width:100%;box-sizing:border-box;min-height:112px;padding:12px 14px;resize:vertical}
 .fb-msg textarea:focus{outline:3px solid var(--ink);outline-offset:1px}
 .fb-email{margin-top:18px}
-.fb-email input{font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;width:100%;box-sizing:border-box;min-height:48px;padding:10px 14px}
+.fb-email input{font:inherit;font-size:16px;color:var(--ink);background:var(--fb-field);border:1px solid var(--fb-edge);border-radius:12px;width:100%;box-sizing:border-box;min-height:48px;padding:10px 14px}
 .fb-email input:focus{outline:3px solid var(--ink);outline-offset:1px}
 .fb-email label{display:block;font-weight:500;font-size:17px;margin:0 0 6px}
 .fb-email label span{font-weight:400;color:var(--muted);font-size:15px}
@@ -846,7 +847,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關',
   'menu.feedback':'心得回饋', 'menu.feedbackSub':'好的、不好的都歡迎回饋',
   'footer.label':'頁尾連結', 'footer.privacy':'隱私權', 'footer.feedback':'心得回饋', 'footer.contact':'聯絡我們', 'footer.lab':'尋光引路實驗室 LumineerLab',
-  'fb.back':'關閉心得回饋', 'fb.close':'關閉', 'fb.h':'你的想法，讓測驗更好', 'fb.sub':'有什麼好的、卡卡的、或是不太準的地方，都歡迎告訴我們，讓我們一起優化這個測驗吧！',
+  'fb.back':'關閉心得回饋', 'fb.close':'關閉', 'fb.h':'心得回饋', 'fb.sub':'先關閉也沒關係，再次打開會保留草稿。',
   'fb.max':'（最多 3 個）', 'fb.linked':'已帶入你在結果頁的評分，想改可以直接點。', 'fb.fav.q':'你最喜歡哪個部分？', 'fb.fav.a':'解析內容', 'fb.fav.b':'圖表與功能',
   'fb.f1':'核心特質', 'fb.f2':'你的優勢', 'fb.f3':'可能的盲點', 'fb.f4':'你的溝通方式', 'fb.f5':'壓力下的你', 'fb.f6':'適合的工作環境與方向', 'fb.f7':'和其他動物相處',
   'fb.f8':'本色組成圖', 'fb.f9':'四種動物的分數', 'fb.f10':'分享結果圖片', 'fb.f11':'換個角度看自己',
@@ -1722,11 +1723,12 @@ let FB = null, fbSending = false;
 const fbResult = () => { const s = (st && st.seq && !st.viewOnly) ? st : load(); return s && s.done ? s : null; };
 const fbFresh = () => ({sid:newSid(), msg:'', email:'', rated:false});
 function openFeedback(){
-  FB = fbFresh();
+  if (!FB || FB.done) FB = fbFresh();
   renderFeedback();
   fbDialog.showModal();
   if (BK.enabled) BK.prepare();   // 在背景準備機器人驗證
 }
+/* 只在使用者明確按關閉或 Escape 時暫時收起；FB 保留在本頁，重開可接續填寫。 */
 function fbLeave(){ if (fbDialog.open && !fbSending) fbDialog.close(); }
 function renderFeedback(){
   const el = $('#s-feedback');
@@ -1734,7 +1736,7 @@ function renderFeedback(){
     el.innerHTML = `<div class="fb-thanks"><div class="fb-tick"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 id="fb-title">${t('fb.thanks.h')}</h2><p class="muted">${t('fb.thanks.p')}</p><button type="button" class="btn" id="fb-close">${t('fb.close')}</button></div>`;
     return;
   }
-  el.innerHTML = `<div class="fb-top"><span class="fb-title">${t('menu.feedback')}</span><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.close')}">×</button></div>
+  el.innerHTML = `<div class="fb-top"><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.close')}">×</button></div>
   <form id="fb-form">
     <h2 id="fb-title">${t('fb.h')}</h2><p class="fb-sub">${t('fb.sub')}</p>
     ${fbRating()}
@@ -1784,7 +1786,7 @@ $('#s-feedback').addEventListener('submit', async e=>{
 });
 $('#m-feedback').addEventListener('click', ()=>{ menu.close(); leaveThen(openFeedback); });
 $('#footer-feedback').addEventListener('click', e=>{ e.preventDefault(); leaveThen(openFeedback); });
-fbDialog.addEventListener('click', e=>{ if (e.target===fbDialog) fbLeave(); });
+/* Escape 可以暫時關閉；FB 草稿保留在本頁，重新打開可繼續填寫。 */
 fbDialog.addEventListener('cancel', e=>{ if (fbSending) e.preventDefault(); });
 
 /* result */
