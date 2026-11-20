@@ -2649,9 +2649,8 @@ if (BK.enabled && BK.hasSession()){
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }
-/* 「換個角度」頁的選單用明確參數開啟回饋；一般頁面錨點不會意外觸發彈窗 */
-const WANT_FB = new URLSearchParams(location.search).get('feedback') === '1';
-if (WANT_FB) history.replaceState(history.state, '', location.pathname + location.hash);
+/* 只有從「換個角度」頁明確點選回饋入口，才消耗一次性的開窗交接旗標 */
+const WANT_FB = (()=>{ try{ const v=sessionStorage.getItem('disc-open-feedback'); sessionStorage.removeItem('disc-open-feedback'); return v==='1'; }catch(e){ return false; } })();
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
 else if (onTabEntry()) showNone();
