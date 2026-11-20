@@ -300,7 +300,9 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
   .menu-row{min-height:46px;font-size:16px}
   @keyframes menu-up{from{transform:translateY(-6px);opacity:0}}
 }
-/* 意見回饋頁 */
+/* 心得回饋彈窗 */
+.fb-dialog{width:min(560px,calc(100vw - 24px));max-width:none;max-height:min(90dvh,760px);padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);box-shadow:0 18px 60px rgba(0,0,0,.24);overflow:auto}
+.fb-dialog::backdrop{background:rgba(20,22,26,.52);backdrop-filter:blur(2px)}
 .fb-page{gap:0}
 .fb-top{display:flex;align-items:center;gap:8px;margin:0 0 8px}
 .fb-back{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
@@ -347,6 +349,12 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fb-hint{margin:0 0 8px;font-size:14px;color:var(--muted)}
 .fb-msg textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;width:100%;box-sizing:border-box;min-height:112px;padding:12px 14px;resize:vertical}
 .fb-msg textarea:focus{outline:3px solid var(--ink);outline-offset:1px}
+.fb-email{margin-top:18px}
+.fb-email input{font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;width:100%;box-sizing:border-box;min-height:48px;padding:10px 14px}
+.fb-email input:focus{outline:3px solid var(--ink);outline-offset:1px}
+.fb-email label{display:block;font-weight:500;font-size:17px;margin:0 0 6px}
+.fb-email label span{font-weight:400;color:var(--muted);font-size:15px}
+.fb-email .fb-hint{margin:6px 0 0}
 .fb-go{width:100%;margin-top:20px;min-height:52px}
 .fb-thanks{text-align:center;padding-top:48px}
 .fb-tick{width:64px;height:64px;border-radius:50%;background:var(--ink);color:var(--bg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px}
@@ -366,6 +374,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
   #s-result:has(.share-dock){padding-bottom:88px}
   body.dock-on .toast{bottom:88px}
 }
+@media (max-width:480px){.fb-dialog{padding:20px 16px;border-radius:18px;max-height:calc(100dvh - 24px)}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100vw - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:20;margin:0}
 .toast:empty{display:none}
 .home-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center}
@@ -672,7 +681,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     </div>
   </section>
 
-  <section id="s-feedback" class="stack fb-page" hidden></section>
+  <dialog id="s-feedback" class="stack fb-page fb-dialog" aria-labelledby="fb-title"></dialog>
 </div>
 <footer class="site-footer" aria-label="頁尾連結" data-i18n-attr="aria-label:footer.label">
   <a href="privacy.html" data-i18n="footer.privacy">隱私權</a><span aria-hidden="true">｜</span>
@@ -837,7 +846,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關',
   'menu.feedback':'心得回饋', 'menu.feedbackSub':'好的、不好的都歡迎回饋',
   'footer.label':'頁尾連結', 'footer.privacy':'隱私權', 'footer.feedback':'心得回饋', 'footer.contact':'聯絡我們', 'footer.lab':'尋光引路實驗室 LumineerLab',
-  'fb.back':'返回', 'fb.h':'你的想法，讓測驗更好', 'fb.sub':'有什麼好的、卡卡的、或是不太準的地方，都歡迎告訴我們，讓我們一起優化這個測驗吧！',
+  'fb.back':'關閉心得回饋', 'fb.close':'關閉', 'fb.h':'你的想法，讓測驗更好', 'fb.sub':'有什麼好的、卡卡的、或是不太準的地方，都歡迎告訴我們，讓我們一起優化這個測驗吧！',
   'fb.max':'（最多 3 個）', 'fb.linked':'已帶入你在結果頁的評分，想改可以直接點。', 'fb.fav.q':'你最喜歡哪個部分？', 'fb.fav.a':'解析內容', 'fb.fav.b':'圖表與功能',
   'fb.f1':'核心特質', 'fb.f2':'你的優勢', 'fb.f3':'可能的盲點', 'fb.f4':'你的溝通方式', 'fb.f5':'壓力下的你', 'fb.f6':'適合的工作環境與方向', 'fb.f7':'和其他動物相處',
   'fb.f8':'本色組成圖', 'fb.f9':'四種動物的分數', 'fb.f10':'分享結果圖片', 'fb.f11':'換個角度看自己',
@@ -847,7 +856,8 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'fb.h3':'更清楚自己的優勢，也更有自信', 'fb.h4':'更懂得怎麼跟不同個性的人溝通、合作',
   'fb.h5':'發現自己平常沒注意到的弱項、盲點', 'fb.h6':'從朋友的角度看見自己，更全面地認識自己',
   'fb.rec.q':'你會推薦朋友做這個測驗嗎？', 'fb.rec.aria':'推薦意願，1 到 10 分', 'fb.rec.lo':'1　非常不推薦', 'fb.rec.hi':'非常推薦　10', 'fb.rec.hint':'左右拉一下選分數',
-  'fb.msg.q':'還有想說的話嗎？', 'fb.opt':'（選填）', 'fb.msg.hint':'哪裡覺得很讚、哪裡好像有點怪、想許願什麼功能，都可以回饋給我們',
+  'fb.msg.q':'想說的話', 'fb.opt':'（選填）', 'fb.msg.hint':'哪裡覺得很讚、哪裡好像有點怪、想許願什麼功能，都可以回饋給我們',
+  'fb.email.q':'信箱', 'fb.email.hint':'想被回覆或是未來想收到其他心理測驗，歡迎留聯絡方式', 'fb.email.placeholder':'請輸入 Email（選填）',
   'fb.send':'送出', 'fb.sending':'正在送出…', 'fb.fail':'沒有送出去，請稍後再試一次。',
   'fb.thanks.h':'收到了，謝謝你寶貴的回饋！', 'fb.thanks.p':'我們將參考你的意見，持續優化測驗',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
@@ -1231,7 +1241,7 @@ const COLLECT_PROFILE = !!(window.DISC_CONFIG && window.DISC_CONFIG.collectProfi
 
 function show(id){
   if (id==='s-info'){ if (BK.enabled) BK.prepare(); }
-  ['s-home','s-quiz','s-info','s-blind','s-result','s-history','s-none','s-feedback'].forEach(s=>$('#'+s).hidden = s!==id);
+  ['s-home','s-quiz','s-info','s-blind','s-result','s-history','s-none'].forEach(s=>$('#'+s).hidden = s!==id);
   if (id!=='s-result') document.body.classList.remove('dock-on');
   $('#bar-qmode').hidden = id!=='s-quiz';
   $('#ptabs').hidden = !((id==='s-result' && $('#peer-card')) || id==='s-none');
@@ -1243,7 +1253,7 @@ function show(id){
 }
 /* 手機的返回鍵／返回手勢：整個網站是同一個網頁，進入作答、結果等畫面時先多記一筆瀏覽紀錄（網址不變），
    按返回時就由網頁自己處理（見下方 popstate），不會直接離開網站 */
-const FLOW = ['s-quiz','s-blind','s-info','s-result','s-history','s-feedback'];
+const FLOW = ['s-quiz','s-blind','s-info','s-result','s-history'];
 function guardOn(id){ try{
   const s = history.state;
   /* 從另一個分頁過來的那一筆只代表結果頁（或「沒有結果」頁），到別的畫面要再記一筆，按返回才會先回到結果頁 */
@@ -1664,7 +1674,7 @@ window.addEventListener('popstate', ()=>{
   if (inProgress()){ guardOn(); askGoHome(); return; }
   /* 退回從另一個分頁過來的那一筆：顯示那一筆的畫面（結果頁或「沒有結果」頁）；正在看過去的結果時照舊回到歷次結果 */
   if (onTabEntry() && !(onResult() && st && st.viewOnly)){ histBack = null; tabView(); return; }
-  if (!$('#s-feedback').hidden){ fbLeave(); return; }
+  if (fbDialog.open){ fbLeave(); return; }
   if (!$('#s-history').hidden && histBack==='away'){ histBack = null; history.back(); return; }   // 從「換個角度」頁的選單來的：再退一步回那一頁
   if (!$('#s-history').hidden){ if (histBack==='s-result' && st && st.done){ histBack = null; renderResult(); show('s-result'); } else goHome(); return; }
   if (onResult()){ if (st && st.viewOnly){ guardOn(); openHistory(); } else goHome(); return; }
@@ -1705,66 +1715,47 @@ $('#m-peer').addEventListener('click', ()=>{
   leaveThen(()=>{ location.href = peerHref(''); });
 });
 
-/* ===== 意見回饋：選單 →「意見回饋」 ===== */
-const FB_FAVS = [['f1','f2','f3','f4','f5','f6','f7'], ['f8','f9','f10','f11']];
-const FB_HELPS = ['h1','h2','h3','h4','h5','h6'];
-const FB_MAX = 3;
-const FB_BACK = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
-let FB = null, fbBack = null, fbSending = false;
+/* ===== 心得回饋彈窗 ===== */
+const fbDialog = $('#s-feedback');
+let FB = null, fbSending = false;
 /* 最近一次作答完的結果：評分跟結果頁共用，只收集一次 */
 const fbResult = () => { const s = (st && st.seq && !st.viewOnly) ? st : load(); return s && s.done ? s : null; };
-const fbFresh = () => ({sid:newSid(), favs:[], helps:[], rec:null, msg:''});
-function openFeedback(back){
-  fbBack = back; FB = fbFresh();
-  show('s-feedback'); renderFeedback();
+const fbFresh = () => ({sid:newSid(), msg:'', email:'', rated:false});
+function openFeedback(){
+  FB = fbFresh();
+  renderFeedback();
+  fbDialog.showModal();
   if (BK.enabled) BK.prepare();   // 在背景準備機器人驗證
 }
-/* 回到進來的地方：從結果頁來的回結果頁，其他回首頁 */
-function fbLeave(){
-  if (fbBack==='s-result' && st && st.done){ fbBack = null; renderResult(); show('s-result'); } else { fbBack = null; goHome(); }
-}
+function fbLeave(){ if (fbDialog.open && !fbSending) fbDialog.close(); }
 function renderFeedback(){
   const el = $('#s-feedback');
   if (FB.done){
-    el.innerHTML = `<div class="fb-thanks"><div class="fb-tick"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2>${t('fb.thanks.h')}</h2><p class="muted">${t('fb.thanks.p')}</p><button type="button" class="btn" id="fb-home">${t('nav.home')}</button></div>`;
-    $('#fb-home').addEventListener('click', goHome);
-    window.scrollTo(0,0); return;
+    el.innerHTML = `<div class="fb-thanks"><div class="fb-tick"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 id="fb-title">${t('fb.thanks.h')}</h2><p class="muted">${t('fb.thanks.p')}</p><button type="button" class="btn" id="fb-close">${t('fb.close')}</button></div>`;
+    return;
   }
-  const chips = ks => ks.map(k=>`<button type="button" class="fb-chip" data-k="${k}" aria-pressed="${FB.favs.includes(k)||FB.helps.includes(k)}">${t('fb.'+k)}</button>`).join('');
-  const acc = (q, body, key) => `<details class="fb-acc"><summary><span class="fb-qh">${t(q)} <span>${t('fb.max')}</span></span><b class="fb-cnt" data-n="${key}"></b></summary><div class="fb-accb">${body}</div></details>`;
-  el.innerHTML = `<div class="fb-top"><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.back')}">${FB_BACK}</button><span class="fb-title">${t('menu.feedback')}</span></div>
-  <form id="fb-form" novalidate>
-    <h2>${t('fb.h')}</h2><p class="fb-sub">${t('fb.sub')}</p>
+  el.innerHTML = `<div class="fb-top"><span class="fb-title">${t('menu.feedback')}</span><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.close')}">×</button></div>
+  <form id="fb-form">
+    <h2 id="fb-title">${t('fb.h')}</h2><p class="fb-sub">${t('fb.sub')}</p>
     ${fbRating()}
-    ${acc('fb.fav.q', `<p class="fb-grp">${t('fb.fav.a')}</p><div class="fb-chips">${chips(FB_FAVS[0])}</div><p class="fb-grp">${t('fb.fav.b')}</p><div class="fb-chips">${chips(FB_FAVS[1])}</div>`, 'favs')}
-    ${acc('fb.help.q', `<div class="fb-chips">${chips(FB_HELPS)}</div>`, 'helps')}
-    <div class="fb-rec${FB.rec?' set':''}" id="fb-rec"><p class="fb-qh">${t('fb.rec.q')}</p><div class="fb-rgw"><b class="fb-bub" id="fb-bub" aria-hidden="true"></b><input class="fb-rg" id="fb-rg" type="range" min="1" max="10" step="1" value="${FB.rec||5}" aria-label="${t('fb.rec.aria')}"></div><div class="fb-ends"><span>${t('fb.rec.lo')}</span><span>${t('fb.rec.hi')}</span></div><p class="fb-rh">${t('fb.rec.hint')}</p></div>
-    <div class="fb-msg"><label for="fb-ta">${t('fb.msg.q')} <span>${t('fb.opt')}</span></label><p class="fb-hint">${t('fb.msg.hint')}</p><textarea id="fb-ta" maxlength="500">${esc(FB.msg)}</textarea></div>
+    <div class="fb-msg"><label for="fb-ta">${t('fb.msg.q')} <span>${t('fb.opt')}</span></label><textarea id="fb-ta" maxlength="500" placeholder="${t('fb.msg.hint')}">${esc(FB.msg)}</textarea></div>
+    <div class="fb-email"><label for="fb-email">${t('fb.email.q')} <span>${t('fb.opt')}</span></label><input id="fb-email" type="email" autocomplete="email" maxlength="254" placeholder="${t('fb.email.placeholder')}" value="${esc(FB.email)}"><p class="fb-hint">${t('fb.email.hint')}</p></div>
     <button type="submit" class="btn primary fb-go" id="fb-go">${t('fb.send')}</button>
   </form>`;
-  fbSync(); fbBubble();
-  window.scrollTo(0,0);
+  fbSync();
 }
 function fbRating(){
   const r = fbResult(); if (!r) return '';
   const L = [1,2,3,4,5].map(v=>t('rate.'+v));
-  return `<div class="card fb-rate"><h3 class="fb-qh">${t('rate.h')}</h3><div class="rate" id="fb-ratebox" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="${r.rating===v}" aria-label="${v} ${L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span></span><span aria-hidden="true">${L[4]}</span></div>${r.rating?`<p class="fb-hint">${t('fb.linked')}</p>`:''}</div>`;
+  return `<div class="card fb-rate"><h3 class="fb-qh">${t('rate.h')}</h3><div class="rate" id="fb-ratebox" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="${r.rating===v}" aria-label="${v} ${L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span></span><span aria-hidden="true">${L[4]}</span></div></div>`;
 }
-/* 已選的數量徽章、送出鈕（什麼都沒回答時不能送） */
+/* 有評分、文字或信箱資料時才可送出 */
 function fbSync(){
-  const el = $('#s-feedback');
-  el.querySelectorAll('.fb-chip').forEach(b=>b.setAttribute('aria-pressed', String(FB.favs.includes(b.dataset.k)||FB.helps.includes(b.dataset.k))));
-  ['favs','helps'].forEach(k=>{ const c = el.querySelector(`.fb-cnt[data-n="${k}"]`), n = FB[k].length; c.textContent = n+'/'+FB_MAX; c.classList.toggle('on', n>0); });
-  $('#fb-go').disabled = fbSending || !(FB.favs.length || FB.helps.length || FB.rec || FB.msg.trim() || FB.rated);
-}
-/* 滑桿上方的數字泡泡跟著圓鈕走 */
-function fbBubble(){
-  const rg = $('#fb-rg'), bub = $('#fb-bub'); if (!rg || !FB.rec) return;
-  const thumb = 28, p = (rg.value-1)/9;
-  bub.style.left = (thumb/2 + p*(rg.offsetWidth-thumb))+'px'; bub.textContent = rg.value;
+  const r = fbResult();
+  $('#fb-go').disabled = fbSending || !(FB.rated || (r && r.rating) || FB.msg.trim() || FB.email.trim());
 }
 $('#s-feedback').addEventListener('click', e=>{
-  if (e.target.closest('#fb-back')) return fbLeave();
+  if (e.target.closest('#fb-back, #fb-close')) return fbLeave();
   const rb = e.target.closest('#fb-ratebox .opt');
   if (rb){   // 改評分：寫回結果頁的評分並送到後台（跟結果頁同一個動作）
     const r = fbResult(), v = +rb.dataset.v; if (!r) return;
@@ -1774,30 +1765,27 @@ $('#s-feedback').addEventListener('click', e=>{
     $('#fb-ratebox').querySelectorAll('.opt').forEach(o=>o.setAttribute('aria-pressed', String(+o.dataset.v===v)));
     return fbSync();
   }
-  const b = e.target.closest('.fb-chip'); if (!b) return;
-  const k = b.dataset.k, list = k[0]==='f' ? FB.favs : FB.helps, i = list.indexOf(k);
-  if (i>=0) list.splice(i,1); else if (list.length<FB_MAX) list.push(k);
-  fbSync();
 });
 $('#s-feedback').addEventListener('input', e=>{
-  if (e.target.id==='fb-rg'){ FB.rec = +e.target.value; $('#fb-rec').classList.add('set'); fbBubble(); fbSync(); }
-  else if (e.target.id==='fb-ta'){ FB.msg = e.target.value; fbSync(); }
+  if (e.target.id==='fb-ta'){ FB.msg = e.target.value; fbSync(); }
+  else if (e.target.id==='fb-email'){ FB.email = e.target.value; fbSync(); }
 });
 $('#s-feedback').addEventListener('submit', async e=>{
   e.preventDefault();
-  if (fbSending || $('#fb-go').disabled) return;
-  const body = {sid:FB.sid, favs:FB.favs, helps:FB.helps, recommend:FB.rec, message:FB.msg.trim()||null, lang:LANG==='en'?'en':'zh-TW'};
+  if (fbSending || $('#fb-go').disabled || !e.target.reportValidity()) return;
+  const body = {sid:FB.sid, favs:[], helps:[], recommend:null, message:FB.msg.trim()||null, email:FB.email.trim()||null, lang:LANG==='en'?'en':'zh-TW'};
   fbSending = true; $('#fb-go').textContent = t('fb.sending'); fbSync();
   let ok = false;
-  if (!(body.favs.length || body.helps.length || body.recommend || body.message)) ok = true;   // 只動了評分：已經送過了
+  if (!(body.message || body.email)) ok = true;   // 只更新評分：已由 rate() 送出
   else try { ok = await BK.sendFeedback(body); } catch(err){}
   fbSending = false;
   if (!ok){ $('#fb-go').textContent = t('fb.send'); fbSync(); return toast(t('fb.fail'), true); }
   FB.done = true; renderFeedback();
 });
-$('#m-feedback').addEventListener('click', ()=>{ menu.close(); const back = onResult() && !(st && st.viewOnly) ? 's-result' : null; leaveThen(()=>openFeedback(back)); });
-$('#footer-feedback').addEventListener('click', e=>{ e.preventDefault(); const back = onResult() && !(st && st.viewOnly) ? 's-result' : null; leaveThen(()=>openFeedback(back)); });
-window.addEventListener('resize', ()=>{ if (!$('#s-feedback').hidden && FB && !FB.done) fbBubble(); });
+$('#m-feedback').addEventListener('click', ()=>{ menu.close(); leaveThen(openFeedback); });
+$('#footer-feedback').addEventListener('click', e=>{ e.preventDefault(); leaveThen(openFeedback); });
+fbDialog.addEventListener('click', e=>{ if (e.target===fbDialog) fbLeave(); });
+fbDialog.addEventListener('cancel', e=>{ if (fbSending) e.preventDefault(); });
 
 /* result */
 const pct = m => Math.round((m-1)/4*100);
@@ -2651,7 +2639,7 @@ if (BK.enabled && BK.hasSession()){
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }
-/* 「換個角度」頁的選單點「意見回饋」會連到 ./#feedback：直接打開意見回饋頁 */
+/* 「換個角度」頁的選單點「意見回饋」會連到 ./#feedback：直接開啟回饋彈窗 */
 const WANT_FB = location.hash === '#feedback';
 if (WANT_FB) history.replaceState(history.state, '', location.pathname + location.search);
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
@@ -2674,12 +2662,12 @@ function rerender(){
   [homeDialog, restartDialog, menu].forEach(d=>{ if (d.open) d.close(); });
   syncTheme();
   $('#toast').textContent = '';
-  if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
+  if (fbDialog.open) renderFeedback();
+  else if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
   else if (!$('#s-blind').hidden && st && st.blindOrders) renderBlind(blindPage);
   else if (!$('#s-info').hidden){ ['#email-err','#uname-err','#age-err','#gender-err','#edu-err','#job-err','#school-err','#major-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
   else if (!$('#s-result').hidden && st && st.done){ const y = window.scrollY; renderResult(); window.scrollTo(0, y); }
   else if (!$('#s-history').hidden) openHistory();
-  else if (!$('#s-feedback').hidden) renderFeedback();
   else if (!$('#s-none').hidden) renderNone();
 }
 async function setLang(code, {save=true}={}){
