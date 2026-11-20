@@ -165,9 +165,12 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .prom{border-left:4px solid var(--btn);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
 .report{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 /* 詳細測驗解析：用這個人主型動物的顏色當底色和框線（變色龍用墨色），先露出幾行「核心特質」再淡掉，下面一顆按鈕點開全部 */
-.fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px;border-radius:14px;border:2px solid var(--main,var(--ink));background:var(--fold-bg)}
-:root[data-theme="dark"] .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
+.fold{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));scroll-margin-top:64px}
+.fold-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px;border-radius:14px;border:2px solid var(--main,var(--ink));background:var(--fold-bg)}
+:root[data-theme="dark"] .fold{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fold{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
+.fold.open{display:flex;flex-direction:column;padding:20px;border:2px solid var(--main,var(--ink));border-radius:14px;background:var(--fold-bg)}
+.fold.open .fold-card{padding:0;border:0;border-radius:0;background:transparent}
 .fold-h{font-family:var(--font-round);font-size:22px;line-height:1.35}
 .fold-hint{color:var(--muted);margin-top:-6px}
 .fold-peek{position:relative;align-self:stretch;max-height:116px;overflow:hidden;cursor:pointer;font-size:15px}
@@ -178,6 +181,8 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .fold-btn svg{width:22px;height:22px;flex:none;transition:transform .2s ease}
 .fold-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .fold-body{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.fold.open .fold-body{margin-top:6px}
+.fold.open .fold-btn{align-self:flex-start;margin-top:16px}
 /* 還沒打開時，捲到畫面上整張卡片輕輕浮起兩次，提示可以點開 */
 @keyframes fold-float{0%,100%{transform:translateY(0);box-shadow:0 0 0 rgba(0,0,0,0)}50%{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.14)}}
 .fold-card.nudge{animation:fold-float 1.4s ease-in-out 2}
@@ -2077,9 +2082,13 @@ function renderResult(){
   const fb = $('#fold-btn');
   const fc = $('#fold-card');
   if (fb){
+    const fold = fc.closest('.fold');
+    const body = $('#fold-body');
     fb.addEventListener('click', ()=>{ const on = fb.getAttribute('aria-expanded')!=='true';
-      fb.setAttribute('aria-expanded', String(on)); $('#fold-body').hidden = !on; fc.classList.toggle('open', on);
-      $('#fold-lbl').textContent = on ? t('fold.close') : t('fold.open'); });
+      fb.setAttribute('aria-expanded', String(on)); body.hidden = !on; fc.classList.toggle('open', on); fold.classList.toggle('open', on);
+      if (on) body.after(fb); else fc.append(fb);
+      $('#fold-lbl').textContent = on ? t('fold.close') : t('fold.open');
+      if (on) requestAnimationFrame(()=>fold.scrollIntoView({behavior:'smooth', block:'start'})); });
     $('#fold-peek').addEventListener('click', ()=>fb.click());
   }
   if (fb && window.IntersectionObserver){
