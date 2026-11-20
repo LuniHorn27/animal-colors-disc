@@ -17,6 +17,7 @@ const canvas = document.getElementById('stage');
 const ctx = canvas.getContext('2d');
 const odo = document.getElementById('odo');
 const hint = document.getElementById('hint');
+const hutTransition = document.getElementById('hutTransition');
 const { placed, worldLength } = placeTools(TOOLS);
 const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((p) => p.x)]);
 const cfg = window.matchMedia('(pointer: coarse)').matches
@@ -24,6 +25,27 @@ const cfg = window.matchMedia('(pointer: coarse)').matches
   : VEHICLES.bicycle;
 const bounds = { min: START_X - 10, max: worldLength };
 const input = createInput(window);
+let enteringHut = false;
+function enterHut(href) {
+  if (enteringHut) return;
+  enteringHut = true;
+  if (!hutTransition) {
+    window.location.assign(href);
+    return;
+  }
+
+  let timer;
+  const finish = () => {
+    window.clearTimeout(timer);
+    hutTransition.removeEventListener('ended', finish);
+    window.location.assign(href);
+  };
+  hutTransition.volume = 0.55;
+  hutTransition.currentTime = 0;
+  hutTransition.addEventListener('ended', finish, { once: true });
+  timer = window.setTimeout(finish, 2200);
+  hutTransition.play().catch(finish);
+}
 // 作業系統開了「減少動態」：關閉閃爍、螢火蟲飄動、炊煙、車身起伏（仍可手動騎車）
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
@@ -32,6 +54,7 @@ let v = { x: 240, vx: 0, face: 1 };
 // Tab 聚焦到山屋連結時，把玩家移到山屋前 200 像素，相機自然跟過去
 const ui = createUi(document.getElementById('overlay'), placed, {
   input,
+  onEnterTool: enterHut,
   onFocusTool(x) { v = { ...v, x: Math.min(Math.max(x - 200, START_X - 10), worldLength), vx: 0, face: 1 }; },
 });
 const openTools = placed.filter((p) => p.status === 'open');

@@ -12,10 +12,17 @@ function el(tag, cls, text) {
 // opts: { onFocusTool(x), navigate(href), input }（input 有給時才建立觸控左右按鈕）
 export function createUi(root, placed, opts = {}) {
   const navigate = opts.navigate || ((href) => window.location.assign(href));
+  const enterTool = (href) => (opts.onEnterTool ? opts.onEnterTool(href) : navigate(href));
+  const handleEntryClick = (event, href) => {
+    if (!opts.onEnterTool || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    enterTool(href);
+  };
   const nodes = placed.map((tool) => {
     if (tool.status === 'open') {
       const a = el('a', 'node hut');
       a.href = tool.href;
+      a.addEventListener('click', (event) => handleEntryClick(event, tool.href));
       const label = el('span', 'label', tool.name);
       const sub = el('small', 'sub', '往前騎，靠近山屋');
       label.appendChild(sub);
@@ -32,6 +39,7 @@ export function createUi(root, placed, opts = {}) {
   // 靠近開放山屋時出現的「進入」按鈕（觸控裝置、窄螢幕才顯示，樣式見 home.css）
   const enter = el('a', 'enter', '進入');
   enter.setAttribute('aria-label', '進入山屋');
+  enter.addEventListener('click', (event) => handleEntryClick(event, enter.href));
   root.appendChild(enter);
 
   if (opts.input) {
@@ -57,7 +65,7 @@ export function createUi(root, placed, opts = {}) {
     const near = nodes.find((n) => n.tool.status === 'open' && Math.abs(playerX - n.tool.x) < ENTER_RANGE);
     if (!near) return;
     e.preventDefault();
-    navigate(near.tool.href);
+    enterTool(near.tool.href);
   };
   window.addEventListener('keydown', onKey);
 
