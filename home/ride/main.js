@@ -10,6 +10,7 @@ import { drawDarkness, drawLampGlow, drawGlow } from './light.js';
 import { drawHutStructure, drawHutLights, drawClosedCabin } from './hut.js';
 import { createUi } from './ui.js';
 import { initMusicControls } from './music.js';
+import { createAnimals, drawAnimals, animalLightHoles } from './animals.js';
 
 initMusicControls();
 
@@ -20,6 +21,7 @@ const hint = document.getElementById('hint');
 const hutTransition = document.getElementById('hutTransition');
 const { placed, worldLength } = placeTools(TOOLS);
 const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((p) => p.x)]);
+const animals = createAnimals(worldLength);
 const cfg = window.matchMedia('(pointer: coarse)').matches
   ? { ...VEHICLES.bicycle, vmax: 240 } // 手機觸控時降低最高速度，讓短按更容易控制
   : VEHICLES.bicycle;
@@ -94,6 +96,7 @@ function frame(t) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
   drawScene(ctx, { w: W, h: H, camX, camY, t, reduced }, scenery, placed, worldLength);
+  drawAnimals(ctx, { w: W, h: H, camX, camY, t, reduced }, animals, S, v.x);
   placed.forEach((p) => { if (p.status !== 'open') drawClosedCabin(ctx, { w: W, h: H, camX, camY }, p.x); });
   const hutView = { w: W, h: H, camX, camY };
   openTools.forEach((p) => { const hx = p.x - camX; if (hx > -200 && hx < W + 200) drawHutStructure(ctx, hutView, p.x); });
@@ -106,6 +109,7 @@ function frame(t) {
   const flicker = reduced ? 1 : 1 + 0.03 * Math.sin(t * 0.011) + 0.02 * Math.sin(t * 0.027);
   drawDarkness(ctx, { w: W, h: H, dpr: DPR }, lamp, aim, { len: lp.len * S, half: lp.half, flicker },
     [{ x: X, y: Y - 40 * S, r: 130 * S, a: 0.9 },
+      ...animalLightHoles(animals, v.x, camX, W, H, camY),
       ...openTools.filter((p) => p.x - camX > -400 && p.x - camX < W + 400)
         .map((p) => ({ x: p.x - camX, y: H * 0.7 + groundY(p.x) - camY - 60, r: 320, a: 0.8 }))]);
   drawLampGlow(ctx, lamp, aim, X, Y, S);
