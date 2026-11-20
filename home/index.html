@@ -27,8 +27,14 @@ if(location.hostname==='animal-colors-disc.pages.dev'){var p=location.pathname;i
 <div class="hint" id="hint"><span class="kbd">按 ← → 騎車</span><span class="touch">按住下方按鈕騎車</span></div>
 <div class="odo" id="odo"></div>
 <a class="about" href="/about/">關於</a>
-<audio id="backgroundMusic" src="/audio/nightlight.mp3" loop preload="none"></audio>
-<button class="music-toggle" id="musicToggle" type="button" aria-label="播放背景音樂" aria-pressed="false">♫ 播放音樂</button>
+<audio id="backgroundMusic" src="/audio/nightlight.mp3" loop preload="auto"></audio>
+<button class="music-toggle" id="musicToggle" type="button" aria-label="靜音背景音樂" aria-pressed="true">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path class="speaker" d="M3 9v6h4l5 4V5L7 9H3Z"></path>
+    <path class="sound-waves" d="M15 9a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"></path>
+    <path class="muted-mark" d="m16 9 5 6m0-6-5 6"></path>
+  </svg>
+</button>
 <noscript>
   <main class="plain">
     <h1>尋光引路實驗室</h1>

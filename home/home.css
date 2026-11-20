@@ -70,9 +70,14 @@ html,body{margin:0;height:100%;background:#04060a;overflow:hidden;color:var(--in
   color:var(--ink);opacity:.45;text-decoration:none}
 .about:hover,.about:focus-visible{opacity:1;outline:none;text-decoration:underline;text-underline-offset:6px}
 
-/* 背景音樂由訪客主動開啟；按鈕不遮住騎乘控制。 */
-.music-toggle{position:fixed;left:max(20px,env(safe-area-inset-left,0px));top:82px;z-index:5;min-height:44px;
-  padding:0 14px;border:1px solid rgba(236,228,210,.24);border-radius:22px;background:rgba(4,6,10,.62);
-  color:var(--ink);font:inherit;font-size:12px;letter-spacing:.12em;opacity:.68;cursor:pointer;backdrop-filter:blur(8px)}
+/* 背景音樂控制以圖示呈現，不遮住騎乘操作。 */
+.music-toggle{position:fixed;left:max(20px,env(safe-area-inset-left,0px));top:82px;z-index:5;width:44px;height:44px;
+  display:flex;align-items:center;justify-content:center;padding:0;border:1px solid rgba(236,228,210,.24);border-radius:50%;
+  background:rgba(4,6,10,.62);color:var(--ink);opacity:.68;cursor:pointer;backdrop-filter:blur(8px)}
+.music-toggle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.music-toggle .speaker{fill:currentColor;stroke:none}
+.music-toggle .muted-mark{display:none}
+.music-toggle[aria-pressed="false"] .sound-waves{display:none}
+.music-toggle[aria-pressed="false"] .muted-mark{display:block}
 .music-toggle:hover,.music-toggle:focus-visible{opacity:1;border-color:rgba(255,216,143,.65);outline:2px solid rgba(255,216,143,.45);outline-offset:3px}
 .music-toggle[aria-pressed="true"]{color:var(--warm);border-color:rgba(255,216,143,.42)}
