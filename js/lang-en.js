@@ -229,7 +229,7 @@ window.DISC_LANG_EN = {
   "fb.back": "Close feedback",
   "fb.close": "Close",
   "fb.h": "Feedback",
-  "fb.sub": "Leave us a message and help me make this test more awesome! Even a silly message of support would make me happy!",
+  "fb.sub": "Leave us a message and help make this test more awesome! Even a silly message of support makes us happy!",
   "fb.max": "(up to 3)",
   "fb.fav.q": "Which part did you like best?",
   "fb.linked": "Your rating from the results page is filled in. Tap to change it.",
