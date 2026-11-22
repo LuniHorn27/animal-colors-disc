@@ -302,7 +302,6 @@ window.DISC_LANG_EN = {
   "img.file": "inner-animal-{code}.png",
   "img.lab": "Lumineer Lab",
   "img.labSub": "lumineer.lab",
-  "img.kicker": "The {name} User Guide",
   "img.powers": "My superpowers",
   "img.blind": "My blind spot",
   "img.stress": "Under pressure",

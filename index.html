@@ -956,7 +956,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'share.hold':'手機可以長按圖片儲存', 'invite':'邀請朋友來測驗', 'share.dock':'儲存／分享結果圖片',
   'img.brand':'測出你的動物本色', 'img.brandSub':'DISC 行為風格測驗',
   'img.ask1':'你的動物本色是什麼？', 'img.ask2':'也來測測看', 'img.scan':'掃描 QR Code，或打開網址：', 'img.file':'動物本色-{code}.png',
-  'img.lab':'尋光引路實驗室', 'img.labSub':'lumineer.lab', 'img.kicker':'{name}使用說明書', 'img.powers':'我的超能力', 'img.blind':'我的小罩門', 'img.stress':'壓力大時', 'img.stressLead':'壓力大時，',
+  'img.lab':'尋光引路實驗室', 'img.labSub':'lumineer.lab', 'img.powers':'我的超能力', 'img.blind':'我的小罩門', 'img.stress':'壓力大時', 'img.stressLead':'壓力大時，',
   'img.comm':'和我相處的訣竅', 'img.jobs':'最適合的舞台', 'img.vote':'朋友認證：這張準不準？', 'img.vote1':'超準', 'img.vote2':'有一點', 'img.vote3':'才不是',
   'inapp.open':'改用瀏覽器開啟', 'inapp.how':'請點右上角的「⋯」，選擇「在瀏覽器中開啟」。',
   'inapp.home':'你正在 {app} 的內建瀏覽器裡，作答完可能無法下載圖片或分享。建議先改用手機的瀏覽器（例如 Chrome、Safari）開啟再作答。',
@@ -2210,7 +2210,6 @@ async function buildShareImage(r, reveal){
   /* 頭冠：和結果頁相同的規則（最高金色、組合型第二高銀色、分數一樣都金色、變色龍不放） */
   const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
   const crownOf = c => !tops.includes(c) ? null : (c===ranked[0] || vals[c]===vals[ranked[0]] ? gold : silver);
-  const name = (r.kind==='combo'||r.kind==='diag') ? L.animal[r.order[0]]+t('res.plusShort')+L.animal[r.order[1]] : rep.name;
   const stressRaw = firstSentence(Array.isArray(rep.stress) ? rep.stress[0] : rep.stress);
   const stressLead = t('img.stressLead');
   let stress = stressRaw.startsWith(stressLead) ? stressRaw.slice(stressLead.length) : stressRaw;
@@ -2248,9 +2247,6 @@ async function buildShareImage(r, reveal){
       x.fillStyle=P.muted;
       if (nx+bw+20+sw <= W-PAD){ x.fillText(t('img.brandSub'), nx+bw+20, by); y = by+22; }
       else { x.fillText(t('img.brandSub'), nx, by+46); y = by+68; } }
-    // 「孔雀使用說明書」膠囊
-    { y += 30*gap; x.font=`700 28px ${SANS}`; const s=t('img.kicker', {name}), kw=x.measureText(s).width+48, kh=52;
-      x.fillStyle=tint; rr(PAD, y, Math.min(kw, maxW), kh, kh/2); x.fill(); x.fillStyle=hue; x.fillText(s, PAD+24, y+37); y += kh; }
     // 標題：單一型一行；組合型太寬時分兩行（第二行是「＋ 第二型」）
     { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0);
       let rows = lines, size = 100; x.font=`400 ${size}px ${ROUND}`;
