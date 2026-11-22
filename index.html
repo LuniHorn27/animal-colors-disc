@@ -2247,14 +2247,13 @@ async function buildShareImage(r, reveal){
       x.fillStyle=P.muted;
       if (nx+bw+20+sw <= W-PAD){ x.fillText(t('img.brandSub'), nx+bw+20, by); y = by+22; }
       else { x.fillText(t('img.brandSub'), nx, by+46); y = by+68; } }
-    // 標題：單一型一行；組合型太寬時分兩行（第二行是「＋ 第二型」）
-    { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0);
-      let rows = lines, size = 100; x.font=`400 ${size}px ${ROUND}`;
-      if (lines.length===1 && lines[0].length===3 && lw(lines[0])*.84 > maxW){ const [a,plus,b]=lines[0]; rows=[[a],[{text:plus.text.trim(),t:null},{text:' '+b.text,t:b.t}]]; size=84; }
-      else if (lines.length===1 && lines[0].length===3) size=84;
-      x.font=`400 ${size}px ${ROUND}`;
-      while (Math.max(...rows.map(lw))>maxW && size>40){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
-      rows.forEach((l,i)=>{ y += (i ? size*1.15 : size*1.02 + 18*gap); let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); });
+    // 標題：一律排成一行；組合型寫「D 老虎 ＋ S 無尾熊」（不加型名），太寬就縮小字
+    { const row = (r.kind==='combo'||r.kind==='diag') ? [{text:LBL(r.order[0]),t:r.order[0]},{text:t('res.plusTitle'),t:null},{text:LBL(r.order[1]),t:r.order[1]}] : titleLines(r)[0];
+      const lw = () => row.reduce((w,p)=>w+x.measureText(p.text).width,0);
+      let size = 96; x.font=`400 ${size}px ${ROUND}`;
+      while (lw()>maxW && size>40){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
+      y += size*1.02 + 18*gap; let px=PAD;
+      row.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; });
       y += size*.18; }
     // 一句話
     { const sz=[34,32,30][f]; y += 16*gap + sz; y = drawRich(units(rep.one), PAD, y, maxW, sz, sz*1.5, P.ink) + sz*.5; }
