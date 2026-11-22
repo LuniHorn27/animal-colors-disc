@@ -2285,14 +2285,14 @@ async function buildShareImage(r, reveal){
       tags.forEach(q=>{ x.fillStyle=hue; x.fillText('#', px, by); x.fillStyle=P.ink; x.fillText(q.slice(1), px+x.measureText('#').width, by); px+=x.measureText(q).width+gx; });
       y += bh; }
     // 四格重點（兩欄；同一列的高度取比較高的那格）
-    { y += 22*gap; const g=22, bw=(maxW-g)/2, padX=28, padY=22, hs=26, sz=[30,28,26][f], lh=sz*1.5;
+    { y += 22*gap; const g=22, bw=(maxW-g)/2, padX=28, padY=22, hs=30, sz=[30,28,26][f], lh=sz*1.5;
       for (let i=0;i<boxes.length;i+=2){
         const pair = boxes.slice(i,i+2).map(([h,b])=>({h, us:units(b)}));
         const hgt = Math.max(...pair.map(p=>wrap(p.us, bw-padX*2, sz).length))*lh + hs*1.6 + 8 + padY*2;
         pair.forEach((p,j)=>{ const bx = PAD + j*(bw+g);
           x.fillStyle=P.bg; rr(bx, y, bw, hgt, 22); x.fill();
-          x.fillStyle=P.muted; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX, y+padY+hs*1.15, hs*.04);
-          drawRich(p.us, bx+padX, y+padY+hs*1.6+8+sz*1.05, bw-padX*2, sz, lh, P.ink); });
+          x.fillStyle=P.ink; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX, y+padY+hs*1.15, hs*.04);
+          drawRich(p.us, bx+padX, y+padY+hs*1.6+8+sz*1.05, bw-padX*2, sz, lh, '#454A51'); });
         y += hgt + (i+2<boxes.length ? g : 0); } }
     // 朋友認證：這張準不準？
     { y += 22*gap + 30; x.fillStyle=P.ink; x.font=`700 28px ${SANS}`; spaced(t('img.vote'), PAD, y, 28*.04); y += 18;
