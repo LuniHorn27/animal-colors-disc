@@ -2148,7 +2148,7 @@ const SITE_URL = 'lumineerlab.com/animal-colors-disc';
 const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
 /* QR Code 圖檔：brand/qr-site.svg（換網域時要重新產生）。載入失敗就不放 QR Code */
 const loadImage = src => new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
-async function buildShareImage(r, reveal){
+async function buildShareImage(r, reveal, removeRedBox = r.key==='IS'){
   try { await document.fonts.ready; } catch(e){}
   const W=1080, PAD=110, maxW=W-PAD*2;
   const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',accent:'#1F2329',sunk:'#E3E5E8',
@@ -2198,7 +2198,7 @@ async function buildShareImage(r, reveal){
   { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0); let size=92; x.font=`400 ${size}px ${ROUND}`;
     while (Math.max(...lines.map(lw))>maxW && size>32){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
     lines.forEach(l=>{ y+=size+20; let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }); }
-  if (subLine(r)){ y+=60; x.fillStyle=P.muted; x.font=`500 32px ${SANS}`; x.fillText(subLine(r), PAD, y); }
+  if (subLine(r) && !removeRedBox){ y+=60; x.fillStyle=P.muted; x.font=`500 32px ${SANS}`; x.fillText(subLine(r), PAD, y); }
   y+=76; y=drawRich(units(rep.one), PAD, y, maxW, 38, 58, P.ink);
   if (r.kind==='single'){
     y+=72;
@@ -2230,6 +2230,7 @@ async function buildShareImage(r, reveal){
   y = cy+Rr+110;
   x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(t('img.legend', {avg:pct(r.avg)}), PAD, y);
 
+  if (!removeRedBox) {
   // score bars
   y+=30; const barX=PAD+200, barW=maxW-200-80, mx=barX+barW*pct(r.avg)/100, top=y+8;
   TYPES.forEach(t=>{ y+=64;
@@ -2241,6 +2242,7 @@ async function buildShareImage(r, reveal){
   x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(mx,top); x.lineTo(mx,y+14); x.stroke(); x.setLineDash([]);
   y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), mx, y); x.textAlign='left';
   y = drawVsAvg(y+60);
+  }
 
   } else {
     const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
@@ -2260,6 +2262,7 @@ async function buildShareImage(r, reveal){
         x.beginPath(); x.arc(lx+16,ry,16,0,Math.PI*2); x.fillStyle=canvasPattern(x,t,32/56,lx,ry-16); x.fill();
         x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), lx+46, ry+11);
         x.textAlign='right'; x.fillText(`${pr[t]}%`, rx, ry+11); x.textAlign='left'; }); }
+    if (!removeRedBox) {
     y = cy+150+104+70; donutNotes(r).forEach((nt,i)=>{ if (i) y+=40; y = drawRich(units(t('img.bullet')+nt), PAD, y, maxW, 24, 36, P.muted); });
     // 花紋長條（由高到低）
     y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.patbars'), PAD, y);
@@ -2275,6 +2278,7 @@ async function buildShareImage(r, reveal){
     x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(ax,top); x.lineTo(ax,y+14); x.stroke(); x.setLineDash([]);
     y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), ax, y); x.textAlign='left';
     y = drawVsAvg(y+60);
+    } else { y = cy+150+104+70; }
   }
 
   // full analysis
