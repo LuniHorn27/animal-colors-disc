@@ -2303,7 +2303,9 @@ async function buildShareImage(r, reveal){
         const hgt = Math.max(...pair.map(p=>wrap(p.us, bw-padX*2, sz).length))*lh + hs*1.6 + 8 + padY*2;
         pair.forEach((p,j)=>{ const bx = PAD + j*(bw+g);
           x.fillStyle=P.bg; rr(bx, y, bw, hgt, 22); x.fill();
-          x.fillStyle=P.ink; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX, y+padY+hs*1.1, hs*.04);
+          // 標題前加一條主色短直條，一眼看出是標題
+          { const hb=y+padY+hs*1.1; x.fillStyle=hue; rr(bx+padX, hb-hs*.86, 7, hs*1.02, 3.5); x.fill();
+            x.fillStyle=P.ink; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX+20, hb, hs*.04); }
           drawRich(p.us, bx+padX, y+padY+hs*1.6+8+sz*1.05, bw-padX*2, sz, lh, '#454A51'); });
         y += hgt + (i+2<boxes.length ? g : 0); } }
     // 朋友認證：這張準不準？
