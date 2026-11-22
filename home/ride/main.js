@@ -19,6 +19,7 @@ const ctx = canvas.getContext('2d');
 const odo = document.getElementById('odo');
 const hint = document.getElementById('hint');
 const hutTransition = document.getElementById('hutTransition');
+const entryTransition = document.getElementById('entryTransition');
 const { placed, worldLength } = placeTools(TOOLS);
 const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((p) => p.x)]);
 const animals = createAnimals(worldLength);
@@ -36,17 +37,31 @@ function enterHut(href) {
     return;
   }
 
+  document.documentElement.classList.add('entering-hut');
+  const target = placed.find((tool) => tool.status === 'open' && Math.abs(v.x - tool.x) < 170);
+  if (target && entryTransition) {
+    entryTransition.style.setProperty('--entry-x', `${target.x - camX}px`);
+    entryTransition.style.setProperty('--entry-y', `${H * 0.7 + groundY(target.x) - camY - 36}px`);
+  }
+  entryTransition?.classList.add('active');
+
   let timer;
+  let finished = false;
   const finish = () => {
+    if (finished) return;
+    finished = true;
     window.clearTimeout(timer);
     hutTransition.removeEventListener('ended', finish);
     window.location.assign(href);
   };
-  hutTransition.volume = 0.4;
+  hutTransition.volume = 0.32;
   hutTransition.currentTime = 0;
   hutTransition.addEventListener('ended', finish, { once: true });
-  timer = window.setTimeout(finish, 6200);
-  hutTransition.play().catch(finish);
+  timer = window.setTimeout(finish, 1850);
+  hutTransition.play().catch(() => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(finish, 1850);
+  });
 }
 // 作業系統開了「減少動態」：關閉閃爍、螢火蟲飄動、炊煙、車身起伏（仍可手動騎車）
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

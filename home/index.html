@@ -20,6 +20,7 @@ if(location.hostname==='animal-colors-disc.pages.dev'){var p=location.pathname;i
 </head>
 <body>
 <canvas id="stage" aria-hidden="true"></canvas>
+<div class="entry-transition" id="entryTransition" aria-hidden="true"><span></span><span></span><span></span></div>
 <div class="brand"><b>尋光引路實驗室</b><br>lumineer.lab</div>
 <a class="skip" id="skip" href="/animal-colors-disc/"><span class="skip-long">略過，直接前往 ›</span><span class="skip-short">略過 ›</span></a>
 <!-- 山屋連結、「？」標籤、邊緣方向提示都由 ride/ui.js 依工具資料產生到這裡 -->
@@ -28,7 +29,7 @@ if(location.hostname==='animal-colors-disc.pages.dev'){var p=location.pathname;i
 <div class="odo" id="odo"></div>
 <a class="about" href="/about/">關於</a>
 <audio id="backgroundMusic" src="/audio/sunset-plains.mp3" loop preload="auto"></audio>
-<audio id="hutTransition" src="/audio/hut-transition.mp3" preload="auto"></audio>
+<audio id="hutTransition" src="/audio/portal-entry-preview.mp3" preload="auto"></audio>
 <button class="music-toggle" id="musicToggle" type="button" aria-label="靜音背景音樂" aria-pressed="true">
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path class="speaker" d="M3 9v6h4l5 4V5L7 9H3Z"></path>
