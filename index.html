@@ -2280,15 +2280,21 @@ async function buildShareImage(r, reveal){
           x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=2; x.shadowOffsetY=1; x.drawImage(cr, cx0, ry-21, 44, 38); x.restore(); }
         x.textAlign='right'; x.fillText(`${pr[c]}%`, rx, tb); x.textAlign='left'; });
       y = top + cH; }
-    // 我的超能力：一行「#標籤」，放在淡色底條裡置中；放不下就縮小字
+    // 我的超能力：每項「#標籤」各自一個淡色底框，排成一行；放不下先縮小字（最小 22，免得看不清楚），仍放不下才換行
     { y += G + 26; x.fillStyle=P.muted; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04);
-      const inner = maxW-52; let sz=s.tag;
-      const textW = () => { x.font=`700 ${sz}px ${SANS}`; return tags.reduce((w,q)=>w+x.measureText(q).width,0); };
-      while (textW()+20*(tags.length-1)>inner && sz>20) sz--;
-      const tw=textW(), gx=Math.min(48, (inner-tw)/Math.max(1,tags.length-1));
-      y += 16; const bh=Math.round(sz*2); x.fillStyle=tint; rr(PAD, y, maxW, bh, 18); x.fill();
-      let px=PAD+(maxW-(tw+gx*(tags.length-1)))/2; const by=y+bh/2+sz*.36; x.font=`700 ${sz}px ${SANS}`;
-      tags.forEach(q=>{ x.fillStyle=hue; x.fillText('#', px, by); x.fillStyle=P.ink; x.fillText(q.slice(1), px+x.measureText('#').width, by); px+=x.measureText(q).width+gx; });
+      const gx=14; let sz=s.tag;
+      const padOf = () => Math.round(sz*.62);
+      const pillW = q => x.measureText(q).width + padOf()*2;
+      const rowW = () => { x.font=`700 ${sz}px ${SANS}`; return tags.reduce((w,q)=>w+pillW(q),0) + gx*(tags.length-1); };
+      while (rowW()>maxW && sz>22) sz--;
+      x.font=`700 ${sz}px ${SANS}`; const bh=Math.round(sz*1.9);
+      y += 16; let px=PAD;
+      tags.forEach(q=>{ const w=pillW(q);
+        if (px>PAD && px+w>PAD+maxW){ px=PAD; y += bh+12; }
+        x.fillStyle=tint; rr(px, y, w, bh, bh/2); x.fill();
+        const by=y+bh/2+sz*.36, tx=px+padOf();
+        x.fillStyle=hue; x.fillText('#', tx, by); x.fillStyle=P.ink; x.fillText(q.slice(1), tx+x.measureText('#').width, by);
+        px += w+gx; });
       y += bh; }
     // 四格重點（兩欄；同一列的高度取比較高的那格）
     { y += G; const g=22, bw=(maxW-g)/2, padX=30, padY=26, hs=s.head, sz=s.body, lh=sz*1.5;
