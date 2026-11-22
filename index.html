@@ -2147,9 +2147,9 @@ const SITE_URL = 'lumineerlab.com/animal-colors-disc';
 const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
 /* QR Code 圖檔：brand/qr-site.svg（換網域時要重新產生）。載入失敗就不放 QR Code */
 const loadImage = src => new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
-/* 分享圖片：直式 1080×1920 的「使用說明書」卡片，適合傳給朋友或放限時動態。
-   由上到下：尋光引路品牌條、測驗名稱、標題、一句話、本色比例（含頭冠）、超能力、四格重點、朋友認證、邀請條。
-   固定淺色配色；內容較長時先縮小字，還是放不下才把圖片拉長，不截斷文字 */
+/* 分享圖片：直式 1080×1920 卡片，適合傳給朋友或放限時動態。
+   由上到下：尋光引路品牌細條、測驗名稱、標題、一句話、本色比例（含頭冠）、超能力、四格重點、朋友認證、邀請細條。
+   固定淺色配色；品牌條和邀請條壓低，把空間留給內容。內容較長時先縮小字，還是放不下才把圖片拉長，不截斷文字 */
 /* 頭冠：和結果頁同一個圖形，顏色直接寫進 SVG（canvas 讀不到網頁的 CSS 變數） */
 const CROWN_C = {gold:{a:'#FFE897',b:'#F4B72E',c:'#C98512',ba:'#E9A21B',bb:'#A86A06',edge:'#8A5A00',gem:'#C8372D'},
   silver:{a:'#FFFFFF',b:'#D2D7DE',c:'#9DA5B0',ba:'#B9C0CA',bb:'#7D8691',edge:'#5F6772',gem:'#3E6FB8'}};
@@ -2166,7 +2166,7 @@ const crownSrc = k => { const c=CROWN_C[k];
 const firstSentence = s => { s=String(s||''); const m = L.code==='zh' ? s.match(/^.*?[。！？]」?/) : s.match(/^.*?[.!?]["”]?(?=\s|$)/); return m ? m[0] : s; };
 async function buildShareImage(r, reveal){
   try { await document.fonts.ready; } catch(e){}
-  const W=1080, PAD=90, maxW=W-PAD*2, H=1920, BAND=300;
+  const W=1080, PAD=90, maxW=W-PAD*2, H=1920, BRAND=100, BAND=210;
   const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',sunk:'#E3E5E8',night:'#04070b',warm:'#ffd88f',cream:'#ece4d2',star:'#dfe8ff',
     D:'#D66A14',I:'#11968A',S:'#5E9A47',C:'#6576DC',Dt:'#F7E1D0',It:'#CFEAE8',St:'#DFEBDA',Ct:'#E0E4F8'};
   const SANS='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif', ROUND='"Huninn","Noto Sans TC",sans-serif';
@@ -2222,61 +2222,67 @@ async function buildShareImage(r, reveal){
   ];
   const tags = rep.good.map(g=>'#'+(splitLabel(g)[0] || g));
 
-  /* 畫一次內容；放不下時用小一號的字再畫一次（f＝縮小的級數） */
-  function layout(f){
+  /* 字級由大到小試排：放得下就用，剩下的空間平均分給區塊之間；最小一級仍放不下才把圖片拉長 */
+  const FS = [
+    {one:38, row:64, leg:36, tag:34, body:32, head:32},
+    {one:36, row:62, leg:34, tag:32, body:30, head:30},
+    {one:34, row:58, leg:34, tag:30, body:28, head:30},
+    {one:32, row:56, leg:32, tag:28, body:26, head:28}];
+  const titleRow = (r.kind==='combo'||r.kind==='diag') ? [{text:LBL(r.order[0]),t:r.order[0]},{text:t('res.plusTitle'),t:null},{text:LBL(r.order[1]),t:r.order[1]}] : titleLines(r)[0];
+  function layout(f, extra){
+    const s=FS[f], G=34+extra;
     x.clearRect(0,0,W,cv.height); x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
-    const gap = [1,.8,.65][f];
-    // 品牌條：夜空底＋車燈光束＋星星＋尋光引路實驗室
-    { const bh=160; x.fillStyle=P.night; x.fillRect(0,0,W,bh);
-      const g=x.createLinearGradient(150,0,W,0); g.addColorStop(0,'rgba(255,216,143,.42)'); g.addColorStop(1,'rgba(255,216,143,0)');
+    // 品牌條（細條）：夜空底＋車燈光束＋星星＋尋光引路實驗室
+    { const bh=BRAND; x.fillStyle=P.night; x.fillRect(0,0,W,bh);
+      const g=x.createLinearGradient(140,0,W,0); g.addColorStop(0,'rgba(255,216,143,.38)'); g.addColorStop(1,'rgba(255,216,143,0)');
       x.save(); x.beginPath(); x.rect(0,0,W,bh); x.clip();
-      x.fillStyle=g; x.beginPath(); x.moveTo(150,bh/2); x.lineTo(W,-36); x.lineTo(W,bh+36); x.closePath(); x.fill();
-      x.fillStyle='rgba(223,232,255,.7)'; [[503,25,2],[727,133,1.6],[913,36,2.2]].forEach(([sx,sy,sr])=>{ x.beginPath(); x.arc(sx,sy,sr,0,Math.PI*2); x.fill(); });
+      x.fillStyle=g; x.beginPath(); x.moveTo(140,bh/2); x.lineTo(W,-24); x.lineTo(W,bh+24); x.closePath(); x.fill();
+      x.fillStyle='rgba(223,232,255,.7)'; [[503,18,1.8],[727,80,1.4],[913,22,2]].forEach(([sx,sy,sr])=>{ x.beginPath(); x.arc(sx,sy,sr,0,Math.PI*2); x.fill(); });
       x.restore();
-      if (lab) x.drawImage(lab, PAD, (bh-84)/2, 84, 84);
-      const tx = PAD + (lab ? 84+26 : 0);
-      x.fillStyle=P.warm; x.font=`500 38px ${SANS}`; spaced(t('img.lab'), tx, 74, 38*.3);
-      x.fillStyle='rgba(236,228,210,.7)'; x.font=`400 24px ${SANS}`; spaced(t('img.labSub'), tx, 116, 24*.25); }
-    let y = 200;
+      const ls=56; if (lab) x.drawImage(lab, PAD, (bh-ls)/2, ls, ls);
+      const tx = PAD + (lab ? ls+20 : 0), base = bh/2+11;
+      x.fillStyle=P.warm; x.font=`500 30px ${SANS}`; spaced(t('img.lab'), tx, base, 30*.25);
+      x.fillStyle='rgba(236,228,210,.7)'; x.font=`400 20px ${SANS}`; const sub=t('img.labSub'), sg=20*.2;
+      const subW=[...sub].reduce((w,ch)=>w+x.measureText(ch).width+sg,0)-sg; spaced(sub, W-PAD-subW, base-2, sg); }
+    let y = BRAND + G;
     // 測驗名稱：四色標誌＋名稱＋副標（英文太長時副標換到下一行）
     { const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
-      x.save(); x.translate(PAD, y+8); x.scale(.66,.66); M.forEach(([d,c])=>{ x.fillStyle=P[c]; x.fill(new Path2D(d)); }); x.restore();
-      const nx = PAD+66+20, by = y+60;
-      x.fillStyle=P.ink; x.font=`400 52px ${ROUND}`; x.fillText(t('img.brand'), nx, by);
-      const bw = x.measureText(t('img.brand')).width; x.font=`500 30px ${SANS}`; const sw = x.measureText(t('img.brandSub')).width;
+      x.save(); x.translate(PAD, y); x.scale(.56,.56); M.forEach(([d,c])=>{ x.fillStyle=P[c]; x.fill(new Path2D(d)); }); x.restore();
+      const nx = PAD+56+18, by = y+41;
+      x.fillStyle=P.ink; x.font=`400 44px ${ROUND}`; x.fillText(t('img.brand'), nx, by);
+      const bw = x.measureText(t('img.brand')).width; x.font=`500 26px ${SANS}`; const sw = x.measureText(t('img.brandSub')).width;
       x.fillStyle=P.muted;
-      if (nx+bw+20+sw <= W-PAD){ x.fillText(t('img.brandSub'), nx+bw+20, by); y = by+22; }
-      else { x.fillText(t('img.brandSub'), nx, by+46); y = by+68; } }
+      if (nx+bw+18+sw <= W-PAD){ x.fillText(t('img.brandSub'), nx+bw+18, by); y += 52; }
+      else { x.fillText(t('img.brandSub'), nx, by+38); y = by+48; } }
     // 標題：一律排成一行；組合型寫「D 老虎 ＋ S 無尾熊」（不加型名），太寬就縮小字
-    { const row = (r.kind==='combo'||r.kind==='diag') ? [{text:LBL(r.order[0]),t:r.order[0]},{text:t('res.plusTitle'),t:null},{text:LBL(r.order[1]),t:r.order[1]}] : titleLines(r)[0];
-      const lw = () => row.reduce((w,p)=>w+x.measureText(p.text).width,0);
+    { const lw = () => titleRow.reduce((w,p)=>w+x.measureText(p.text).width,0);
       let size = 96; x.font=`400 ${size}px ${ROUND}`;
       while (lw()>maxW && size>40){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
-      y += size*1.02 + 18*gap; let px=PAD;
-      row.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; });
-      y += size*.18; }
+      y += G*.8 + size*.92; let px=PAD;
+      titleRow.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; });
+      y += size*.22; }
     // 一句話
-    { const sz=[34,32,30][f]; y += 16*gap + sz; y = drawRich(units(rep.one), PAD, y, maxW, sz, sz*1.5, P.ink) + sz*.5; }
+    { y += 14 + s.one; y = drawRich(units(rep.one), PAD, y, maxW, s.one, s.one*1.5, P.ink) + s.one*.45; }
     // 本色圓＋四型比例（固定 D I S C 的順序）＋頭冠
-    { y += 24*gap; const pitch=[64,60,56][f], lgH = pitch*3+44, top=y, circ = tops.length>1 ? 160 : 190, overlap=40;
+    { y += G; const lgH = s.row*3 + s.leg + 8, top=y, circ = tops.length>1 ? 180 : 210, overlap=44;
       const cH = Math.max(circ, lgH), cy = top + cH/2;
       const ts = tops.length ? tops : ['X'];
       ts.forEach((c,i)=>{ const cx = PAD + circ/2 + i*(circ-overlap), R=circ/2;
         x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.closePath();
         x.fillStyle = c==='X' ? chamPattern(x, circ/56, cx-R, cy-R) : canvasPattern(x,c,circ/56,cx-R,cy-R); x.fill();
         x.lineWidth=6; x.strokeStyle=P.card; x.stroke(); });
-      const lx = PAD + circ + (ts.length-1)*(circ-overlap) + 56, rx = W-PAD;
-      TYPES.forEach((c,i)=>{ const ry = cy - lgH/2 + 22 + i*pitch;
+      const lx = PAD + circ + (ts.length-1)*(circ-overlap) + 60, rx = W-PAD;
+      TYPES.forEach((c,i)=>{ const ry = cy - lgH/2 + s.leg/2 + 4 + i*s.row, tb = ry + s.leg*.36;
         x.beginPath(); x.arc(lx+18, ry, 18, 0, Math.PI*2); x.fillStyle=canvasPattern(x,c,36/56,lx,ry-18); x.fill();
-        x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(LBL(c), lx+36+14, ry+12);
+        x.fillStyle=P.ink; x.font=`700 ${s.leg}px ${SANS}`; x.fillText(LBL(c), lx+36+14, tb);
         const cr = crownOf(c);
         if (cr){ const cx0 = lx+36+14+x.measureText(LBL(c)).width+12;
           x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=2; x.shadowOffsetY=1; x.drawImage(cr, cx0, ry-21, 44, 38); x.restore(); }
-        x.textAlign='right'; x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(`${pr[c]}%`, rx, ry+12); x.textAlign='left'; });
+        x.textAlign='right'; x.fillText(`${pr[c]}%`, rx, tb); x.textAlign='left'; });
       y = top + cH; }
     // 我的超能力：一行「#標籤」，放在淡色底條裡置中；放不下就縮小字
-    { y += 22*gap + 28; x.fillStyle=P.muted; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04);
-      const inner = maxW-52; let sz=[34,32,30][f];
+    { y += G + 26; x.fillStyle=P.muted; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04);
+      const inner = maxW-52; let sz=s.tag;
       const textW = () => { x.font=`700 ${sz}px ${SANS}`; return tags.reduce((w,q)=>w+x.measureText(q).width,0); };
       while (textW()+20*(tags.length-1)>inner && sz>20) sz--;
       const tw=textW(), gx=Math.min(48, (inner-tw)/Math.max(1,tags.length-1));
@@ -2285,47 +2291,51 @@ async function buildShareImage(r, reveal){
       tags.forEach(q=>{ x.fillStyle=hue; x.fillText('#', px, by); x.fillStyle=P.ink; x.fillText(q.slice(1), px+x.measureText('#').width, by); px+=x.measureText(q).width+gx; });
       y += bh; }
     // 四格重點（兩欄；同一列的高度取比較高的那格）
-    { y += 22*gap; const g=22, bw=(maxW-g)/2, padX=28, padY=22, hs=30, sz=[30,28,26][f], lh=sz*1.5;
+    { y += G; const g=22, bw=(maxW-g)/2, padX=30, padY=26, hs=s.head, sz=s.body, lh=sz*1.5;
       for (let i=0;i<boxes.length;i+=2){
         const pair = boxes.slice(i,i+2).map(([h,b])=>({h, us:units(b)}));
         const hgt = Math.max(...pair.map(p=>wrap(p.us, bw-padX*2, sz).length))*lh + hs*1.6 + 8 + padY*2;
         pair.forEach((p,j)=>{ const bx = PAD + j*(bw+g);
           x.fillStyle=P.bg; rr(bx, y, bw, hgt, 22); x.fill();
-          x.fillStyle=P.ink; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX, y+padY+hs*1.15, hs*.04);
+          x.fillStyle=P.ink; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX, y+padY+hs*1.1, hs*.04);
           drawRich(p.us, bx+padX, y+padY+hs*1.6+8+sz*1.05, bw-padX*2, sz, lh, '#454A51'); });
         y += hgt + (i+2<boxes.length ? g : 0); } }
     // 朋友認證：這張準不準？
-    { y += 22*gap + 30; x.fillStyle=P.ink; x.font=`700 28px ${SANS}`; spaced(t('img.vote'), PAD, y, 28*.04); y += 18;
-      const opts=[t('img.vote1'), t('img.vote2'), t('img.vote3')], g=18, w=(maxW-g*2)/3, h=80;
-      opts.forEach((s,i)=>{ const bx=PAD+i*(w+g);
+    { y += G + 30; x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; spaced(t('img.vote'), PAD, y, 30*.04); y += 20;
+      const opts=[t('img.vote1'), t('img.vote2'), t('img.vote3')], g=18, w=(maxW-g*2)/3, h=84;
+      opts.forEach((q,i)=>{ const bx=PAD+i*(w+g);
         x.lineWidth=3; x.strokeStyle=P.ink; rr(bx+1.5, y+1.5, w-3, h-3, (h-3)/2); x.stroke();
-        x.font=`700 32px ${SANS}`; const sw=x.measureText(s).width, box=30, tot=box+12+sw, sx=bx+(w-tot)/2;
+        x.font=`700 32px ${SANS}`; const sw=x.measureText(q).width, box=30, tot=box+12+sw, sx=bx+(w-tot)/2;
         rr(sx+1.5, y+h/2-box/2+1.5, box-3, box-3, 6); x.stroke();
-        x.fillStyle=P.ink; x.fillText(s, sx+box+12, y+h/2+11); });
+        x.fillStyle=P.ink; x.fillText(q, sx+box+12, y+h/2+11); });
       y += h; }
     return y;
   }
-  let f=0, end=layout(0);
-  while (end > H-BAND-28 && f<2){ f++; end=layout(f); }
-  const outH = Math.max(H, Math.ceil(end + 28 + BAND));
+  const limit = H-BAND-44;
+  let f=0, end=layout(0,0);
+  while (end>limit && f<FS.length-1){ f++; end=layout(f,0); }
+  if (end<limit) end=layout(f, Math.min((limit-end)/6, 40));
+  const outH = Math.max(H, Math.ceil(end + 44 + BAND));
 
   const out=document.createElement('canvas'); out.width=W; out.height=outH;
   const o=out.getContext('2d'); o.fillStyle=P.card; o.fillRect(0,0,W,outH);
   o.drawImage(cv,0,0);
-  // 邀請條：貼在最下面，讓看到圖的朋友找得到測驗
-  { const y=outH-BAND, tile=210; o.fillStyle=P.ink; o.fillRect(0, y, W, BAND);
-    o.fillStyle='#FFFFFF'; o.font=`400 46px ${ROUND}`; o.textBaseline='alphabetic';
-    if (qr){
-      o.fillText(t('img.ask1'), PAD, y+92); o.fillText(t('img.ask2'), PAD, y+154);
-      o.fillStyle='rgba(255,255,255,.78)'; o.font=`500 25px ${SANS}`; o.fillText(t('img.scan'), PAD, y+212);
-      o.fillStyle='#FFFFFF'; o.font=`500 27px ${SANS}`; o.fillText(host, PAD, y+252);
-      const qx=W-PAD-tile, qy=y+(BAND-tile)/2;
-      o.fillStyle='#FFFFFF'; o.beginPath(); o.roundRect ? o.roundRect(qx, qy, tile, tile, 16) : o.rect(qx, qy, tile, tile); o.fill();
-      o.imageSmoothingEnabled=false; o.drawImage(qr, qx+21, qy+21, tile-42, tile-42); o.imageSmoothingEnabled=true;
-    } else {
-      o.fillText(t('img.ask1'), PAD, y+124); o.fillText(t('img.ask2'), PAD, y+186);
-      if (host){ o.font=`500 30px ${SANS}`; o.fillText(host, PAD, y+246); }
-    } }
+  // 邀請條（細條）：貼在最下面，讓看到圖的朋友找得到測驗
+  { const y=outH-BAND, tile=166; o.fillStyle=P.ink; o.fillRect(0, y, W, BAND); o.textBaseline='alphabetic';
+    const avail = (qr ? W-PAD-tile-32 : W-PAD) - PAD;
+    const one = t('img.ask1') + (L.code==='zh' ? '' : ' ') + t('img.ask2');
+    let sz=38; o.font=`400 ${sz}px ${ROUND}`; while (o.measureText(one).width>avail && sz>28){ sz--; o.font=`400 ${sz}px ${ROUND}`; }
+    const twoLines = o.measureText(one).width>avail;
+    o.fillStyle='#FFFFFF';
+    let ty;
+    if (twoLines){ o.fillText(t('img.ask1'), PAD, y+60); o.fillText(t('img.ask2'), PAD, y+60+sz*1.2); ty = y+60+sz*1.2; }
+    else { o.fillText(one, PAD, y+(host?78:118)); ty = y+78; }
+    if (host){
+      if (qr){ o.fillStyle='rgba(255,255,255,.72)'; o.font=`500 22px ${SANS}`; o.fillText(t('img.scan'), PAD, ty+46); }
+      o.fillStyle='#FFFFFF'; o.font=`500 26px ${SANS}`; o.fillText(host, PAD, ty+(qr?84:56)); }
+    if (qr){ const qx=W-PAD-tile, qy=y+(BAND-tile)/2;
+      o.fillStyle='#FFFFFF'; o.beginPath(); o.roundRect ? o.roundRect(qx, qy, tile, tile, 14) : o.rect(qx, qy, tile, tile); o.fill();
+      o.imageSmoothingEnabled=false; o.drawImage(qr, qx+15, qy+15, tile-30, tile-30); o.imageSmoothingEnabled=true; } }
 
   /* 用 blob 網址而不是 data 網址：data 網址很大，安卓上常常下載失敗 */
   const blob = await new Promise(res=>out.toBlob(res,'image/png'));
