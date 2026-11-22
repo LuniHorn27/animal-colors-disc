@@ -2281,7 +2281,7 @@ async function buildShareImage(r, reveal){
         x.textAlign='right'; x.fillText(`${pr[c]}%`, rx, tb); x.textAlign='left'; });
       y = top + cH; }
     // 我的超能力：每項「#標籤」各自一個淡色底框，排成一行；放不下先縮小字（最小 22，免得看不清楚），仍放不下才換行
-    { y += G + 26; x.fillStyle=P.muted; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04);
+    { y += G + 26; x.fillStyle=P.ink; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04);
       const gx=14; let sz=s.tag;
       const padOf = () => Math.round(sz*.62);
       const pillW = q => x.measureText(q).width + padOf()*2;
