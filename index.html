@@ -2220,7 +2220,7 @@ async function buildShareImage(r, reveal){
     [t('img.comm'), firstSentence(rep.commTip)],
     [t('img.jobs'), String(rep.jobs).split(/、|, /).slice(0,6).join(L.listSep)],
   ];
-  const powers = rep.good.map(g=>splitLabel(g)[0] || g);
+  const tags = rep.good.map(g=>'#'+(splitLabel(g)[0] || g));
 
   /* 畫一次內容；放不下時用小一號的字再畫一次（f＝縮小的級數） */
   function layout(f){
@@ -2274,15 +2274,16 @@ async function buildShareImage(r, reveal){
           x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=2; x.shadowOffsetY=1; x.drawImage(cr, cx0, ry-21, 44, 38); x.restore(); }
         x.textAlign='right'; x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(`${pr[c]}%`, rx, ry+12); x.textAlign='left'; });
       y = top + cH; }
-    // 我的超能力
-    { y += 22*gap + 28; x.fillStyle=P.muted; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04); y += 16;
-      const sz=[34,32,30][f], ch=sz*1.6+12; let px=PAD, row=0; x.font=`700 ${sz}px ${SANS}`;
-      powers.forEach(p=>{ const w = Math.min(x.measureText(p).width+44, maxW);
-        if (px>PAD && px+w>W-PAD){ px=PAD; row++; }
-        const cy0 = y + row*(ch+12);
-        x.fillStyle=tint; rr(px, cy0, w, ch, 14); x.fill(); x.fillStyle=P.ink; x.font=`700 ${sz}px ${SANS}`; x.fillText(p, px+22, cy0+ch/2+sz*.36);
-        px += w+12; });
-      y += (row+1)*ch + row*12; }
+    // 我的超能力：一行「#標籤」，放在淡色底條裡置中；放不下就縮小字
+    { y += 22*gap + 28; x.fillStyle=P.muted; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04);
+      const inner = maxW-52; let sz=[34,32,30][f];
+      const textW = () => { x.font=`700 ${sz}px ${SANS}`; return tags.reduce((w,q)=>w+x.measureText(q).width,0); };
+      while (textW()+20*(tags.length-1)>inner && sz>20) sz--;
+      const tw=textW(), gx=Math.min(48, (inner-tw)/Math.max(1,tags.length-1));
+      y += 16; const bh=Math.round(sz*2); x.fillStyle=tint; rr(PAD, y, maxW, bh, 18); x.fill();
+      let px=PAD+(maxW-(tw+gx*(tags.length-1)))/2; const by=y+bh/2+sz*.36; x.font=`700 ${sz}px ${SANS}`;
+      tags.forEach(q=>{ x.fillStyle=hue; x.fillText('#', px, by); x.fillStyle=P.ink; x.fillText(q.slice(1), px+x.measureText('#').width, by); px+=x.measureText(q).width+gx; });
+      y += bh; }
     // 四格重點（兩欄；同一列的高度取比較高的那格）
     { y += 22*gap; const g=22, bw=(maxW-g)/2, padX=28, padY=22, hs=26, sz=[30,28,26][f], lh=sz*1.5;
       for (let i=0;i<boxes.length;i+=2){
