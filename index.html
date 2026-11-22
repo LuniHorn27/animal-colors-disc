@@ -951,14 +951,13 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'seg.aria':'結果呈現方式', 'seg.brand':'動物本色', 'seg.data':'精確數據',
   'card.donut':'你的本色組成', 'card.patbars':'四種動物的分數', 'card.chart':'DISC 四向圖', 'card.bars':'四型分數',
   'chart.legend':'虛線圓是你的平均（{avg} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。', 'chart.l1':'虛線圓是你的平均（{avg} 分）。', 'chart.l2':'點在虛線外，代表此型較明顯。', 'chart.l3':'點在虛線內，代表此型較隱晦。',
-  'share.h':'分享你的結果', 'share.p':'產生一張包含完整分析的結果圖片，可以下載或分享給朋友。', 'share.make':'產生結果圖片',
+  'share.h':'分享你的結果', 'share.p':'產生一張適合分享的結果圖片，可以下載或傳給朋友。', 'share.make':'產生結果圖片',
   'share.alt':'我的動物本色結果圖片', 'share.download':'下載圖片', 'share.fileDefault':'動物本色-結果.png',
   'share.hold':'手機可以長按圖片儲存', 'invite':'邀請朋友來測驗', 'share.dock':'儲存／分享結果圖片',
-  'img.brand':'測出你的動物本色', 'img.brandSub':'DISC 行為風格測驗', 'img.dash':'虛線是四種動物的平均（{avg} 分）。',
-  'img.above':'高於平均（貼近你的風格）：', 'img.equal':'剛好在平均：', 'img.below':'低於平均（比較少展現）：',
-  'img.legend':'虛線圓：你的平均（{avg} 分）　點在虛線外代表此型較明顯', 'img.bullet':'・',
-  'img.ask1':'你的動物本色是什麼？', 'img.ask2':'也來測測看', 'img.scan':'掃描 QR Code，或打開網址：',
-  'img.askOne':'你的動物本色是什麼？也來測測看', 'img.file':'動物本色-{code}.png',
+  'img.brand':'測出你的動物本色', 'img.brandSub':'DISC 行為風格測驗',
+  'img.ask1':'你的動物本色是什麼？', 'img.ask2':'也來測測看', 'img.scan':'掃描 QR Code，或打開網址：', 'img.file':'動物本色-{code}.png',
+  'img.lab':'尋光引路實驗室', 'img.labSub':'lumineer.lab', 'img.kicker':'{name}使用說明書', 'img.powers':'我的超能力', 'img.blind':'我的小罩門', 'img.stress':'壓力大時', 'img.stressLead':'壓力大時，',
+  'img.comm':'和我相處的訣竅', 'img.jobs':'最適合的舞台', 'img.vote':'朋友認證：這張準不準？', 'img.vote1':'超準', 'img.vote2':'有一點', 'img.vote3':'才不是',
   'inapp.open':'改用瀏覽器開啟', 'inapp.how':'請點右上角的「⋯」，選擇「在瀏覽器中開啟」。',
   'inapp.home':'你正在 {app} 的內建瀏覽器裡，作答完可能無法下載圖片或分享。建議先改用手機的瀏覽器（例如 Chrome、Safari）開啟再作答。',
   'inapp.result':'你正在 {app} 的內建瀏覽器裡，可能無法下載圖片或分享。可以直接截圖保存結果；改用瀏覽器開啟的話，需要重新作答。',
@@ -2141,21 +2140,40 @@ function setupShareDock(){
   });
 }
 
-/* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
+/* ===== 分享圖片：網址、QR Code 與產圖共用的小工具 ===== */
 let lastImage = null;
 /* 測驗網址：上線後若改用自訂網域，填在這裡（網域＋子路徑，前面不加 https://、後面不加斜線）；留空時自動用目前網站的網址，本機預覽時不顯示 */
 const SITE_URL = 'lumineerlab.com/animal-colors-disc';
 const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
 /* QR Code 圖檔：brand/qr-site.svg（換網域時要重新產生）。載入失敗就不放 QR Code */
 const loadImage = src => new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
-async function buildShareImage(r, reveal, removeRedBox = r.key==='IS'){
+/* 分享圖片：直式 1080×1920 的「使用說明書」卡片，適合傳給朋友或放限時動態。
+   由上到下：尋光引路品牌條、測驗名稱、標題、一句話、本色比例（含頭冠）、超能力、四格重點、朋友認證、邀請條。
+   固定淺色配色；內容較長時先縮小字，還是放不下才把圖片拉長，不截斷文字 */
+/* 頭冠：和結果頁同一個圖形，顏色直接寫進 SVG（canvas 讀不到網頁的 CSS 變數） */
+const CROWN_C = {gold:{a:'#FFE897',b:'#F4B72E',c:'#C98512',ba:'#E9A21B',bb:'#A86A06',edge:'#8A5A00',gem:'#C8372D'},
+  silver:{a:'#FFFFFF',b:'#D2D7DE',c:'#9DA5B0',ba:'#B9C0CA',bb:'#7D8691',edge:'#5F6772',gem:'#3E6FB8'}};
+const crownSrc = k => { const c=CROWN_C[k];
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 24" width="112" height="96"><defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.a}"/><stop offset=".55" stop-color="${c.b}"/><stop offset="1" stop-color="${c.c}"/></linearGradient>
+  <linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.ba}"/><stop offset="1" stop-color="${c.bb}"/></linearGradient></defs>
+  <path d="M4.2 17.2 2.8 7.9 9.2 12.4 14 4.2l4.8 8.2 6.4-4.5-1.4 9.3Z" fill="url(#g)" stroke="${c.edge}" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M6.6 15.3h14.8" stroke="#fff" stroke-opacity=".55" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="3.8" y="17" width="20.4" height="4.6" rx="1.6" fill="url(#b)" stroke="${c.edge}" stroke-width="1"/>
+  <circle cx="9" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/><circle cx="14" cy="19.3" r="1.3" fill="${c.gem}"/><circle cx="19" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/>
+  <circle cx="2.8" cy="6.8" r="1.9" fill="url(#g)" stroke="${c.edge}" stroke-width=".9"/><circle cx="14" cy="3.1" r="2.1" fill="url(#g)" stroke="${c.edge}" stroke-width=".9"/><circle cx="25.2" cy="6.8" r="1.9" fill="url(#g)" stroke="${c.edge}" stroke-width=".9"/></svg>`); };
+/* 卡片上的短句：取解說的第一句（中文到「。！？」為止，英文到句點為止） */
+const firstSentence = s => { s=String(s||''); const m = L.code==='zh' ? s.match(/^.*?[。！？]」?/) : s.match(/^.*?[.!?]["”]?(?=\s|$)/); return m ? m[0] : s; };
+async function buildShareImage(r, reveal){
   try { await document.fonts.ready; } catch(e){}
-  const W=1080, PAD=110, maxW=W-PAD*2;
-  const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',accent:'#1F2329',sunk:'#E3E5E8',
+  const W=1080, PAD=90, maxW=W-PAD*2, H=1920, BAND=300;
+  const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',sunk:'#E3E5E8',night:'#04070b',warm:'#ffd88f',cream:'#ece4d2',star:'#dfe8ff',
     D:'#D66A14',I:'#11968A',S:'#5E9A47',C:'#6576DC',Dt:'#F7E1D0',It:'#CFEAE8',St:'#DFEBDA',Ct:'#E0E4F8'};
   const SANS='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif', ROUND='"Huninn","Noto Sans TC",sans-serif';
   const rep=REP()[r.key];
-  const cv=document.createElement('canvas'); cv.width=W; cv.height=9000;
+  const host = siteHost();
+  const [lab, qr, gold, silver] = await Promise.all([loadImage('brand/lab-mark.svg'), host ? loadImage('brand/qr-site.svg') : null, loadImage(crownSrc('gold')), loadImage(crownSrc('silver'))]);
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=3200;
   const x=cv.getContext('2d'); x.textBaseline='alphabetic';
 
   // rich text: chips (D 老虎…) are atomic units with a tinted background; other text wraps per character
@@ -2167,10 +2185,12 @@ async function buildShareImage(r, reveal, removeRedBox = r.key==='IS'){
     return out; };
   const fontOf = (u,size) => `${u.bold?700:400} ${size}px ${SANS}`;
   const uw = (u,size) => { x.font=fontOf(u,size); return x.measureText(u.s).width + (u.chip?18:0); };
-  function drawRich(us, X, Y, width, size, lh, color){
-    let lines=[[]], w=0;
-    const noStart = /^[，。、：；！？）」』,.!?]$/;
+  const wrap = (us, width, size) => { const lines=[[]]; let w=0; const noStart = /^[，。、：；！？）」』,.!?]$/;
     us.forEach(u=>{ const ww=uw(u,size); if (w+ww>width && lines[lines.length-1].length && !noStart.test(u.s)){ lines.push([]); w=0; if(u.s===' ') return; } lines[lines.length-1].push(u); w+=ww; });
+    return lines; };
+  // 畫多行文字；Y 是第一行的基線，回傳最後一行的基線
+  function drawRich(us, X, Y, width, size, lh, color){
+    const lines = wrap(us, width, size);
     lines.forEach((ln,li)=>{ let px=X; const py=Y+li*lh;
       ln.forEach(u=>{ const ww=uw(u,size);
         if (u.chip){ x.fillStyle=P[u.chip+'t']; rr(px, py-size*0.95, ww, size*1.32, 8); x.fill(); x.fillStyle=P.ink; x.font=fontOf(u,size); x.fillText(u.s, px+9, py); }
@@ -2179,157 +2199,139 @@ async function buildShareImage(r, reveal, removeRedBox = r.key==='IS'){
     return Y + (lines.length-1)*lh;
   }
   const rr=(X,Y,w,h,rad)=>{x.beginPath();x.moveTo(X+rad,Y);x.arcTo(X+w,Y,X+w,Y+h,rad);x.arcTo(X+w,Y+h,X,Y+h,rad);x.arcTo(X,Y+h,X,Y,rad);x.arcTo(X,Y,X+w,Y,rad);x.closePath();};
-  // 和自己的平均比較：高於平均＝強項，低於平均＝比較少用
-  const drawVsAvg = (yy) => { const g=avgGroups(r), ls=ts=>ts.map(c=>LBL(c)).join(L.listSep);
-    yy = drawRich(units(t('img.dash', {avg:pct(r.avg)})), PAD, yy, maxW, 26, 40, P.muted);
-    if (r.kind==='chameleon'){ yy+=44; return drawRich(units(t('vs.cham')), PAD, yy, maxW, 26, 40, P.ink)+24; }
-    if (g.above.length){ yy+=44; yy = drawRich([...units(t('img.above'),true), ...units(ls(g.above))], PAD, yy, maxW, 26, 40, P.ink); }
-    if (g.equal.length){ yy+=44; yy = drawRich([...units(t('img.equal'),true), ...units(ls(g.equal))], PAD, yy, maxW, 26, 40, P.ink); }
-    if (g.below.length){ yy+=44; yy = drawRich([...units(t('img.below'),true), ...units(ls(g.below))], PAD, yy, maxW, 26, 40, P.ink); }
-    return yy+24; };
+  // 字距（canvas 的 letterSpacing 舊版 Safari 不支援，所以一個字一個字畫）
+  const spaced = (s, X, Y, gap) => { [...s].forEach(ch=>{ x.fillText(ch, X, Y); X += x.measureText(ch).width + gap; }); return X; };
 
-  x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
-  let y=130;
-  { // brand row: logo mark + name
-    const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
-    x.save(); x.translate(PAD, y-38); x.scale(.48,.48); M.forEach(([d,t])=>{ x.fillStyle=P[t]; x.fill(new Path2D(d)); }); x.restore();
-    x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText(t('img.brand'), PAD+62, y);
-    const bw=x.measureText(t('img.brand')).width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText(t('img.brandSub'), PAD+62+bw+20, y); }
-  { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0); let size=92; x.font=`400 ${size}px ${ROUND}`;
-    while (Math.max(...lines.map(lw))>maxW && size>32){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
-    lines.forEach(l=>{ y+=size+20; let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }); }
-  if (subLine(r) && !removeRedBox){ y+=60; x.fillStyle=P.muted; x.font=`500 32px ${SANS}`; x.fillText(subLine(r), PAD, y); }
-  y+=76; y=drawRich(units(rep.one), PAD, y, maxW, 38, 58, P.ink);
-  if (r.kind==='single'){
-    y+=72;
-    const top=y-40; y=drawRich(units(promText(r)), PAD+28, y, maxW-28, 32, 50, P.ink);
-    y+=48; y=drawRich(units(t('res.secondary', {lbl:LBL(r.secondary), sub:SUBT()[r.primary+r.secondary]})), PAD+28, y, maxW-28, 28, 44, P.muted);
-    x.fillStyle=P.accent; x.fillRect(PAD, top, 6, y-top+12);
-  }
-
-  // chart: 精確數據＝四向圖＋長條圖；動物本色＝四瓣花
-  if (VIEW==='data'){
-  const Rr=220, cx=W/2, cy=y+130+Rr, k=Math.SQRT1_2, Gm=chartGeom(r);
-  x.strokeStyle=P.line; x.lineWidth=2; [1,...Gm.rings].forEach(f=>{x.beginPath();x.arc(cx,cy,Rr*f,0,Math.PI*2);x.stroke();});
-  x.strokeStyle='#B9C0BB'; x.beginPath(); x.moveTo(cx,cy-Rr-14); x.lineTo(cx,cy+Rr+14); x.moveTo(cx-Rr-14,cy); x.lineTo(cx+Rr+14,cy); x.stroke();
-  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.textAlign='center';
-  x.fillText(t('chart.up'),cx,cy-Rr-26); x.fillText(t('chart.down'),cx,cy+Rr+50);
-  x.textAlign='right'; x.fillText(t('chart.left'),cx-Rr-22,cy-10); x.textAlign='left'; x.fillText(t('chart.right'),cx+Rr+22,cy-10);
-  x.setLineDash([12,10]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.arc(cx,cy,Rr*Gm.mean,0,Math.PI*2); x.stroke(); x.setLineDash([]);
-  const pts=TYPES.map(t=>{const d=DIRS[t],q=Rr*Gm.frac(t);return [cx+d[0]*k*q, cy+d[1]*k*q];});
-  x.beginPath(); pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.closePath();
-  x.fillStyle='rgba(31,35,41,0.08)'; x.fill(); x.strokeStyle=P.ink; x.lineWidth=5; x.lineJoin='round'; x.stroke();
-  TYPES.forEach((t,i)=>{const [px,py]=pts[i], d=DIRS[t];
-    x.fillStyle=P[t]; x.beginPath(); x.arc(px,py,10,0,Math.PI*2); x.fill();
-    x.font=`700 30px ${SANS}`; x.lineWidth=8; x.strokeStyle=P.card; x.lineJoin='round';
-    x.textAlign=d[0]<0?'right':'left'; const tx=px+d[0]*20, ty=py+10; x.strokeText(String(pct(r.mean[t])),tx,ty); x.fillStyle=P.ink; x.fillText(String(pct(r.mean[t])),tx,ty);
-    const lx=cx+d[0]*k*(Rr+86), ly=cy+d[1]*k*(Rr+86)+12; x.font=`700 32px ${SANS}`; const tw=x.measureText(LBL(t)).width;
-    x.fillStyle=P[t]; x.beginPath(); x.arc(lx-tw/2-6, ly-11, 10, 0, Math.PI*2); x.fill();
-    x.textAlign='center'; x.fillStyle=P.ink; x.fillText(LBL(t), lx+12, ly);});
-  x.textAlign='left';
-  y = cy+Rr+110;
-  x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(t('img.legend', {avg:pct(r.avg)}), PAD, y);
-
-  if (!removeRedBox) {
-  // score bars
-  y+=30; const barX=PAD+200, barW=maxW-200-80, mx=barX+barW*pct(r.avg)/100, top=y+8;
-  TYPES.forEach(t=>{ y+=64;
-    x.fillStyle=P[t]; x.beginPath(); x.arc(PAD+14,y-11,14,0,Math.PI*2); x.fill();
-    x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), PAD+38, y);
-    x.fillStyle=P.sunk; rr(barX,y-30,barW,26,13); x.fill();
-    x.fillStyle=P[t]; rr(barX,y-30,Math.max(26,barW*pct(r.mean[t])/100),26,13); x.fill();
-    x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(pct(r.mean[t])), W-PAD, y); x.textAlign='left'; });
-  x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(mx,top); x.lineTo(mx,y+14); x.stroke(); x.setLineDash([]);
-  y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), mx, y); x.textAlign='left';
-  y = drawVsAvg(y+60);
-  }
-
-  } else {
-    const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
-    // 本色組成：左邊本色的花色圓＋「你的本色」＋動物名稱，右邊四種動物的比例（和網頁一樣）
-    y += 90; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.donut'), PAD, y);
-    const pr=pctRound(donutGeom(vals)), ts=r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : ['X'];
-    const Rc = ts.length>1 ? 120 : 150, colX = PAD+200, cy = y+60+150;
-    ts.forEach((t,i)=>{ const cx = ts.length>1 ? colX+(i?1:-1)*95 : colX;
-      x.beginPath(); x.arc(cx,cy,Rc,0,Math.PI*2); x.closePath();
-      x.fillStyle = t==='X' ? chamPattern(x, Rc*2/56, cx-Rc, cy-Rc) : canvasPattern(x,t,Rc*2/56,cx-Rc,cy-Rc); x.fill();
-      x.lineWidth=8; x.strokeStyle=P.card; x.stroke(); });
-    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(t('donut.center'), colX, cy+150+56);
-    { const c=animalLine(r); let size=34; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>390 && size>22){ size-=2; x.font=`700 ${size}px ${SANS}`; }
-      x.fillStyle=P.ink; x.fillText(c, colX, cy+150+104); }
-    x.textAlign='left';
-    { const lx=PAD+450, rx=PAD+maxW; TYPES.forEach((t,i)=>{ const ry=cy-105+i*70;
-        x.beginPath(); x.arc(lx+16,ry,16,0,Math.PI*2); x.fillStyle=canvasPattern(x,t,32/56,lx,ry-16); x.fill();
-        x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), lx+46, ry+11);
-        x.textAlign='right'; x.fillText(`${pr[t]}%`, rx, ry+11); x.textAlign='left'; }); }
-    if (!removeRedBox) {
-    y = cy+150+104+70; donutNotes(r).forEach((nt,i)=>{ if (i) y+=40; y = drawRich(units(t('img.bullet')+nt), PAD, y, maxW, 24, 36, P.muted); });
-    // 花紋長條（由高到低）
-    y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.patbars'), PAD, y);
-    const order=TYPES, barX=PAD+200, barW=maxW-200-80, ax=barX+barW*pct(r.avg)/100;
-    y += 30;
-    const top=y+8;
-    order.forEach(t=>{ y+=64;
-      x.fillStyle=canvasPattern(x,t,1.4,0,0); x.beginPath(); x.arc(PAD+14,y-11,14,0,Math.PI*2); x.fill();
-      x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), PAD+38, y);
-      x.fillStyle=P.sunk; rr(barX,y-30,barW,26,13); x.fill();
-      x.fillStyle=canvasPattern(x,t,1.4,0,0); rr(barX,y-30,Math.max(26,barW*vals[t]/100),26,13); x.fill();
-      x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(vals[t]), W-PAD, y); x.textAlign='left'; });
-    x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(ax,top); x.lineTo(ax,y+14); x.stroke(); x.setLineDash([]);
-    y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), ax, y); x.textAlign='left';
-    y = drawVsAvg(y+60);
-    } else { y = cy+150+104+70; }
-  }
-
-  // full analysis
   const mainT = (r.kind==='single') ? r.primary : (r.kind==='combo'||r.kind==='diag') ? r.order[0] : null;
-  const mainTint = mainT ? P[mainT+'t'] : P.sunk;
-  reportSections(rep).forEach(sec=>{
-    y+=96; x.fillStyle=P.line; x.fillRect(PAD, y-62, maxW, 2);
-    y=drawRich(units(sec.title, true), PAD, y, maxW, 40, 56, P.ink);
-    (sec.paras||[]).forEach(p=>{ y+=60; y=drawRich(units(p), PAD, y, maxW, 30, 48, P.ink); });
-    (sec.bullets||[]).forEach(it=>{ y+=56;
-      x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
-      y=drawRich(units(it), PAD+32, y, maxW-32, 30, 46, P.ink); });
-    (sec.items||[]).forEach(it=>{ const [l,b]=splitLabel(it); y+=56;
-      x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
-      const us = l ? [...units(l,true), {s:L.colon,bold:true}, ...units(L.colonGap+b)] : units(b);
-      y=drawRich(us, PAD+32, y, maxW-32, 30, 46, P.ink); });
-    if (sec.tip){ y+=34; const top=y; const us=[...units(sec.tip[0]+L.colon,true), ...units(L.colonGap+sec.tip[1])];
-      // measure by drawing off-canvas first
-      const endY = drawRich(us, -99999, y+48, maxW-48, 28, 44, P.ink);
-      if (mainT){ x.fillStyle=mainTint; rr(PAD, top, maxW, endY-top+30, 16); x.fill(); }
-      else { rr(PAD, top, maxW, endY-top+30, 16); x.fillStyle=P.sunk; x.fill(); }
-      drawRich(us, PAD+24, y+48, maxW-48, 28, 44, P.ink); y=endY+30; }
-  });
+  const tint = mainT ? P[mainT+'t'] : P.sunk, hue = mainT ? P[mainT] : P.ink;
+  const tops = r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [];
+  const vals = {}; TYPES.forEach(c=>vals[c]=pct(r.mean[c]));
+  const pr = pctRound(donutGeom(vals));
+  /* 頭冠：和結果頁相同的規則（最高金色、組合型第二高銀色、分數一樣都金色、變色龍不放） */
+  const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
+  const crownOf = c => !tops.includes(c) ? null : (c===ranked[0] || vals[c]===vals[ranked[0]] ? gold : silver);
+  const name = (r.kind==='combo'||r.kind==='diag') ? L.animal[r.order[0]]+t('res.plusShort')+L.animal[r.order[1]] : rep.name;
+  const stressRaw = firstSentence(Array.isArray(rep.stress) ? rep.stress[0] : rep.stress);
+  const stressLead = t('img.stressLead');
+  let stress = stressRaw.startsWith(stressLead) ? stressRaw.slice(stressLead.length) : stressRaw;
+  stress = L.code==='zh' ? stress.replace(/^你的?/, '') : stress.charAt(0).toUpperCase()+stress.slice(1);
+  const boxes = [
+    [t('img.blind'), rep.blind[0]],
+    [t('img.stress'), stress],
+    [t('img.comm'), firstSentence(rep.commTip)],
+    [t('img.jobs'), String(rep.jobs).split(/、|, /).slice(0,6).join(L.listSep)],
+  ];
+  const powers = rep.good.map(g=>splitLabel(g)[0] || g);
 
-  // footer
-  y+=90; x.fillStyle=P.line; x.fillRect(PAD, y-50, maxW, 2);
-  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(metaText().join(L.metaSep), PAD, y);
-  y+=44; y=drawRich(units(t('disclaimer')), PAD, y, maxW, 26, 40, P.muted);
-  y+=90;
-  // invitation band: lets friends who see the picture find the test
-  const host = siteHost();
-  const qr = host ? await loadImage('brand/qr-site.svg') : null;
-  { const tile = 210, bandH = qr ? 320 : (host ? 200 : 150); x.fillStyle=P.accent; x.fillRect(0, y, W, bandH);
-    x.fillStyle='#FFFFFF'; x.font=`400 44px ${ROUND}`;
-    if (qr){
-      x.fillText(t('img.ask1'), PAD, y+100); x.fillText(t('img.ask2'), PAD, y+158);
-      x.fillStyle='rgba(255,255,255,.78)'; x.font=`500 26px ${SANS}`; x.fillText(t('img.scan'), PAD, y+222);
-      x.fillStyle='#FFFFFF'; x.fillText(host, PAD, y+262);
-    } else {
-      x.fillText(t('img.askOne'), PAD, y+86);
-      if (host){ x.font=`500 34px ${SANS}`; x.fillText(host, PAD, y+146); }
-    }
-    if (qr){ const qx=W-PAD-tile+20, qy=y+(bandH-tile)/2;
-      x.fillStyle='#FFFFFF'; rr(qx, qy, tile, tile, 16); x.fill();
-      x.imageSmoothingEnabled=false; x.drawImage(qr, qx+22, qy+22, tile-44, tile-44); x.imageSmoothingEnabled=true; }
-    y += bandH; }
+  /* 畫一次內容；放不下時用小一號的字再畫一次（f＝縮小的級數） */
+  function layout(f){
+    x.clearRect(0,0,W,cv.height); x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
+    const gap = [1,.8,.65][f];
+    // 品牌條：夜空底＋車燈光束＋星星＋尋光引路實驗室
+    { const bh=160; x.fillStyle=P.night; x.fillRect(0,0,W,bh);
+      const g=x.createLinearGradient(150,0,W,0); g.addColorStop(0,'rgba(255,216,143,.42)'); g.addColorStop(1,'rgba(255,216,143,0)');
+      x.save(); x.beginPath(); x.rect(0,0,W,bh); x.clip();
+      x.fillStyle=g; x.beginPath(); x.moveTo(150,bh/2); x.lineTo(W,-36); x.lineTo(W,bh+36); x.closePath(); x.fill();
+      x.fillStyle='rgba(223,232,255,.7)'; [[503,25,2],[727,133,1.6],[913,36,2.2]].forEach(([sx,sy,sr])=>{ x.beginPath(); x.arc(sx,sy,sr,0,Math.PI*2); x.fill(); });
+      x.restore();
+      if (lab) x.drawImage(lab, PAD, (bh-84)/2, 84, 84);
+      const tx = PAD + (lab ? 84+26 : 0);
+      x.fillStyle=P.warm; x.font=`500 38px ${SANS}`; spaced(t('img.lab'), tx, 74, 38*.3);
+      x.fillStyle='rgba(236,228,210,.7)'; x.font=`400 24px ${SANS}`; spaced(t('img.labSub'), tx, 116, 24*.25); }
+    let y = 200;
+    // 測驗名稱：四色標誌＋名稱＋副標（英文太長時副標換到下一行）
+    { const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
+      x.save(); x.translate(PAD, y+8); x.scale(.66,.66); M.forEach(([d,c])=>{ x.fillStyle=P[c]; x.fill(new Path2D(d)); }); x.restore();
+      const nx = PAD+66+20, by = y+60;
+      x.fillStyle=P.ink; x.font=`400 52px ${ROUND}`; x.fillText(t('img.brand'), nx, by);
+      const bw = x.measureText(t('img.brand')).width; x.font=`500 30px ${SANS}`; const sw = x.measureText(t('img.brandSub')).width;
+      x.fillStyle=P.muted;
+      if (nx+bw+20+sw <= W-PAD){ x.fillText(t('img.brandSub'), nx+bw+20, by); y = by+22; }
+      else { x.fillText(t('img.brandSub'), nx, by+46); y = by+68; } }
+    // 「孔雀使用說明書」膠囊
+    { y += 30*gap; x.font=`700 28px ${SANS}`; const s=t('img.kicker', {name}), kw=x.measureText(s).width+48, kh=52;
+      x.fillStyle=tint; rr(PAD, y, Math.min(kw, maxW), kh, kh/2); x.fill(); x.fillStyle=hue; x.fillText(s, PAD+24, y+37); y += kh; }
+    // 標題：單一型一行；組合型太寬時分兩行（第二行是「＋ 第二型」）
+    { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0);
+      let rows = lines, size = 100; x.font=`400 ${size}px ${ROUND}`;
+      if (lines.length===1 && lines[0].length===3 && lw(lines[0])*.84 > maxW){ const [a,plus,b]=lines[0]; rows=[[a],[{text:plus.text.trim(),t:null},{text:' '+b.text,t:b.t}]]; size=84; }
+      else if (lines.length===1 && lines[0].length===3) size=84;
+      x.font=`400 ${size}px ${ROUND}`;
+      while (Math.max(...rows.map(lw))>maxW && size>40){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
+      rows.forEach((l,i)=>{ y += (i ? size*1.15 : size*1.02 + 18*gap); let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); });
+      y += size*.18; }
+    // 一句話
+    { const sz=[34,32,30][f]; y += 16*gap + sz; y = drawRich(units(rep.one), PAD, y, maxW, sz, sz*1.5, P.ink) + sz*.5; }
+    // 本色圓＋四型比例（固定 D I S C 的順序）＋頭冠
+    { y += 24*gap; const pitch=[64,60,56][f], lgH = pitch*3+44, top=y, circ = tops.length>1 ? 160 : 190, overlap=40;
+      const cH = Math.max(circ, lgH), cy = top + cH/2;
+      const ts = tops.length ? tops : ['X'];
+      ts.forEach((c,i)=>{ const cx = PAD + circ/2 + i*(circ-overlap), R=circ/2;
+        x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.closePath();
+        x.fillStyle = c==='X' ? chamPattern(x, circ/56, cx-R, cy-R) : canvasPattern(x,c,circ/56,cx-R,cy-R); x.fill();
+        x.lineWidth=6; x.strokeStyle=P.card; x.stroke(); });
+      const lx = PAD + circ + (ts.length-1)*(circ-overlap) + 56, rx = W-PAD;
+      TYPES.forEach((c,i)=>{ const ry = cy - lgH/2 + 22 + i*pitch;
+        x.beginPath(); x.arc(lx+18, ry, 18, 0, Math.PI*2); x.fillStyle=canvasPattern(x,c,36/56,lx,ry-18); x.fill();
+        x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(LBL(c), lx+36+14, ry+12);
+        const cr = crownOf(c);
+        if (cr){ const cx0 = lx+36+14+x.measureText(LBL(c)).width+12;
+          x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=2; x.shadowOffsetY=1; x.drawImage(cr, cx0, ry-21, 44, 38); x.restore(); }
+        x.textAlign='right'; x.fillStyle=P.ink; x.font=`700 34px ${SANS}`; x.fillText(`${pr[c]}%`, rx, ry+12); x.textAlign='left'; });
+      y = top + cH; }
+    // 我的超能力
+    { y += 22*gap + 28; x.fillStyle=P.muted; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04); y += 16;
+      const sz=[34,32,30][f], ch=sz*1.6+12; let px=PAD, row=0; x.font=`700 ${sz}px ${SANS}`;
+      powers.forEach(p=>{ const w = Math.min(x.measureText(p).width+44, maxW);
+        if (px>PAD && px+w>W-PAD){ px=PAD; row++; }
+        const cy0 = y + row*(ch+12);
+        x.fillStyle=tint; rr(px, cy0, w, ch, 14); x.fill(); x.fillStyle=P.ink; x.font=`700 ${sz}px ${SANS}`; x.fillText(p, px+22, cy0+ch/2+sz*.36);
+        px += w+12; });
+      y += (row+1)*ch + row*12; }
+    // 四格重點（兩欄；同一列的高度取比較高的那格）
+    { y += 22*gap; const g=22, bw=(maxW-g)/2, padX=28, padY=22, hs=26, sz=[30,28,26][f], lh=sz*1.5;
+      for (let i=0;i<boxes.length;i+=2){
+        const pair = boxes.slice(i,i+2).map(([h,b])=>({h, us:units(b)}));
+        const hgt = Math.max(...pair.map(p=>wrap(p.us, bw-padX*2, sz).length))*lh + hs*1.6 + 8 + padY*2;
+        pair.forEach((p,j)=>{ const bx = PAD + j*(bw+g);
+          x.fillStyle=P.bg; rr(bx, y, bw, hgt, 22); x.fill();
+          x.fillStyle=P.muted; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX, y+padY+hs*1.15, hs*.04);
+          drawRich(p.us, bx+padX, y+padY+hs*1.6+8+sz*1.05, bw-padX*2, sz, lh, P.ink); });
+        y += hgt + (i+2<boxes.length ? g : 0); } }
+    // 朋友認證：這張準不準？
+    { y += 22*gap + 30; x.fillStyle=P.ink; x.font=`700 28px ${SANS}`; spaced(t('img.vote'), PAD, y, 28*.04); y += 18;
+      const opts=[t('img.vote1'), t('img.vote2'), t('img.vote3')], g=18, w=(maxW-g*2)/3, h=80;
+      opts.forEach((s,i)=>{ const bx=PAD+i*(w+g);
+        x.lineWidth=3; x.strokeStyle=P.ink; rr(bx+1.5, y+1.5, w-3, h-3, (h-3)/2); x.stroke();
+        x.font=`700 32px ${SANS}`; const sw=x.measureText(s).width, box=30, tot=box+12+sw, sx=bx+(w-tot)/2;
+        rr(sx+1.5, y+h/2-box/2+1.5, box-3, box-3, 6); x.stroke();
+        x.fillStyle=P.ink; x.fillText(s, sx+box+12, y+h/2+11); });
+      y += h; }
+    return y;
+  }
+  let f=0, end=layout(0);
+  while (end > H-BAND-28 && f<2){ f++; end=layout(f); }
+  const outH = Math.max(H, Math.ceil(end + 28 + BAND));
 
-  const out=document.createElement('canvas'); out.width=W; out.height=y;
-  const o=out.getContext('2d'); o.fillStyle=P.bg; o.fillRect(0,0,W,y);
+  const out=document.createElement('canvas'); out.width=W; out.height=outH;
+  const o=out.getContext('2d'); o.fillStyle=P.card; o.fillRect(0,0,W,outH);
   o.drawImage(cv,0,0);
-  /* 用 blob 網址而不是 data 網址：長圖的 data 網址有好幾 MB，安卓上常常下載失敗 */
+  // 邀請條：貼在最下面，讓看到圖的朋友找得到測驗
+  { const y=outH-BAND, tile=210; o.fillStyle=P.ink; o.fillRect(0, y, W, BAND);
+    o.fillStyle='#FFFFFF'; o.font=`400 46px ${ROUND}`; o.textBaseline='alphabetic';
+    if (qr){
+      o.fillText(t('img.ask1'), PAD, y+92); o.fillText(t('img.ask2'), PAD, y+154);
+      o.fillStyle='rgba(255,255,255,.78)'; o.font=`500 25px ${SANS}`; o.fillText(t('img.scan'), PAD, y+212);
+      o.fillStyle='#FFFFFF'; o.font=`500 27px ${SANS}`; o.fillText(host, PAD, y+252);
+      const qx=W-PAD-tile, qy=y+(BAND-tile)/2;
+      o.fillStyle='#FFFFFF'; o.beginPath(); o.roundRect ? o.roundRect(qx, qy, tile, tile, 16) : o.rect(qx, qy, tile, tile); o.fill();
+      o.imageSmoothingEnabled=false; o.drawImage(qr, qx+21, qy+21, tile-42, tile-42); o.imageSmoothingEnabled=true;
+    } else {
+      o.fillText(t('img.ask1'), PAD, y+124); o.fillText(t('img.ask2'), PAD, y+186);
+      if (host){ o.font=`500 30px ${SANS}`; o.fillText(host, PAD, y+246); }
+    } }
+
+  /* 用 blob 網址而不是 data 網址：data 網址很大，安卓上常常下載失敗 */
   const blob = await new Promise(res=>out.toBlob(res,'image/png'));
   if (lastImage && lastImage.url) URL.revokeObjectURL(lastImage.url);
   const url = URL.createObjectURL(blob);
