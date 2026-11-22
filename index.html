@@ -2185,8 +2185,17 @@ async function buildShareImage(r, reveal){
     return out; };
   const fontOf = (u,size) => `${u.bold?700:400} ${size}px ${SANS}`;
   const uw = (u,size) => { x.font=fontOf(u,size); return x.measureText(u.s).width + (u.chip?18:0); };
+  // 「D 老虎 ＋ S 無尾熊」這種用＋連起來的動物要一起看，整組排在同一行，不從中間斷開（整組比一行還寬時才照常換行）
   const wrap = (us, width, size) => { const lines=[[]]; let w=0; const noStart = /^[，。、：；！？）」』,.!?]$/;
-    us.forEach(u=>{ const ww=uw(u,size); if (w+ww>width && lines[lines.length-1].length && !noStart.test(u.s)){ lines.push([]); w=0; if(u.s===' ') return; } lines[lines.length-1].push(u); w+=ww; });
+    const add = u => { const ww=uw(u,size); if (w+ww>width && lines[lines.length-1].length && !noStart.test(u.s)){ lines.push([]); w=0; if(u.s===' ') return; } lines[lines.length-1].push(u); w+=ww; };
+    for (let i=0;i<us.length;){
+      let end=i+1;
+      if (us[i].chip){ for(;;){ let k=end; while (k<us.length && !us[k].chip && /^[\s＋+]+$/.test(us[k].s)) k++;
+        if (k<us.length && us[k].chip && /[＋+]/.test(us.slice(end,k).map(u=>u.s).join(''))) end=k+1; else break; } }
+      const grp = us.slice(i,end), gw = grp.reduce((a,u)=>a+uw(u,size),0);
+      if (grp.length>1 && gw<=width && w+gw>width && lines[lines.length-1].length){ lines.push([]); w=0; }
+      grp.forEach(u=>{ if (grp.length>1 && gw<=width){ lines[lines.length-1].push(u); w+=uw(u,size); } else add(u); });
+      i=end; }
     return lines; };
   // 畫多行文字；Y 是第一行的基線，回傳最後一行的基線
   function drawRich(us, X, Y, width, size, lh, color){
