@@ -101,17 +101,19 @@ main{max-width:1080px}
 .content{counter-reset:sec}
 .sec{counter-increment:sec}
 .sec h2::before{content:counter(sec,decimal) ". "}
-.toc{counter-reset:t}.toc a::before{counter-increment:t;content:counter(t,decimal) ". ";margin-right:2px}
+.toc{counter-reset:t}.toc>li>a::before{counter-increment:t;content:counter(t,decimal) ". ";margin-right:2px}
 .tbl-wrap{margin:16px 0 8px}.dtbl{width:100%;border-collapse:collapse;font-size:15px}.dtbl th,.dtbl td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}.dtbl thead th{font-weight:500;color:var(--muted);font-size:14px}.dtbl tbody th{border-left:6px solid var(--o);font-weight:500;white-space:nowrap}
 @media (max-width:639px){.dtbl thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.dtbl,.dtbl tbody,.dtbl tr,.dtbl th,.dtbl td{display:block}.dtbl tr{margin:0 0 12px;border:1px solid var(--line);border-left:6px solid var(--o);border-radius:12px;padding:6px 12px}.dtbl tbody th{border:0;padding:6px 0}.dtbl td{border:0;padding:4px 0}.dtbl td::before{content:attr(data-l) ": ";color:var(--muted)}}
 .rbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:transparent;pointer-events:none}.rbar i{display:block;height:100%;width:0;background:var(--accent,var(--ink));transition:width .1s linear}
 @media (prefers-reduced-motion:reduce){.rbar i{transition:none}}
 .outline{margin:22px 0 0;padding:14px 18px;border-left:4px solid var(--accent,var(--ink));background:var(--surface);border-radius:0 12px 12px 0}
 .outline b{display:block;font-family:var(--font-round);font-weight:400;font-size:17px;margin-bottom:4px}
-.outline ol{margin:0;padding:0;list-style:none;counter-reset:o}.outline li{margin:0;counter-increment:o}
+.outline ol{margin:0;padding:0;list-style:none;counter-reset:o}.outline li{margin:0}.outline ol>li{counter-increment:o}
 .outline a{display:flex;align-items:center;min-height:44px;text-decoration:none;font-size:16px}
-.outline a::before{content:counter(o,decimal) ". ";margin-right:4px;color:var(--muted)}
+.outline ol>li>a::before{content:counter(o,decimal) ". ";margin-right:4px;color:var(--muted)}
 .outline a:hover{text-decoration:underline}
+.sub{list-style:none;margin:0;padding:0 0 6px 2.1em}.sub li{margin:0}.sub a{display:flex;align-items:center;gap:10px;min-height:40px;font-size:15px;color:var(--muted);text-decoration:none}.sub a::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--o)}.sub a:hover,.sub a:focus-visible{color:var(--ink);text-decoration:underline}
+@media (min-width:900px){.layout .toc .sub{padding:0 0 4px 12px}.layout .toc .sub a{padding:5px 0;font-size:15px;font-weight:400}}
 @media (max-width:899px){.layout .toc{display:none}}
 .q{border-bottom:1px solid var(--line)}.q summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px}
 .q summary::-webkit-details-marker{display:none}.q summary h3{margin:0;font-size:17px}
@@ -130,7 +132,7 @@ main{max-width:1080px}
 
   <div class="layout">
   <ul class="toc" aria-label="On this page">
-    <li><a href="#what">What the DISC test is</a></li><li><a href="#types">The four styles</a></li><li><a href="#origin">History</a></li><li><a href="#use">What it is for</a></li><li><a href="#limit">Limitations</a></li><li><a href="#faq">FAQ</a></li>
+    <li><a href="#what">What the DISC test is</a></li><li><a href="#types">The four styles</a><ul class="sub"><li><a href="disc-tiger-en.html" style="--o:var(--d)">D Tiger</a></li><li><a href="disc-peacock-en.html" style="--o:var(--i)">I Peacock</a></li><li><a href="disc-koala-en.html" style="--o:var(--s)">S Koala</a></li><li><a href="disc-owl-en.html" style="--o:var(--c)">C Owl</a></li></ul></li><li><a href="#origin">History</a></li><li><a href="#use">What it is for</a></li><li><a href="#limit">Limitations</a></li><li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="content">
     <div class="intro"><div class="in-text">
@@ -139,7 +141,7 @@ main{max-width:1080px}
       <h1>What Is the DISC Behavioral Style Test? <mark>The Four Animals</mark> Explained at a Glance</h1></div>
       <svg class="bn-quad" viewBox="-8 -8 540 540" aria-hidden="true"><g stroke="var(--surface)" stroke-width="12" stroke-linejoin="round"><path d="M262 262L0 262A262 262 0 0 1 262 0Z" fill="url(#patD)"/><path d="M262 262L262 36.7A225.3 225.3 0 0 1 487.3 262Z" fill="url(#patI)"/><path d="M262 262L450.6 262A188.6 188.6 0 0 1 262 450.6Z" fill="url(#patS)"/><path d="M262 262L262 471.6A209.6 209.6 0 0 1 52.4 262Z" fill="url(#patC)"/></g></svg>
       <p class="bn-lab"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg><span>LumineerLab</span></p></div></div>
-      <nav class="outline" aria-label="Article outline"><b>Article outline</b><ol><li><a href="#what">What the DISC test is</a></li><li><a href="#types">What the four styles are</a></li><li><a href="#origin">History</a></li><li><a href="#use">What it can be used for</a></li><li><a href="#limit">Limitations</a></li><li><a href="#faq">FAQ</a></li></ol></nav>
+      <nav class="outline" aria-label="Article outline"><b>Article outline</b><ol><li><a href="#what">What the DISC test is</a></li><li><a href="#types">What the four styles are</a><ul class="sub"><li><a href="disc-tiger-en.html" style="--o:var(--d)">D Tiger</a></li><li><a href="disc-peacock-en.html" style="--o:var(--i)">I Peacock</a></li><li><a href="disc-koala-en.html" style="--o:var(--s)">S Koala</a></li><li><a href="disc-owl-en.html" style="--o:var(--c)">C Owl</a></li></ul></li><li><a href="#origin">History</a></li><li><a href="#use">What it can be used for</a></li><li><a href="#limit">Limitations</a></li><li><a href="#faq">FAQ</a></li></ol></nav>
     </div>
     </div>
   <section class="sec" id="what">
