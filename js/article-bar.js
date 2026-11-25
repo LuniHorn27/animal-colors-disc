@@ -23,7 +23,7 @@
     if ((EN && h.indexOf('zh') === 0) || (!EN && h.indexOf('en') === 0)) altHref = l.getAttribute('href');
   });
   var discHref = EN ? 'disc-en.html' : 'disc.html';
-  var here = location.pathname.replace(/^.*\//, '') || 'index.html';
+  var here = (location.pathname.replace(/^.*\//, '') || 'index').replace(/\.html$/, '') + '.html';
   var ico = function(d, extra){ return '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"'+(extra||'')+'>'+d+'</svg>'; };
 
   var actions = document.createElement('div'); actions.className = 'bar-actions';
