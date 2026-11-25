@@ -108,6 +108,7 @@ main{max-width:1080px}
 .q summary::after{content:"＋";flex:none;font-size:20px;color:var(--muted)}.q[open] summary::after{content:"－"}
 .q p{margin:0 0 16px}
 </style>
+<link rel="stylesheet" href="brand/article-bar.css">
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
 <div class="rbar" aria-hidden="true"><i id="rbar-i"></i></div>
@@ -216,4 +217,5 @@ main{max-width:1080px}
 <script>(function(){var l=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));if(!l.length)return;var s=l.map(function(a){return document.getElementById(a.getAttribute('href').slice(1))});function u(){var h=document.documentElement,k=0,b=window.innerHeight*0.3;s.forEach(function(e,i){if(e&&e.getBoundingClientRect().top<=b)k=i});if(window.scrollY+window.innerHeight>=h.scrollHeight-4)k=s.length-1;l.forEach(function(a,i){a.classList.toggle('on',i===k)})}window.addEventListener('scroll',u,{passive:true});window.addEventListener('resize',u);u()})()</script>
 <script>(function(){var i=document.getElementById('rbar-i');if(!i)return;function u(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;i.style.width=(m>0?Math.min(100,h.scrollTop/m*100):0)+'%'}addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u()})()</script>
 </main>
+<script src="js/article-bar.js"></script>
 </html>
