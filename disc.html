@@ -83,9 +83,12 @@ main{max-width:1080px}
 .content{counter-reset:sec}
 .sec h2::before{counter-increment:sec;content:counter(sec,trad-chinese-informal) "、"}
 .toc{counter-reset:t}.toc a::before{counter-increment:t;content:counter(t,trad-chinese-informal) "、";margin-right:2px}
+.rbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:transparent;pointer-events:none}.rbar i{display:block;height:100%;width:0;background:var(--accent,var(--ink));transition:width .1s linear}
+@media (prefers-reduced-motion:reduce){.rbar i{transition:none}}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
+<div class="rbar" aria-hidden="true"><i id="rbar-i"></i></div>
 <header class="site-bar"><div class="bar-in"><a class="bar-brand" href="./"><img src="brand/logo-mark.svg" alt=""><span>測出你的​動物本色</span></a></div></header>
 <main style="--accent:var(--ink)">
   <div>
@@ -175,5 +178,6 @@ main{max-width:1080px}
   </div>
   <p class="foot"><a href="privacy.html">隱私說明</a></p>
 <script>(function(){var l=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));if(!l.length||!window.IntersectionObserver)return;var m={};l.forEach(function(a){var e=document.getElementById(a.getAttribute('href').slice(1));if(e)m[e.id]=a});var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){l.forEach(function(a){a.classList.remove('on')});m[e.target.id].classList.add('on')}})},{rootMargin:'-20% 0px -70% 0px'});Object.keys(m).forEach(function(k){io.observe(document.getElementById(k))})})()</script>
+<script>(function(){var i=document.getElementById('rbar-i');if(!i)return;function u(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;i.style.width=(m>0?Math.min(100,h.scrollTop/m*100):0)+'%'}addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u()})()</script>
 </main>
 </html>
