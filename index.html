@@ -1217,7 +1217,7 @@ const AI_SITES = {
   claude:{name:'Claude', url:'https://claude.ai/new?q=', home:'https://claude.ai/new'},
   gemini:{name:'Gemini', home:'https://gemini.google.com/app'}
 };
-const AI_URL_MAX = 8000; /* 編碼後網址長度上限；超過就只開首頁，靠貼上 */
+const AI_URL_MAX = 30000; /* 編碼後網址長度上限（Cloudflare 的網址上限約 32KB）；超過就只開首頁，靠貼上 */
 const aiUrl = (site, text) => { const u = site.url ? site.url + encodeURIComponent(text) : ''; return u && u.length <= AI_URL_MAX ? u : site.home; };
 
 /* ===== 3. 抽題與計分（不碰畫面） ===== */
