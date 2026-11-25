@@ -288,8 +288,6 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 /* 之後新增的頁面連結放在 .bar-nav 裡；目前所在頁面加 aria-current="page" */
 .bar-nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;min-width:0}
 .bar-nav:empty{display:none}
-.bar-nav{flex:none}
-@media (max-width:480px){.bar-in{gap:8px}.bar-nav a{padding:0 8px;font-size:14px}}
 .bar-nav a{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:15px;white-space:nowrap}
 .bar-nav a:hover{background:var(--sunk);color:var(--ink)}
 .bar-nav a[aria-current="page"]{color:var(--ink);font-weight:700}
@@ -561,7 +559,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 <header class="site-bar">
   <div class="bar-in">
     <a class="bar-brand" href="./"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z" fill="var(--d)"/><path d="M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z" fill="var(--i)"/><path d="M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z" fill="var(--s)"/><path d="M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z" fill="var(--c)"/></svg><span data-i18n="bar.brand">測出你的​動物本色</span></a>
-    <nav class="bar-nav" aria-label="網站導覽" data-i18n-attr="aria-label:bar.nav"><a href="disc.html" data-i18n="bar.disc">認識 DISC</a></nav>
+    <nav class="bar-nav" aria-label="網站導覽" data-i18n-attr="aria-label:bar.nav"></nav>
     <div class="bar-actions">
       <button type="button" class="bar-btn" id="bar-lang"><span class="lang-k" aria-hidden="true" data-i18n="bar.lang.short">EN</span><span class="lbl" data-i18n="bar.lang">切換成英文 English</span></button>
       <button type="button" class="bar-btn" id="bar-qmode" role="switch" aria-checked="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl" data-i18n="bar.qmode">全部列出</span></button>
@@ -749,6 +747,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   <div class="menu-in" tabindex="-1">
     <div class="menu-grab" aria-hidden="true"></div>
     <button type="button" class="menu-row" id="m-peer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg><span data-i18n="peer.title">換個角度看自己</span></button>
+    <a class="menu-row" href="disc.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg><span data-i18n="bar.disc">認識 DISC</span></a>
     <hr>
     <div id="m-acct">
       <h2 class="menu-sec" data-i18n="menu.account">帳號</h2>
