@@ -192,8 +192,14 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
 .ai3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
 .ai3 .btn{padding:0 6px;font-size:15px;white-space:nowrap}
+#ai-card .btn{transition:transform .12s ease,filter .12s ease,background-color .12s ease}
+#ai-card .btn:active{transform:scale(.95);filter:brightness(1.25)}
+#ai-card .btn:not(.primary):active{filter:none;background:var(--sunk)}
+#ai-card .btn.pressed{animation:ai-pop .5s ease}
+@keyframes ai-pop{0%{box-shadow:0 0 0 0 var(--ink)}60%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
 .ai-copy{margin-top:20px;border-style:dashed;width:100%}
 #ai-card .share-msg{margin-top:12px;min-height:1.4em;color:var(--ink);font-weight:500}
+@media (prefers-reduced-motion:reduce){#ai-card .btn,#ai-card .btn.pressed{transition:none;animation:none}}
 #ai-card details{margin-top:12px}
 #ai-card summary{cursor:pointer;color:var(--muted);font-size:14px}
 .ai-text{display:block;width:100%;height:180px;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);font:inherit;font-size:13px;line-height:1.6;resize:vertical}
@@ -2163,7 +2169,7 @@ function renderResult(){
     $('#make-img').addEventListener('click', ()=>buildShareImage(r, true));
     setupShareDock();
     el.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click', ()=>shareResult(r, b.dataset.share)));
-    el.querySelectorAll('[data-ai]').forEach(b=>b.addEventListener('click', ()=>aiOpen(b.dataset.ai, aiTextFor(r))));
+    el.querySelectorAll('[data-ai]').forEach(b=>b.addEventListener('click', ()=>aiOpen(b.dataset.ai, aiTextFor(r), b)));
     $('#invite').addEventListener('click', inviteFriends);
   }
   $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
@@ -2469,7 +2475,8 @@ async function copyText(t){
 }
 const aiTextFor = r => aiPrompt(r, {rep:REP(), sub:SUBT(), title:titleLines(r).flat().map(p=>p.text).join('')});
 /* 點 AI 按鈕：必須先開新分頁（任何 await 之前，才不會被瀏覽器擋），再複製文字；複製失敗就自動展開全文讓使用者手動複製 */
-async function aiOpen(site, text){
+async function aiOpen(site, text, btn){
+  if (btn){ btn.classList.remove('pressed'); void btn.offsetWidth; btn.classList.add('pressed'); }
   if (site) window.open(aiUrl(AI_SITES[site], text), '_blank', 'noopener');
   const ok = await copyText(text);
   const m = document.querySelector('.share-msg[data-msg="ai"]'), d = $('#ai-preview');
