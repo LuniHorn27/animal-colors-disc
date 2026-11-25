@@ -76,7 +76,7 @@ main{max-width:1080px}
 .tlist{grid-template-columns:1fr 1fr}
 }
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
-.four{display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;border-radius:14px 14px 0 0}.four .hero{border-radius:0}.tlist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.tlist li{margin:0}.tcard{display:flex;flex-direction:column;padding:12px 16px;border:1px solid var(--line);border-left:6px solid var(--o);border-radius:12px;text-decoration:none;line-height:1.6}.tcard span{color:var(--muted);font-size:15px}
+.four{display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;border-radius:14px 14px 0 0}.four .hero{border-radius:0}.tlist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.tlist li{margin:0}.tcard{display:flex;align-items:center;gap:14px;padding:12px 16px 12px 12px;border:1px solid var(--line);border-radius:12px;text-decoration:none;line-height:1.6}.tcard .sw{flex:none;width:56px;height:56px;border-radius:10px}.tcard .tx{display:flex;flex-direction:column}.tcard .tx span{color:var(--muted);font-size:15px}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
@@ -109,10 +109,10 @@ main{max-width:1080px}
   <section class="sec" id="types">
     <h2>四種動物分別是什麼？</h2>
     <ul class="tlist">
-      <li><a href="disc-tiger.html" class="tcard" style="--o:var(--d)"><b>D-老虎型（支配型）</b><span>看準目標就行動，重視結果與效率。</span></a></li>
-      <li><a href="disc-peacock.html" class="tcard" style="--o:var(--i)"><b>I-孔雀型（影響型）</b><span>熱情樂觀、善於表達，帶動氣氛。</span></a></li>
-      <li><a href="disc-koala.html" class="tcard" style="--o:var(--s)"><b>S-無尾熊型（穩定型）</b><span>穩定可靠、體貼包容，重視和諧。</span></a></li>
-      <li><a href="disc-owl.html" class="tcard" style="--o:var(--c)"><b>C-貓頭鷹型（分析型）</b><span>細心嚴謹，用事實和邏輯把事情做對。</span></a></li>
+      <li><a href="disc-tiger.html" class="tcard" style="--o:var(--d)"><svg class="sw" aria-hidden="true"><rect width="100%" height="100%" fill="url(#patD)"/></svg><span class="tx"><b>D-老虎型（支配型）</b><span>看準目標就行動，重視結果與效率。</span></span></a></li>
+      <li><a href="disc-peacock.html" class="tcard" style="--o:var(--i)"><svg class="sw" aria-hidden="true"><rect width="100%" height="100%" fill="url(#patI)"/></svg><span class="tx"><b>I-孔雀型（影響型）</b><span>熱情樂觀、善於表達，帶動氣氛。</span></span></a></li>
+      <li><a href="disc-koala.html" class="tcard" style="--o:var(--s)"><svg class="sw" aria-hidden="true"><rect width="100%" height="100%" fill="url(#patS)"/></svg><span class="tx"><b>S-無尾熊型（穩定型）</b><span>穩定可靠、體貼包容，重視和諧。</span></span></a></li>
+      <li><a href="disc-owl.html" class="tcard" style="--o:var(--c)"><svg class="sw" aria-hidden="true"><rect width="100%" height="100%" fill="url(#patC)"/></svg><span class="tx"><b>C-貓頭鷹型（分析型）</b><span>細心嚴謹，用事實和邏輯把事情做對。</span></span></a></li>
     </ul>
   </section>
 
