@@ -90,6 +90,10 @@ main{max-width:1080px}
 .outline a::before{content:counter(o,trad-chinese-informal) "、";margin-right:4px;color:var(--muted)}
 .outline a:hover{text-decoration:underline}
 @media (max-width:899px){.layout .toc{display:none}}
+.q{border-bottom:1px solid var(--line)}.q summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px}
+.q summary::-webkit-details-marker{display:none}.q summary h3{margin:0;font-size:17px}
+.q summary::after{content:"＋";flex:none;font-size:20px;color:var(--muted)}.q[open] summary::after{content:"－"}
+.q p{margin:0 0 16px}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
@@ -171,12 +175,9 @@ main{max-width:1080px}
 
   <section class="sec" id="faq">
     <h2>常見問題</h2>
-    <h3>I-孔雀型就是愛現嗎？</h3>
-    <p>不是。I-孔雀型的熱情和表達，是他們和人連結、帶動氣氛的方式，並不是為了出風頭。</p>
-    <h3>一個人只會是一種動物嗎？</h3>
-    <p>不會。每個人身上都有四種傾向，也常有兩種都很明顯的情況。</p>
-    <h3>DISC 測驗準嗎？</h3>
-    <p>DISC 是根據你自己的作答描述行為傾向，適合用來認識自己和改善溝通，不是能力評分，也不是診斷工具，結果僅供參考。</p>
+    <details class="q"><summary><h3>I-孔雀型就是愛現嗎？</h3></summary><p>不是。I-孔雀型的熱情和表達，是他們和人連結、帶動氣氛的方式，並不是為了出風頭。</p></details>
+    <details class="q"><summary><h3>一個人只會是一種動物嗎？</h3></summary><p>不會。每個人身上都有四種傾向，也常有兩種都很明顯的情況。</p></details>
+    <details class="q"><summary><h3>DISC 測驗準嗎？</h3></summary><p>DISC 是根據你自己的作答描述行為傾向，適合用來認識自己和改善溝通，不是能力評分，也不是診斷工具，結果僅供參考。</p></details>
   </section>
 
   <section class="sec" aria-labelledby="more">
