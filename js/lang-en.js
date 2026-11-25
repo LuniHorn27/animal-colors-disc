@@ -27,7 +27,7 @@ window.DISC_LANG_EN = {
   "site.desc": "Everyone has a Tiger, a Peacock, a Koala, and an Owl inside, just in different amounts. 46 questions, about 5–10 minutes, to find your inner animal.",
   "bar.brand": "What's Your Inner Animal?",
   "bar.nav": "Site navigation",
-  "bar.disc": "About DISC",
+  "bar.disc": "About the DISC Behavioral Style Assessment",
   "bar.qmode": "Show all questions",
   "bar.theme": "Dark mode",
   "bar.share": "Share this test with friends",
