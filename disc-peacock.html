@@ -77,6 +77,10 @@ main{max-width:1080px}
 .tlist{grid-template-columns:1fr 1fr}
 }
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+.sec{background:none;border:0;border-radius:0;padding:0;margin:48px 0 0}
+.content{counter-reset:sec}.sec[id]{counter-increment:sec}
+.sec[id] h2::before{content:counter(sec,trad-chinese-informal) "、"}
+.toc{counter-reset:t}.toc a::before{counter-increment:t;content:counter(t,trad-chinese-informal) "、";margin-right:2px}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
