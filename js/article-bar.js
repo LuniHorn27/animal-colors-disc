@@ -11,7 +11,7 @@
     shareText:"What's Your Inner Animal? A DISC behavioral style test. In about 5–10 minutes, find out which animals you are!",
     copied:'Copied. Paste it to send to friends.', copyThis:'Copy this link: ', peerUrl:'peer.html?lang=en', navLabel:'Menu'
   } : {
-    menu:'選單', lang:'切換成英文 English', langK:'EN', peer:'換個角度看自己', disc:'認識 DISC',
+    menu:'選單', lang:'切換成英文 English', langK:'EN', peer:'換個角度看自己', disc:'認識 DISC 行為風格測驗',
     settings:'設定', dark:'深色模式', on:'開', off:'關', share:'分享這個測驗給朋友',
     shareTitle:'測出你的動物本色｜DISC 行為風格測驗',
     shareText:'測出你的動物本色：DISC 行為風格測驗，約 5–10 分鐘，看看你是哪幾種動物！',
