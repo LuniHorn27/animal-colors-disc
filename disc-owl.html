@@ -83,6 +83,13 @@ main{max-width:1080px}
 .toc{counter-reset:t}.toc a::before{counter-increment:t;content:counter(t,trad-chinese-informal) "、";margin-right:2px}
 .rbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:transparent;pointer-events:none}.rbar i{display:block;height:100%;width:0;background:var(--accent,var(--ink));transition:width .1s linear}
 @media (prefers-reduced-motion:reduce){.rbar i{transition:none}}
+.outline{margin:0 0 8px;padding:14px 18px;border-left:4px solid var(--accent,var(--ink));background:var(--surface);border-radius:0 12px 12px 0}
+.outline b{display:block;font-family:var(--font-round);font-weight:400;font-size:17px;margin-bottom:4px}
+.outline ol{margin:0;padding:0;list-style:none;counter-reset:o}.outline li{margin:0;counter-increment:o}
+.outline a{display:flex;align-items:center;min-height:44px;text-decoration:none;font-size:16px}
+.outline a::before{content:counter(o,trad-chinese-informal) "、";margin-right:4px;color:var(--muted)}
+.outline a:hover{text-decoration:underline}
+@media (max-width:899px){.layout .toc{display:none}}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
@@ -114,6 +121,7 @@ main{max-width:1080px}
     <li><a href="#what">C-貓頭鷹型是什麼</a></li><li><a href="#pros">優點和盲點</a></li><li><a href="#work">工作環境</a></li><li><a href="#talk">怎麼溝通</a></li><li><a href="#faq">常見問題</a></li>
   </ul>
   <div class="content">
+    <nav class="outline" aria-label="文章大綱"><b>文章大綱</b><ol><li><a href="#what">C-貓頭鷹型是什麼</a></li><li><a href="#pros">優點和盲點</a></li><li><a href="#work">工作環境</a></li><li><a href="#talk">怎麼溝通</a></li><li><a href="#faq">常見問題</a></li></ol></nav>
   <section class="sec" id="what">
     <h2>C-貓頭鷹型是什麼？</h2>
     <p>DISC 是心理學家馬斯頓（William Marston）在 1928 年的著作《Emotions of Normal People》中提出的理論，把行為風格分成 D（支配）、I（影響）、S（穩定）、C（分析）四種傾向。用 D-老虎型、I-孔雀型、S-無尾熊型、C-貓頭鷹型來比喻，是後人為了方便記憶而加的通俗說法。</p>
