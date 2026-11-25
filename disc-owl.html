@@ -64,6 +64,18 @@ a{color:inherit;text-underline-offset:3px}
 .others small{color:var(--muted);font-size:13px}
 .foot{margin-top:28px;font-size:14px;color:var(--muted)}
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+@media (min-width:900px){
+main{max-width:1080px}
+.hero{height:200px}
+.title-card{display:grid;grid-template-columns:1.15fr 1fr;gap:40px;align-items:center;padding-bottom:32px}
+.badge{margin-top:-44px}
+.tc-side{padding-top:28px}
+.tc-side .points{margin-bottom:16px}
+.layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:32px;align-items:start}
+.toc{position:sticky;top:20px;flex-direction:column;flex-wrap:nowrap;gap:6px;margin:16px 0 0}
+.toc a{width:100%;border-radius:12px}
+.tlist{grid-template-columns:1fr 1fr}
+}
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -73,23 +85,28 @@ a{color:inherit;text-underline-offset:3px}
   <div>
     <svg class="hero" aria-hidden="true"><defs><pattern id="pat" width="20" height="16" patternUnits="userSpaceOnUse"><rect width="20" height="16" fill="#6576DC"/><path d="M0 16A10 10 0 0 1 20 16M-10 8A10 10 0 0 1 10 8M10 8A10 10 0 0 1 30 8" fill="none" stroke="#222A6E" stroke-width="2"/></pattern></defs><rect width="100%" height="100%" fill="url(#pat)"/></svg>
     <div class="title-card">
+      <div class="tc-main">
       <svg class="badge" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="34" fill="var(--surface)"/><circle cx="36" cy="36" r="30" fill="url(#pat)"/></svg>
       <p class="kicker">DISC 動物系列｜最後更新：2026 年 11 月 25 日</p>
       <h1>DISC C-貓頭鷹型（分析型）：人格特質、優缺點與相處方式</h1>
       <p class="lead">C-貓頭鷹型是 DISC 的 <b>C 型（Conscientiousness，分析型，也常譯為謹慎型）</b>：細心嚴謹、講求精確，用事實和邏輯把事情做對。</p>
+      </div>
+      <div class="tc-side">
       <ul class="points">
         <li>重視品質和正確性，做決定前先蒐集資料</li>
         <li>精確、分析力強、有條理</li>
         <li>盲點是追求完美，資訊不夠時不容易下決定</li>
       </ul>
       <a class="cta" href="./">想知道你的 C-貓頭鷹型 有多高？開始免費測驗</a>
+      </div>
     </div>
   </div>
 
+  <div class="layout">
   <ul class="toc" aria-label="本頁目錄">
     <li><a href="#what">C-貓頭鷹型是什麼</a></li><li><a href="#pros">優點和盲點</a></li><li><a href="#work">工作環境</a></li><li><a href="#talk">怎麼溝通</a></li><li><a href="#faq">常見問題</a></li>
   </ul>
-
+  <div class="content">
   <section class="sec" id="what">
     <h2>C-貓頭鷹型是什麼？</h2>
     <p>DISC 是心理學家馬斯頓（William Marston）在 1928 年的著作《Emotions of Normal People》中提出的理論，把行為風格分成 D（支配）、I（影響）、S（穩定）、C（分析）四種傾向。用 D-老虎型、I-孔雀型、S-無尾熊型、C-貓頭鷹型來比喻，是後人為了方便記憶而加的通俗說法。</p>
@@ -157,6 +174,8 @@ a{color:inherit;text-underline-offset:3px}
     <p style="margin-top:16px"><a href="disc.html">DISC 是什麼？四種動物一次看懂</a></p>
   </section>
 
+  </div>
+  </div>
   <p class="foot"><a href="privacy.html">隱私說明</a></p>
 </main>
 </html>
