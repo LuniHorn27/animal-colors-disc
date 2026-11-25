@@ -77,7 +77,7 @@ main{max-width:1080px}
 .tlist{grid-template-columns:1fr 1fr}
 }
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
-.four{display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;border-radius:14px 14px 0 0}.four .hero{border-radius:0}.tlist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.tlist li{margin:0}.tcard{display:flex;align-items:center;gap:14px;padding:12px 16px 12px 12px;border:1px solid var(--line);border-radius:12px;text-decoration:none;line-height:1.6}.tcard .sw{flex:none;width:56px;height:56px;border-radius:50%}.tcard .tx{display:flex;flex-direction:column}.tcard .tx span{color:var(--muted);font-size:15px}.nohero{border-top:1px solid var(--line);border-radius:14px}.quad{margin:20px 0 0}.qgrid{display:grid;grid-template-columns:2.2em 1fr 1fr 2.2em;grid-template-rows:auto 1fr 1fr auto;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}.ax{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--ink);background:var(--bg);padding:6px 0}.ax-t{grid-column:2/4;grid-row:1}.ax-b{grid-column:2/4;grid-row:4}.ax-l{grid-column:1;grid-row:2/4;writing-mode:vertical-rl}.ax-r{grid-column:4;grid-row:2/4;writing-mode:vertical-rl}.qc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:18px 8px;text-align:center;text-decoration:none;line-height:1.5;border:0 solid var(--line)}.qc .sw{width:clamp(56px,16vw,88px);height:clamp(56px,16vw,88px);border-radius:50%;margin-bottom:6px}.qc span{color:var(--muted);font-size:15px}.qc:hover b,.qc:focus-visible b{text-decoration:underline;text-decoration-color:var(--o);text-decoration-thickness:3px}.qgrid .qc:nth-of-type(1){grid-area:2/2;border-right-width:1px;border-bottom-width:1px}.qgrid .qc:nth-of-type(2){grid-area:2/3;border-bottom-width:1px}.qgrid .qc:nth-of-type(3){grid-area:3/2;border-right-width:1px}.qgrid .qc:nth-of-type(4){grid-area:3/3}.quad figcaption{margin-top:10px;color:var(--muted);font-size:15px;line-height:1.7}
+.four{display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;border-radius:14px 14px 0 0}.four .hero{border-radius:0}.tlist{list-style:none;padding:0;margin:0;display:grid;gap:10px}.tlist li{margin:0}.tcard{display:flex;align-items:center;gap:14px;padding:12px 16px 12px 12px;border:1px solid var(--line);border-radius:12px;text-decoration:none;line-height:1.6}.tcard .sw{flex:none;width:56px;height:56px;border-radius:50%}.tcard .tx{display:flex;flex-direction:column}.tcard .tx span{color:var(--muted);font-size:15px}.intro{display:grid;gap:20px;padding:20px 0 0}.in-text .kicker{margin:0 0 6px}.in-text h1{margin:0 0 10px}.in-text .points{margin:14px 0}.quad{margin:0}.qgrid{display:grid;grid-template-columns:1.6em 1fr 1fr 1.6em;grid-template-rows:auto 1fr 1fr auto}.ax{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:var(--muted);padding:4px 0}.ax-t{grid-column:2/4;grid-row:1}.ax-b{grid-column:2/4;grid-row:4}.ax-l{grid-column:1;grid-row:2/4;writing-mode:vertical-rl}.ax-r{grid-column:4;grid-row:2/4;writing-mode:vertical-rl}.qc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:12px 6px;text-align:center;text-decoration:none;line-height:1.45;border:0 solid var(--line)}.qc .sw{width:clamp(48px,14vw,64px);height:clamp(48px,14vw,64px);border-radius:50%;margin-bottom:4px}.qc span{color:var(--muted);font-size:14px}.qc:hover b,.qc:focus-visible b{text-decoration:underline;text-decoration-color:var(--o);text-decoration-thickness:3px}.qgrid .qc:nth-of-type(1){grid-area:2/2;border-right-width:1px;border-bottom-width:1px}.qgrid .qc:nth-of-type(2){grid-area:2/3;border-bottom-width:1px}.qgrid .qc:nth-of-type(3){grid-area:3/2;border-right-width:1px}.qgrid .qc:nth-of-type(4){grid-area:3/3}.quad figcaption{margin-top:8px;color:var(--muted);font-size:14px;line-height:1.6}@media (min-width:900px){.intro{grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;padding-top:32px}.in-text h1{font-size:clamp(30px,3.2vw,38px)}}
 </style>
 <script>try{const t=localStorage.getItem('disc-theme'); if(t==='dark'||t==='light') document.documentElement.dataset.theme=t;}catch(e){}</script>
 
@@ -85,20 +85,16 @@ main{max-width:1080px}
 <main style="--accent:var(--ink)">
   <div>
     <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="patD" width="44" height="44" patternUnits="userSpaceOnUse" patternTransform="rotate(-32) scale(.9)"><rect width="44" height="44" fill="#D66A14"/><path d="M0 9C11 3 24 15 44 7L44 14C25 22 11 10 0 15Z" fill="#3A1C07"/><path d="M0 31C13 26 27 37 44 30L44 35C27 43 13 32 0 37Z" fill="#3A1C07"/></pattern><pattern id="patI" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#11968A"/><ellipse cx="10" cy="11" rx="8" ry="10" fill="#0B4F66"/><ellipse cx="10" cy="12" rx="5" ry="6.4" fill="#F3C24F"/><ellipse cx="10" cy="13" rx="2.8" ry="2.8" fill="#142A4C"/><ellipse cx="30" cy="31" rx="8" ry="10" fill="#0B4F66"/><ellipse cx="30" cy="32" rx="5" ry="6.4" fill="#F3C24F"/><ellipse cx="30" cy="33" rx="2.8" ry="2.8" fill="#142A4C"/></pattern><pattern id="patS" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#5E9A47"/><ellipse cx="9" cy="10" rx="3.6" ry="8.5" transform="rotate(38 9 10)" fill="#3C6B30"/><ellipse cx="27" cy="27" rx="3.6" ry="8.5" transform="rotate(-38 27 27)" fill="#3C6B30"/><ellipse cx="27" cy="8" rx="2.2" ry="2.2" fill="#DCEBD3"/><ellipse cx="9" cy="28" rx="2.2" ry="2.2" fill="#DCEBD3"/></pattern><pattern id="patC" width="20" height="16" patternUnits="userSpaceOnUse"><rect width="20" height="16" fill="#6576DC"/><path d="M0 16A10 10 0 0 1 20 16M-10 8A10 10 0 0 1 10 8M10 8A10 10 0 0 1 30 8" fill="none" stroke="#222A6E" stroke-width="2"/></pattern></defs></svg>
-    <div class="title-card nohero">
-      <div class="tc-main">
-      <p class="kicker" style="margin-top:20px">DISC 動物系列｜最後更新：2026 年 11 月 25 日</p>
+    <div class="intro"><div class="in-text">
+      <p class="kicker">DISC 動物系列｜最後更新：2026 年 11 月 25 日</p>
       <h1>DISC 是什麼？四種動物行為風格一次看懂</h1>
       <p class="lead">DISC 是一套描述「行為風格」的工具，把人的行事傾向分成 <b>D（支配）、I（影響）、S（穩定）、C（分析）</b>四種，我們用 D-老虎型、I-孔雀型、S-無尾熊型、C-貓頭鷹型來比喻。</p>
-      </div>
-      <div class="tc-side">
       <ul class="points">
         <li>描述的是做事和溝通的習慣，不是能力高低</li>
         <li>每個人都有四種傾向，只是比例不同</li>
         <li>適合用來認識自己、改善和別人的溝通</li>
       </ul>
       <a class="cta" href="./">開始免費測驗</a>
-      </div>
     </div>
     <figure class="quad">
       <div class="qgrid">
@@ -107,6 +103,7 @@ main{max-width:1080px}
       </div>
       <figcaption>橫軸看注意力放在「事情」還是「人」，縱軸看習慣主動出手還是先觀察。點動物可看詳細介紹。</figcaption>
     </figure>
+    </div>
   </div>
 
   <div class="layout">
