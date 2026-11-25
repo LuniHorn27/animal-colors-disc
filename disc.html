@@ -92,6 +92,8 @@ main{max-width:1080px}
 .sec{counter-increment:sec}
 .sec h2::before{content:counter(sec,trad-chinese-informal) "、"}
 .toc{counter-reset:t}.toc a::before{counter-increment:t;content:counter(t,trad-chinese-informal) "、";margin-right:2px}
+.tbl-wrap{margin:16px 0 8px}.dtbl{width:100%;border-collapse:collapse;font-size:15px}.dtbl th,.dtbl td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}.dtbl thead th{font-weight:500;color:var(--muted);font-size:14px}.dtbl tbody th{border-left:6px solid var(--o);font-weight:500;white-space:nowrap}
+@media (max-width:639px){.dtbl thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.dtbl,.dtbl tbody,.dtbl tr,.dtbl th,.dtbl td{display:block}.dtbl tr{margin:0 0 12px;border:1px solid var(--line);border-left:6px solid var(--o);border-radius:12px;padding:6px 12px}.dtbl tbody th{border:0;padding:6px 0}.dtbl td{border:0;padding:4px 0}.dtbl td::before{content:attr(data-l) "：";color:var(--muted)}}
 .rbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:transparent;pointer-events:none}.rbar i{display:block;height:100%;width:0;background:var(--accent,var(--ink));transition:width .1s linear}
 @media (prefers-reduced-motion:reduce){.rbar i{transition:none}}
 .outline{margin:22px 0 0;padding:14px 18px;border-left:4px solid var(--accent,var(--ink));background:var(--surface);border-radius:0 12px 12px 0}
@@ -169,12 +171,23 @@ main{max-width:1080px}
 
   <section class="sec" id="use">
     <h2>DISC 行為風格測驗可以用來做什麼？</h2>
-    <ul>
-      <li><b>認識自己：</b>知道自己在什麼情況下比較自在、什麼情況下容易累。</li>
-      <li><b>改善溝通：</b>了解對方的習慣，調整說話和合作的方式。</li>
-      <li><b>團隊合作：</b>看見大家的差異，讓分工更順。</li>
-    </ul>
-    <p>很多企業和學校會把它放在團隊活動、溝通課程裡，因為它的語言簡單，大家很快就能聊起來。</p>
+    <p>DISC 行為風格測驗最實用的地方，是給你一套大家都聽得懂的共同語言，讓人討論「做事方式不同」，而不是互相指責。先看這張一覽表，下面三點都會用到：</p>
+    <div class="tbl-wrap"><table class="dtbl">
+      <thead><tr><th scope="col">風格</th><th scope="col">擅長發揮</th><th scope="col">容易吃力的情況</th><th scope="col">跟他溝通時</th></tr></thead>
+      <tbody>
+        <tr style="--o:var(--d)"><th scope="row">D 老虎型</th><td data-l="擅長發揮">快速拍板、帶頭衝刺</td><td data-l="容易吃力的情況">被卡住、被限制手腳</td><td data-l="跟他溝通時">先講結論與重點</td></tr>
+        <tr style="--o:var(--i)"><th scope="row">I 孔雀型</th><td data-l="擅長發揮">帶動氣氛、點子多</td><td data-l="容易吃力的情況">長時間獨自作業、沒人回應</td><td data-l="跟他溝通時">先聊感受，給他表達空間</td></tr>
+        <tr style="--o:var(--s)"><th scope="row">S 無尾熊型</th><td data-l="擅長發揮">穩穩陪伴、長期維持</td><td data-l="容易吃力的情況">被催著立刻決定、突然改變</td><td data-l="跟他溝通時">給時間消化，不逼當場表態</td></tr>
+        <tr style="--o:var(--c)"><th scope="row">C 貓頭鷹型</th><td data-l="擅長發揮">顧好細節、把關品質</td><td data-l="容易吃力的情況">資訊不夠、標準不清楚</td><td data-l="跟他溝通時">準備好資料與理由</td></tr>
+      </tbody>
+    </table></div>
+    <h3>1. 認識自己</h3>
+    <p>看表中「擅長發揮」那欄，知道自己的強項，就能放心把力氣用在這裡；再看「容易吃力」那欄，知道什麼情況要提早照顧自己。回想最近一次特別順或特別累的情境，對照看看就有感覺。</p>
+    <h3>2. 改善溝通</h3>
+    <p>看表中「跟他溝通時」那欄：同一件事換個說法，對方比較聽得進去。這不是討好，而是少一點「我明明說清楚了，他怎麼沒懂」。</p>
+    <h3>3. 團隊合作與職涯探索</h3>
+    <p>看見差異，就能把「態度問題」變成分工：拍板衝刺找 D、對外說明找 I、長期照顧找 S、把關細節找 C。它不會告訴你該做什麼職業，但能幫你想清楚自己偏好的工作節奏與環境。</p>
+    <p>用的時候記得：拿來問問題，不要拿來下結論。</p>
   </section>
 
   <section class="sec" id="limit">
