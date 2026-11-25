@@ -63,7 +63,12 @@ a{color:inherit;text-underline-offset:3px}
 .callout{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:0 12px 12px 0;padding:12px 16px;margin:16px 0 0}
 .callout p{margin:0}
 .others{display:flex;justify-content:center;gap:clamp(14px,5vw,40px);margin:8px 0 0;padding:0;list-style:none}.others li{margin:0}.others a{display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;line-height:1.4;text-align:center}.others svg{width:clamp(76px,24vw,120px);height:auto;display:block}.others small{color:var(--muted);font-size:13px}
-.foot{margin-top:28px;font-size:14px;color:var(--muted)}
+.site-footer{margin-top:28px;border-top:1px solid var(--line);padding:16px 8px calc(18px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:13px;line-height:1.8;white-space:nowrap}
+.site-footer a{color:inherit;font-size:inherit;text-decoration:none;margin:0 4px}
+.site-footer a:hover{text-decoration:underline}
+@media (max-width:480px){.site-footer{font-size:12px;padding-inline:4px;white-space:normal}.site-footer a{margin-inline:2px}}
+.site-footer .lab-link{display:inline-flex;align-items:center;gap:6px}
+.site-footer .lab-mark{width:16px;height:16px;flex:none}
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 @media (min-width:900px){
 main{max-width:1080px}
@@ -180,7 +185,12 @@ main{max-width:1080px}
 
   </div>
   </div>
-  <p class="foot"><a href="privacy.html">隱私說明</a></p>
+  <footer class="site-footer" aria-label="頁尾連結">
+  <a href="privacy.html">隱私權</a><span aria-hidden="true">｜</span>
+  <a href="./">心得回饋</a><span aria-hidden="true">｜</span>
+  <a href="mailto:hello@lumineerlab.com">聯絡我們</a><span aria-hidden="true">｜</span>
+  <a class="lab-link" href="/" aria-label="尋光引路實驗室 LumineerLab"><svg class="lab-mark" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg><span>尋光引路實驗室 LumineerLab</span></a>
+</footer>
 <script>(function(){var i=document.getElementById('rbar-i');if(!i)return;function u(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;i.style.width=(m>0?Math.min(100,h.scrollTop/m*100):0)+'%'}addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u()})()</script>
 </main>
 </html>
