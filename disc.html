@@ -81,7 +81,8 @@ main{max-width:1080px}
 .intro .cta{margin:0 0 4px}@media (max-width:899px){.layout .toc{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px 24px;margin:20px 0 24px;padding:12px 0 0;border:0;border-top:2px solid var(--line)}.layout .toc a{display:inline;padding:6px 0;margin:0;border:0;min-height:0;text-decoration:underline;text-decoration-color:var(--line);text-decoration-thickness:2px;text-underline-offset:6px}}@media (min-width:900px){.layout .toc{position:sticky;top:24px;align-self:start;display:block;margin:0;padding:4px 0 4px 20px;border:0;border-left:2px solid var(--line)}.layout .toc::before{content:"目錄";display:block;margin-bottom:10px;font-size:15px;color:var(--muted)}.layout .toc a{display:block;padding:9px 0;margin:0;border:0;min-height:0;text-decoration:none;color:var(--muted);font-size:17px;font-weight:700;transition:color .15s}.layout .toc a:hover{color:var(--ink)}.layout .toc a.on{color:var(--d)}}.toc a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}@media (max-width:899px){.layout{display:flex;flex-direction:column}.layout .content{display:contents}.intro{order:0}.layout .toc{order:1}.layout .sec{order:2}}
 .sec{background:none;border:0;border-radius:0;padding:0;margin:48px 0 0}
 .content{counter-reset:sec}
-.sec h2::before{counter-increment:sec;content:counter(sec,trad-chinese-informal) "、"}
+.sec{counter-increment:sec}
+.sec h2::before{content:counter(sec,trad-chinese-informal) "、"}
 .toc{counter-reset:t}.toc a::before{counter-increment:t;content:counter(t,trad-chinese-informal) "、";margin-right:2px}
 .rbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:transparent;pointer-events:none}.rbar i{display:block;height:100%;width:0;background:var(--accent,var(--ink));transition:width .1s linear}
 @media (prefers-reduced-motion:reduce){.rbar i{transition:none}}
