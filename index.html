@@ -747,7 +747,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
   <div class="menu-in" tabindex="-1">
     <div class="menu-grab" aria-hidden="true"></div>
     <button type="button" class="menu-row" id="m-peer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg><span data-i18n="peer.title">換個角度看自己</span></button>
-    <a class="menu-row" href="disc.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg><span data-i18n="bar.disc">認識 DISC</span></a>
+    <a class="menu-row" id="menu-disc" href="disc.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg><span data-i18n="bar.disc">認識 DISC</span></a>
     <hr>
     <div id="m-acct">
       <h2 class="menu-sec" data-i18n="menu.account">帳號</h2>
@@ -1310,6 +1310,7 @@ function applyStatic(){
   document.querySelectorAll('[data-i18n]').forEach(e=>{ e.textContent = t(e.dataset.i18n); });
   document.querySelectorAll('[data-i18n-animal]').forEach(e=>{ e.textContent = L.animal[e.dataset.i18nAnimal]; });
   document.querySelectorAll('[data-i18n-attr]').forEach(e=>e.dataset.i18nAttr.split(';').forEach(p=>{ const [a,k]=p.split(':'); e.setAttribute(a, t(k)); }));
+  const discLink = document.getElementById('menu-disc'); if (discLink) discLink.href = L.code==='en' ? 'disc-en.html' : 'disc.html';   // 選單的「認識 DISC」依語言連到中文或英文文章
   document.querySelectorAll('select option').forEach(o=>{ o.textContent = o.value==='' ? t('info.choose') : ((L.opts||{})[o.value] ?? o.value); });
 }
 const STORE='disc-proto-v1';
