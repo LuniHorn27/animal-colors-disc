@@ -36,9 +36,15 @@ ul{margin:0 0 14px;padding-left:22px}
 li{margin:8px 0}
 a{color:inherit;text-underline-offset:3px}
 .muted{color:var(--muted);font-size:14px;margin:0}
-.hero{display:block;width:100%;height:clamp(104px,22vw,160px);border-radius:14px 14px 0 0}
-.title-card{position:relative;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;padding:0 clamp(18px,4vw,32px) 24px}
-.badge{display:block;width:72px;height:72px;margin-top:-36px;margin-bottom:10px}
+.bn-wrap{container-type:inline-size}
+.banner{display:grid;grid-template-columns:1fr 26%;grid-template-rows:1fr auto;gap:12px 4%;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4cqw,36px);margin:12px 0 16px}
+.bn-text{grid-row:1}.bn-brand{display:flex;align-items:center;gap:10px;margin:0 0 clamp(14px,3cqw,28px);font-family:var(--font-round);font-size:clamp(15px,2.6cqw,22px);color:var(--ink)}.bn-brand img{width:clamp(26px,4.4cqw,40px);height:auto}
+.bn-wrap .banner h1{font-family:var(--font-round);font-weight:400;margin:0;color:var(--ink);font-size:clamp(20px,4.25cqw,44px);line-height:1.35;word-break:keep-all;isolation:isolate}
+.banner h1 mark{position:relative;background:none;color:inherit;padding:0}.banner h1 mark::after{content:"";position:absolute;left:-.06em;right:-.06em;bottom:-.04em;height:.3em;background:#F3C24F;border-radius:999px;z-index:-1}
+.bn-art{grid-column:2;grid-row:1/3;width:100%;height:auto}
+.bn-lab{grid-row:2;display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--muted)}.bn-lab svg{width:20px;height:20px;flex:none}
+@container (max-width:560px){.banner{grid-template-columns:1fr;grid-template-rows:auto auto;padding:20px 20px 14px;position:relative;gap:14px;overflow:hidden}.bn-wrap .banner h1{font-size:calc((100cqw - 40px)/13.9)}.bn-art{position:absolute;right:-70px;bottom:-70px;width:140px;grid-column:auto;grid-row:auto}.bn-text{grid-column:1}.bn-lab{grid-column:1;grid-row:2;justify-self:start;font-size:11px;gap:5px;opacity:.85}.bn-lab svg{width:14px;height:14px}}
+.title-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px clamp(18px,4vw,32px) 8px}
 .kicker{font-size:14px;color:var(--muted);margin:0}
 .lead{font-size:19px;line-height:1.7;margin-bottom:14px}
 .points{background:var(--bg);border-radius:12px;padding:14px 18px 14px 36px;margin-bottom:18px}
@@ -66,10 +72,8 @@ a{color:inherit;text-underline-offset:3px}
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 @media (min-width:900px){
 main{max-width:1080px}
-.hero{height:200px}
 .title-card{display:grid;grid-template-columns:1.15fr 1fr;gap:40px;align-items:center;padding-bottom:32px}
-.badge{margin-top:-44px}
-.tc-side{padding-top:28px}
+.tc-side{padding-top:0}
 .tc-side .points{margin-bottom:16px}
 .layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:32px;align-items:start}
 .toc{position:sticky;top:20px;flex-direction:column;flex-wrap:nowrap;gap:6px;margin:16px 0 0}
@@ -101,12 +105,14 @@ main{max-width:1080px}
 <header class="site-bar"><div class="bar-in"><a class="bar-brand" href="./"><img src="brand/logo-mark.svg" alt=""><span>測出你的​動物本色</span></a></div></header>
 <main style="--accent:var(--s)">
   <div>
-    <svg class="hero" aria-hidden="true"><defs><pattern id="pat" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#5E9A47"/><ellipse cx="9" cy="10" rx="3.6" ry="8.5" transform="rotate(38 9 10)" fill="#3C6B30"/><ellipse cx="27" cy="27" rx="3.6" ry="8.5" transform="rotate(-38 27 27)" fill="#3C6B30"/><ellipse cx="27" cy="8" rx="2.2" ry="2.2" fill="#DCEBD3"/><ellipse cx="9" cy="28" rx="2.2" ry="2.2" fill="#DCEBD3"/></pattern></defs><rect width="100%" height="100%" fill="url(#pat)"/></svg>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="pat" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#5E9A47"/><ellipse cx="9" cy="10" rx="3.6" ry="8.5" transform="rotate(38 9 10)" fill="#3C6B30"/><ellipse cx="27" cy="27" rx="3.6" ry="8.5" transform="rotate(-38 27 27)" fill="#3C6B30"/><ellipse cx="27" cy="8" rx="2.2" ry="2.2" fill="#DCEBD3"/><ellipse cx="9" cy="28" rx="2.2" ry="2.2" fill="#DCEBD3"/></pattern></defs></svg>
+    <p class="kicker">DISC 動物系列｜最後更新：2026 年 11 月 25 日</p>
+    <div class="bn-wrap"><div class="banner"><div class="bn-text"><p class="bn-brand"><img src="brand/logo-mark.svg" alt=""><span>測出你的動物本色</span></p>
+    <h1>DISC 行為風格測驗<br><mark>S 無尾熊型</mark> 完整解析</h1></div>
+    <svg class="bn-art" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="url(#pat)"/></svg>
+    <p class="bn-lab"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg><span>尋光引路實驗室 LumineerLab</span></p></div></div>
     <div class="title-card">
       <div class="tc-main">
-      <svg class="badge" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="34" fill="var(--surface)"/><circle cx="36" cy="36" r="30" fill="url(#pat)"/></svg>
-      <p class="kicker">DISC 動物系列｜最後更新：2026 年 11 月 25 日</p>
-      <h1>DISC S-無尾熊型（穩定型）：人格特質、優缺點與相處方式</h1>
       <p class="lead">S-無尾熊型是 DISC 的 <b>S 型（Steadiness，穩定型）</b>：穩定可靠、體貼包容，是大家最安心的依靠。</p>
       </div>
       <div class="tc-side">
