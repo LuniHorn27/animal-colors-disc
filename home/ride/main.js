@@ -9,16 +9,60 @@ import { drawRider } from './rider.js';
 import { drawDarkness, drawLampGlow, drawGlow } from './light.js';
 import { drawHutStructure, drawHutLights, drawClosedCabin } from './hut.js';
 import { createUi } from './ui.js';
+import { initMusicControls } from './music.js';
+import { createAnimals, drawAnimals, animalLightHoles } from './animals.js';
+
+initMusicControls();
 
 const canvas = document.getElementById('stage');
 const ctx = canvas.getContext('2d');
 const odo = document.getElementById('odo');
 const hint = document.getElementById('hint');
+const hutTransition = document.getElementById('hutTransition');
+const entryTransition = document.getElementById('entryTransition');
 const { placed, worldLength } = placeTools(TOOLS);
 const scenery = buildScenery(worldLength, [START_X, worldLength, ...placed.map((p) => p.x)]);
-const cfg = VEHICLES.bicycle;
+const animals = createAnimals(worldLength);
+const cfg = window.matchMedia('(pointer: coarse)').matches
+  ? { ...VEHICLES.bicycle, vmax: 240 } // 手機觸控時降低最高速度，讓短按更容易控制
+  : VEHICLES.bicycle;
 const bounds = { min: START_X - 10, max: worldLength };
 const input = createInput(window);
+let enteringHut = false;
+function enterHut(href) {
+  if (enteringHut) return;
+  enteringHut = true;
+  if (!hutTransition) {
+    window.location.assign(href);
+    return;
+  }
+
+  document.documentElement.classList.add('entering-hut');
+  const target = placed.find((tool) => tool.status === 'open' && Math.abs(v.x - tool.x) < 170);
+  if (target && entryTransition) {
+    entryTransition.style.setProperty('--entry-x', `${target.x - camX}px`);
+    entryTransition.style.setProperty('--entry-y', `${H * 0.7 + groundY(target.x) - camY - 36}px`);
+  }
+  entryTransition?.classList.add('active');
+
+  let timer;
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    window.clearTimeout(timer);
+    hutTransition.removeEventListener('ended', finish);
+    window.location.assign(href);
+  };
+  hutTransition.volume = 0.32;
+  hutTransition.currentTime = 0;
+  hutTransition.addEventListener('ended', finish, { once: true });
+  timer = window.setTimeout(finish, 1850);
+  hutTransition.play().catch(() => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(finish, 1850);
+  });
+}
 // 作業系統開了「減少動態」：關閉閃爍、螢火蟲飄動、炊煙、車身起伏（仍可手動騎車）
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
@@ -27,6 +71,7 @@ let v = { x: 240, vx: 0, face: 1 };
 // Tab 聚焦到山屋連結時，把玩家移到山屋前 200 像素，相機自然跟過去
 const ui = createUi(document.getElementById('overlay'), placed, {
   input,
+  onEnterTool: enterHut,
   onFocusTool(x) { v = { ...v, x: Math.min(Math.max(x - 200, START_X - 10), worldLength), vx: 0, face: 1 }; },
 });
 const openTools = placed.filter((p) => p.status === 'open');
@@ -66,6 +111,7 @@ function frame(t) {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
   drawScene(ctx, { w: W, h: H, camX, camY, t, reduced }, scenery, placed, worldLength);
+  drawAnimals(ctx, { w: W, h: H, camX, camY, t, reduced }, animals, S, v.x);
   placed.forEach((p) => { if (p.status !== 'open') drawClosedCabin(ctx, { w: W, h: H, camX, camY }, p.x); });
   const hutView = { w: W, h: H, camX, camY };
   openTools.forEach((p) => { const hx = p.x - camX; if (hx > -200 && hx < W + 200) drawHutStructure(ctx, hutView, p.x); });
@@ -78,6 +124,7 @@ function frame(t) {
   const flicker = reduced ? 1 : 1 + 0.03 * Math.sin(t * 0.011) + 0.02 * Math.sin(t * 0.027);
   drawDarkness(ctx, { w: W, h: H, dpr: DPR }, lamp, aim, { len: lp.len * S, half: lp.half, flicker },
     [{ x: X, y: Y - 40 * S, r: 130 * S, a: 0.9 },
+      ...animalLightHoles(animals, v.x, camX, W, H, camY),
       ...openTools.filter((p) => p.x - camX > -400 && p.x - camX < W + 400)
         .map((p) => ({ x: p.x - camX, y: H * 0.7 + groundY(p.x) - camY - 60, r: 320, a: 0.8 }))]);
   drawLampGlow(ctx, lamp, aim, X, Y, S);

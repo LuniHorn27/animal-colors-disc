@@ -16,10 +16,11 @@ if(location.hostname==='animal-colors-disc.pages.dev'){var p=location.pathname;i
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="/home.css">
+<link rel="stylesheet" href="/home.css?v=19fda26">
 </head>
 <body>
 <canvas id="stage" aria-hidden="true"></canvas>
+<div class="entry-transition" id="entryTransition" aria-hidden="true"><span></span><span></span><span></span></div>
 <div class="brand"><b>尋光引路實驗室</b><br>lumineer.lab</div>
 <a class="skip" id="skip" href="/animal-colors-disc/"><span class="skip-long">略過，直接前往 ›</span><span class="skip-short">略過 ›</span></a>
 <!-- 山屋連結、「？」標籤、邊緣方向提示都由 ride/ui.js 依工具資料產生到這裡 -->
@@ -27,6 +28,15 @@ if(location.hostname==='animal-colors-disc.pages.dev'){var p=location.pathname;i
 <div class="hint" id="hint"><span class="kbd">按 ← → 騎車</span><span class="touch">按住下方按鈕騎車</span></div>
 <div class="odo" id="odo"></div>
 <a class="about" href="/about/">關於</a>
+<audio id="backgroundMusic" src="/audio/sunset-plains.mp3" loop preload="auto"></audio>
+<audio id="hutTransition" src="/audio/portal-entry-preview.mp3" preload="auto"></audio>
+<button class="music-toggle" id="musicToggle" type="button" aria-label="靜音背景音樂" aria-pressed="true">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path class="speaker" d="M3 9v6h4l5 4V5L7 9H3Z"></path>
+    <path class="sound-waves" d="M15 9a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"></path>
+    <path class="muted-mark" d="m16 9 5 6m0-6-5 6"></path>
+  </svg>
+</button>
 <noscript>
   <main class="plain">
     <h1>尋光引路實驗室</h1>
@@ -35,6 +45,6 @@ if(location.hostname==='animal-colors-disc.pages.dev'){var p=location.pathname;i
     <ul><li><a href="/animal-colors-disc/">找尋你的動物本色</a></li></ul>
   </main>
 </noscript>
-<script type="module" src="/ride/main.js"></script>
+<script type="module" src="/ride/main.js?v=19fda26"></script>
 </body>
 </html>

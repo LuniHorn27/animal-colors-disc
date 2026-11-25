@@ -28,17 +28,18 @@
    Brand 動物本色 (brand/tokens.css): neutral 霧白 ground so the four animal colors stay equal; buttons use ink, never an animal color. */
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:16px;line-height:1.75;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:16px;line-height:1.75;margin:0;min-height:100vh;display:flex;flex-direction:column}
 .wrap{width:100%;padding-inline:clamp(16px,4vw,48px);padding-block:28px 64px}
+.site-footer{margin-top:auto;border-top:1px solid var(--line);padding:16px 8px calc(18px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:13px;line-height:1.8;white-space:nowrap}
+.site-footer a{color:inherit;font-size:inherit;text-decoration:none;margin:0 4px}
+.site-footer a:hover{text-decoration:underline}
+@media (max-width:480px){.site-footer{font-size:12px;padding-inline:4px}.site-footer a{margin-inline:2px}}
 #s-home,#s-quiz,#s-info,#s-blind,#s-result,#s-history{max-width:800px;margin-inline:auto}
 .home-col{display:flex;flex-direction:column;gap:16px;padding-block:clamp(8px,3vh,32px)}
 .home-col h1{font-size:clamp(34px,5vw,52px);margin-bottom:4px}
 .home-col .types{margin:8px 0}
-.home-lab{margin:24px 0 0;padding-top:8px;border-top:1px solid var(--line);text-align:center}
-.home-lab a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;font-size:13px;letter-spacing:.04em;color:var(--muted);text-decoration:none}
-.home-lab a:hover{color:var(--ink)}
-.home-lab a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;border-radius:8px}
-.home-lab svg{width:16px;height:16px;flex:none}
+.site-footer .lab-link{display:inline-flex;align-items:center;gap:6px}
+.site-footer .lab-mark{width:16px;height:16px;flex:none}
 .start-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:16px}
 h1,h2,h3{font-family:var(--font-round);font-weight:400;font-synthesis:none;line-height:1.35;text-wrap:balance;margin:0}
 h1{font-size:30px} h2{font-size:22px} h3{font-size:18px}
@@ -93,6 +94,13 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
   .opts .opt .t{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:center}
   .opts .opt .t span{display:block}
 }
+/* 電腦寬度的測驗頁：欄寬加到 1100px，題目字與選項格放大（手機不受影響） */
+@media (min-width:768px){
+  #s-quiz{max-width:1100px}
+  #s-quiz .q{font-size:clamp(26px,2.6vw,32px)}
+  .opts .opt{min-height:128px;padding:26px 8px 18px}
+  .opts{gap:14px}
+}
 .opt .k{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--sunk);font-size:14px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
 .opt[aria-pressed="true"]{border-color:var(--btn);background:var(--selected)}
 .opt[aria-pressed="true"] .k{background:var(--btn);color:var(--btn-ink)}
@@ -115,6 +123,11 @@ details ul{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--muted)}
 #s-quiz.mode-page .quiz-head{position:static}
 .qi{padding:22px 0;border-top:1px solid var(--line);scroll-margin-top:64px}
 .qi:first-child{border-top:none}
+/* 電腦寬度的「全部列出」：左右兩欄，先排完左欄再排右欄 */
+@media (min-width:768px){
+  .qlist{column-count:2;column-gap:56px}
+  .qi{break-inside:avoid;border-top:none;border-bottom:1px solid var(--line)}
+}
 .qn{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .qn .miss{display:none;margin-left:8px;color:var(--err);font-weight:500}
 .qi.missing .qn .miss{display:inline}
@@ -164,9 +177,12 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .prom{border-left:4px solid var(--btn);padding:4px 0 4px 14px;color:var(--ink);max-width:46em;margin-top:6px}
 .report{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 /* 詳細測驗解析：用這個人主型動物的顏色當底色和框線（變色龍用墨色），先露出幾行「核心特質」再淡掉，下面一顆按鈕點開全部 */
-.fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px;border-radius:14px;border:2px solid var(--main,var(--ink));background:var(--fold-bg)}
-:root[data-theme="dark"] .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fold-card{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
+.fold{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 12%,var(--surface));scroll-margin-top:64px}
+.fold-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px;border-radius:14px;border:2px solid var(--main,var(--ink));background:var(--fold-bg)}
+:root[data-theme="dark"] .fold{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fold{--fold-bg:color-mix(in srgb,var(--main,var(--ink)) 18%,var(--surface))}}
+.fold.open{display:flex;flex-direction:column;padding:20px;border:2px solid var(--main,var(--ink));border-radius:14px;background:var(--fold-bg)}
+.fold.open .fold-card{padding:0;border:0;border-radius:0;background:transparent}
 .fold-h{font-family:var(--font-round);font-size:22px;line-height:1.35}
 .fold-hint{color:var(--muted);margin-top:-6px}
 .fold-peek{position:relative;align-self:stretch;max-height:116px;overflow:hidden;cursor:pointer;font-size:15px}
@@ -177,6 +193,8 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .fold-btn svg{width:22px;height:22px;flex:none;transition:transform .2s ease}
 .fold-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
 .fold-body{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.fold.open .fold-body{margin-top:6px}
+.fold.open .fold-btn{align-self:flex-start;margin-top:16px}
 /* 還沒打開時，捲到畫面上整張卡片輕輕浮起兩次，提示可以點開 */
 @keyframes fold-float{0%,100%{transform:translateY(0);box-shadow:0 0 0 rgba(0,0,0,0)}50%{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.14)}}
 .fold-card.nudge{animation:fold-float 1.4s ease-in-out 2}
@@ -184,6 +202,23 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 @media (prefers-reduced-motion:reduce){.fold-btn svg{transition:none}.fold-card.nudge,#peer-card.nudge .ghost::before,#peer-card.nudge .ghost span{animation:none}}
 .side,.main{display:flex;flex-direction:column;gap:16px;min-width:0}
 .pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.ai3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.ai3 .btn{padding:0 6px;font-size:15px;white-space:nowrap}
+#ai-card .btn{transition:transform .12s ease,filter .12s ease,background-color .12s ease}
+#ai-card .btn:active{transform:scale(.95);filter:brightness(1.25)}
+#ai-card .btn:not(.primary):active{filter:none;background:var(--sunk)}
+#ai-card .btn.pressed{animation:ai-pop .5s ease}
+@keyframes ai-pop{0%{box-shadow:0 0 0 0 var(--ink)}60%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.ai-copy{margin-top:20px;width:100%;border:2px solid var(--ink);color:var(--ink);font-weight:700}
+#ai-card .share-msg{margin-top:12px;min-height:1.4em;color:var(--ink);font-weight:500}
+#ai-card .share-msg.ai-ok{padding:10px 12px;border-radius:10px;border-left:4px solid #d9a21b;background:rgba(243,194,79,.4);animation:ai-flash .9s ease}
+:root[data-theme="dark"] #ai-card .share-msg.ai-ok{background:rgba(243,194,79,.22)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #ai-card .share-msg.ai-ok{background:rgba(243,194,79,.22)}}
+@keyframes ai-flash{0%{transform:scale(.97);box-shadow:0 0 0 0 rgba(243,194,79,.9)}50%{transform:scale(1.01)}100%{transform:none;box-shadow:0 0 0 10px rgba(243,194,79,0)}}
+@media (prefers-reduced-motion:reduce){#ai-card .btn,#ai-card .btn.pressed,#ai-card .share-msg.ai-ok{transition:none;animation:none}}
+#ai-card details{margin-top:12px}
+#ai-card summary{cursor:pointer;color:var(--muted);font-size:14px}
+.ai-text{display:block;width:100%;height:180px;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);font:inherit;font-size:13px;line-height:1.6;resize:vertical}
 .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
 .ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
@@ -218,7 +253,7 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 .rate-ends{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;gap:12px;margin-top:6px;font-size:14px;color:var(--muted)}
 .rate-ends>:last-child{text-align:right}
 #rate-msg{white-space:nowrap}
-.share-img{display:block;width:100%;max-width:360px;max-height:520px;object-fit:cover;object-position:top;height:auto;margin:12px auto 0;border-radius:12px;border:1px solid var(--line)}
+.share-img{display:block;width:100%;max-width:360px;height:auto;margin:12px auto 0;border-radius:12px;border:1px solid var(--line)}
 .foot-meta{border-top:1px solid var(--line);padding-top:14px;margin-top:24px;display:flex;flex-direction:column;gap:6px}
 .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 /* brand */
@@ -259,7 +294,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 /* 頁首右側的動作按鈕（分享測驗；之後的設定也放這裡）。導覽是空的時候，由它把自己推到最右邊 */
 .bar-actions{display:flex;gap:4px;flex:none}
 .bar-nav:empty+.bar-actions{margin-left:auto}
-.bar-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:500}
+.bar-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:500;-webkit-tap-highlight-color:transparent}
 .bar-btn:hover{background:var(--sunk)}
 .bar-btn svg{width:20px;height:20px;flex:none}
 .bar-btn .lang-k{font-size:14px;font-weight:700;letter-spacing:.02em;line-height:1}
@@ -294,15 +329,20 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
   .menu-row{min-height:46px;font-size:16px}
   @keyframes menu-up{from{transform:translateY(-6px);opacity:0}}
 }
-/* 意見回饋頁 */
+/* 心得回饋彈窗 */
+.fb-dialog{--fb-panel:var(--surface);--fb-field:var(--bg);--fb-edge:var(--line);--fb-ink:var(--ink);--fb-muted:var(--muted);--fb-accent:var(--btn);--fb-accent-ink:var(--btn-ink);width:min(560px,calc(100vw - 24px));max-width:none;max-height:min(90dvh,760px);padding:24px;border:1px solid var(--fb-edge);border-radius:20px;background:var(--fb-panel);color:var(--fb-ink);box-shadow:0 24px 72px rgba(0,0,0,.34);overflow:auto}
+:root[data-theme="dark"] .fb-dialog{--fb-panel:#262626;--fb-field:#171717;--fb-edge:#505050}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb-dialog{--fb-panel:#262626;--fb-field:#171717;--fb-edge:#505050}}
+.fb-dialog::backdrop{background:rgba(0,0,0,.62);backdrop-filter:blur(3px)}
+.fb-dialog:not([open]){display:none}
 .fb-page{gap:0}
-.fb-top{display:flex;align-items:center;gap:8px;margin:0 0 8px}
-.fb-back{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
+.fb-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 10px}
+.fb-top h2{font-size:24px;margin:0}
+.fb-back{width:44px;height:44px;border-radius:12px;border:1px solid var(--fb-edge);background:var(--fb-field);color:var(--fb-ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:inherit}
 .fb-back svg{width:20px;height:20px}
-.fb-back:focus-visible,.fb-chip:focus-visible,.fb-acc summary:focus-visible,.fb-rg:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-.fb-title{font-family:var(--font-round);font-size:17px}
-.fb-page h2{font-size:24px;margin:8px 0 4px}
-.fb-sub{margin:0 0 20px;color:var(--muted);font-size:15px}
+.fb-back:focus-visible,.fb-chip:focus-visible,.fb-acc summary:focus-visible,.fb-rg:focus-visible{outline:3px solid var(--fb-accent);outline-offset:2px}
+.fb-page h2{font-size:24px;margin:0 0 10px}
+.fb-sub{margin:0 0 20px;color:var(--fb-muted);font-size:15px;line-height:1.55}
 .fb-qh{font-weight:500;font-size:17px;margin:0}
 .fb-qh span{font-weight:400;color:var(--muted);font-size:15px}
 .fb-acc{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:12px}
@@ -327,8 +367,12 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fb-ends{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:var(--muted);margin-top:2px}
 .fb-rh{font-size:14px;color:var(--muted);margin:6px 0 0;text-align:center}
 .fb-rec.set .fb-rh{display:none}
-.fb-rate{margin-bottom:12px}
+.fb-rate{margin-bottom:12px;background:var(--fb-field);border-color:var(--fb-edge)}
 .fb-rate .fb-hint{margin:8px 0 0}
+.fb-rating{margin-bottom:12px}
+.fb-rating .fb-qh{margin:0 4px 8px}
+.fb-dialog .rate .opt{color:var(--fb-accent);border-color:var(--fb-accent);background:var(--fb-field)}
+.fb-dialog .rate .opt[aria-pressed="true"]{color:var(--fb-accent-ink);border-color:var(--fb-accent);background:var(--fb-accent)}
 .fb-rg{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;cursor:pointer}
 .fb-rg::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--sunk);border:1px solid var(--line)}
 .fb-rg::-moz-range-track{height:8px;border-radius:4px;background:var(--sunk);border:1px solid var(--line)}
@@ -338,10 +382,17 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fb-rec.set .fb-rg::-moz-range-thumb{background:var(--ink)}
 .fb-msg label{display:block;font-weight:500;font-size:17px;margin:0 0 2px}
 .fb-msg label span{font-weight:400;color:var(--muted);font-size:15px}
-.fb-hint{margin:0 0 8px;font-size:14px;color:var(--muted)}
-.fb-msg textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;width:100%;box-sizing:border-box;min-height:112px;padding:12px 14px;resize:vertical}
-.fb-msg textarea:focus{outline:3px solid var(--ink);outline-offset:1px}
+.fb-hint{margin:0 0 8px;font-size:14px;color:var(--fb-muted)}
+.fb-msg textarea{font:inherit;font-size:17px;color:var(--fb-ink);background:var(--fb-field);border:1px solid var(--fb-edge);border-radius:12px;width:100%;box-sizing:border-box;min-height:112px;padding:12px 14px;resize:vertical}
+.fb-msg textarea:focus{outline:3px solid var(--fb-accent);outline-offset:1px}
+.fb-email{margin-top:18px}
+.fb-email input{font:inherit;font-size:16px;color:var(--fb-ink);background:var(--fb-field);border:1px solid var(--fb-edge);border-radius:12px;width:100%;box-sizing:border-box;min-height:48px;padding:10px 14px}
+.fb-email input:focus{outline:3px solid var(--fb-accent);outline-offset:1px}
+.fb-email label{display:block;font-weight:500;font-size:17px;margin:0 0 6px}
+.fb-email label span{font-weight:400;color:var(--muted);font-size:15px}
+.fb-email .fb-hint{margin:0 0 8px}
 .fb-go{width:100%;margin-top:20px;min-height:52px}
+.fb-dialog .fb-go.btn.primary{background:var(--fb-accent);border-color:var(--fb-accent);color:var(--fb-accent-ink)}
 .fb-thanks{text-align:center;padding-top:48px}
 .fb-tick{width:64px;height:64px;border-radius:50%;background:var(--ink);color:var(--bg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px}
 .fb-tick svg{width:32px;height:32px}
@@ -352,14 +403,16 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 /* 分享卡出現在畫面上時，底部按鈕先藏起來（同一件事不要同時出現兩個按鈕） */
 .share-dock{transition:opacity .2s ease,transform .2s ease}
 .share-dock.away{opacity:0;transform:translateY(16px);pointer-events:none;visibility:hidden;transition:opacity .2s ease,transform .2s ease,visibility 0s .2s}
-@media (max-width:767.98px){#s-result:has(.share-dock){padding-bottom:72px}body.dock-on .toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
+.wrap:has(#s-result:not([hidden])){padding-bottom:24px}
+@media (max-width:767.98px){body.dock-on .toast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}}
 /* 電腦版：改成內容欄右下角的圓角小按鈕，不橫跨整個畫面 */
 @media (min-width:768px){
   .share-dock{left:auto;right:max(clamp(16px,4vw,48px), calc((100vw - 800px) / 2));bottom:24px;padding:0;background:none;border:0}
   .share-dock .btn{width:auto;border-radius:999px;padding:0 22px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
-  #s-result:has(.share-dock){padding-bottom:88px}
   body.dock-on .toast{bottom:88px}
 }
+@media (max-width:480px){.fb-dialog{padding:20px 16px;border-radius:18px;max-height:calc(100dvh - 24px)}}
+@media (max-width:480px){.fb-rating .rate{grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-flow:column;gap:4px;margin-top:10px}.fb-rating .rate .opt{min-width:0;min-height:48px;padding-inline:0;font-size:18px}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100vw - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:20;margin:0}
 .toast:empty{display:none}
 .home-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center}
@@ -436,6 +489,7 @@ body.on-quiz .qi{scroll-margin-top:calc(125px + env(safe-area-inset-top,0px))}
 .fu-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 @media (min-width:768px){.fu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}}
 input[type=text],input[type=email],input[type=tel]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;height:48px;min-height:48px;padding:0 12px;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none}
+.fb-dialog input[type=email]{color:var(--fb-ink);background:var(--fb-field);border-color:var(--fb-edge)}
 input[aria-invalid="true"]{border-color:var(--err)}
 .field-err{font-size:14px;color:var(--err)}
 .req{color:var(--err);font-style:normal;margin-left:3px}
@@ -448,6 +502,8 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
 /* 會員：保存這次結果、我的歷次結果 */
 .account{display:flex;flex-direction:column;gap:12px}
 .account a,.hist-page a{color:inherit;text-underline-offset:3px}
+/* 帳號卡的標題下距和其他卡片一致（欄位間距 12px 已含在內，標題自己的 14px 不再重複加） */
+.account>h3.hl{margin-bottom:-4px}
 .check{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
 .check input{width:20px;height:20px;margin-top:4px;accent-color:var(--btn);flex:none}
 .hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
@@ -549,7 +605,6 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <button class="btn" id="my-results" hidden data-i18n="home.myResults">我的歷次結果</button>
     </div>
     </div>
-    <p class="home-lab"><a href="/"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg>尋光引路實驗室 LumineerLab</a></p>
     </div>
   </section>
 
@@ -667,8 +722,14 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
     </div>
   </section>
 
-  <section id="s-feedback" class="stack fb-page" hidden></section>
+  <dialog id="s-feedback" class="stack fb-page fb-dialog" aria-labelledby="fb-title"></dialog>
 </div>
+<footer class="site-footer" aria-label="頁尾連結" data-i18n-attr="aria-label:footer.label">
+  <a href="privacy.html" data-i18n="footer.privacy">隱私權</a><span aria-hidden="true">｜</span>
+  <a href="./" id="footer-feedback" data-i18n="footer.feedback">心得回饋</a><span aria-hidden="true">｜</span>
+  <a href="mailto:hello@lumineerlab.com" data-i18n="footer.contact">聯絡我們</a><span aria-hidden="true">｜</span>
+  <a class="lab-link" href="/" aria-label="尋光引路實驗室 LumineerLab"><svg class="lab-mark" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="17.5" r="3"/><circle cx="14.5" cy="17.5" r="3"/><path d="M4.5 17.5L8 12h4.5l2 5.5"/><path d="M8 12l1.8-3.4 3.2.8"/><circle cx="10.2" cy="5.6" r="1.2" fill="currentColor"/><path d="M18.6 8.4L23.4 5.2v8.4l-4.8-3.2z" fill="currentColor" fill-opacity=".26" stroke="none"/><path d="M13 9.4h2.6"/><path d="M15.6 8.1h2.4v2.6h-2.4z" stroke-width="1.2"/></svg><span data-i18n="footer.lab">尋光引路實驗室 LumineerLab</span></a>
+</footer>
 
 <p class="toast" id="toast" role="status" aria-live="polite"></p>
 <dialog id="home-dialog" aria-labelledby="hd-title" aria-describedby="hd-desc">
@@ -695,7 +756,7 @@ dialog .actions{margin-top:20px;justify-content:flex-end}
       <button type="button" class="menu-row" id="m-signout" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg><span data-i18n="signout">登出</span></button>
       <hr>
     </div>
-    <button type="button" class="menu-row" id="m-feedback" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg><span><span data-i18n="menu.feedback">意見回饋</span><small data-i18n="menu.feedbackSub">好的、不好的都歡迎回饋</small></span></button>
+    <button type="button" class="menu-row" id="m-feedback" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg><span><span data-i18n="menu.feedback">心得回饋</span><small data-i18n="menu.feedbackSub">好的、不好的都歡迎回饋</small></span></button>
     <h2 class="menu-sec" data-i18n="menu.settings">設定</h2>
     <button type="button" class="menu-row" id="m-theme" role="switch" aria-checked="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor"/></svg><span data-i18n="bar.theme">深色模式</span><span class="r" id="m-theme-v" aria-hidden="true">關</span></button>
     <button type="button" class="menu-row" id="m-share"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4M5 12v8h14v-8"/></svg><span data-i18n="bar.share">分享這個測驗給朋友</span></button>
@@ -824,8 +885,9 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'bar.brand':'測出你的\u200b動物本色', 'bar.nav':'網站導覽', 'bar.qmode':'全部列出', 'bar.theme':'深色模式', 'bar.share':'分享這個測驗給朋友',
   'menu.btn':'選單', 'menu.account':'帳號', 'menu.signin':'用 Google 登入', 'menu.signinSub':'換手機也看得到你的結果',
   'menu.settings':'設定', 'menu.on':'開', 'menu.off':'關',
-  'menu.feedback':'意見回饋', 'menu.feedbackSub':'好的、不好的都歡迎回饋',
-  'fb.back':'返回', 'fb.h':'你的想法，讓測驗更好', 'fb.sub':'有什麼好的、卡卡的、或是不太準的地方，都歡迎告訴我們，讓我們一起優化這個測驗吧！',
+  'menu.feedback':'心得回饋', 'menu.feedbackSub':'好的、不好的都歡迎回饋',
+  'footer.label':'頁尾連結', 'footer.privacy':'隱私權', 'footer.feedback':'心得回饋', 'footer.contact':'聯絡我們', 'footer.lab':'尋光引路實驗室 LumineerLab',
+  'fb.back':'關閉心得回饋', 'fb.close':'關閉', 'fb.h':'心得回饋', 'fb.sub':'歡迎留言說說話，讓測驗越來越ㄅ ㄧ ㄤˋ！單純幹話支持也很開心！',
   'fb.max':'（最多 3 個）', 'fb.linked':'已帶入你在結果頁的評分，想改可以直接點。', 'fb.fav.q':'你最喜歡哪個部分？', 'fb.fav.a':'解析內容', 'fb.fav.b':'圖表與功能',
   'fb.f1':'核心特質', 'fb.f2':'你的優勢', 'fb.f3':'可能的盲點', 'fb.f4':'你的溝通方式', 'fb.f5':'壓力下的你', 'fb.f6':'適合的工作環境與方向', 'fb.f7':'和其他動物相處',
   'fb.f8':'本色組成圖', 'fb.f9':'四種動物的分數', 'fb.f10':'分享結果圖片', 'fb.f11':'換個角度看自己',
@@ -835,7 +897,8 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'fb.h3':'更清楚自己的優勢，也更有自信', 'fb.h4':'更懂得怎麼跟不同個性的人溝通、合作',
   'fb.h5':'發現自己平常沒注意到的弱項、盲點', 'fb.h6':'從朋友的角度看見自己，更全面地認識自己',
   'fb.rec.q':'你會推薦朋友做這個測驗嗎？', 'fb.rec.aria':'推薦意願，1 到 10 分', 'fb.rec.lo':'1　非常不推薦', 'fb.rec.hi':'非常推薦　10', 'fb.rec.hint':'左右拉一下選分數',
-  'fb.msg.q':'還有想說的話嗎？', 'fb.opt':'（選填）', 'fb.msg.hint':'哪裡覺得很讚、哪裡好像有點怪、想許願什麼功能，都可以回饋給我們',
+  'fb.msg.q':'想說的話', 'fb.opt':'（選填）', 'fb.msg.hint':'哪裡覺得很讚、哪裡好像有點怪、想許願什麼功能，都可以回饋給我們',
+  'fb.email.q':'信箱', 'fb.email.hint':'想被回覆或是未來想收到其他心理測驗，歡迎留聯絡方式', 'fb.email.placeholder':'請輸入 Email（選填）',
   'fb.send':'送出', 'fb.sending':'正在送出…', 'fb.fail':'沒有送出去，請稍後再試一次。',
   'fb.thanks.h':'收到了，謝謝你寶貴的回饋！', 'fb.thanks.p':'我們將參考你的意見，持續優化測驗',
   'bar.lang.short':'EN', 'bar.lang':'切換成英文 English',
@@ -919,14 +982,27 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'seg.aria':'結果呈現方式', 'seg.brand':'動物本色', 'seg.data':'精確數據',
   'card.donut':'你的本色組成', 'card.patbars':'四種動物的分數', 'card.chart':'DISC 四向圖', 'card.bars':'四型分數',
   'chart.legend':'虛線圓是你的平均（{avg} 分）：點在虛線外，代表此型較明顯；在虛線內，代表此型較隱晦。', 'chart.l1':'虛線圓是你的平均（{avg} 分）。', 'chart.l2':'點在虛線外，代表此型較明顯。', 'chart.l3':'點在虛線內，代表此型較隱晦。',
-  'share.h':'分享你的結果', 'share.p':'產生一張包含完整分析的結果圖片，可以下載或分享給朋友。', 'share.make':'產生結果圖片',
+  'ai.prompt':'我剛做完「動物本色」DISC 行為風格測驗，想請你陪我聊聊。\n\n【我的結果】\n{result}\n\n【報告內容】\n{report}\n\n【我們可以聊的】\n1. 職涯方向：適合什麼工作、科系，或下一步怎麼走\n2. 人際相處：和家人、朋友、同學或同事\n3. 更了解自己：優點、盲點、壓力來源，為什麼我會這樣反應\n4. 其他：生活中大大小小的事\n\n【請你這樣陪我聊】\n你的角色\n1. 請扮演一位溫和、專業的職涯諮詢師，用台灣繁體中文和我對話。你的任務是陪我把事情想清楚，不是替我做決定。\n2. 以「焦點解決短期治療（SFBT）」為主軸；我卡在很負面或很絕對的想法時，再用「認知行為取向（CBT／REBT）」的技巧。直接用這些方法和我對話，不需要解釋理論名稱。\n3. 這是陪我思考的對話，不是心理治療或診斷。\n\n對話步驟（大致依序進行，可彈性調整）\n第 1 步　開場：第一次回覆簡短，用兩三句話說說你從結果看到的我（先講優點），再列出上面四個話題，問我想從哪個開始。\n\n第 2 步　認識我的背景：我選好話題後，先說明想多認識我一點、不想回答的可以跳過。請在同一則訊息問這三項，讓我一次回答：\n- 年紀或年齡層\n- 目前的狀態（在學、剛畢業、在職、待業、創業、自由工作者、家庭主婦／主夫、退休或其他）\n- 依話題調整：職涯方向問念過的科系或做過的工作；人際相處問想聊的是和誰的相處；更了解自己或其他問最近最常佔據心思的事\n我回答後，簡短回應並連結到我的測驗結果，再接著了解我的狀況。\n\n第 3 步　了解現況和我的想法：先問我最在意或最卡住的是什麼。我說出煩惱後，先問「你自己目前的想法是什麼？」，再順著我的回答往下問，不要急著開新話題。先用開放的方式邀請我多說，讓我決定要講什麼；如果我說不知道怎麼講，再改用具體、好回答的問題。\n\n第 4 步　發散但有方向地探索：這個階段先不要給建議或答案，用這些角度引導我說出經驗和想法：\n- 找例外：問我有沒有哪一次這個問題沒那麼嚴重、我處理得還不錯，當時有什麼不一樣\n- 評量問句：0 分是完全沒頭緒、10 分是非常清楚，問我現在幾分、是什麼讓我有這個分數而不是 0 分，再問往上一分可能發生什麼\n- 想像理想的未來：問如果醒來這件事已經變好了，我會先注意到什麼不同\n- 因應問句：問這段時間不容易，我是怎麼撐過來的\n- 關係問句：問最了解我的朋友會怎麼形容我在這件事上的長處\n- 連結測驗結果：適時用報告裡的優勢、溝通方式、壓力反應來提問，並請我確認像不像自己\n\n第 5 步　遇到卡住的想法時：如果我說出很絕對或很負面的想法（例如「我一定會失敗」），請溫和地陪我看一看：\n- 先釐清：發生了什麼事 → 當下怎麼想 → 有什麼感受 → 做了什麼\n- 看證據：有什麼支持這個想法？有沒有不太符合的經驗？\n- 找其他可能：最壞、最好、最可能的情況各是什麼\n- 換位思考：如果是好朋友有同樣的想法，我會怎麼跟他說\n- 把「一定要、應該」換成「我希望、我比較想」，再看看感受有沒有不同\n請用好奇、陪伴的語氣，不要說我「想錯了」，也不要硬要我改變想法。\n\n第 6 步　整理與確認：你對我夠了解時，用幾句話整理聽到的重點（包括我的優點和已經做到的事），問我「有沒有說錯或漏掉的？」，再問我想不想聽一些可以試試的做法。\n\n第 7 步　小步行動：我說想聽時，提供 2～3 種不同難度的做法，讓我依現在的狀態選：\n- 輕鬆試試：10 分鐘內能做的小事\n- 小小挑戰：這週可以完成的事\n- 進一步行動：需要多一點時間或勇氣的事\n可搭配評量問句，問做完之後分數有沒有機會往上移一分。\n\n第 8 步　行動前的準備：我選好做法後，先不要急著收尾，依序問我（一次一題，等我回答再問下一題）：\n- 針對這個做法，有沒有覺得困難或會阻礙我的地方？\n- 有沒有哪些資源或人可以協助我？\n- 如果都沒有，或已經聊完，再問這個話題還有沒有其他想聊的\n\n第 9 步　收尾或換話題：肯定我這次的投入，簡短整理談到的重點，再問我要換下一個話題，還是先停在這裡。\n\n說話的原則\n- 正向鼓勵：多看見我的優點和努力，我說出想法時給我肯定。談到盲點或困難時，當成「可以成長的地方」，不批評、不貼標籤。\n- 一次只問一個問題：除了第 2 步的背景資訊，每次只問一個問題，等我回答再問下一個，像真人聊天。\n- 問題要具體、好回答：貼近日常，例如問「上一次做事做到忘記時間，是在做什麼？」，不要問「你的熱情是什麼？」這種太抽象的問題。需要時附上幾個選項，也歡迎我自己說。\n- 不要武斷：多用「可能」「或許」「你可以考慮」，不要說「你就是……」「你應該……」。我才是做決定的人。\n- 測驗結果是我的「行為傾向」，不是能力高低，也不是診斷。我說的和結果不一樣時，以我實際的經驗為準。\n- 每次回覆簡短一點，一次聚焦一件事。\n- 每次給建議或行動方案時，最後簡短提醒我：你的看法只是參考，重要的決定最好和職涯諮詢師（例如學校或地方政府的職涯諮詢服務），或信任的老師、家人、朋友一起討論。\n- 安全第一：如果我提到很低落、想放棄或傷害自己，請先暫停原本的話題、關心我，建議我找信任的人聊，或撥打 1925 安心專線（24 小時免付費）；有立即的危險，請撥 119 或 110。',
+  'ai.r.type':'動物本色：{title}',
+  'ai.r.line':'一句話：{one}',
+  'ai.r.sub':'副型：{lbl}。{sub}',
+  'ai.r.scores':'四種傾向的分數（0–100，代表傾向強弱，不是能力）：{list}',
+  'ai.r.score':'{lbl} {n}',
+  'ai.h':'用 AI 深入探索你的結果',
+  'ai.p':'把你的測驗結果交給 AI，聊聊職涯、人際，或更了解自己。不會帶上你的名字和個人資料。',
+  'ai.hint':'按下去會先幫你複製文字並打開 AI；如果對話框是空的，貼上就能開始聊。',
+  'ai.copyOnly':'只複製文字',
+  'ai.preview':'看看要交給 AI 的文字',
+  'ai.copied':'✓ 已複製，到 AI 的對話框貼上就可以開始聊。',
+  'ai.copyFail':'沒辦法自動複製，請在下面的文字框長按或全選後複製。',
+  'ai.open':'用 {name} 開啟',
+  'share.h':'分享你的結果', 'share.p':'產生一張適合分享的結果圖片，可以下載或傳給朋友。', 'share.make':'產生結果圖片',
   'share.alt':'我的動物本色結果圖片', 'share.download':'下載圖片', 'share.fileDefault':'動物本色-結果.png',
   'share.hold':'手機可以長按圖片儲存', 'invite':'邀請朋友來測驗', 'share.dock':'儲存／分享結果圖片',
-  'img.brand':'測出你的動物本色', 'img.brandSub':'DISC 行為風格測驗', 'img.dash':'虛線是四種動物的平均（{avg} 分）。',
-  'img.above':'高於平均（貼近你的風格）：', 'img.equal':'剛好在平均：', 'img.below':'低於平均（比較少展現）：',
-  'img.legend':'虛線圓：你的平均（{avg} 分）　點在虛線外代表此型較明顯', 'img.bullet':'・',
-  'img.ask1':'你的動物本色是什麼？', 'img.ask2':'也來測測看', 'img.scan':'掃描 QR Code，或打開網址：',
-  'img.askOne':'你的動物本色是什麼？也來測測看', 'img.file':'動物本色-{code}.png',
+  'img.brand':'測出你的動物本色', 'img.brandSub':'DISC 行為風格測驗',
+  'img.ask1':'你的動物本色是什麼？', 'img.ask2':'也來測測看', 'img.scan':'掃描 QR Code，或打開網址：', 'img.file':'動物本色-{code}.png',
+  'img.lab':'尋光引路實驗室', 'img.labSub':'lumineer.lab', 'img.powers':'我的超能力', 'img.blind':'我的小罩門', 'img.stress':'壓力大時', 'img.stressLead':'壓力大時，',
+  'img.comm':'和我相處的訣竅', 'img.jobs':'最適合的舞台', 'img.vote':'朋友認證：這張準不準？', 'img.vote1':'超準', 'img.vote2':'有一點', 'img.vote3':'才不是',
   'inapp.open':'改用瀏覽器開啟', 'inapp.how':'請點右上角的「⋯」，選擇「在瀏覽器中開啟」。',
   'inapp.home':'你正在 {app} 的內建瀏覽器裡，作答完可能無法下載圖片或分享。建議先改用手機的瀏覽器（例如 Chrome、Safari）開啟再作答。',
   'inapp.result':'你正在 {app} 的內建瀏覽器裡，可能無法下載圖片或分享。可以直接截圖保存結果；改用瀏覽器開啟的話，需要重新作答。',
@@ -1132,6 +1208,36 @@ const SUB_ZH = TEXT_VER==='v1' ? SUB_V1 : SUB_V3;
 const REP = () => L.R || R_ZH;
 const SUBT = () => L.SUB || SUB_ZH;
 
+/* ===== AI 引導文字（不碰畫面，測試會切出這段） ===== */
+const pct = m => Math.round((m-1)/4*100);
+/* 產生「用 AI 深入探索你的結果」的全文。r 是 score() 的結果；opt = {rep:解說字典, sub:副型字典, title:結果標題純文字}。沒有結果回傳空字串 */
+function aiPrompt(r, opt){
+  if (!r || r.kind==='none') return '';
+  const rep = opt.rep[r.key]; if (!rep) return '';
+  const zh = L.code==='zh', co = L.colon + L.colonGap;
+  const para = a => [].concat(a).join(zh ? '' : ' ');
+  const bullets = a => a.map(x => '- ' + x).join('\n');
+  const result = [t('ai.r.type', {title:opt.title}), t('ai.r.line', {one:rep.one})];
+  if (r.kind==='single') result.push(t('ai.r.sub', {lbl:LBL(r.secondary), sub:opt.sub[r.primary+r.secondary]}));
+  result.push(t('ai.r.scores', {list:TYPES.map(c => t('ai.r.score', {lbl:LBL(c), n:pct(r.mean[c])})).join(L.listSep)}));
+  const report = [
+    t('sec.core') + co + para(rep.core),
+    t('sec.good') + co + '\n' + bullets(rep.good),
+    (rep.blindTitle || t('sec.blind')) + co + '\n' + bullets(rep.blind),
+    t('sec.comm') + co + para(rep.comm),
+    t('sec.stress') + co + para(rep.stress) + '\n' + t('sec.stressTip') + co + rep.stressTip,
+    t('sec.env') + co + [].concat(rep.env).join(zh ? '；' : '; ') + '\n' + t('sec.jobs') + co + rep.jobs,
+  ].join('\n\n');
+  return t('ai.prompt', {result:result.join('\n'), report});
+}
+const AI_SITES = {
+  chatgpt:{name:'ChatGPT', url:'https://chatgpt.com/?q=', home:'https://chatgpt.com/'},
+  claude:{name:'Claude', url:'https://claude.ai/new?q=', home:'https://claude.ai/new'},
+  gemini:{name:'Gemini', home:'https://gemini.google.com/app'}
+};
+const AI_URL_MAX = 30000; /* 編碼後網址長度上限（Cloudflare 的網址上限約 32KB）；超過就只開首頁，靠貼上 */
+const aiUrl = (site, text) => { const u = site.url ? site.url + encodeURIComponent(text) : ''; return u && u.length <= AI_URL_MAX ? u : site.home; };
+
 /* ===== 3. 抽題與計分（不碰畫面） ===== */
 const GATE = 0.40;
 const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
@@ -1219,7 +1325,7 @@ const COLLECT_PROFILE = !!(window.DISC_CONFIG && window.DISC_CONFIG.collectProfi
 
 function show(id){
   if (id==='s-info'){ if (BK.enabled) BK.prepare(); }
-  ['s-home','s-quiz','s-info','s-blind','s-result','s-history','s-none','s-feedback'].forEach(s=>$('#'+s).hidden = s!==id);
+  ['s-home','s-quiz','s-info','s-blind','s-result','s-history','s-none'].forEach(s=>$('#'+s).hidden = s!==id);
   if (id!=='s-result') document.body.classList.remove('dock-on');
   $('#bar-qmode').hidden = id!=='s-quiz';
   $('#ptabs').hidden = !((id==='s-result' && $('#peer-card')) || id==='s-none');
@@ -1231,7 +1337,7 @@ function show(id){
 }
 /* 手機的返回鍵／返回手勢：整個網站是同一個網頁，進入作答、結果等畫面時先多記一筆瀏覽紀錄（網址不變），
    按返回時就由網頁自己處理（見下方 popstate），不會直接離開網站 */
-const FLOW = ['s-quiz','s-blind','s-info','s-result','s-history','s-feedback'];
+const FLOW = ['s-quiz','s-blind','s-info','s-result','s-history'];
 function guardOn(id){ try{
   const s = history.state;
   /* 從另一個分頁過來的那一筆只代表結果頁（或「沒有結果」頁），到別的畫面要再記一筆，按返回才會先回到結果頁 */
@@ -1652,7 +1758,7 @@ window.addEventListener('popstate', ()=>{
   if (inProgress()){ guardOn(); askGoHome(); return; }
   /* 退回從另一個分頁過來的那一筆：顯示那一筆的畫面（結果頁或「沒有結果」頁）；正在看過去的結果時照舊回到歷次結果 */
   if (onTabEntry() && !(onResult() && st && st.viewOnly)){ histBack = null; tabView(); return; }
-  if (!$('#s-feedback').hidden){ fbLeave(); return; }
+  if (fbDialog.open){ fbLeave(); return; }
   if (!$('#s-history').hidden && histBack==='away'){ histBack = null; history.back(); return; }   // 從「換個角度」頁的選單來的：再退一步回那一頁
   if (!$('#s-history').hidden){ if (histBack==='s-result' && st && st.done){ histBack = null; renderResult(); show('s-result'); } else goHome(); return; }
   if (onResult()){ if (st && st.viewOnly){ guardOn(); openHistory(); } else goHome(); return; }
@@ -1693,66 +1799,48 @@ $('#m-peer').addEventListener('click', ()=>{
   leaveThen(()=>{ location.href = peerHref(''); });
 });
 
-/* ===== 意見回饋：選單 →「意見回饋」 ===== */
-const FB_FAVS = [['f1','f2','f3','f4','f5','f6','f7'], ['f8','f9','f10','f11']];
-const FB_HELPS = ['h1','h2','h3','h4','h5','h6'];
-const FB_MAX = 3;
-const FB_BACK = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
-let FB = null, fbBack = null, fbSending = false;
+/* ===== 心得回饋彈窗 ===== */
+const fbDialog = $('#s-feedback');
+let FB = null, fbSending = false;
 /* 最近一次作答完的結果：評分跟結果頁共用，只收集一次 */
 const fbResult = () => { const s = (st && st.seq && !st.viewOnly) ? st : load(); return s && s.done ? s : null; };
-const fbFresh = () => ({sid:newSid(), favs:[], helps:[], rec:null, msg:''});
-function openFeedback(back){
-  fbBack = back; FB = fbFresh();
-  show('s-feedback'); renderFeedback();
+const fbFresh = () => ({sid:newSid(), msg:'', email:'', rated:false});
+function openFeedback(){
+  if (!FB || FB.done) FB = fbFresh();
+  renderFeedback();
+  fbDialog.showModal();
   if (BK.enabled) BK.prepare();   // 在背景準備機器人驗證
 }
-/* 回到進來的地方：從結果頁來的回結果頁，其他回首頁 */
-function fbLeave(){
-  if (fbBack==='s-result' && st && st.done){ fbBack = null; renderResult(); show('s-result'); } else { fbBack = null; goHome(); }
-}
+/* 只在使用者明確按關閉或 Escape 時暫時收起；FB 保留在本頁，重開可接續填寫。 */
+function fbLeave(){ if (fbDialog.open && !fbSending) fbDialog.close(); }
 function renderFeedback(){
   const el = $('#s-feedback');
   if (FB.done){
-    el.innerHTML = `<div class="fb-thanks"><div class="fb-tick"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2>${t('fb.thanks.h')}</h2><p class="muted">${t('fb.thanks.p')}</p><button type="button" class="btn" id="fb-home">${t('nav.home')}</button></div>`;
-    $('#fb-home').addEventListener('click', goHome);
-    window.scrollTo(0,0); return;
+    el.innerHTML = `<div class="fb-thanks"><div class="fb-tick"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 id="fb-title">${t('fb.thanks.h')}</h2><p class="muted">${t('fb.thanks.p')}</p><button type="button" class="btn" id="fb-close">${t('fb.close')}</button></div>`;
+    return;
   }
-  const chips = ks => ks.map(k=>`<button type="button" class="fb-chip" data-k="${k}" aria-pressed="${FB.favs.includes(k)||FB.helps.includes(k)}">${t('fb.'+k)}</button>`).join('');
-  const acc = (q, body, key) => `<details class="fb-acc"><summary><span class="fb-qh">${t(q)} <span>${t('fb.max')}</span></span><b class="fb-cnt" data-n="${key}"></b></summary><div class="fb-accb">${body}</div></details>`;
-  el.innerHTML = `<div class="fb-top"><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.back')}">${FB_BACK}</button><span class="fb-title">${t('menu.feedback')}</span></div>
-  <form id="fb-form" novalidate>
-    <h2>${t('fb.h')}</h2><p class="fb-sub">${t('fb.sub')}</p>
+  el.innerHTML = `<div class="fb-top"><h2 id="fb-title">${t('fb.h')}</h2><button type="button" class="fb-back" id="fb-back" aria-label="${t('fb.close')}">×</button></div>
+  <form id="fb-form">
+    <p class="fb-sub">${t('fb.sub')}</p>
     ${fbRating()}
-    ${acc('fb.fav.q', `<p class="fb-grp">${t('fb.fav.a')}</p><div class="fb-chips">${chips(FB_FAVS[0])}</div><p class="fb-grp">${t('fb.fav.b')}</p><div class="fb-chips">${chips(FB_FAVS[1])}</div>`, 'favs')}
-    ${acc('fb.help.q', `<div class="fb-chips">${chips(FB_HELPS)}</div>`, 'helps')}
-    <div class="fb-rec${FB.rec?' set':''}" id="fb-rec"><p class="fb-qh">${t('fb.rec.q')}</p><div class="fb-rgw"><b class="fb-bub" id="fb-bub" aria-hidden="true"></b><input class="fb-rg" id="fb-rg" type="range" min="1" max="10" step="1" value="${FB.rec||5}" aria-label="${t('fb.rec.aria')}"></div><div class="fb-ends"><span>${t('fb.rec.lo')}</span><span>${t('fb.rec.hi')}</span></div><p class="fb-rh">${t('fb.rec.hint')}</p></div>
-    <div class="fb-msg"><label for="fb-ta">${t('fb.msg.q')} <span>${t('fb.opt')}</span></label><p class="fb-hint">${t('fb.msg.hint')}</p><textarea id="fb-ta" maxlength="500">${esc(FB.msg)}</textarea></div>
+    <div class="fb-msg"><label for="fb-ta">${t('fb.msg.q')} <span>${t('fb.opt')}</span></label><textarea id="fb-ta" maxlength="500" placeholder="${t('fb.msg.hint')}">${esc(FB.msg)}</textarea></div>
+    <div class="fb-email"><label for="fb-email">${t('fb.email.q')} <span>${t('fb.opt')}</span></label><p class="fb-hint">${t('fb.email.hint')}</p><input id="fb-email" type="email" autocomplete="email" maxlength="254" placeholder="${t('fb.email.placeholder')}" value="${esc(FB.email)}"></div>
     <button type="submit" class="btn primary fb-go" id="fb-go">${t('fb.send')}</button>
   </form>`;
-  fbSync(); fbBubble();
-  window.scrollTo(0,0);
+  fbSync();
 }
 function fbRating(){
   const r = fbResult(); if (!r) return '';
   const L = [1,2,3,4,5].map(v=>t('rate.'+v));
-  return `<div class="card fb-rate"><h3 class="fb-qh">${t('rate.h')}</h3><div class="rate" id="fb-ratebox" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="${r.rating===v}" aria-label="${v} ${L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span></span><span aria-hidden="true">${L[4]}</span></div>${r.rating?`<p class="fb-hint">${t('fb.linked')}</p>`:''}</div>`;
+  return `<div class="fb-rating"><h3 class="fb-qh">${t('rate.h')}</h3><div class="card fb-rate"><div class="rate" id="fb-ratebox" role="group" aria-label="${t('rate.h')}">${[1,2,3,4,5].map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="${r.rating===v}" aria-label="${v} ${L[v-1]}">${v}</button>`).join('')}</div><div class="rate-ends"><span aria-hidden="true">${L[0]}</span><span></span><span aria-hidden="true">${L[4]}</span></div></div></div>`;
 }
-/* 已選的數量徽章、送出鈕（什麼都沒回答時不能送） */
+/* 有評分、文字或信箱資料時才可送出 */
 function fbSync(){
-  const el = $('#s-feedback');
-  el.querySelectorAll('.fb-chip').forEach(b=>b.setAttribute('aria-pressed', String(FB.favs.includes(b.dataset.k)||FB.helps.includes(b.dataset.k))));
-  ['favs','helps'].forEach(k=>{ const c = el.querySelector(`.fb-cnt[data-n="${k}"]`), n = FB[k].length; c.textContent = n+'/'+FB_MAX; c.classList.toggle('on', n>0); });
-  $('#fb-go').disabled = fbSending || !(FB.favs.length || FB.helps.length || FB.rec || FB.msg.trim() || FB.rated);
-}
-/* 滑桿上方的數字泡泡跟著圓鈕走 */
-function fbBubble(){
-  const rg = $('#fb-rg'), bub = $('#fb-bub'); if (!rg || !FB.rec) return;
-  const thumb = 28, p = (rg.value-1)/9;
-  bub.style.left = (thumb/2 + p*(rg.offsetWidth-thumb))+'px'; bub.textContent = rg.value;
+  const r = fbResult();
+  $('#fb-go').disabled = fbSending || !(FB.rated || (r && r.rating) || FB.msg.trim() || FB.email.trim());
 }
 $('#s-feedback').addEventListener('click', e=>{
-  if (e.target.closest('#fb-back')) return fbLeave();
+  if (e.target.closest('#fb-back, #fb-close')) return fbLeave();
   const rb = e.target.closest('#fb-ratebox .opt');
   if (rb){   // 改評分：寫回結果頁的評分並送到後台（跟結果頁同一個動作）
     const r = fbResult(), v = +rb.dataset.v; if (!r) return;
@@ -1762,32 +1850,29 @@ $('#s-feedback').addEventListener('click', e=>{
     $('#fb-ratebox').querySelectorAll('.opt').forEach(o=>o.setAttribute('aria-pressed', String(+o.dataset.v===v)));
     return fbSync();
   }
-  const b = e.target.closest('.fb-chip'); if (!b) return;
-  const k = b.dataset.k, list = k[0]==='f' ? FB.favs : FB.helps, i = list.indexOf(k);
-  if (i>=0) list.splice(i,1); else if (list.length<FB_MAX) list.push(k);
-  fbSync();
 });
 $('#s-feedback').addEventListener('input', e=>{
-  if (e.target.id==='fb-rg'){ FB.rec = +e.target.value; $('#fb-rec').classList.add('set'); fbBubble(); fbSync(); }
-  else if (e.target.id==='fb-ta'){ FB.msg = e.target.value; fbSync(); }
+  if (e.target.id==='fb-ta'){ FB.msg = e.target.value; fbSync(); }
+  else if (e.target.id==='fb-email'){ FB.email = e.target.value; fbSync(); }
 });
 $('#s-feedback').addEventListener('submit', async e=>{
   e.preventDefault();
-  if (fbSending || $('#fb-go').disabled) return;
-  const body = {sid:FB.sid, favs:FB.favs, helps:FB.helps, recommend:FB.rec, message:FB.msg.trim()||null, lang:LANG==='en'?'en':'zh-TW'};
+  if (fbSending || $('#fb-go').disabled || !e.target.reportValidity()) return;
+  const body = {sid:FB.sid, favs:[], helps:[], recommend:null, message:FB.msg.trim()||null, email:FB.email.trim()||null, lang:LANG==='en'?'en':'zh-TW'};
   fbSending = true; $('#fb-go').textContent = t('fb.sending'); fbSync();
   let ok = false;
-  if (!(body.favs.length || body.helps.length || body.recommend || body.message)) ok = true;   // 只動了評分：已經送過了
+  if (!(body.message || body.email)) ok = true;   // 只更新評分：已由 rate() 送出
   else try { ok = await BK.sendFeedback(body); } catch(err){}
   fbSending = false;
   if (!ok){ $('#fb-go').textContent = t('fb.send'); fbSync(); return toast(t('fb.fail'), true); }
   FB.done = true; renderFeedback();
 });
-$('#m-feedback').addEventListener('click', ()=>{ menu.close(); const back = onResult() && !(st && st.viewOnly) ? 's-result' : null; leaveThen(()=>openFeedback(back)); });
-window.addEventListener('resize', ()=>{ if (!$('#s-feedback').hidden && FB && !FB.done) fbBubble(); });
+$('#m-feedback').addEventListener('click', ()=>{ menu.close(); leaveThen(openFeedback); });
+$('#footer-feedback').addEventListener('click', e=>{ e.preventDefault(); leaveThen(openFeedback); });
+/* Escape 可以暫時關閉；FB 草稿保留在本頁，重新打開可繼續填寫。 */
+fbDialog.addEventListener('cancel', e=>{ if (fbSending) e.preventDefault(); });
 
 /* result */
-const pct = m => Math.round((m-1)/4*100);
 const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* 四向圖的刻度：以「你的平均」為基準圓，放大各型和平均的差距。
@@ -2050,6 +2135,14 @@ function renderResult(){
               <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn primary" id="dl-img" download="${t('share.fileDefault')}">${t('share.download')}</a>${shareBtns('card')}</div>
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">${t('share.hold')}</p></div>
           </div>
+          <div class="card" id="ai-card"><h3 class="hl">${t('ai.h')}</h3>
+            <p class="small muted">${t('ai.p')}</p>
+            <div class="ai3">${Object.entries(AI_SITES).map(([k,s])=>`<button class="btn primary" data-ai="${k}" aria-label="${t('ai.open', {name:s.name})}">${s.name}</button>`).join('')}</div>
+            <div class="actions" style="margin-top:0"><button class="btn ai-copy" data-ai="">${t('ai.copyOnly')}</button></div>
+            <p class="small muted" style="margin-top:10px">${t('ai.hint')}</p>
+            <p class="small share-msg" data-msg="ai" role="status"></p>
+            <details id="ai-preview"><summary>${t('ai.preview')}</summary><textarea class="ai-text" readonly>${esc(aiTextFor(r))}</textarea></details>
+          </div>
         </div>
         <div class="actions"><button class="btn" id="again">${t('again')}</button><button class="btn" id="invite">${t('invite')}</button><button class="btn" id="go-home">${t('nav.home')}</button></div>
         ${confirmHTML}
@@ -2069,9 +2162,13 @@ function renderResult(){
   const fb = $('#fold-btn');
   const fc = $('#fold-card');
   if (fb){
+    const fold = fc.closest('.fold');
+    const body = $('#fold-body');
     fb.addEventListener('click', ()=>{ const on = fb.getAttribute('aria-expanded')!=='true';
-      fb.setAttribute('aria-expanded', String(on)); $('#fold-body').hidden = !on; fc.classList.toggle('open', on);
-      $('#fold-lbl').textContent = on ? t('fold.close') : t('fold.open'); });
+      fb.setAttribute('aria-expanded', String(on)); body.hidden = !on; fc.classList.toggle('open', on); fold.classList.toggle('open', on);
+      if (on) body.after(fb); else fc.append(fb);
+      $('#fold-lbl').textContent = on ? t('fold.close') : t('fold.open');
+      if (on) requestAnimationFrame(()=>fold.scrollIntoView({behavior:'smooth', block:'start'})); });
     $('#fold-peek').addEventListener('click', ()=>fb.click());
   }
   if (fb && window.IntersectionObserver){
@@ -2090,6 +2187,7 @@ function renderResult(){
     $('#make-img').addEventListener('click', ()=>buildShareImage(r, true));
     setupShareDock();
     el.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click', ()=>shareResult(r, b.dataset.share)));
+    el.querySelectorAll('[data-ai]').forEach(b=>b.addEventListener('click', ()=>aiOpen(b.dataset.ai, aiTextFor(r), b)));
     $('#invite').addEventListener('click', inviteFriends);
   }
   $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
@@ -2102,14 +2200,22 @@ function renderResult(){
   if (rb){ rb.addEventListener('click', ()=>{ if (BK.flush) BK.flush().catch(()=>{}); }); syncBanner(); }
 }
 
-/* 底部固定按鈕：一直顯示；按了捲到分享卡片並產生圖片 */
+/* 底部固定按鈕在分享卡片或頁尾進入畫面時讓位 */
 function setupShareDock(){
   const dock = $('#share-dock'), card = $('#share-card');
   if (!dock || !card) return;
   document.body.classList.add('dock-on');
   if (window.IntersectionObserver){
-    const io = new IntersectionObserver(es=>es.forEach(e=>dock.classList.toggle('away', e.isIntersecting)), {threshold:.25});
+    const visible = new Set();
+    const io = new IntersectionObserver(entries=>{
+      for (const entry of entries){
+        if (entry.intersectionRatio >= .25) visible.add(entry.target);
+        else visible.delete(entry.target);
+      }
+      dock.classList.toggle('away', visible.size > 0);
+    }, {threshold:.25});
     io.observe(card);
+    io.observe(document.querySelector('.site-footer'));
   }
   $('#dock-share').addEventListener('click', ()=>{
     card.scrollIntoView({behavior:reduceMotion()?'auto':'smooth', block:'start'});
@@ -2117,21 +2223,40 @@ function setupShareDock(){
   });
 }
 
-/* ===== 分享圖片：包含標題、四向圖、四型分數與完整解說（固定淺色配色，任何裝置看起來都一樣） ===== */
+/* ===== 分享圖片：網址、QR Code 與產圖共用的小工具 ===== */
 let lastImage = null;
 /* 測驗網址：上線後若改用自訂網域，填在這裡（網域＋子路徑，前面不加 https://、後面不加斜線）；留空時自動用目前網站的網址，本機預覽時不顯示 */
 const SITE_URL = 'lumineerlab.com/animal-colors-disc';
 const siteHost = () => SITE_URL || (/^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? location.host : '');
 /* QR Code 圖檔：brand/qr-site.svg（換網域時要重新產生）。載入失敗就不放 QR Code */
 const loadImage = src => new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
+/* 分享圖片：直式 1080×1920 卡片，適合傳給朋友或放限時動態。
+   由上到下：尋光引路品牌細條、測驗名稱、標題、一句話、本色比例（含頭冠）、超能力、四格重點、朋友認證、邀請細條。
+   固定淺色配色；品牌條和邀請條壓低，把空間留給內容。內容較長時先縮小字，還是放不下才把圖片拉長，不截斷文字 */
+/* 頭冠：和結果頁同一個圖形，顏色直接寫進 SVG（canvas 讀不到網頁的 CSS 變數） */
+const CROWN_C = {gold:{a:'#FFE897',b:'#F4B72E',c:'#C98512',ba:'#E9A21B',bb:'#A86A06',edge:'#8A5A00',gem:'#C8372D'},
+  silver:{a:'#FFFFFF',b:'#D2D7DE',c:'#9DA5B0',ba:'#B9C0CA',bb:'#7D8691',edge:'#5F6772',gem:'#3E6FB8'}};
+const crownSrc = k => { const c=CROWN_C[k];
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 24" width="112" height="96"><defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.a}"/><stop offset=".55" stop-color="${c.b}"/><stop offset="1" stop-color="${c.c}"/></linearGradient>
+  <linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.ba}"/><stop offset="1" stop-color="${c.bb}"/></linearGradient></defs>
+  <path d="M4.2 17.2 2.8 7.9 9.2 12.4 14 4.2l4.8 8.2 6.4-4.5-1.4 9.3Z" fill="url(#g)" stroke="${c.edge}" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M6.6 15.3h14.8" stroke="#fff" stroke-opacity=".55" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="3.8" y="17" width="20.4" height="4.6" rx="1.6" fill="url(#b)" stroke="${c.edge}" stroke-width="1"/>
+  <circle cx="9" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/><circle cx="14" cy="19.3" r="1.3" fill="${c.gem}"/><circle cx="19" cy="19.3" r=".95" fill="#fff" fill-opacity=".8"/>
+  <circle cx="2.8" cy="6.8" r="1.9" fill="url(#g)" stroke="${c.edge}" stroke-width=".9"/><circle cx="14" cy="3.1" r="2.1" fill="url(#g)" stroke="${c.edge}" stroke-width=".9"/><circle cx="25.2" cy="6.8" r="1.9" fill="url(#g)" stroke="${c.edge}" stroke-width=".9"/></svg>`); };
+/* 卡片上的短句：取解說的第一句（中文到「。！？」為止，英文到句點為止） */
+const firstSentence = s => { s=String(s||''); const m = L.code==='zh' ? s.match(/^.*?[。！？]」?/) : s.match(/^.*?[.!?]["”]?(?=\s|$)/); return m ? m[0] : s; };
 async function buildShareImage(r, reveal){
   try { await document.fonts.ready; } catch(e){}
-  const W=1080, PAD=110, maxW=W-PAD*2;
-  const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',accent:'#1F2329',sunk:'#E3E5E8',
+  const W=1080, PAD=90, maxW=W-PAD*2, H=1920, BRAND=100, BAND=210;
+  const P={bg:'#F1F2F4',card:'#FFFFFF',ink:'#1F2329',muted:'#5B6068',line:'#D7DADF',sunk:'#E3E5E8',night:'#04070b',warm:'#ffd88f',cream:'#ece4d2',star:'#dfe8ff',
     D:'#D66A14',I:'#11968A',S:'#5E9A47',C:'#6576DC',Dt:'#F7E1D0',It:'#CFEAE8',St:'#DFEBDA',Ct:'#E0E4F8'};
   const SANS='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif', ROUND='"Huninn","Noto Sans TC",sans-serif';
   const rep=REP()[r.key];
-  const cv=document.createElement('canvas'); cv.width=W; cv.height=9000;
+  const host = siteHost();
+  const [lab, qr, gold, silver] = await Promise.all([loadImage('brand/lab-mark.svg'), host ? loadImage('brand/qr-site.svg') : null, loadImage(crownSrc('gold')), loadImage(crownSrc('silver'))]);
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=3200;
   const x=cv.getContext('2d'); x.textBaseline='alphabetic';
 
   // rich text: chips (D 老虎…) are atomic units with a tinted background; other text wraps per character
@@ -2143,10 +2268,21 @@ async function buildShareImage(r, reveal){
     return out; };
   const fontOf = (u,size) => `${u.bold?700:400} ${size}px ${SANS}`;
   const uw = (u,size) => { x.font=fontOf(u,size); return x.measureText(u.s).width + (u.chip?18:0); };
+  // 「D 老虎 ＋ S 無尾熊」這種用＋連起來的動物要一起看，整組排在同一行，不從中間斷開（整組比一行還寬時才照常換行）
+  const wrap = (us, width, size) => { const lines=[[]]; let w=0; const noStart = /^[，。、：；！？）」』,.!?]$/;
+    const add = u => { const ww=uw(u,size); if (w+ww>width && lines[lines.length-1].length && !noStart.test(u.s)){ lines.push([]); w=0; if(u.s===' ') return; } lines[lines.length-1].push(u); w+=ww; };
+    for (let i=0;i<us.length;){
+      let end=i+1;
+      if (us[i].chip){ for(;;){ let k=end; while (k<us.length && !us[k].chip && /^[\s＋+]+$/.test(us[k].s)) k++;
+        if (k<us.length && us[k].chip && /[＋+]/.test(us.slice(end,k).map(u=>u.s).join(''))) end=k+1; else break; } }
+      const grp = us.slice(i,end), gw = grp.reduce((a,u)=>a+uw(u,size),0);
+      if (grp.length>1 && gw<=width && w+gw>width && lines[lines.length-1].length){ lines.push([]); w=0; }
+      grp.forEach(u=>{ if (grp.length>1 && gw<=width){ lines[lines.length-1].push(u); w+=uw(u,size); } else add(u); });
+      i=end; }
+    return lines; };
+  // 畫多行文字；Y 是第一行的基線，回傳最後一行的基線
   function drawRich(us, X, Y, width, size, lh, color){
-    let lines=[[]], w=0;
-    const noStart = /^[，。、：；！？）」』,.!?]$/;
-    us.forEach(u=>{ const ww=uw(u,size); if (w+ww>width && lines[lines.length-1].length && !noStart.test(u.s)){ lines.push([]); w=0; if(u.s===' ') return; } lines[lines.length-1].push(u); w+=ww; });
+    const lines = wrap(us, width, size);
     lines.forEach((ln,li)=>{ let px=X; const py=Y+li*lh;
       ln.forEach(u=>{ const ww=uw(u,size);
         if (u.chip){ x.fillStyle=P[u.chip+'t']; rr(px, py-size*0.95, ww, size*1.32, 8); x.fill(); x.fillStyle=P.ink; x.font=fontOf(u,size); x.fillText(u.s, px+9, py); }
@@ -2155,153 +2291,153 @@ async function buildShareImage(r, reveal){
     return Y + (lines.length-1)*lh;
   }
   const rr=(X,Y,w,h,rad)=>{x.beginPath();x.moveTo(X+rad,Y);x.arcTo(X+w,Y,X+w,Y+h,rad);x.arcTo(X+w,Y+h,X,Y+h,rad);x.arcTo(X,Y+h,X,Y,rad);x.arcTo(X,Y,X+w,Y,rad);x.closePath();};
-  // 和自己的平均比較：高於平均＝強項，低於平均＝比較少用
-  const drawVsAvg = (yy) => { const g=avgGroups(r), ls=ts=>ts.map(c=>LBL(c)).join(L.listSep);
-    yy = drawRich(units(t('img.dash', {avg:pct(r.avg)})), PAD, yy, maxW, 26, 40, P.muted);
-    if (r.kind==='chameleon'){ yy+=44; return drawRich(units(t('vs.cham')), PAD, yy, maxW, 26, 40, P.ink)+24; }
-    if (g.above.length){ yy+=44; yy = drawRich([...units(t('img.above'),true), ...units(ls(g.above))], PAD, yy, maxW, 26, 40, P.ink); }
-    if (g.equal.length){ yy+=44; yy = drawRich([...units(t('img.equal'),true), ...units(ls(g.equal))], PAD, yy, maxW, 26, 40, P.ink); }
-    if (g.below.length){ yy+=44; yy = drawRich([...units(t('img.below'),true), ...units(ls(g.below))], PAD, yy, maxW, 26, 40, P.ink); }
-    return yy+24; };
+  // 字距（canvas 的 letterSpacing 舊版 Safari 不支援，所以一個字一個字畫）
+  const spaced = (s, X, Y, gap) => { [...s].forEach(ch=>{ x.fillText(ch, X, Y); X += x.measureText(ch).width + gap; }); return X; };
 
-  x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
-  let y=130;
-  { // brand row: logo mark + name
-    const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
-    x.save(); x.translate(PAD, y-38); x.scale(.48,.48); M.forEach(([d,t])=>{ x.fillStyle=P[t]; x.fill(new Path2D(d)); }); x.restore();
-    x.fillStyle=P.ink; x.font=`400 38px ${ROUND}`; x.fillText(t('img.brand'), PAD+62, y);
-    const bw=x.measureText(t('img.brand')).width; x.fillStyle=P.muted; x.font=`500 26px ${SANS}`; x.fillText(t('img.brandSub'), PAD+62+bw+20, y); }
-  { const lines = titleLines(r), lw = l => l.reduce((w,p)=>w+x.measureText(p.text).width,0); let size=92; x.font=`400 ${size}px ${ROUND}`;
-    while (Math.max(...lines.map(lw))>maxW && size>32){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
-    lines.forEach(l=>{ y+=size+20; let px=PAD; l.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; }); }); }
-  if (subLine(r)){ y+=60; x.fillStyle=P.muted; x.font=`500 32px ${SANS}`; x.fillText(subLine(r), PAD, y); }
-  y+=76; y=drawRich(units(rep.one), PAD, y, maxW, 38, 58, P.ink);
-  if (r.kind==='single'){
-    y+=72;
-    const top=y-40; y=drawRich(units(promText(r)), PAD+28, y, maxW-28, 32, 50, P.ink);
-    y+=48; y=drawRich(units(t('res.secondary', {lbl:LBL(r.secondary), sub:SUBT()[r.primary+r.secondary]})), PAD+28, y, maxW-28, 28, 44, P.muted);
-    x.fillStyle=P.accent; x.fillRect(PAD, top, 6, y-top+12);
-  }
-
-  // chart: 精確數據＝四向圖＋長條圖；動物本色＝四瓣花
-  if (VIEW==='data'){
-  const Rr=220, cx=W/2, cy=y+130+Rr, k=Math.SQRT1_2, Gm=chartGeom(r);
-  x.strokeStyle=P.line; x.lineWidth=2; [1,...Gm.rings].forEach(f=>{x.beginPath();x.arc(cx,cy,Rr*f,0,Math.PI*2);x.stroke();});
-  x.strokeStyle='#B9C0BB'; x.beginPath(); x.moveTo(cx,cy-Rr-14); x.lineTo(cx,cy+Rr+14); x.moveTo(cx-Rr-14,cy); x.lineTo(cx+Rr+14,cy); x.stroke();
-  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.textAlign='center';
-  x.fillText(t('chart.up'),cx,cy-Rr-26); x.fillText(t('chart.down'),cx,cy+Rr+50);
-  x.textAlign='right'; x.fillText(t('chart.left'),cx-Rr-22,cy-10); x.textAlign='left'; x.fillText(t('chart.right'),cx+Rr+22,cy-10);
-  x.setLineDash([12,10]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.arc(cx,cy,Rr*Gm.mean,0,Math.PI*2); x.stroke(); x.setLineDash([]);
-  const pts=TYPES.map(t=>{const d=DIRS[t],q=Rr*Gm.frac(t);return [cx+d[0]*k*q, cy+d[1]*k*q];});
-  x.beginPath(); pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.closePath();
-  x.fillStyle='rgba(31,35,41,0.08)'; x.fill(); x.strokeStyle=P.ink; x.lineWidth=5; x.lineJoin='round'; x.stroke();
-  TYPES.forEach((t,i)=>{const [px,py]=pts[i], d=DIRS[t];
-    x.fillStyle=P[t]; x.beginPath(); x.arc(px,py,10,0,Math.PI*2); x.fill();
-    x.font=`700 30px ${SANS}`; x.lineWidth=8; x.strokeStyle=P.card; x.lineJoin='round';
-    x.textAlign=d[0]<0?'right':'left'; const tx=px+d[0]*20, ty=py+10; x.strokeText(String(pct(r.mean[t])),tx,ty); x.fillStyle=P.ink; x.fillText(String(pct(r.mean[t])),tx,ty);
-    const lx=cx+d[0]*k*(Rr+86), ly=cy+d[1]*k*(Rr+86)+12; x.font=`700 32px ${SANS}`; const tw=x.measureText(LBL(t)).width;
-    x.fillStyle=P[t]; x.beginPath(); x.arc(lx-tw/2-6, ly-11, 10, 0, Math.PI*2); x.fill();
-    x.textAlign='center'; x.fillStyle=P.ink; x.fillText(LBL(t), lx+12, ly);});
-  x.textAlign='left';
-  y = cy+Rr+110;
-  x.fillStyle=P.muted; x.font=`400 24px ${SANS}`; x.fillText(t('img.legend', {avg:pct(r.avg)}), PAD, y);
-
-  // score bars
-  y+=30; const barX=PAD+200, barW=maxW-200-80, mx=barX+barW*pct(r.avg)/100, top=y+8;
-  TYPES.forEach(t=>{ y+=64;
-    x.fillStyle=P[t]; x.beginPath(); x.arc(PAD+14,y-11,14,0,Math.PI*2); x.fill();
-    x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), PAD+38, y);
-    x.fillStyle=P.sunk; rr(barX,y-30,barW,26,13); x.fill();
-    x.fillStyle=P[t]; rr(barX,y-30,Math.max(26,barW*pct(r.mean[t])/100),26,13); x.fill();
-    x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(pct(r.mean[t])), W-PAD, y); x.textAlign='left'; });
-  x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(mx,top); x.lineTo(mx,y+14); x.stroke(); x.setLineDash([]);
-  y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), mx, y); x.textAlign='left';
-  y = drawVsAvg(y+60);
-
-  } else {
-    const vals = {}; TYPES.forEach(t=>vals[t]=pct(r.mean[t]));
-    // 本色組成：左邊本色的花色圓＋「你的本色」＋動物名稱，右邊四種動物的比例（和網頁一樣）
-    y += 90; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.donut'), PAD, y);
-    const pr=pctRound(donutGeom(vals)), ts=r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : ['X'];
-    const Rc = ts.length>1 ? 120 : 150, colX = PAD+200, cy = y+60+150;
-    ts.forEach((t,i)=>{ const cx = ts.length>1 ? colX+(i?1:-1)*95 : colX;
-      x.beginPath(); x.arc(cx,cy,Rc,0,Math.PI*2); x.closePath();
-      x.fillStyle = t==='X' ? chamPattern(x, Rc*2/56, cx-Rc, cy-Rc) : canvasPattern(x,t,Rc*2/56,cx-Rc,cy-Rc); x.fill();
-      x.lineWidth=8; x.strokeStyle=P.card; x.stroke(); });
-    x.textAlign='center'; x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(t('donut.center'), colX, cy+150+56);
-    { const c=animalLine(r); let size=34; x.font=`700 ${size}px ${SANS}`; while (x.measureText(c).width>390 && size>22){ size-=2; x.font=`700 ${size}px ${SANS}`; }
-      x.fillStyle=P.ink; x.fillText(c, colX, cy+150+104); }
-    x.textAlign='left';
-    { const lx=PAD+450, rx=PAD+maxW; TYPES.forEach((t,i)=>{ const ry=cy-105+i*70;
-        x.beginPath(); x.arc(lx+16,ry,16,0,Math.PI*2); x.fillStyle=canvasPattern(x,t,32/56,lx,ry-16); x.fill();
-        x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), lx+46, ry+11);
-        x.textAlign='right'; x.fillText(`${pr[t]}%`, rx, ry+11); x.textAlign='left'; }); }
-    y = cy+150+104+70; donutNotes(r).forEach((nt,i)=>{ if (i) y+=40; y = drawRich(units(t('img.bullet')+nt), PAD, y, maxW, 24, 36, P.muted); });
-    // 花紋長條（由高到低）
-    y += 100; x.fillStyle=P.ink; x.font=`700 36px ${SANS}`; x.fillText(t('card.patbars'), PAD, y);
-    const order=TYPES, barX=PAD+200, barW=maxW-200-80, ax=barX+barW*pct(r.avg)/100;
-    y += 30;
-    const top=y+8;
-    order.forEach(t=>{ y+=64;
-      x.fillStyle=canvasPattern(x,t,1.4,0,0); x.beginPath(); x.arc(PAD+14,y-11,14,0,Math.PI*2); x.fill();
-      x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; x.fillText(LBL(t), PAD+38, y);
-      x.fillStyle=P.sunk; rr(barX,y-30,barW,26,13); x.fill();
-      x.fillStyle=canvasPattern(x,t,1.4,0,0); rr(barX,y-30,Math.max(26,barW*vals[t]/100),26,13); x.fill();
-      x.textAlign='right'; x.fillStyle=P.ink; x.fillText(String(vals[t]), W-PAD, y); x.textAlign='left'; });
-    x.setLineDash([10,8]); x.strokeStyle=P.muted; x.lineWidth=3; x.beginPath(); x.moveTo(ax,top); x.lineTo(ax,y+14); x.stroke(); x.setLineDash([]);
-    y += 44; x.fillStyle=P.muted; x.font=`400 22px ${SANS}`; x.textAlign='center'; x.fillText(t('avg.short', {avg:pct(r.avg)}), ax, y); x.textAlign='left';
-    y = drawVsAvg(y+60);
-  }
-
-  // full analysis
   const mainT = (r.kind==='single') ? r.primary : (r.kind==='combo'||r.kind==='diag') ? r.order[0] : null;
-  const mainTint = mainT ? P[mainT+'t'] : P.sunk;
-  reportSections(rep).forEach(sec=>{
-    y+=96; x.fillStyle=P.line; x.fillRect(PAD, y-62, maxW, 2);
-    y=drawRich(units(sec.title, true), PAD, y, maxW, 40, 56, P.ink);
-    (sec.paras||[]).forEach(p=>{ y+=60; y=drawRich(units(p), PAD, y, maxW, 30, 48, P.ink); });
-    (sec.bullets||[]).forEach(it=>{ y+=56;
-      x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
-      y=drawRich(units(it), PAD+32, y, maxW-32, 30, 46, P.ink); });
-    (sec.items||[]).forEach(it=>{ const [l,b]=splitLabel(it); y+=56;
-      x.fillStyle=P.accent; x.beginPath(); x.arc(PAD+8, y-10, 6, 0, Math.PI*2); x.fill();
-      const us = l ? [...units(l,true), {s:L.colon,bold:true}, ...units(L.colonGap+b)] : units(b);
-      y=drawRich(us, PAD+32, y, maxW-32, 30, 46, P.ink); });
-    if (sec.tip){ y+=34; const top=y; const us=[...units(sec.tip[0]+L.colon,true), ...units(L.colonGap+sec.tip[1])];
-      // measure by drawing off-canvas first
-      const endY = drawRich(us, -99999, y+48, maxW-48, 28, 44, P.ink);
-      if (mainT){ x.fillStyle=mainTint; rr(PAD, top, maxW, endY-top+30, 16); x.fill(); }
-      else { rr(PAD, top, maxW, endY-top+30, 16); x.fillStyle=P.sunk; x.fill(); }
-      drawRich(us, PAD+24, y+48, maxW-48, 28, 44, P.ink); y=endY+30; }
-  });
+  const tint = mainT ? P[mainT+'t'] : P.sunk, hue = mainT ? P[mainT] : P.ink;
+  const tops = r.kind==='single' ? [r.primary] : (r.kind==='combo'||r.kind==='diag') ? r.order.slice(0,2) : [];
+  const vals = {}; TYPES.forEach(c=>vals[c]=pct(r.mean[c]));
+  const pr = pctRound(donutGeom(vals));
+  /* 頭冠：和結果頁相同的規則（最高金色、組合型第二高銀色、分數一樣都金色、變色龍不放） */
+  const ranked = tops.slice().sort((a,b)=>vals[b]-vals[a]);
+  const crownOf = c => !tops.includes(c) ? null : (c===ranked[0] || vals[c]===vals[ranked[0]] ? gold : silver);
+  const stressRaw = firstSentence(Array.isArray(rep.stress) ? rep.stress[0] : rep.stress);
+  const stressLead = t('img.stressLead');
+  let stress = stressRaw.startsWith(stressLead) ? stressRaw.slice(stressLead.length) : stressRaw;
+  stress = L.code==='zh' ? stress.replace(/^你的?/, '') : stress.charAt(0).toUpperCase()+stress.slice(1);
+  const boxes = [
+    [t('img.blind'), rep.blind[0]],
+    [t('img.stress'), stress],
+    [t('img.comm'), firstSentence(rep.commTip)],
+    [t('img.jobs'), String(rep.jobs).split(/、|, /).slice(0,6).join(L.listSep)],
+  ];
+  const tags = rep.good.map(g=>'#'+(splitLabel(g)[0] || g));
 
-  // footer
-  y+=90; x.fillStyle=P.line; x.fillRect(PAD, y-50, maxW, 2);
-  x.fillStyle=P.muted; x.font=`400 26px ${SANS}`; x.fillText(metaText().join(L.metaSep), PAD, y);
-  y+=44; y=drawRich(units(t('disclaimer')), PAD, y, maxW, 26, 40, P.muted);
-  y+=90;
-  // invitation band: lets friends who see the picture find the test
-  const host = siteHost();
-  const qr = host ? await loadImage('brand/qr-site.svg') : null;
-  { const tile = 210, bandH = qr ? 320 : (host ? 200 : 150); x.fillStyle=P.accent; x.fillRect(0, y, W, bandH);
-    x.fillStyle='#FFFFFF'; x.font=`400 44px ${ROUND}`;
-    if (qr){
-      x.fillText(t('img.ask1'), PAD, y+100); x.fillText(t('img.ask2'), PAD, y+158);
-      x.fillStyle='rgba(255,255,255,.78)'; x.font=`500 26px ${SANS}`; x.fillText(t('img.scan'), PAD, y+222);
-      x.fillStyle='#FFFFFF'; x.fillText(host, PAD, y+262);
-    } else {
-      x.fillText(t('img.askOne'), PAD, y+86);
-      if (host){ x.font=`500 34px ${SANS}`; x.fillText(host, PAD, y+146); }
-    }
-    if (qr){ const qx=W-PAD-tile+20, qy=y+(bandH-tile)/2;
-      x.fillStyle='#FFFFFF'; rr(qx, qy, tile, tile, 16); x.fill();
-      x.imageSmoothingEnabled=false; x.drawImage(qr, qx+22, qy+22, tile-44, tile-44); x.imageSmoothingEnabled=true; }
-    y += bandH; }
+  /* 字級由大到小試排：放得下就用，剩下的空間平均分給區塊之間；最小一級仍放不下才把圖片拉長 */
+  const FS = [
+    {one:38, row:64, leg:36, tag:34, body:32, head:32},
+    {one:36, row:62, leg:34, tag:32, body:30, head:30},
+    {one:34, row:58, leg:34, tag:30, body:28, head:30},
+    {one:32, row:56, leg:32, tag:28, body:26, head:28}];
+  const titleRow = (r.kind==='combo'||r.kind==='diag') ? [{text:LBL(r.order[0]),t:r.order[0]},{text:t('res.plusTitle'),t:null},{text:LBL(r.order[1]),t:r.order[1]}] : titleLines(r)[0];
+  function layout(f, extra){
+    const s=FS[f], G=34+extra;
+    x.clearRect(0,0,W,cv.height); x.fillStyle=P.card; x.fillRect(0,0,W,cv.height);
+    // 品牌條（細條）：夜空底＋車燈光束＋星星＋尋光引路實驗室
+    { const bh=BRAND; x.fillStyle=P.night; x.fillRect(0,0,W,bh);
+      const g=x.createLinearGradient(140,0,W,0); g.addColorStop(0,'rgba(255,216,143,.38)'); g.addColorStop(1,'rgba(255,216,143,0)');
+      x.save(); x.beginPath(); x.rect(0,0,W,bh); x.clip();
+      x.fillStyle=g; x.beginPath(); x.moveTo(140,bh/2); x.lineTo(W,-24); x.lineTo(W,bh+24); x.closePath(); x.fill();
+      x.fillStyle='rgba(223,232,255,.7)'; [[503,18,1.8],[727,80,1.4],[913,22,2]].forEach(([sx,sy,sr])=>{ x.beginPath(); x.arc(sx,sy,sr,0,Math.PI*2); x.fill(); });
+      x.restore();
+      const ls=56; if (lab) x.drawImage(lab, PAD, (bh-ls)/2, ls, ls);
+      const tx = PAD + (lab ? ls+20 : 0), base = bh/2+11;
+      x.fillStyle=P.warm; x.font=`500 30px ${SANS}`; spaced(t('img.lab'), tx, base, 30*.25);
+      x.fillStyle='rgba(236,228,210,.7)'; x.font=`400 20px ${SANS}`; const sub=t('img.labSub'), sg=20*.2;
+      const subW=[...sub].reduce((w,ch)=>w+x.measureText(ch).width+sg,0)-sg; spaced(sub, W-PAD-subW, base-2, sg); }
+    let y = BRAND + G;
+    // 測驗名稱：四色標誌＋名稱＋副標（英文太長時副標換到下一行）
+    { const M=[['M48.4 48.4L.4 48.4A48 48 0 0 1 48.4 .4Z','D'],['M51.6 48.4L51.6 7.1A41.3 41.3 0 0 1 92.9 48.4Z','I'],['M51.6 51.6L86.2 51.6A34.6 34.6 0 0 1 51.6 86.2Z','S'],['M48.4 51.6L48.4 90A38.4 38.4 0 0 1 10 51.6Z','C']];
+      x.save(); x.translate(PAD, y); x.scale(.56,.56); M.forEach(([d,c])=>{ x.fillStyle=P[c]; x.fill(new Path2D(d)); }); x.restore();
+      const nx = PAD+56+18, by = y+41;
+      x.fillStyle=P.ink; x.font=`400 44px ${ROUND}`; x.fillText(t('img.brand'), nx, by);
+      const bw = x.measureText(t('img.brand')).width; x.font=`500 26px ${SANS}`; const sw = x.measureText(t('img.brandSub')).width;
+      x.fillStyle=P.muted;
+      if (nx+bw+18+sw <= W-PAD){ x.fillText(t('img.brandSub'), nx+bw+18, by); y += 52; }
+      else { x.fillText(t('img.brandSub'), nx, by+38); y = by+48; } }
+    // 標題：一律排成一行；組合型寫「D 老虎 ＋ S 無尾熊」（不加型名），太寬就縮小字
+    { const lw = () => titleRow.reduce((w,p)=>w+x.measureText(p.text).width,0);
+      let size = 96; x.font=`400 ${size}px ${ROUND}`;
+      while (lw()>maxW && size>40){ size-=2; x.font=`400 ${size}px ${ROUND}`; }
+      y += G*.8 + size*.92; let px=PAD;
+      titleRow.forEach(p=>{ x.fillStyle=p.t?P[p.t]:P.ink; x.fillText(p.text,px,y); px+=x.measureText(p.text).width; });
+      y += size*.22; }
+    // 一句話
+    { y += 14 + s.one; y = drawRich(units(rep.one), PAD, y, maxW, s.one, s.one*1.5, P.ink) + s.one*.45; }
+    // 本色圓＋四型比例（固定 D I S C 的順序）＋頭冠
+    { y += G; const lgH = s.row*3 + s.leg + 8, top=y, circ = tops.length>1 ? 180 : 210, overlap=44;
+      const cH = Math.max(circ, lgH), cy = top + cH/2;
+      const ts = tops.length ? tops : ['X'];
+      ts.forEach((c,i)=>{ const cx = PAD + circ/2 + i*(circ-overlap), R=circ/2;
+        x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.closePath();
+        x.fillStyle = c==='X' ? chamPattern(x, circ/56, cx-R, cy-R) : canvasPattern(x,c,circ/56,cx-R,cy-R); x.fill();
+        x.lineWidth=6; x.strokeStyle=P.card; x.stroke(); });
+      const lx = PAD + circ + (ts.length-1)*(circ-overlap) + 60, rx = W-PAD;
+      TYPES.forEach((c,i)=>{ const ry = cy - lgH/2 + s.leg/2 + 4 + i*s.row, tb = ry + s.leg*.36;
+        x.beginPath(); x.arc(lx+18, ry, 18, 0, Math.PI*2); x.fillStyle=canvasPattern(x,c,36/56,lx,ry-18); x.fill();
+        x.fillStyle=P.ink; x.font=`700 ${s.leg}px ${SANS}`; x.fillText(LBL(c), lx+36+14, tb);
+        const cr = crownOf(c);
+        if (cr){ const cx0 = lx+36+14+x.measureText(LBL(c)).width+12;
+          x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=2; x.shadowOffsetY=1; x.drawImage(cr, cx0, ry-21, 44, 38); x.restore(); }
+        x.textAlign='right'; x.fillText(`${pr[c]}%`, rx, tb); x.textAlign='left'; });
+      y = top + cH; }
+    // 我的超能力：每項「#標籤」各自一個淡色底框，排成一行；放不下先縮小字（最小 22，免得看不清楚），仍放不下才換行
+    { y += G + 26; x.fillStyle=P.ink; x.font=`700 28px ${SANS}`; spaced(t('img.powers'), PAD, y, 28*.04);
+      const gx=14; let sz=s.tag;
+      const padOf = () => Math.round(sz*.62);
+      const pillW = q => x.measureText(q).width + padOf()*2;
+      const rowW = () => { x.font=`700 ${sz}px ${SANS}`; return tags.reduce((w,q)=>w+pillW(q),0) + gx*(tags.length-1); };
+      while (rowW()>maxW && sz>22) sz--;
+      x.font=`700 ${sz}px ${SANS}`; const bh=Math.round(sz*1.9);
+      y += 16; let px=PAD;
+      tags.forEach(q=>{ const w=pillW(q);
+        if (px>PAD && px+w>PAD+maxW){ px=PAD; y += bh+12; }
+        x.fillStyle=tint; rr(px, y, w, bh, bh/2); x.fill();
+        const by=y+bh/2+sz*.36, tx=px+padOf();
+        x.fillStyle=hue; x.fillText('#', tx, by); x.fillStyle=P.ink; x.fillText(q.slice(1), tx+x.measureText('#').width, by);
+        px += w+gx; });
+      y += bh; }
+    // 四格重點（兩欄；同一列的高度取比較高的那格）
+    { y += G; const g=22, bw=(maxW-g)/2, padX=30, padY=26, hs=s.head, sz=s.body, lh=sz*1.5;
+      for (let i=0;i<boxes.length;i+=2){
+        const pair = boxes.slice(i,i+2).map(([h,b])=>({h, us:units(b)}));
+        const hgt = Math.max(...pair.map(p=>wrap(p.us, bw-padX*2, sz).length))*lh + hs*1.6 + 8 + padY*2;
+        pair.forEach((p,j)=>{ const bx = PAD + j*(bw+g);
+          x.fillStyle=P.bg; rr(bx, y, bw, hgt, 22); x.fill();
+          // 標題前加一條主色短直條，一眼看出是標題
+          { const hb=y+padY+hs*1.1; x.fillStyle=hue; rr(bx+padX, hb-hs*.86, 7, hs*1.02, 3.5); x.fill();
+            x.fillStyle=P.ink; x.font=`700 ${hs}px ${SANS}`; spaced(p.h, bx+padX+20, hb, hs*.04); }
+          drawRich(p.us, bx+padX, y+padY+hs*1.6+8+sz*1.05, bw-padX*2, sz, lh, '#454A51'); });
+        y += hgt + (i+2<boxes.length ? g : 0); } }
+    // 朋友認證：這張準不準？
+    { y += G + 30; x.fillStyle=P.ink; x.font=`700 30px ${SANS}`; spaced(t('img.vote'), PAD, y, 30*.04); y += 20;
+      const opts=[t('img.vote1'), t('img.vote2'), t('img.vote3')], g=18, w=(maxW-g*2)/3, h=84;
+      opts.forEach((q,i)=>{ const bx=PAD+i*(w+g);
+        x.lineWidth=3; x.strokeStyle=P.ink; rr(bx+1.5, y+1.5, w-3, h-3, (h-3)/2); x.stroke();
+        x.font=`700 32px ${SANS}`; const sw=x.measureText(q).width, box=30, tot=box+12+sw, sx=bx+(w-tot)/2;
+        rr(sx+1.5, y+h/2-box/2+1.5, box-3, box-3, 6); x.stroke();
+        x.fillStyle=P.ink; x.fillText(q, sx+box+12, y+h/2+11); });
+      y += h; }
+    return y;
+  }
+  const limit = H-BAND-44;
+  let f=0, end=layout(0,0);
+  while (end>limit && f<FS.length-1){ f++; end=layout(f,0); }
+  if (end<limit) end=layout(f, Math.min((limit-end)/6, 40));
+  const outH = Math.max(H, Math.ceil(end + 44 + BAND));
 
-  const out=document.createElement('canvas'); out.width=W; out.height=y;
-  const o=out.getContext('2d'); o.fillStyle=P.bg; o.fillRect(0,0,W,y);
+  const out=document.createElement('canvas'); out.width=W; out.height=outH;
+  const o=out.getContext('2d'); o.fillStyle=P.card; o.fillRect(0,0,W,outH);
   o.drawImage(cv,0,0);
-  /* 用 blob 網址而不是 data 網址：長圖的 data 網址有好幾 MB，安卓上常常下載失敗 */
+  // 邀請條（細條）：貼在最下面，讓看到圖的朋友找得到測驗
+  { const y=outH-BAND, tile=166; o.fillStyle=P.ink; o.fillRect(0, y, W, BAND); o.textBaseline='alphabetic';
+    const avail = (qr ? W-PAD-tile-32 : W-PAD) - PAD;
+    const one = t('img.ask1') + (L.code==='zh' ? '' : ' ') + t('img.ask2');
+    let sz=38; o.font=`400 ${sz}px ${ROUND}`; while (o.measureText(one).width>avail && sz>28){ sz--; o.font=`400 ${sz}px ${ROUND}`; }
+    const twoLines = o.measureText(one).width>avail;
+    o.fillStyle='#FFFFFF';
+    let ty;
+    if (twoLines){ o.fillText(t('img.ask1'), PAD, y+60); o.fillText(t('img.ask2'), PAD, y+60+sz*1.2); ty = y+60+sz*1.2; }
+    else { o.fillText(one, PAD, y+(host?78:118)); ty = y+78; }
+    if (host){
+      if (qr){ o.fillStyle='rgba(255,255,255,.72)'; o.font=`500 22px ${SANS}`; o.fillText(t('img.scan'), PAD, ty+46); }
+      o.fillStyle='#FFFFFF'; o.font=`500 26px ${SANS}`; o.fillText(host, PAD, ty+(qr?84:56)); }
+    if (qr){ const qx=W-PAD-tile, qy=y+(BAND-tile)/2;
+      o.fillStyle='#FFFFFF'; o.beginPath(); o.roundRect ? o.roundRect(qx, qy, tile, tile, 14) : o.rect(qx, qy, tile, tile); o.fill();
+      o.imageSmoothingEnabled=false; o.drawImage(qr, qx+15, qy+15, tile-30, tile-30); o.imageSmoothingEnabled=true; } }
+
+  /* 用 blob 網址而不是 data 網址：data 網址很大，安卓上常常下載失敗 */
   const blob = await new Promise(res=>out.toBlob(res,'image/png'));
   if (lastImage && lastImage.url) URL.revokeObjectURL(lastImage.url);
   const url = URL.createObjectURL(blob);
@@ -2355,6 +2491,20 @@ async function copyText(t){
   try { const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
     document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length); const ok=document.execCommand('copy'); ta.remove(); return ok; } catch(e){ return false; }
 }
+const aiTextFor = r => aiPrompt(r, {rep:REP(), sub:SUBT(), title:titleLines(r).flat().map(p=>p.text).join('')});
+/* 點 AI 按鈕：必須先開新分頁（任何 await 之前，才不會被瀏覽器擋），再複製文字；複製失敗就自動展開全文讓使用者手動複製 */
+async function aiOpen(site, text, btn){
+  if (btn){ btn.classList.remove('pressed'); void btn.offsetWidth; btn.classList.add('pressed'); }
+  if (site) window.open(aiUrl(AI_SITES[site], text), '_blank', 'noopener');
+  const ok = await copyText(text);
+  const m = document.querySelector('.share-msg[data-msg="ai"]'), d = $('#ai-preview');
+  if (m){
+    m.textContent = ok ? t('ai.copied') : t('ai.copyFail');
+    m.classList.remove('ai-ok'); void m.offsetWidth; /* 每次成功都重新播一次動畫與底色，等於再提醒一次 */
+    if (ok) m.classList.add('ai-ok');
+  }
+  if (!ok && d) d.open = true;
+}
 async function shareResult(r, where){
   const msg = s => { const m=document.querySelector(`.share-msg[data-msg="${where}"]`); if (m) m.textContent=s; };
   msg(t('share.making'));
@@ -2375,7 +2525,7 @@ async function shareResult(r, where){
 }
 
 /* ===== 會員：Google 登入、保存結果、我的歷次結果 ===== */
-const CONTACT = 'a21420000@gmail.com';
+const CONTACT = 'hello@lumineerlab.com';
 let USER = null;
 const fmtDate = d => new Date(d).toLocaleDateString(L.locale, L.dateOpts);
 /* 結果頁的額外區塊：看過去的結果時顯示提示列；看自己剛做完的結果時顯示「保存這次結果」 */
@@ -2523,7 +2673,7 @@ function renderSaveCard(note){
   }
   const blocked = IN_APP ? `<div class="warn inapp"><span>${t('save.blocked', {app:IN_APP})}</span>${IN_APP==='LINE' ? `<a class="btn" href="${esc(externalURL())}">${t('inapp.open')}</a>` : ''}</div>` : '';
   box.innerHTML = `<h3 class="hl">${t('save.h')}</h3>
-    <p>${t('save.p')}</p>
+    <p class="small muted">${t('save.p')}</p>
     ${blocked}
     <div class="actions"><button class="btn primary" id="sign-in"${IN_APP?' disabled':''}>${t('save.signin')}</button></div>
     <p class="small muted" id="sign-in-msg" role="status">${note||''}</p>`;
@@ -2634,9 +2784,8 @@ if (BK.enabled && BK.hasSession()){
   }).catch(()=>{});
   BK.onAuthChange(u=>{ USER = u; authUI(); });
 }
-/* 「換個角度」頁的選單點「意見回饋」會連到 ./#feedback：直接打開意見回饋頁 */
-const WANT_FB = location.hash === '#feedback';
-if (WANT_FB) history.replaceState(history.state, '', location.pathname + location.search);
+/* 只有從「換個角度」頁明確點選回饋入口，才消耗一次性的開窗交接旗標 */
+const WANT_FB = (()=>{ try{ const v=sessionStorage.getItem('disc-open-feedback'); sessionStorage.removeItem('disc-open-feedback'); return v==='1'; }catch(e){ return false; } })();
 $('#inapp-home').innerHTML = inAppNoteHTML('home');
 if (saved && saved.done){ st=saved; renderResult(); show('s-result'); }
 else if (onTabEntry()) showNone();
@@ -2657,12 +2806,12 @@ function rerender(){
   [homeDialog, restartDialog, menu].forEach(d=>{ if (d.open) d.close(); });
   syncTheme();
   $('#toast').textContent = '';
-  if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
+  if (fbDialog.open) renderFeedback();
+  else if (!$('#s-quiz').hidden && st){ const keep = lastAt; renderQuiz(); lastAt = keep; }
   else if (!$('#s-blind').hidden && st && st.blindOrders) renderBlind(blindPage);
   else if (!$('#s-info').hidden){ ['#email-err','#uname-err','#age-err','#gender-err','#edu-err','#job-err','#school-err','#major-err','#fu-phone-err','#fu-line-err'].forEach(q=>{ $(q).textContent = ''; }); }
   else if (!$('#s-result').hidden && st && st.done){ const y = window.scrollY; renderResult(); window.scrollTo(0, y); }
   else if (!$('#s-history').hidden) openHistory();
-  else if (!$('#s-feedback').hidden) renderFeedback();
   else if (!$('#s-none').hidden) renderNone();
 }
 async function setLang(code, {save=true}={}){

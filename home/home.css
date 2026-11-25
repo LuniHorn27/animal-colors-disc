@@ -4,6 +4,25 @@
 html,body{margin:0;height:100%;background:#04060a;overflow:hidden;color:var(--ink);
   font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
 #stage{position:fixed;inset:0;width:100%;height:100%;display:block}
+.entry-transition{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden;opacity:0;
+  background:radial-gradient(ellipse 12vmin 18vmin at var(--entry-x,50%) var(--entry-y,58%),rgba(255,250,222,.98) 0%,rgba(255,213,132,.62) 24%,rgba(156,218,244,.26) 48%,transparent 76%)}
+html.entering-hut #overlay,html.entering-hut #skip,html.entering-hut .about,html.entering-hut .hint,html.entering-hut .odo{
+  opacity:0;pointer-events:none;transition:opacity .2s}
+.entry-transition.active{animation:entry-wash 1.72s ease-in forwards}
+.entry-transition::before{content:"";position:absolute;inset:0;opacity:0;transform:rotate(-12deg);transform-origin:var(--entry-x,50%) var(--entry-y,58%);
+  background:conic-gradient(from 0deg at var(--entry-x,50%) var(--entry-y,58%),transparent 0deg 33deg,rgba(255,230,168,.34) 34deg 40deg,transparent 41deg 113deg,rgba(170,226,248,.3) 114deg 120deg,transparent 121deg 211deg,rgba(255,224,151,.32) 212deg 218deg,transparent 219deg 300deg,rgba(172,222,246,.3) 301deg 307deg,transparent 308deg 360deg)}
+.entry-transition.active::before{animation:entry-beam 1.5s ease-in-out 1 forwards}
+.entry-transition span{position:absolute;left:var(--entry-x,50%);top:var(--entry-y,58%);width:32vmin;height:32vmin;
+  border:2px solid rgba(234,246,255,.92);border-radius:50%;box-shadow:0 0 32px rgba(255,202,118,.62),inset 0 0 18px rgba(196,233,255,.42);
+  transform:translate(-50%,-50%) scale(.18);opacity:0;will-change:transform,opacity}
+.entry-transition.active span:nth-child(1){animation:entry-ring 1.45s ease-out 1 forwards}
+.entry-transition.active span:nth-child(2){animation:entry-ring 1.35s ease-out .12s 1 forwards}
+.entry-transition.active span:nth-child(3){animation:entry-ring 1.25s ease-out .24s 1 forwards}
+@keyframes entry-wash{0%{opacity:0}7%{opacity:1}20%{opacity:.82}64%{opacity:.92}100%{opacity:1}}
+@keyframes entry-beam{0%{opacity:.2;transform:rotate(-12deg) scale(.6)}20%{opacity:1}70%{opacity:.75;transform:rotate(8deg) scale(1.12)}100%{opacity:1;transform:rotate(0deg) scale(1.4)}}
+@keyframes entry-ring{0%{transform:translate(-50%,-50%) scale(.18);opacity:1}100%{transform:translate(-50%,-50%) scale(3.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.entry-transition.active{animation:entry-wash .4s ease-out forwards}
+  .entry-transition.active::before{display:none}.entry-transition.active span{display:none}}
 .brand{position:fixed;left:max(24px,env(safe-area-inset-left,0px));top:22px;opacity:.65;letter-spacing:.2em;
   font-size:13px;line-height:1.7;pointer-events:none;z-index:3;text-shadow:0 0 10px #000}
 .brand b{font-weight:500;font-size:15px;letter-spacing:.3em}
@@ -69,3 +88,19 @@ html,body{margin:0;height:100%;background:#04060a;overflow:hidden;color:var(--in
   min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:.2em;
   color:var(--ink);opacity:.45;text-decoration:none}
 .about:hover,.about:focus-visible{opacity:1;outline:none;text-decoration:underline;text-underline-offset:6px}
+
+/* 背景音樂控制以圖示呈現，不遮住騎乘操作。 */
+.music-toggle{position:fixed;left:max(20px,env(safe-area-inset-left,0px));top:82px;z-index:5;width:50px;height:50px;
+  display:flex;align-items:center;justify-content:center;padding:0;border:1px solid rgba(255,255,255,.25);border-radius:50%;
+  background:rgba(255,255,255,.07);color:var(--ink);opacity:1;cursor:pointer;backdrop-filter:blur(8px)}
+.music-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.music-toggle .speaker{fill:currentColor;stroke:none}
+.music-toggle .muted-mark{display:none}
+.music-toggle[aria-pressed="false"] .sound-waves{display:none}
+.music-toggle[aria-pressed="false"] .muted-mark{display:block}
+.music-toggle:hover,.music-toggle:focus-visible{opacity:1;border-color:rgba(255,255,255,.55);outline:2px solid rgba(255,255,255,.4);outline-offset:3px}
+.music-toggle:active{background:rgba(255,216,143,.25)}
+@media (min-width:700px) and (pointer:fine){
+  .music-toggle{left:max(20px,env(safe-area-inset-left,0px));top:auto;bottom:calc(78px + env(safe-area-inset-bottom,0px));width:68px;height:68px}
+  .music-toggle svg{width:28px;height:28px}
+}
