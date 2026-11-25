@@ -291,7 +291,7 @@ window.DISC_LANG_EN = {
   "ai.r.sub": "Secondary tendency: {lbl}. {sub}",
   "ai.r.scores": "Scores for the four tendencies (0-100, showing how strong each tendency is, not ability): {list}",
   "ai.r.score": "{lbl} {n}",
-  "ai.h": "Take your result to an AI",
+  "ai.h": "Explore your result with AI",
   "ai.p": "Hand your quiz result to an AI to talk about careers, relationships, or getting to know yourself better. Your name and personal details are not included.",
   "ai.hint": "Tapping a button copies the text first, then opens the AI. If the chat box is empty, just paste to start talking.",
   "ai.copyOnly": "Copy text only",

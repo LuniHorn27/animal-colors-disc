@@ -970,7 +970,7 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'ai.r.sub':'副型：{lbl}。{sub}',
   'ai.r.scores':'四種傾向的分數（0–100，代表傾向強弱，不是能力）：{list}',
   'ai.r.score':'{lbl} {n}',
-  'ai.h':'帶著結果去問 AI',
+  'ai.h':'用 AI 深入探索你的結果',
   'ai.p':'把你的測驗結果交給 AI，聊聊職涯、人際，或更了解自己。不會帶上你的名字和個人資料。',
   'ai.hint':'按下去會先幫你複製文字並打開 AI；如果對話框是空的，貼上就能開始聊。',
   'ai.copyOnly':'只複製文字',
@@ -1192,7 +1192,7 @@ const SUBT = () => L.SUB || SUB_ZH;
 
 /* ===== AI 引導文字（不碰畫面，測試會切出這段） ===== */
 const pct = m => Math.round((m-1)/4*100);
-/* 產生「帶著結果去問 AI」的全文。r 是 score() 的結果；opt = {rep:解說字典, sub:副型字典, title:結果標題純文字}。沒有結果回傳空字串 */
+/* 產生「用 AI 深入探索你的結果」的全文。r 是 score() 的結果；opt = {rep:解說字典, sub:副型字典, title:結果標題純文字}。沒有結果回傳空字串 */
 function aiPrompt(r, opt){
   if (!r || r.kind==='none') return '';
   const rep = opt.rep[r.key]; if (!rep) return '';
