@@ -190,6 +190,11 @@ select{font:inherit;color:var(--ink);background-color:var(--surface);border:1px 
 @media (prefers-reduced-motion:reduce){.fold-btn svg{transition:none}.fold-card.nudge,#peer-card.nudge .ghost::before,#peer-card.nudge .ghost span{animation:none}}
 .side,.main{display:flex;flex-direction:column;gap:16px;min-width:0}
 .pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.ai3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.ai3 .btn{padding:0 6px;font-size:15px;white-space:nowrap}
+#ai-card details{margin-top:12px}
+#ai-card summary{cursor:pointer;color:var(--muted);font-size:14px}
+.ai-text{display:block;width:100%;height:180px;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);font:inherit;font-size:13px;line-height:1.6;resize:vertical}
 .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .ak{display:inline-block;padding:0 7px;border-radius:6px;font-weight:700;color:var(--ink);white-space:nowrap;line-height:1.6}
 .ak-D{background:color-mix(in srgb,var(--d) 20%,transparent)} .ak-I{background:color-mix(in srgb,var(--i) 20%,transparent)}
@@ -957,6 +962,14 @@ const ZH = {code:'zh', htmlLang:'zh-Hant-TW', locale:'zh-TW', dateOpts:{year:'nu
   'ai.r.sub':'副型：{lbl}。{sub}',
   'ai.r.scores':'四種傾向的分數（0–100，代表傾向強弱，不是能力）：{list}',
   'ai.r.score':'{lbl} {n}',
+  'ai.h':'帶著結果去問 AI',
+  'ai.p':'把你的測驗結果交給 AI，聊聊職涯、人際，或更了解自己。不會帶上你的名字和個人資料。',
+  'ai.hint':'按下去會先幫你複製文字並打開 AI；如果對話框是空的，貼上就能開始聊。',
+  'ai.copyOnly':'只複製文字',
+  'ai.preview':'看看要交給 AI 的文字',
+  'ai.copied':'✓ 已複製，到 AI 的對話框貼上就可以開始聊。',
+  'ai.copyFail':'沒辦法自動複製，請在下面的文字框長按或全選後複製。',
+  'ai.open':'用 {name} 開啟',
   'share.h':'分享你的結果', 'share.p':'產生一張適合分享的結果圖片，可以下載或傳給朋友。', 'share.make':'產生結果圖片',
   'share.alt':'我的動物本色結果圖片', 'share.download':'下載圖片', 'share.fileDefault':'動物本色-結果.png',
   'share.hold':'手機可以長按圖片儲存', 'invite':'邀請朋友來測驗', 'share.dock':'儲存／分享結果圖片',
@@ -1191,6 +1204,13 @@ function aiPrompt(r, opt){
   ].join('\n\n');
   return t('ai.prompt', {result:result.join('\n'), report});
 }
+const AI_SITES = {
+  chatgpt:{name:'ChatGPT', url:'https://chatgpt.com/?q=', home:'https://chatgpt.com/'},
+  claude:{name:'Claude', url:'https://claude.ai/new?q=', home:'https://claude.ai/new'},
+  gemini:{name:'Gemini', home:'https://gemini.google.com/app'}
+};
+const AI_URL_MAX = 8000; /* 編碼後網址長度上限；超過就只開首頁，靠貼上 */
+const aiUrl = (site, text) => { const u = site.url ? site.url + encodeURIComponent(text) : ''; return u && u.length <= AI_URL_MAX ? u : site.home; };
 
 /* ===== 3. 抽題與計分（不碰畫面） ===== */
 const GATE = 0.40;
@@ -2089,6 +2109,14 @@ function renderResult(){
               <div class="actions" style="justify-content:center;margin-top:12px"><a class="btn primary" id="dl-img" download="${t('share.fileDefault')}">${t('share.download')}</a>${shareBtns('card')}</div>
               <p class="small muted share-msg" data-msg="card" style="text-align:center;margin-top:8px">${t('share.hold')}</p></div>
           </div>
+          <div class="card" id="ai-card"><h3 class="hl">${t('ai.h')}</h3>
+            <p class="small muted">${t('ai.p')}</p>
+            <div class="ai3">${Object.entries(AI_SITES).map(([k,s])=>`<button class="btn primary" data-ai="${k}" aria-label="${t('ai.open', {name:s.name})}">${s.name}</button>`).join('')}</div>
+            <div class="actions"><button class="btn" data-ai="">${t('ai.copyOnly')}</button></div>
+            <p class="small muted" style="margin-top:10px">${t('ai.hint')}</p>
+            <p class="small share-msg" data-msg="ai" role="status"></p>
+            <details id="ai-preview"><summary>${t('ai.preview')}</summary><textarea class="ai-text" readonly>${esc(aiTextFor(r))}</textarea></details>
+          </div>
         </div>
         <div class="actions"><button class="btn" id="again">${t('again')}</button><button class="btn" id="invite">${t('invite')}</button><button class="btn" id="go-home">${t('nav.home')}</button></div>
         ${confirmHTML}
@@ -2133,6 +2161,7 @@ function renderResult(){
     $('#make-img').addEventListener('click', ()=>buildShareImage(r, true));
     setupShareDock();
     el.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click', ()=>shareResult(r, b.dataset.share)));
+    el.querySelectorAll('[data-ai]').forEach(b=>b.addEventListener('click', ()=>aiOpen(b.dataset.ai, aiTextFor(r))));
     $('#invite').addEventListener('click', inviteFriends);
   }
   $('#again').addEventListener('click', ()=>{ $('#again-confirm').hidden=false; $('#again-cancel').focus(); });
@@ -2435,6 +2464,15 @@ async function copyText(t){
   try { await navigator.clipboard.writeText(t); return true; } catch(e){}
   try { const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
     document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length); const ok=document.execCommand('copy'); ta.remove(); return ok; } catch(e){ return false; }
+}
+const aiTextFor = r => aiPrompt(r, {rep:REP(), sub:SUBT(), title:titleLines(r).flat().map(p=>p.text).join('')});
+/* 點 AI 按鈕：必須先開新分頁（任何 await 之前，才不會被瀏覽器擋），再複製文字；複製失敗就自動展開全文讓使用者手動複製 */
+async function aiOpen(site, text){
+  if (site) window.open(aiUrl(AI_SITES[site], text), '_blank', 'noopener');
+  const ok = await copyText(text);
+  const m = document.querySelector('.share-msg[data-msg="ai"]'), d = $('#ai-preview');
+  if (m) m.textContent = ok ? t('ai.copied') : t('ai.copyFail');
+  if (!ok && d) d.open = true;
 }
 async function shareResult(r, where){
   const msg = s => { const m=document.querySelector(`.share-msg[data-msg="${where}"]`); if (m) m.textContent=s; };

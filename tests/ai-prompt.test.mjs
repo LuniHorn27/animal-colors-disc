@@ -31,3 +31,16 @@ test('英文版沒有中文字、沒有台灣專線號碼', () => {
   for (const r of Object.values(R)) { const s = en(r); assert.ok(!/[㐀-鿿]/.test(s)); assert.ok(!s.includes('1925')); assert.ok(s.includes(A.EN.R[r.key].one)); }
   A.useDict(A.ZH);
 });
+
+test('短文字帶入網址，太長改開首頁，Gemini 一律開首頁', () => {
+  const S = A.AI_SITES;
+  assert.equal(A.aiUrl(S.chatgpt, 'hi'), 'https://chatgpt.com/?q=hi');
+  assert.equal(A.aiUrl(S.claude, 'hi'), 'https://claude.ai/new?q=hi');
+  assert.equal(A.aiUrl(S.gemini, 'hi'), 'https://gemini.google.com/app');
+  assert.equal(A.aiUrl(S.chatgpt, '字'.repeat(5000)), S.chatgpt.home);
+});
+test('點 AI 按鈕時先開分頁、才複製（避免被擋）', () => {
+  const src = A.html.slice(A.html.indexOf('async function aiOpen'), A.html.indexOf('async function aiOpen') + 600);
+  assert.ok(src.indexOf('window.open') > -1 && src.indexOf('window.open') < src.indexOf('copyText'));
+  assert.ok(src.indexOf('await') === -1 || src.indexOf('window.open') < src.indexOf('await'));
+});
