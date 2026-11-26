@@ -81,8 +81,8 @@ main{max-width:1080px}
 }
 @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 .sec{background:none;border:0;border-radius:0;padding:0;margin:48px 0 0}
-.content{counter-reset:sec}.sec[id]{counter-increment:sec}
-.sec[id] h2::before{content:counter(sec,trad-chinese-informal) "、"}
+.content{counter-reset:sec}.sec[id],.sec[aria-labelledby]{counter-increment:sec}.more-link{counter-increment:sec}
+.sec[id] h2::before,.sec[aria-labelledby] h2::before{content:counter(sec,trad-chinese-informal) "、"}.more-link .ml::before{content:counter(sec,trad-chinese-informal) "、延伸："}
 .toc{counter-reset:t}.toc>li:not(.pre)>a::before{counter-increment:t;content:counter(t,trad-chinese-informal) "、";margin-right:2px}
 .rbar{position:fixed;top:0;left:0;right:0;height:4px;z-index:50;background:transparent;pointer-events:none}.rbar i{display:block;height:100%;width:0;background:var(--accent,var(--ink));transition:width .1s linear}
 @media (prefers-reduced-motion:reduce){.rbar i{transition:none}}
@@ -186,7 +186,7 @@ main{max-width:1080px}
       <li><a href="disc-peacock.html"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><pattern id="pt-peacock" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#11968A"/><ellipse cx="10" cy="11" rx="8" ry="10" fill="#0B4F66"/><ellipse cx="10" cy="12" rx="5" ry="6.4" fill="#F3C24F"/><ellipse cx="10" cy="13" rx="2.8" ry="2.8" fill="#142A4C"/><ellipse cx="30" cy="31" rx="8" ry="10" fill="#0B4F66"/><ellipse cx="30" cy="32" rx="5" ry="6.4" fill="#F3C24F"/><ellipse cx="30" cy="33" rx="2.8" ry="2.8" fill="#142A4C"/></pattern></defs><circle cx="50" cy="50" r="48" fill="url(#pt-peacock)"/></svg><b>I 孔雀型</b><small>影響型</small></a></li>
       <li><a href="disc-koala.html"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><pattern id="pt-koala" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#5E9A47"/><ellipse cx="9" cy="10" rx="3.6" ry="8.5" transform="rotate(38 9 10)" fill="#3C6B30"/><ellipse cx="27" cy="27" rx="3.6" ry="8.5" transform="rotate(-38 27 27)" fill="#3C6B30"/><ellipse cx="27" cy="8" rx="2.2" ry="2.2" fill="#DCEBD3"/><ellipse cx="9" cy="28" rx="2.2" ry="2.2" fill="#DCEBD3"/></pattern></defs><circle cx="50" cy="50" r="48" fill="url(#pt-koala)"/></svg><b>S 無尾熊型</b><small>穩定型</small></a></li>
     </ul>
-    <a class="more-link" href="disc.html">DISC 行為風格測驗是什麼？四種動物解析一次看懂</a>
+    <a class="more-link" href="disc.html"><span class="ml">DISC 行為風格測驗是什麼？四種動物解析一次看懂</span></a>
   </section>
 
   </div>
