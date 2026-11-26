@@ -335,6 +335,8 @@ svg text{font-family:var(--font-sans)}
       <a class="menu-row" id="m-home" href="./"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-6h4v6"/></svg><span><span data-i18n="menu.home">回到首頁</span><small data-i18n="menu.homeSub">測出你的動物本色｜DISC 行為風格測驗</small></span></a>
       <hr>
     </div>
+    <a class="menu-row" id="m-disc" href="disc.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg><span data-i18n="menu.disc">認識 DISC 行為風格測驗</span></a>
+    <hr>
     <div id="m-acct">
       <h2 class="menu-sec" data-i18n="menu.account">帳號</h2>
       <p class="menu-who" id="m-who" hidden></p>
@@ -384,6 +386,7 @@ function applyStatic() {
   document.title = T('doc.title');
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = T(el.dataset.i18n); });
   $('#ptabs').setAttribute('aria-label', T('tab.nav'));
+  $('#m-disc').href = X.lang === 'en' ? 'disc-en.html' : 'disc.html';
   menu.setAttribute('aria-label', T('menu.btn'));
   syncTheme();
 }

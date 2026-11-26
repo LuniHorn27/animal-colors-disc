@@ -35,6 +35,7 @@
     'menu.feedback': '意見回饋',
     'menu.feedbackSub': '好的、不好的都歡迎回饋',
     'menu.homeSub': '測出你的動物本色｜DISC 行為風格測驗',
+    'menu.disc': '認識 DISC 行為風格測驗',
     'bar.lang': '切換成英文 English',
     'lang.fail': 'English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。',
     'copied': '已複製',

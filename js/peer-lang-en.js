@@ -25,6 +25,7 @@ window.PEER_LANG_EN = {
   "menu.feedback": "Feedback",
   "menu.feedbackSub": "Good or bad, we want to hear it",
   "menu.homeSub": "What's Your Inner Animal? | DISC Behavioral Style Test",
+  "menu.disc": "About the DISC Behavioral Style Assessment",
   "bar.lang": "Switch to Chinese 中文",
   "lang.fail": "English is unavailable right now. Showing Chinese.／英文版暫時無法使用，先顯示中文。",
   "copied": "Copied",
